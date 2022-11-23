@@ -1,0 +1,28 @@
+{
+  "name": "shop",
+  "menus": [
+    {
+      "name_menu_fr": "Boutique",
+      "name_menu_en": "Shop",
+      "icon_menu": "fas fa-shop",
+      "url_menu": "",
+      "urls_submenu_fr": {
+        "Configuration": "shop/config"
+      }
+    }
+  ],
+
+  "description": [
+    {
+      "fr": "Ajoutez une boutique à votre site !",
+      "en": "Add a shop to your website"
+    }
+  ],
+
+
+  "version": "1.0.0",
+  "author": "Teyir",
+
+  "isGame": false,
+  "isCore": false
+}
