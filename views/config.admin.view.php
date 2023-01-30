@@ -2,7 +2,7 @@
 use CMW\Entity\Shop\ShopConfigEntity;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\ThemeModel;
-use CMW\Utils\SecurityService;
+use CMW\Manager\Security\SecurityManager;
 
 $title = "";
 $description = "";
@@ -25,7 +25,7 @@ $description = "";
             </div>
             <div class="card-body">
                 <form id="Configuration" action="" method="post">
-                    <?php (new SecurityService())->insertHiddenToken() ?>
+                    <?php (new SecurityManager())->insertHiddenToken() ?>
                     <div class="row">
                         <div class="col-md-6">
                             <h6>Devises acceptées :</h6>
