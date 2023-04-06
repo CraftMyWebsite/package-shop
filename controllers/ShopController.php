@@ -6,7 +6,7 @@ use CMW\Controller\Core\CoreController;
 use CMW\Controller\Users\UsersController;
 use CMW\Model\Shop\ShopConfigModel;
 use CMW\Router\Link;
-use CMW\Utils\View;
+use CMW\Manager\Views\View;
 
 
 /**
