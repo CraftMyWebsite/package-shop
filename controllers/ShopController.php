@@ -39,8 +39,8 @@ class ShopController extends CoreController
 
     /* ///////////////////// CONFIG /////////////////////*/
 
-    #[Link(path: "/", method: Link::GET, scope: "/cmw-Admin/shop")]
-    #[Link("/config", Link::GET, [], "/cmw-Admin/shop")]
+    #[Link(path: "/", method: Link::GET, scope: "/cmw-admin/shop")]
+    #[Link("/config", Link::GET, [], "/cmw-admin/shop")]
     public function shopConfig(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.configuration");
