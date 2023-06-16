@@ -6,6 +6,7 @@ use CMW\Entity\Shop\ShopConfigCurrenciesEntity;
 use CMW\Entity\Shop\ShopConfigEntity;
 use CMW\Entity\Shop\ShopConfigMail;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Package\AbstractController;
 
 
 /**
@@ -14,14 +15,17 @@ use CMW\Manager\Database\DatabaseManager;
  * @author Teyir
  * @version 1.0
  */
-class ShopConfigModel extends DatabaseManager
+class ShopConfigModel extends AbstractController
 {
     public function getConfig(string $config): mixed
     {
-        $db = self::getInstance();
-        $req = $db->prepare('SELECT shop_config_value FROM cmw_shop_config WHERE shop_config_name = ?');
-        $req->execute(array($config));
-        $option = $req->fetch();
+        $sql = "SELECT shop_config_value FROM cmw_shop_config WHERE shop_config_name = ?";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        $res->execute(array($config));
+        $option = $res->fetch();
 
         return $option['shop_config_value'] ?? "";
     }
@@ -31,17 +35,18 @@ class ShopConfigModel extends DatabaseManager
      */
     public function getConfigMails(): array
     {
-        $db = self::getInstance();
-        $req = $db->prepare('SELECT shop_config_mail_type FROM cmw_shop_config_mail');
+        $sql = "SELECT shop_config_mail_type FROM cmw_shop_config_mail";
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
 
         $toReturn = [];
 
-        if (!$req->execute()) {
+        if (!$res->execute()) {
             return $toReturn;
         }
 
-        while ($res = $req->fetch()) {
-            $toReturn[] = $this->getConfigMail($res['minecraft_server_id']);
+        while ($minecraft = $res->fetch()) {
+            $toReturn[] = $this->getConfigMail($minecraft['minecraft_server_id']);
         }
         return $toReturn;
     }
@@ -52,22 +57,23 @@ class ShopConfigModel extends DatabaseManager
      */
     public function getConfigMail(string $type): ?ShopConfigMail
     {
-        $db = self::getInstance();
-        $req = $db->prepare('SELECT shop_config_mail_reply, shop_config_mail_object,  shop_config_mail_content,
+        $sql = "SELECT shop_config_mail_reply, shop_config_mail_object,  shop_config_mail_content,
                                     shop_config_mail_type, shop_config_mail_last_update
-                                    FROM cmw_shop_config_mail WHERE shop_config_mail_type = ? LIMIT 1');
+                                    FROM cmw_shop_config_mail WHERE shop_config_mail_type = ? LIMIT 1";
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
 
-        if (!$req->execute(array($type))) {
+        if (!$res->execute(array($type))) {
             return null;
         }
-        $res = $req->fetch();
+        $shop = $res->fetch();
 
         return new ShopConfigMail(
-            $res['shop_config_mail_reply'] ?? null,
-            $res['shop_config_mail_object'] ?? null,
-            $res['shop_config_mail_content'] ?? null,
-            $res['shop_config_mail_type'] ?? null,
-            $res['shop_config_mail_last_update'] ?? null,
+            $shop['shop_config_mail_reply'] ?? null,
+                $shop['shop_config_mail_object'] ?? null,
+                $shop['shop_config_mail_content'] ?? null,
+                $shop['shop_config_mail_type'] ?? null,
+                $shop['shop_config_mail_last_update'] ?? null,
         );
     }
 
@@ -76,17 +82,18 @@ class ShopConfigModel extends DatabaseManager
      */
     public function getConfigCurrencies(): array
     {
-        $db = self::getInstance();
-        $req = $db->prepare('SELECT shop_config_currencies_code FROM cmw_shop_config_currencies');
+        $sql = "SELECT shop_config_currencies_code FROM cmw_shop_config_currencies";
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
 
         $toReturn = [];
 
-        if (!$req->execute()) {
+        if (!$res->execute()) {
             return $toReturn;
         }
 
-        while ($res = $req->fetch()) {
-            $toReturn[] = $this->getConfigCurrency($res['shop_config_currencies_code']);
+        while ($currencies = $res->fetch()) {
+            $toReturn[] = $this->getConfigCurrency($currencies['shop_config_currencies_code']);
         }
         return $toReturn;
     }
@@ -97,24 +104,27 @@ class ShopConfigModel extends DatabaseManager
      */
     public function getConfigCurrency(string $code): ?ShopConfigCurrenciesEntity
     {
-        $db = self::getInstance();
-        $req = $db->prepare('SELECT shop_config_currencies_code, shop_config_currencies_name, shop_config_currencies_date_added
-                                    FROM cmw_shop_config_currencies WHERE shop_config_currencies_code = ? LIMIT 1');
+        $sql = "SELECT shop_config_currencies_code, shop_config_currencies_name, shop_config_currencies_date_added
+                                    FROM cmw_shop_config_currencies WHERE shop_config_currencies_code = ? LIMIT 1";
+        $db = DatabaseManager::getInstance();
 
-        if (!$req->execute(array($code))) {
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array($code))) {
             return null;
         }
-        $res = $req->fetch();
+        $shop = $res->fetch();
 
         return new ShopConfigCurrenciesEntity(
-            $res['shop_config_currencies_code'] ?? "",
-            $res['shop_config_currencies_name'] ?? "",
-            $res['shop_config_currencies_date_added'] ?? ""
+            $shop['shop_config_currencies_code'] ?? "",
+                $shop['shop_config_currencies_name'] ?? "",
+                $shop['shop_config_currencies_date_added'] ?? ""
         );
     }
 
     /**
      * @return \CMW\Entity\Shop\ShopConfigEntity|null
+     * @throws \JsonException
      */
     public function getConfigs(): ?ShopConfigEntity
     {
@@ -124,7 +134,7 @@ class ShopConfigModel extends DatabaseManager
         return new ShopConfigEntity(
             $currencies,
             $this->getConfig("isDiscordWebhookEnable") ?? "",
-            json_decode($this->getConfig("discordWebHook"), false, 512, JSON_THROW_ON_ERROR) ?? [],
+            json_decode($this->getConfig("discordWebHook"), false, 512, JSON_THROW_ON_ERROR) ?? [],//discordWebHook n'existe pas enDB
             $mails ?? [],
             $this->getConfig("useBalance") ?? "",
             $this->getConfig("moneyName") ?? "",

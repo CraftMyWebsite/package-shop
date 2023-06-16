@@ -2,10 +2,10 @@
 
 namespace CMW\Controller\Shop;
 
-use CMW\Controller\Core\CoreController;
 use CMW\Controller\Users\UsersController;
+use CMW\Manager\Package\AbstractController;
+use CMW\Manager\Router\Link;
 use CMW\Model\Shop\ShopConfigModel;
-use CMW\Router\Link;
 use CMW\Manager\Views\View;
 
 
@@ -15,11 +15,9 @@ use CMW\Manager\Views\View;
  * @author Teyir
  * @version 1.0
  */
-class ShopController extends CoreController
+class ShopController extends AbstractController
 {
 
-    public static string $themePath;
-    private ShopConfigModel $shopModel;
 
     // Based on PayPal accepted currencies
     public static array $availableCurrencies = ["AUD" => "Australian Dollar", "BRL" => "Brazilian Real" ,
@@ -31,23 +29,16 @@ class ShopController extends CoreController
         "SEK" => "Swedish Krona", "CHF" => "Swiss Franc", "THB" => "Thai Baht", "USD" => "United States Dollar"];
 
 
-    public function __construct($themePath = null,)
-    {
-        parent::__construct($themePath);
-        $this->shopModel = new ShopConfigModel();
-    }
-
     /* ///////////////////// CONFIG /////////////////////*/
 
-    #[Link(path: "/", method: Link::GET, scope: "/cmw-admin/shop")]
     #[Link("/config", Link::GET, [], "/cmw-admin/shop")]
     public function shopConfig(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.configuration");
 
-        $config = $this->shopModel->getConfigs();
+        $config = ShopConfigModel::getInstance()->getConfigs();
 
-        View::createAdminView('shop', 'config')
+        View::createAdminView('Shop', 'config')
             ->addVariableList(["config" => $config])
             ->view();
     }
