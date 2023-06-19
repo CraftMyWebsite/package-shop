@@ -9,12 +9,12 @@ use CMW\Manager\Views\View;
 
 
 /**
- * Class: @ShopSettingsController
+ * Class: @SettingsController
  * @package shop
- * @author Teyir
+ * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-class ShopSettingsController extends AbstractController
+class SettingsController extends AbstractController
 {
     // Based on PayPal accepted currencies
     public static array $availableCurrencies = ["AUD" => "Australian Dollar", "BRL" => "Brazilian Real" ,

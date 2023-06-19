@@ -10,7 +10,7 @@ $description = "";
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-gears"></i> <span class="m-lg-auto">Configuration de votre boutique</span></h3>
+    <h3><i class="fa-solid fa-gears"></i> <span class="m-lg-auto">Configuration</span></h3>
     <div class="buttons">
         <button form="Configuration" type="submit"
                 class="btn btn-primary"><?= LangManager::translate("core.btn.save") ?>
