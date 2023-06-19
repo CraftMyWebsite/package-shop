@@ -5,20 +5,17 @@ namespace CMW\Controller\Shop;
 use CMW\Controller\Users\UsersController;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
-use CMW\Model\Shop\ShopConfigModel;
 use CMW\Manager\Views\View;
 
 
 /**
- * Class: @ShopController
+ * Class: @ShopSettingsController
  * @package shop
  * @author Teyir
  * @version 1.0
  */
-class ShopController extends AbstractController
+class ShopSettingsController extends AbstractController
 {
-
-
     // Based on PayPal accepted currencies
     public static array $availableCurrencies = ["AUD" => "Australian Dollar", "BRL" => "Brazilian Real" ,
         "CAD" => "Canadian Dollar", "CNY" => "Chinese Renmenbi", "CZK" => "Czech Koruna", "DKK" => "Danish Krone",
@@ -31,39 +28,23 @@ class ShopController extends AbstractController
 
     /* ///////////////////// CONFIG /////////////////////*/
 
-    #[Link("/config", Link::GET, [], "/cmw-admin/shop")]
-    public function shopConfig(): void
+    #[Link("/settings", Link::GET, [], "/cmw-admin/shop")]
+    public function shopSettings(): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.configuration");
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
-        $config = ShopConfigModel::getInstance()->getConfigs();
 
-        View::createAdminView('Shop', 'config')
-            ->addVariableList(["config" => $config])
+        View::createAdminView('Shop', 'settings')
+            ->addVariableList([])
             ->view();
     }
 
-
-
-
-
-
-    /* ///////////////////// UTILS FUNCTIONS /////////////////////*/
-
-    /**
-     * @return array
-     * @desc Return an array with all the currencies code config
-     */
-    public static function getLocalCurrenciesCode(): array
+    #[Link("/settings", Link::POST, [], "/cmw-admin/shop")]
+    public function shopSettingsPost(): void
     {
-        $toReturn = [];
-        $config = (new ShopConfigModel())->getConfigCurrencies();
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
-        foreach ($config as $currency){
-            $toReturn[$currency->getCode()] = true;
-        }
-
-        return $toReturn;
+        print ('Oui');
     }
 
 }
