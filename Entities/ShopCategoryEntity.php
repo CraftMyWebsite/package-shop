@@ -11,12 +11,12 @@ class ShopCategoryEntity
     private string $categoryName;
     private string $categoryDescription;
     private string $categorySlug;
-    private string $categoryImage;
+    private ?int $categoryImage;
     private string $categoryCreated;
     private string $categoryUpdated;
 
 
-    public function __construct(int $categoryId, string $categoryName, string $categoryDescription, string $categorySlug, string $categoryImage, string $categoryCreated, string $categoryUpdated)
+    public function __construct(int $categoryId, string $categoryName, string $categoryDescription, string $categorySlug, ?int $categoryImage, string $categoryCreated, string $categoryUpdated)
     {
         $this->categoryId = $categoryId;
         $this->categoryName = $categoryName;
@@ -61,9 +61,9 @@ class ShopCategoryEntity
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getImage(): string
+    public function getImage(): int
     {
         return $this->categoryImage;
     }
