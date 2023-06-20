@@ -217,3 +217,4 @@ ALTER TABLE `cmw_shops_items` ADD
     CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id) REFERENCES cmw_shops_images (`shop_image_id`) ON DELETE SET NULL;
 ALTER TABLE `cmw_shops_categories` ADD
     CONSTRAINT fk_shop_image_id_categories FOREIGN KEY (shop_image_id) REFERENCES cmw_shops_images (`shop_image_id`) ON DELETE SET NULL;
+INSERT INTO cmw_shops_settings (`shop_settings_key`, `shop_settings_value`) VALUES ('currency', 'EUR');
