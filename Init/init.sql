@@ -22,11 +22,10 @@ CREATE TABLE IF NOT EXISTS cmw_shops_categories
     shop_category_id          INT AUTO_INCREMENT PRIMARY KEY,
     shop_category_name        VARCHAR(50) NOT NULL,
     shop_category_description TEXT NULL,
+    shop_category_slug        VARCHAR(255) NOT NULL,
     shop_image_id             INT NULL,
-    shop_sub_category_id      INT NULL,
     shop_category_created_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_category_updated_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_shop_category_id_categories FOREIGN KEY (shop_sub_category_id) REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL
+    shop_category_updated_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -36,6 +35,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_category_id        INT NULL,
     shop_item_name          VARCHAR(50) NULL,
     shop_item_description   LONGTEXT NOT NULL,
+    shop_item_slug        VARCHAR(255) NOT NULL,
     shop_image_id           INT NULL,
     shop_item_type          TINYINT NOT NULL,
     shop_item_default_stock INT NULL,

@@ -1,6 +1,6 @@
 <?php
 
-use CMW\Controller\Shop\SettingsController;
+use CMW\Controller\Shop\ShopSettingsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
@@ -32,7 +32,7 @@ $description = "";
                             <h6>Devise :</h6>
                             <fieldset class="form-group">
                                 <select class="choices" name="code" required>
-                                    <?php foreach (SettingsController::$availableCurrencies as $code => $name): ?>
+                                    <?php foreach (ShopSettingsController::$availableCurrencies as $code => $name): ?>
                                         <option value="<?= $code ?>" <?= $code === $currentCurrency ? 'selected' : '' ?>>
                                             <?= "$code ($name)" ?>
                                         </option>
