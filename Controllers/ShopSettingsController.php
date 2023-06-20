@@ -8,18 +8,18 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\SettingsModel;
+use CMW\Model\Shop\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
 
 /**
- * Class: @SettingsController
+ * Class: @ShopSettingsController
  * @package shop
  * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-class SettingsController extends AbstractController
+class ShopSettingsController extends AbstractController
 {
     // Based on PayPal accepted currencies
     public static array $availableCurrencies = [
@@ -58,7 +58,7 @@ class SettingsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
-        $currentCurrency = SettingsModel::getInstance()->getSettingValue("currency");
+        $currentCurrency = ShopSettingsModel::getInstance()->getSettingValue("currency");
 
         View::createAdminView('Shop', 'settings')
             ->addVariableList(["currentCurrency" => $currentCurrency])
@@ -71,7 +71,7 @@ class SettingsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
         [$code] = Utils::filterInput('code');
-        SettingsModel::getInstance()->updateSetting("currency", $code);
+        ShopSettingsModel::getInstance()->updateSetting("currency", $code);
         Flash::send(Alert::SUCCESS, "Boutique", "La monnaie utilisé est maintenant ". $code);
         Redirect::redirectPreviousRoute();
     }

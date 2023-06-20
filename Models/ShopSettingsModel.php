@@ -6,12 +6,12 @@ use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 
 /**
- * Class @SettingsModel
+ * Class @ShopSettingsModel
  * @package shop
- * @author Teyir
+ * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-class SettingsModel extends AbstractModel
+class ShopSettingsModel extends AbstractModel
 {
 
     /**

@@ -9,18 +9,18 @@ use CMW\Manager\Views\View;
 
 
 /**
- * Class: @DeliveriesController
+ * Class: @ShopCartsController
  * @package shop
  * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-class DeliveriesController extends AbstractController
+class ShopCartsController extends AbstractController
 {
-    #[Link("/deliveries", Link::GET, [], "/cmw-admin/shop")]
-    public function shopDiscounts(): void
+    #[Link("/carts", Link::GET, [], "/cmw-admin/shop")]
+    public function shopCarts(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
-        View::createAdminView('Shop', 'deliveries')
+        View::createAdminView('Shop', 'carts')
             ->addVariableList([])
             ->view();
     }
