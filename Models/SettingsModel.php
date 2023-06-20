@@ -3,7 +3,7 @@
 namespace CMW\Model\Shop;
 
 use CMW\Manager\Database\DatabaseManager;
-use CMW\Manager\Package\AbstractController;
+use CMW\Manager\Package\AbstractModel;
 
 /**
  * Class @SettingsModel
@@ -11,7 +11,7 @@ use CMW\Manager\Package\AbstractController;
  * @author Teyir
  * @version 1.0
  */
-class SettingsModel extends AbstractController
+class SettingsModel extends AbstractModel
 {
 
     /**
