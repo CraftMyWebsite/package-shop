@@ -58,10 +58,10 @@ class SettingsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
-        $currentCodeCurrency = "&".SettingsModel::getInstance()->getSettingValue("currency").";";
+        $currentCurrency = SettingsModel::getInstance()->getSettingValue("currency");
 
         View::createAdminView('Shop', 'settings')
-            ->addVariableList(["$currentCodeCurrency" => $currentCodeCurrency])
+            ->addVariableList(["currentCurrency" => $currentCurrency])
             ->view();
     }
 
