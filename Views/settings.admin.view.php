@@ -1,12 +1,13 @@
 <?php
-use CMW\Controller\Shop\ShopController;
-use CMW\Controller\Shop\ShopSettingsController;
-use CMW\Entity\Shop\ShopConfigEntity;
+
+use CMW\Controller\Shop\SettingsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
 $title = "";
 $description = "";
+
+/* @VAR \CMW\Model\Shop\SettingsModel\ $currentCurrency */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -24,15 +25,15 @@ $description = "";
                 <h4><?= LangManager::translate("core.config.title") ?></h4>
             </div>
             <div class="card-body">
-                <form id="Configuration" action="" method="post">
+                <form id="Configuration" action="settings/apply_currency" method="post">
                     <?php (new SecurityManager())->insertHiddenToken() ?>
                     <div class="row">
                         <div class="col-md-6">
                             <h6>Devise :</h6>
                             <fieldset class="form-group">
-                                <select class="choices choices__list--multiple" name="currency" required>
-                                    <?php foreach (ShopSettingsController::$availableCurrencies as $code => $name): ?>
-                                        <option value="<?= $code ?>" <?= $code === 'EUR' ? 'selected' : '' ?>>
+                                <select class="choices" name="code" required>
+                                    <?php foreach (SettingsController::$availableCurrencies as $code => $name): ?>
+                                        <option value="<?= $code ?>" <?= $code === $currentCurrency ? 'selected' : '' ?>>
                                             <?= "$code ($name)" ?>
                                         </option>
                                     <?php endforeach; ?>
