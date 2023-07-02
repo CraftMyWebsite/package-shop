@@ -52,7 +52,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getCategoryId(): int
+    public function getCategoryId(): ?int
     {
         return $this->categoryId;
     }
@@ -61,7 +61,7 @@ class ShopItemEntity
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->itemName;
     }
@@ -85,7 +85,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getImage(): int
+    public function getImage(): ?int
     {
         return $this->itemImage;
     }
@@ -101,7 +101,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getDefaultStock(): int
+    public function getDefaultStock(): ?int
     {
         return $this->itemDefaultStock;
     }
@@ -109,7 +109,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getCurrentStock(): int
+    public function getCurrentStock(): ?int
     {
         return $this->itemCurrentStock;
     }
@@ -117,7 +117,7 @@ class ShopItemEntity
     /**
      * @return float
      */
-    public function getPrice(): float
+    public function getPrice(): ?float
     {
         return $this->itemPrice;
     }
@@ -125,7 +125,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getGlobalLimit(): int
+    public function getGlobalLimit(): ?int
     {
         return $this->itemGlobalLimit;
     }
@@ -133,7 +133,7 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getUserLimit(): int
+    public function getUserLimit(): ?int
     {
         return $this->itemUserLimit;
     }
@@ -159,7 +159,7 @@ class ShopItemEntity
      */
     public function getLink(): string
     {
-        return "shop/$this->itemSlug";
+        return "shop/item/$this->itemSlug";
     }
 
 }
