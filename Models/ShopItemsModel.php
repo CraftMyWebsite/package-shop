@@ -17,32 +17,6 @@ use CMW\Utils\Utils;
  */
 class ShopItemsModel extends AbstractModel
 {
-
-    /**
-     * @return \CMW\Entity\Shop\ShopItemEntity []
-     */
-    public function getShopItems(): array
-    {
-
-        $sql = "SELECT shop_category_id FROM cmw_shops_items ORDER BY shop_item_id ASC";
-        $db = DatabaseManager::getInstance();
-
-        $res = $db->prepare($sql);
-
-        if (!$res->execute()) {
-            return array();
-        }
-
-        $toReturn = array();
-
-        while ($cat = $res->fetch()) {
-            $toReturn[] = $this->getShopItemsByCategoryId($cat["shop_category_id"]);
-        }
-
-        return $toReturn;
-
-    }
-
     public function getShopItemsById(int $id): ?ShopItemEntity
     {
         $sql = "SELECT * FROM cmw_shops_items WHERE shop_item_id = :shop_item_id";
@@ -98,7 +72,7 @@ class ShopItemsModel extends AbstractModel
         return $toReturn;
     }
 
-    public function createShopItem(?string $name, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $globalLimit, ?int $userLimit): ?ShopItemEntity
+    public function createShopItem(?string $name, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $globalLimit, ?int $userLimit): int
     {
         $data = array(
             "shop_item_name" => $name,
@@ -123,10 +97,9 @@ class ShopItemsModel extends AbstractModel
         if ($req->execute($data)) {
             $id = $db->lastInsertId();
             $this->setShopItemSlug($id, $name);
-            return $this->getShopItemsById($id);
+            return $id;
         }
 
-        return null;
     }
 
     private function setShopItemSlug(int $id, string $name): void
@@ -159,4 +132,5 @@ class ShopItemsModel extends AbstractModel
 
         return $db->prepare($sql)->execute(array("shop_item_id" => $id));
     }
+
 }
