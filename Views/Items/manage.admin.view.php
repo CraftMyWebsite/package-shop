@@ -10,6 +10,7 @@ $description = "";
 
 /* @var CMW\Model\Shop\ShopCategoriesModel $categories */
 /* @var CMW\Model\Shop\ShopItemsModel $items */
+/* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -33,6 +34,7 @@ $description = "";
         </li>
     </ul>
 </section>
+
 <section class="tab-content" id="myTabContent">
     <?php $i = 0;
     foreach ($categories as $category): ?>
@@ -43,14 +45,70 @@ $description = "";
                     <div class="col-12 col-lg-3">
                         <div class="card p-2">
                             <h6 class="text-center"><?= $item->getName() ?></h6>
+                            <?php $v = 0;
+                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $countImage) {
+                                $v++;
+                            } ?>
+                            <?php if ($imagesItem->getShopImagesByItem($item->getId())) : ?>
+                                <?php if ($v !== 1) : ?>
+                                    <div id="carousel_<?= $item->getId() ?>" class="carousel slide"
+                                         data-bs-ride="carousel">
+                                        <ol class="carousel-indicators">
+                                            <?php $i = 0;
+                                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageId): ?>
+                                                <li data-bs-target="#carousel_<?= $item->getId() ?>"
+                                                    data-bs-slide-to="<?= $i ?>"
+                                                    <?php if ($i === 0): ?>class="active"><?php endif; ?></li>
+                                                <?php $i++; endforeach; ?>
+                                        </ol>
+                                        <div class="carousel-inner">
+                                            <?php $x = 0;
+                                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imagesUrl): ?>
+                                                <div class="carousel-item <?php if ($x === 0): ?>active<?php endif; ?>">
+                                                    <img style="width: 100px; height: 150px; object-fit: contain"
+                                                         src="<?= $imagesUrl->getImageUrl() ?>"
+                                                         class="px-5 d-block w-100" alt="..."/>
+                                                </div>
+                                                <?php $x++; endforeach; ?>
+                                        </div>
+                                        <div class="mt-5">
+                                            <a class="carousel-control-prev" href="#carousel_<?= $item->getId() ?>"
+                                               role="button" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </a>
+                                            <a class="carousel-control-next" href="#carousel_<?= $item->getId() ?>"
+                                               role="button" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
+                                        <img style="width: 100px; height: 150px; object-fit: contain"
+                                             src="<?= $imageUrl->getImageUrl() ?>" class="px-5 d-block w-100"
+                                             alt="..."/>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            <?php endif; ?>
                             <p><small><?= $item->getCreated() ?></small></p>
                             <p><?= $item->getDescription() ?></p>
-                            <p>Type : <?php if($item->getType() === 0): ?>Physique<?php else:?>Virtuel<?php endif;?></p>
-                            <p>Stock : <?php if($item->getDefaultStock() === null): ?>Illimité<?php else:?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif;?></p>
-                            <p><a href="<?= Website::getProtocol(). "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . $item->getLink() ?>">Voir l'article</a></p>
-                            <p>Limite globale : <?php if($item->getGlobalLimit() === null):?>Pas de limite<?php else:?><?= $item->getGlobalLimit() ?><?php endif;?></p>
-                            <p>Limite utilisateur : <?php if($item->getUserLimit() === null):?>Pas de limite<?php else:?><?= $item->getUserLimit() ?><?php endif;?></p>
-                            <h5 class="text-center"><?php if($item->getPrice() === 0.00): ?>Gratuit<?php else:?><?= $item->getPrice() ?><small> <?= \CMW\Model\Shop\ShopSettingsModel::getInstance()->getSettingValue("currency") ?></small><?php endif;?></h5>
+                            <p>Type
+                                : <?php if ($item->getType() === 0): ?>Physique<?php else: ?>Virtuel<?php endif; ?></p>
+                            <p>Stock
+                                : <?php if ($item->getDefaultStock() === null): ?>Illimité<?php else: ?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif; ?></p>
+                            <p>
+                                <a href="<?= Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . $item->getLink() ?>">Voir
+                                    l'article</a></p>
+                            <p>Limite globale
+                                : <?php if ($item->getGlobalLimit() === null): ?>Pas de limite<?php else: ?><?= $item->getGlobalLimit() ?><?php endif; ?></p>
+                            <p>Limite utilisateur
+                                : <?php if ($item->getUserLimit() === null): ?>Pas de limite<?php else: ?><?= $item->getUserLimit() ?><?php endif; ?></p>
+                            <h5 class="text-center"><?php if ($item->getPrice() === 0.00): ?>Gratuit<?php else: ?><?= $item->getPrice() ?>
+                                    <small> <?= \CMW\Model\Shop\ShopSettingsModel::getInstance()->getSettingValue("currency") ?></small><?php endif; ?>
+                            </h5>
                             <div class="text-center py-1">
                                 <a type="button" data-bs-toggle="modal"
                                    data-bs-target="#delete-<?= $item->getId() ?>"><i
