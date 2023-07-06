@@ -12,17 +12,24 @@ $description = "";
 /* @var CMW\Model\Shop\ShopItemsModel $items */
 
 ?>
+<div class="d-flex flex-wrap justify-content-between">
+    <h3><i class="fa-solid fa-envelope"></i> <span class="m-lg-auto">Ajouter un article dans <?= $category->getName() ?></span></h3>
+    <div class="buttons">
+        <button form="addItem" type="submit"
+                class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
+    </div>
+</div>
 
-<section class="row">
-    <h4>Nouvelle article dans <?= $category->getName() ?></h4>
-    <div class="col-12 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Informations</h4>
-            </div>
-            <div class="card-body">
-                <form action="items/add_item" method="post">
-                    <?php (new SecurityManager())->insertHiddenToken() ?>
+<form id="addItem" action="<?= $category->getId() ?>" method="post" enctype="multipart/form-data">
+    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <section class="row">
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Informations</h4>
+                </div>
+                <div class="card-body">
+
                     <div class="modal-body">
                         <input type="hidden" name="shop_category_id" value="<?= $category->getId() ?>">
                         <div class="row">
@@ -63,41 +70,77 @@ $description = "";
                         </div>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
-                            <span class=""><?= LangManager::translate("core.btn.add") ?></span>
-                        </button>
+
                     </div>
-                </form>
+
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Galerie</h4>
-            </div>
-            <div class="card-body">
-                <form >
-                    <div class="cursor-pointer">
-                        <label for="imgInp" style="width: 200px; height: 200px">
-                            <img class="cursor-pointer" style="width: 150px;border: solid 3px green;" id="blah" src="https://image.noelshack.com/fichiers/2023/27/4/1688654674-2023-07-06-16h44-02.png" alt="your image" />
-                        </label>
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Galerie</h4>
+                </div>
+                <div class="card-body">
+
+                    <div onclick="addImg();" class="card-in-card mb-4" style="cursor: pointer">
+                        <div class="text-center" style="padding-top: 1rem">
+                            <h2><i class="text-success fa-solid fa-circle-plus fa-xl"></i></h2>
+                            <p class="mt-2">Ajouter une image</p>
+                        </div>
                     </div>
-                    <input hidden="" accept="image/*" type='file' id="imgInp" />
-                </form>
+                    <div id="img_div" class="row">
 
+                    </div>
+                    <input hidden="" type="text" name="numberOfImage" id="numberOfImage">
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+</form>
+<script type="text/javascript">
+    let i = 0;
 
-</section>
+    function addImg() {
+        let input = document.createElement('input');
+        let div = document.createElement('div');
+        let img = document.createElement('img');
+        let btnDelete = document.createElement('button');
+        input.type = "file";
+        input.name = 'image-' + i;
+        div.className = "col-12 col-lg-6 card-in-card";
+        div.id = 'delete-' + i;
+        img.className = "w-50 mx-auto";
+        btnDelete.type = "button";
+        btnDelete.innerText = "Supprimé";
+        setTimeout(function () {
+            (input).click();
+        }, 200);
+        //without this next line, you'll get nuthin' on the display
+        let mydiv = document.getElementById('img_div').appendChild(div);
+        mydiv.appendChild(input);
+        mydiv.appendChild(img);
+        mydiv.appendChild(btnDelete);
 
-<script>
-    imgInp.onchange = evt => {
-        const [file] = imgInp.files
-        if (file) {
-            blah.src = URL.createObjectURL(file)
+        input.onchange = evt => {
+            const [file] = input.files
+            if (file) {
+                img.src = URL.createObjectURL(file)
+            } else {
+                img.src = "https://voyza.fr/Admin/Resources/Assets/Images/Logo/logo_compact.png"
+            }
         }
+        btnDelete.onclick = evt => {
+            input.remove()
+            div.remove()
+            img.remove()
+            btnDelete.remove()
+        }
+        i++;
+        let test = document.getElementById('numberOfImage')
+        test.value = i;
     }
+
+
 </script>
