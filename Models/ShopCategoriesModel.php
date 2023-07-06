@@ -9,10 +9,10 @@ use CMW\Utils\Utils;
 
 
 /**
- * Class: @CategoryModel
- * @package Forum
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
- * @version 1.0
+ * Class: @ShopCategoryModel
+ * @package Shop
+ * @author Zomb
+ * @version 0.0.1
  */
 class ShopCategoriesModel extends AbstractModel
 {

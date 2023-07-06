@@ -32,7 +32,7 @@ class ShopItemsController extends AbstractController
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
 
-        View::createAdminView('Shop', 'items')
+        View::createAdminView('Shop', 'Items/manage')
             ->addVariableList(["categories" => $categories, "items" => $items])
             ->view();
     }
@@ -49,7 +49,30 @@ class ShopItemsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/items/add_item", Link::POST, [], "/cmw-admin/shop")]
+    #[Link("/items/add_item/:categoryId", Link::GET, [], "/cmw-admin/shop")]
+    public function adminAddShopItem(Request $request, int $categoryId): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        $category = ShopCategoriesModel::getInstance()->getShopCategoryById($categoryId);
+
+        View::createAdminView('Shop', 'Items/add')
+            ->addVariableList(["category" => $category])
+            ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
+                "Admin/Resources/Vendors/Tinymce/Config/full.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-file-validate-size.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-file-validate-type.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-image-crop.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-image-exif-orientation.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-image-filter.js",
+                "Admin/Resources/Vendors/Filepound/Js/FilePondPluginImagePreview.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond-plugin-image-resize.js",
+                "Admin/Resources/Vendors/Filepound/Js/filepond.js",
+                "Admin/Resources/Vendors/Filepound/Js/pages_filepond.js",
+            )
+            ->view();
+    }
+    #[Link("/items/add_item/:categoryId", Link::POST, [], "/cmw-admin/shop")]
     public function adminAddShopItemPost(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");

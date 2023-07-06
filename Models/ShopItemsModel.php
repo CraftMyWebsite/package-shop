@@ -11,9 +11,9 @@ use CMW\Utils\Utils;
 
 /**
  * Class: @ShopItemsModel
- * @package Forum
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
- * @version 1.0
+ * @package Shop
+ * @author Zomb
+ * @version 0.0.1
  */
 class ShopItemsModel extends AbstractModel
 {

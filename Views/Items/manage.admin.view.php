@@ -3,10 +3,9 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Utils\Website;
 
-$title = "";
+$title = "Boutique";
 $description = "";
 
 /* @var CMW\Model\Shop\ShopCategoriesModel $categories */
@@ -93,78 +92,12 @@ $description = "";
                     </div>
                 <?php endforeach; ?>
                 <div class="col-12 col-lg-3">
-                    <a class="card" type="button" data-bs-toggle="modal"
-                       data-bs-target="#add-item-<?= $category->getId() ?>" style="cursor: pointer">
+                    <a class="card" href="items/add_item/<?= $category->getId() ?>" style="cursor: pointer">
                         <div class="text-center" style="padding-top: 6rem;padding-bottom: 5.5rem">
                             <h2><i class="text-success fa-solid fa-circle-plus fa-xl"></i></h2>
                             <p class="mt-2">Ajouter un article</p>
                         </div>
                     </a>
-                </div>
-            </div>
-        </div>
-        <!--
-        ----MODAL AJOUT ARTICLE ----
-        -->
-        <div class="modal fade text-left" id="add-item-<?= $category->getId() ?>" tabindex="-1"
-             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary">
-                        <h5 class="modal-title white" id="myModalLabel160">Nouvelle article
-                            dans <?= $category->getName() ?></h5>
-                    </div>
-                    <form action="items/add_item" method="post">
-                        <?php (new SecurityManager())->insertHiddenToken() ?>
-                        <div class="modal-body">
-                            <input type="hidden" name="shop_category_id" value="<?= $category->getId() ?>">
-                            <div class="row">
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Nom :</h6>
-                                    <input type="text" class="form-control" name="shop_item_name" required>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Description :</h6>
-                                    <input type="text" class="form-control" name="shop_item_description" required>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Type :</h6>
-                                    <select class="form-select" name="shop_item_type" required>
-                                        <option value="0">Physique</option>
-                                        <option value="1">Virtuel</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Stock :</h6>
-                                    <input type="number" class="form-control" name="shop_item_default_stock"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Limite d'achat :</h6>
-                                    <input type="number" class="form-control" name="shop_item_global_limit"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Limite d'achat par utilisateur :</h6>
-                                    <input type="number" class="form-control" name="shop_item_user_limit"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Prix :</h6>
-                                    <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                                <span class=""><?= LangManager::translate("core.btn.close") ?></span>
-                            </button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
-                                <span class=""><?= LangManager::translate("core.btn.add") ?></span>
-                            </button>
-
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
