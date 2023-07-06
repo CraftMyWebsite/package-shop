@@ -79,9 +79,9 @@ $description = "";
             </div>
             <div class="card-body">
                 <form >
-                    <div class="cursor-pointer" style="cursor: pointer">
+                    <div class="cursor-pointer">
                         <label for="imgInp" style="width: 200px; height: 200px">
-                            <img style="width: 150px;" id="blah" src="https://image.noelshack.com/fichiers/2023/27/4/1688654674-2023-07-06-16h44-02.png" alt="your image" />
+                            <img class="cursor-pointer" style="width: 150px;border: solid 3px green;" id="blah" src="https://image.noelshack.com/fichiers/2023/27/4/1688654674-2023-07-06-16h44-02.png" alt="your image" />
                         </label>
                     </div>
                     <input hidden="" accept="image/*" type='file' id="imgInp" />
