@@ -3,6 +3,8 @@
 namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Manager\Env\EnvManager;
+use CMW\Utils\Website;
 
 class ShopCategoryEntity
 {
@@ -89,7 +91,7 @@ class ShopCategoryEntity
      */
     public function getLink(): string
     {
-        return "shop/$this->categorySlug";
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/$this->categorySlug";
     }
 
 }
