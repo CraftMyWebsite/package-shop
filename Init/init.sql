@@ -67,9 +67,11 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
     shop_cart_item_id        INT AUTO_INCREMENT PRIMARY KEY,
     shop_shopping_session_id INT NULL,
     shop_item_id             INT NULL,
+    shop_user_id             INT NULL,
     shop_cart_item_quantity  INT NOT NULL DEFAULT 1,
     shop_cart_item_created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_cart_item_updated_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_id_cart_items FOREIGN KEY (shop_user_id) REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_shop_item_id_cart_items FOREIGN KEY (shop_item_id) REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_shop_shopping_session_id_cart_items FOREIGN KEY (shop_shopping_session_id) REFERENCES cmw_shops_shopping_session (shop_shopping_session_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
