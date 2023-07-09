@@ -101,8 +101,10 @@ $description = "";
                             <p>Stock
                                 : <?php if ($item->getDefaultStock() === null): ?>Illimité<?php else: ?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif; ?></p>
                             <p>
-                                <a target="_blank" href="<?=$item->getFullLink($category->getSlug())?>">Voir
+                                <a target="_blank" href="<?=$item->getItemLink()?>">Voir
                                     l'article</a></p>
+                            <p>
+                                <a target="_blank" href="<?=$item->getAddToCartLink()?>">Ajouter au panier</a></p>
                             <p>Limite globale
                                 : <?php if ($item->getGlobalLimit() === null): ?>Pas de limite<?php else: ?><?= $item->getGlobalLimit() ?><?php endif; ?></p>
                             <p>Limite utilisateur
