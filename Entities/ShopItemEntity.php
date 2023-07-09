@@ -4,13 +4,14 @@ namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\ShopCartsModel;
 use CMW\Utils\Website;
 
 class ShopItemEntity
 {
 
     private int $itemId;
-    private ?int $categoryId;
+    private ?ShopCategoryEntity $category;
     private ?string $itemName;
     private string $itemDescription;
     private string $itemSlug;
@@ -25,10 +26,10 @@ class ShopItemEntity
     private string $itemUpdated;
 
 
-    public function __construct(int $itemId, ?int $categoryId, ?string $itemName, string $itemDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
     {
         $this->itemId = $itemId;
-        $this->categoryId = $categoryId;
+        $this->category = $category;
         $this->itemName = $itemName;
         $this->itemDescription = $itemDescription;
         $this->itemSlug = $itemSlug;
@@ -54,9 +55,9 @@ class ShopItemEntity
     /**
      * @return int
      */
-    public function getCategoryId(): ?int
+    public function getCategory(): ?ShopCategoryEntity
     {
-        return $this->categoryId;
+        return $this->category;
     }
 
 
@@ -158,11 +159,72 @@ class ShopItemEntity
 
     /**
      * @return string
-     * @param string $catSlug
      */
-    public function getFullLink($catSlug): string
+    public function getItemLink(): string
     {
+        $catSlug = $this->getCategory()->getSlug();
         return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cat/$catSlug/item/$this->itemSlug";
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddToCartLink(): string
+    {
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/add_to_cart/$this->itemId";
+    }
+
+
+
+    /*
+     * ++ Cool features
+     * */
+
+    /**
+     * @return float
+     * @desc perfect for get the total price in cart
+     */
+    public function getTotalPriceInCart(): float
+    {
+        //TODO : Gérer les promo
+        $quantity = ShopCartsModel::getInstance()->getQuantity($this->itemId);
+        return $quantity * $this->getPrice();
+    }
+
+    /**
+     * @return string
+     * @desc perfect if you retrieve the quantities in the cart from the item page
+     */
+    public function getQuantityInCart(): string
+    {
+        return ShopCartsModel::getInstance()->getQuantity($this->itemId);
+    }
+
+    /**
+     * @return string
+     * @desc perfect if you want to manage quantities in the cart from the item page
+     */
+    public function getIncreaseQuantityCartLink(): string
+    {
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/increase_quantity/$this->itemId";
+    }
+
+    /**
+     * @return string
+     * @desc perfect if you want to manage quantities in the cart from the item page
+     */
+    public function getDecreaseQuantityCartLink(): string
+    {
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/decrease_quantity/$this->itemId";
+    }
+
+    /**
+     * @return string
+     * @desc perfect if you want to manage quantities in the cart from the item page
+     */
+    public function getRemoveCartLink(): string
+    {
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/remove/$this->itemId";
     }
 
 }
