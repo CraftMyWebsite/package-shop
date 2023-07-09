@@ -67,6 +67,25 @@ class ShopCategoriesModel extends AbstractModel
         );
     }
 
+    public function getShopCategoryIdBySlug(string $catSlug): int
+    {
+        $sql = "SELECT shop_category_id FROM cmw_shops_categories WHERE shop_category_slug = :shop_category_slug";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_category_slug" => $catSlug))) {
+            return 0;
+        }
+
+        $res = $res->fetch();
+        if(!$res){
+            return 0;
+        }
+        return $res['shop_category_id'] ?? 0;
+    }
+
     public function createShopCategory(string $name, string $description): ?ShopCategoryEntity
     {
         $data = array(
