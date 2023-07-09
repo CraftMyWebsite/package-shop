@@ -3,6 +3,7 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
+use CMW\Model\Shop\ShopSettingsModel;
 use CMW\Utils\Website;
 
 $title = "Boutique";
@@ -100,14 +101,14 @@ $description = "";
                             <p>Stock
                                 : <?php if ($item->getDefaultStock() === null): ?>Illimité<?php else: ?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif; ?></p>
                             <p>
-                                <a href="<?= Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . $item->getLink() ?>">Voir
+                                <a target="_blank" href="<?=$item->getFullLink($category->getSlug())?>">Voir
                                     l'article</a></p>
                             <p>Limite globale
                                 : <?php if ($item->getGlobalLimit() === null): ?>Pas de limite<?php else: ?><?= $item->getGlobalLimit() ?><?php endif; ?></p>
                             <p>Limite utilisateur
                                 : <?php if ($item->getUserLimit() === null): ?>Pas de limite<?php else: ?><?= $item->getUserLimit() ?><?php endif; ?></p>
                             <h5 class="text-center"><?php if ($item->getPrice() === 0.00): ?>Gratuit<?php else: ?><?= $item->getPrice() ?>
-                                    <small> <?= \CMW\Model\Shop\ShopSettingsModel::getInstance()->getSettingValue("currency") ?></small><?php endif; ?>
+                                    <small> <?= ShopSettingsModel::getInstance()->getSettingValue("currency") ?></small><?php endif; ?>
                             </h5>
                             <div class="text-center py-1">
                                 <a type="button" data-bs-toggle="modal"
