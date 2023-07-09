@@ -5,7 +5,6 @@ namespace CMW\Model\Shop;
 use CMW\Entity\Shop\ShopItemEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
-use CMW\Manager\Uploads\ImagesManager;
 use CMW\Utils\Utils;
 
 
@@ -17,6 +16,14 @@ use CMW\Utils\Utils;
  */
 class ShopItemsModel extends AbstractModel
 {
+    private ShopCategoriesModel $shopCategoriesModel;
+
+    public function __construct()
+    {
+
+        $this->shopCategoriesModel = new ShopCategoriesModel();
+    }
+
     public function getShopItemsById(int $id): ?ShopItemEntity
     {
         $sql = "SELECT * FROM cmw_shops_items WHERE shop_item_id = :shop_item_id";
@@ -31,9 +38,11 @@ class ShopItemsModel extends AbstractModel
 
         $res = $res->fetch();
 
+        $category = $this->shopCategoriesModel->getShopCategoryById($res["shop_category_id"]);
+
         return new ShopItemEntity(
             $res["shop_item_id"],
-            $res["shop_category_id"] ?? null,
+            $category ?? null,
             $res["shop_item_name"] ?? null,
             $res["shop_item_description"],
             $res["shop_item_slug"],
@@ -47,6 +56,31 @@ class ShopItemsModel extends AbstractModel
             $res["shop_item_created_at"],
             $res["shop_item_updated_at"]
         );
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopItemEntity []
+     */
+    public function getShopItems(): array
+    {
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items ORDER BY shop_item_id DESC";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item["shop_item_id"]);
+        }
+
+        return $toReturn;
+
     }
 
     /**
@@ -70,6 +104,49 @@ class ShopItemsModel extends AbstractModel
         }
 
         return $toReturn;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopItemEntity []
+     */
+    public function getShopItemByCatSlug(string $catSlug): array
+    {
+        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_category_id" => $catId))) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($items = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($items["shop_item_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    public function getShopItemIdBySlug(string $itemSlug): int
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_slug = :shop_item_slug";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_item_slug" => $itemSlug))) {
+            return 0;
+        }
+
+        $res = $res->fetch();
+        if(!$res){
+            return 0;
+        }
+        return $res['shop_item_id'] ?? 0;
     }
 
     public function createShopItem(?string $name, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $globalLimit, ?int $userLimit): int
