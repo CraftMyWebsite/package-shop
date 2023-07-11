@@ -9,7 +9,7 @@ use CMW\Utils\Website;
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Model\Shop\ShopCategoriesModel $categories */
+/* @var CMW\Entity\Shop\ShopCategoryEntity[] $categories */
 /* @var CMW\Model\Shop\ShopItemsModel $items */
 /* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
 
@@ -41,7 +41,11 @@ $description = "";
     foreach ($categories as $category): ?>
         <div class="tab-pane fade <?php if ($i === 0): ?>show active<?php endif; ?>" id="cat_<?= $category->getId() ?>"
              role="tabpanel" aria-labelledby="cat_<?= $category->getId() ?>_1">
-            <div class="row mt-4">
+            <div class="mt-2">
+                <a href="<?= $category->getCatLink() ?>" target="_blank" class="btn btn-sm btn-primary">Consulter cette catégorie</a>
+                <a data-bs-target="#delete-<?= $category->getId() ?>" type="button" data-bs-toggle="modal" class="btn btn-sm btn-danger">Supprimé cette catégorie</a>
+            </div>
+            <div class="row mt-2">
                 <?php foreach ($items->getShopItemByCat($category->getId()) as $item): ?>
                     <div class="col-12 col-lg-3">
                         <div class="card p-2">
@@ -98,6 +102,12 @@ $description = "";
                             <p><?= $item->getDescription() ?></p>
                             <p>Type
                                 : <?php if ($item->getType() === 0): ?>Physique<?php else: ?>Virtuel<?php endif; ?></p>
+                            <?php if ($item->getType() === 0): ?>
+                                <p>Poids : <?= $item->getPhysicalWeight() ?> grammes</p>
+                                <p>Taille : <?= $item->getPhysicalSize() ?></p>
+                            <?php else: ?>
+                                <p>Liens de l'article : <?= $item->getVirtualLink() ?></p>
+                            <?php endif; ?>
                             <p>Stock
                                 : <?php if ($item->getDefaultStock() === null): ?>Illimité<?php else: ?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif; ?></p>
                             <p>
@@ -162,7 +172,38 @@ $description = "";
                 </div>
             </div>
         </div>
-
+        <!--
+        --MODAL SUPPRESSION CAT--
+        -->
+        <div class="modal fade text-left" id="delete-<?= $category->getId() ?>" tabindex="-1"
+             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                 role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title white" id="myModalLabel160">Supression de
+                            : <?= $category->getName() ?></h5>
+                    </div>
+                    <div class="modal-body">
+                        Cette supression est définitive
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-secondary"
+                                data-bs-dismiss="modal">
+                            <i class="bx bx-x"></i>
+                            <span
+                                    class=""><?= LangManager::translate("core.btn.close") ?></span>
+                        </button>
+                        <a href="cat/delete/<?= $category->getId() ?>"
+                           class="btn btn-danger ml-1">
+                            <i class="bx bx-check"></i>
+                            <span
+                                    class=""><?= LangManager::translate("core.btn.delete") ?></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <?php $i++; endforeach; ?>
 </section>
 

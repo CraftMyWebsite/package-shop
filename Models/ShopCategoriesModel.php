@@ -131,5 +131,14 @@ class ShopCategoriesModel extends AbstractModel
         return Utils::normalizeForSlug($name) . "-$id";
     }
 
+    public function deleteShopCat(int $id): bool
+    {
+        $sql = "DELETE FROM cmw_shops_categories WHERE shop_category_id = :shop_category_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute(array("shop_category_id" => $id));
+    }
+
 
 }

@@ -89,9 +89,9 @@ class ShopCategoryEntity
     /**
      * @return string
      */
-    public function getLink(): string
+    public function getCatLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/$this->categorySlug";
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cat/$this->categorySlug";
     }
 
 }

@@ -13,7 +13,8 @@ $description = "";
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-envelope"></i> <span class="m-lg-auto">Ajouter un article dans <?= $category->getName() ?></span></h3>
+    <h3><i class="fa-solid fa-envelope"></i> <span
+                class="m-lg-auto">Ajouter un article dans <?= $category->getName() ?></span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
                 class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
@@ -37,13 +38,32 @@ $description = "";
                                 <h6>Nom :</h6>
                                 <input type="text" class="form-control" name="shop_item_name" required>
                             </div>
+
+
                             <div class="col-12 col-lg-6 mt-2">
                                 <h6>Type :</h6>
-                                <select class="form-select" name="shop_item_type" required>
-                                    <option value="0">Physique</option>
-                                    <option value="1">Virtuel</option>
+                                <select class="form-select super-choice" name="shop_item_type" required>
+                                    <option value="virtual">Virtuel</option>
+                                    <option value="physical">Physique</option>
                                 </select>
                             </div>
+                            <div class="addVirtual col-12 col-lg-6 mt-2">
+                                <h6>Liens du produit :</h6>
+                                <input type="url" class="form-control" name="shop_item_virtual_link"
+                                       placeholder="https://site.com/download">
+                            </div>
+                            <div class="addPhysical d-none col-12 col-lg-6 mt-2">
+                                <h6>Poids (grammes) :</h6>
+                                <input type="text" class="form-control" name="shop_item_physical_weight"
+                                       placeholder="3">
+                            </div>
+                            <div class="addPhysical d-none col-12 col-lg-6 mt-2">
+                                <h6>Taille (L/l/H) :</h6>
+                                <input type="text" class="form-control" name="shop_item_physical_size"
+                                       placeholder="20/10/15">
+                            </div>
+
+
                             <div class="col-12 col-lg-6 mt-2">
                                 <h6>Stock :</h6>
                                 <input type="number" class="form-control" name="shop_item_default_stock"
@@ -99,6 +119,28 @@ $description = "";
         </div>
     </section>
 </form>
+
+<script>
+    /*
+    Get choice input select
+ */
+
+    const choice = document.getElementsByClassName('super-choice')
+    const virtual = document.getElementsByClassName('addVirtual')
+    const physical = document.getElementsByClassName('addPhysical')
+
+    for (let i = 0; i < choice.length; i++) {
+        choice[i].addEventListener("change", () => {
+            for (let o = 0; o < virtual.length; o++) {
+                virtual[o].classList.toggle('d-none');
+            }
+            for (let p = 0; p < physical.length; p++) {
+                physical[p].classList.toggle('d-none');
+            }
+        })
+    }
+</script>
+
 <script type="text/javascript">
     let i = 0;
 

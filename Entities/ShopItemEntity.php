@@ -17,6 +17,9 @@ class ShopItemEntity
     private string $itemSlug;
     private ?int $itemImage;
     private int $itemType;
+    private ?string $itemVirtualLink;
+    private ?int $itemPhysicalWeight;
+    private ?string $itemPhysicalSize;
     private ?int $itemDefaultStock;
     private ?int $itemCurrentStock;
     private ?float $itemPrice;
@@ -26,7 +29,7 @@ class ShopItemEntity
     private string $itemUpdated;
 
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemSlug, ?int $itemImage, int $itemType, ?string $itemVirtualLink, ?int $itemPhysicalWeight, ?string $itemPhysicalSize, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -35,6 +38,9 @@ class ShopItemEntity
         $this->itemSlug = $itemSlug;
         $this->itemImage = $itemImage;
         $this->itemType = $itemType;
+        $this->itemVirtualLink = $itemVirtualLink;
+        $this->itemPhysicalWeight = $itemPhysicalWeight;
+        $this->itemPhysicalSize = $itemPhysicalSize;
         $this->itemDefaultStock = $itemDefaultStock;
         $this->itemCurrentStock = $itemCurrentStock;
         $this->itemPrice = $itemPrice;
@@ -53,7 +59,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?ShopCategoryEntity
      */
     public function getCategory(): ?ShopCategoryEntity
     {
@@ -62,7 +68,7 @@ class ShopItemEntity
 
 
     /**
-     * @return string
+     * @return ?string
      */
     public function getName(): ?string
     {
@@ -86,7 +92,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?int
      */
     public function getImage(): ?int
     {
@@ -102,7 +108,31 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?string
+     */
+    public function getVirtualLink(): ?string
+    {
+        return $this->itemVirtualLink;
+    }
+
+    /**
+     * @return ?int
+     */
+    public function getPhysicalWeight(): ?int
+    {
+        return $this->itemPhysicalWeight;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getPhysicalSize(): ?string
+    {
+        return $this->itemPhysicalSize;
+    }
+
+    /**
+     * @return ?int
      */
     public function getDefaultStock(): ?int
     {
@@ -110,7 +140,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?int
      */
     public function getCurrentStock(): ?int
     {
@@ -118,7 +148,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return float
+     * @return ?float
      */
     public function getPrice(): ?float
     {
@@ -126,7 +156,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?int
      */
     public function getGlobalLimit(): ?int
     {
@@ -134,7 +164,7 @@ class ShopItemEntity
     }
 
     /**
-     * @return int
+     * @return ?int
      */
     public function getUserLimit(): ?int
     {
