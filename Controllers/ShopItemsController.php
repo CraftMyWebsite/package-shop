@@ -70,18 +70,10 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        [$name, $category, $description, $type, $productLink, $productWeight, $productSize, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_virtual_link", "shop_item_physical_weight", "shop_item_physical_size", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
+        [$name, $category, $description, $type, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
 
-        if ($type === 'virtual') {
-            $type = 1;
-            $productWeight = "";
-            $productSize = "";
-        } else {
-            $type = 0;
-            $productLink = "";
-        }
 
-        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $category, $description, $type, ($productLink === "" ? null : $productLink), ($productWeight === "" ? null : $productWeight), ($productSize === "" ? null : $productSize), ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
+        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
 
 
         [$numberOfImage] = Utils::filterInput("numberOfImage");

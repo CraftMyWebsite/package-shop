@@ -102,12 +102,6 @@ $description = "";
                             <p><?= $item->getDescription() ?></p>
                             <p>Type
                                 : <?php if ($item->getType() === 0): ?>Physique<?php else: ?>Virtuel<?php endif; ?></p>
-                            <?php if ($item->getType() === 0): ?>
-                                <p>Poids : <?= $item->getPhysicalWeight() ?> grammes</p>
-                                <p>Taille : <?= $item->getPhysicalSize() ?></p>
-                            <?php else: ?>
-                                <p>Liens de l'article : <?= $item->getVirtualLink() ?></p>
-                            <?php endif; ?>
                             <p>Stock
                                 : <?php if ($item->getDefaultStock() === null): ?>Illimité<?php else: ?><?= $item->getCurrentStock() ?>/<?= $item->getDefaultStock() ?><?php endif; ?></p>
                             <p>
