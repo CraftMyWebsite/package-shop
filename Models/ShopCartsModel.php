@@ -123,6 +123,25 @@ class ShopCartsModel extends AbstractModel
         return $toReturn;
     }
 
+    /**
+     * @param int $userId
+     * @return string
+     * @desc count number of items in cart
+     */
+    public function countItemsByUserId(int $userId): mixed
+    {
+        $sql = "SELECT COUNT(`shop_cart_item_id`) as count FROM cmw_shops_cart_items WHERE `shop_user_id` = :userId";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("userId" => $userId))) {
+            return 0;
+        }
+
+        return $res->fetch(0)['count'];
+    }
+
     public function addToCart(int $itemId): ?ShopCartEntity
     {
         $userId = UsersModel::getCurrentUser()->getId();
@@ -144,6 +163,50 @@ class ShopCartsModel extends AbstractModel
         }
 
         return null;
+    }
+
+    public function addToCartWithQuantity(int $itemId, int $quantity): ?ShopCartEntity
+    {
+        $userId = UsersModel::getCurrentUser()->getId();
+        $data = array(
+            "shop_item_id" => $itemId,
+            "shop_user_id" => $userId,
+            "shop_cart_item_quantity" => $quantity
+        );
+
+        $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_user_id, shop_cart_item_quantity)
+                VALUES (:shop_item_id, :shop_user_id, :shop_cart_item_quantity)";
+
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            return $this->getShopCartsById($id);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string
+     * @desc Get the first image by item Id
+     */
+    public function getFirstImageByItemId(int $itemId): string
+    {
+        $sql = "SELECT `shop_image_name` FROM cmw_shops_images WHERE shop_item_id = :shop_item_id LIMIT 1;";
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if (!$req->execute(array("shop_item_id" => $itemId))) {
+            return 0;
+        }
+        $res = $req->fetch();
+        if(!$res){
+            return 0;
+        }
+        return $res['shop_image_name'] ?? 0;
     }
 
     /**
