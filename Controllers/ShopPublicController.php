@@ -16,6 +16,7 @@ use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
+use CMW\Utils\Utils;
 
 
 /**
@@ -33,19 +34,24 @@ class ShopPublicController extends CoreController
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
 
         $view = new View("Shop", "main");
-        $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" => $imagesItem]);
+        $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart]);
         $view->view();
     }
 
     #[Link("/cat/:catSlug", Link::GET, ['.*?'], "/shop")]
     public function publicCatView(Request $request, string $catSlug): void
     {
+        $categories = ShopCategoriesModel::getInstance()->getShopCategories();
+        $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
+        $imagesItem = ShopImagesModel::getInstance();
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
 
         $view = new View("Shop", "cat");
-        $view->addVariableList(["items" => $items]);
+        $view->addVariableList(["items" => $items , "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
         $view->view();
     }
 
@@ -53,11 +59,14 @@ class ShopPublicController extends CoreController
     public function publicItemView(Request $request, string $catSlug, string $itemSlug): void
     {
         $otherItemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
+        $parentCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+        $imagesItem = ShopImagesModel::getInstance();
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
 
         $view = new View("Shop", "item");
-        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "item" => $item]);
+        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart]);
         $view->view();
     }
 
@@ -70,9 +79,10 @@ class ShopPublicController extends CoreController
         }
 
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId());
+        $imagesItem = ShopImagesModel::getInstance();
 
         $view = new View("Shop", "cart");
-        $view->addVariableList(["cartContent" => $cartContent]);
+        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem]);
         $view->view();
     }
 
@@ -84,8 +94,10 @@ class ShopPublicController extends CoreController
             Redirect::redirect('login');
         }
 
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+
         $view = new View("Shop", "history");
-        $view->addVariableList([]);
+        $view->addVariableList(["itemInCart" => $itemInCart]);
         $view->view();
     }
 
@@ -97,8 +109,10 @@ class ShopPublicController extends CoreController
             Redirect::redirect('login');
         }
 
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+
         $view = new View("Shop", "settings");
-        $view->addVariableList([]);
+        $view->addVariableList(["itemInCart" => $itemInCart]);
         $view->view();
     }
 
@@ -120,6 +134,28 @@ class ShopPublicController extends CoreController
             //TODO : Verif setting boutique : La quantité d'article s'ajoute tout seul ou l'utilisateur reçois simplement une alerte ?
             ShopCartsModel::getInstance()->increaseQuantity($itemId);
             Flash::send(Alert::SUCCESS,"Boutique","Vous aviez déjà cet article, nous avons rajouté une quantité pour vous");
+        }
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/cat/:catSlug/item/:itemSlug", Link::POST, ['.*?'], "/shop")]
+    public function publicAddCartQuantity(Request $request, string $catSlug, string $itemSlug): void
+    {
+        if (!UsersController::isUserLogged()){
+            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant d'ajouter cet article dans votre panier'");
+            Redirect::redirect('login');
+        }
+
+        $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
+        //TODO : Verifier la quantité max qu'il peut mettre
+        [$quantity] = Utils::filterInput('quantity');
+
+        if (ShopCartsModel::getInstance()->itemIsInCart($itemId)) {
+            ShopCartsModel::getInstance()->addToCartWithQuantity($itemId, $quantity);
+            Flash::send(Alert::SUCCESS,"Boutique","Nouvel article ajouté au panier !");
+        } else {
+            Flash::send(Alert::ERROR,"Boutique","Vous avez déjà cet article dans le panier !");
         }
 
         Redirect::redirectPreviousRoute();
