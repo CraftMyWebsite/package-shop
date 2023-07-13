@@ -50,17 +50,17 @@ $description = "";
                     <div class="col-12 col-lg-3">
                         <div class="card p-2">
                             <h6 class="text-center"><?= $item->getName() ?></h6>
-                            <?php $v = 0;
-                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $countImage) {
+                            <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId()); $v = 0;
+                            foreach ($getImagesItem as $countImage) {
                                 $v++;
                             } ?>
-                            <?php if ($imagesItem->getShopImagesByItem($item->getId())) : ?>
+                            <?php if ($getImagesItem) : ?>
                                 <?php if ($v !== 1) : ?>
                                     <div id="carousel_<?= $item->getId() ?>" class="carousel slide"
                                          data-bs-ride="carousel">
                                         <ol class="carousel-indicators">
                                             <?php $i = 0;
-                                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageId): ?>
+                                            foreach ($getImagesItem as $imageId): ?>
                                                 <li data-bs-target="#carousel_<?= $item->getId() ?>"
                                                     data-bs-slide-to="<?= $i ?>"
                                                     <?php if ($i === 0): ?>class="active"><?php endif; ?></li>
@@ -68,7 +68,7 @@ $description = "";
                                         </ol>
                                         <div class="carousel-inner">
                                             <?php $x = 0;
-                                            foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imagesUrl): ?>
+                                            foreach ($getImagesItem as $imagesUrl): ?>
                                                 <div class="carousel-item <?php if ($x === 0): ?>active<?php endif; ?>">
                                                     <img style="width: 100px; height: 150px; object-fit: contain"
                                                          src="<?= $imagesUrl->getImageUrl() ?>"
