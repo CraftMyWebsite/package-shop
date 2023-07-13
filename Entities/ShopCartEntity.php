@@ -5,7 +5,9 @@ namespace CMW\Entity\Shop;
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
 class ShopCartEntity
@@ -64,6 +66,15 @@ class ShopCartEntity
     }
 
     /**
+     * @return string
+     */
+    public function getFirstImageItemUrl(): string
+    {
+        $return = ShopCartsModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
+        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/". $return;
+    }
+
+    /**
      * @return int
      */
     public function getQuantity(): int
@@ -76,9 +87,43 @@ class ShopCartEntity
      */
     public function getTotalPrice(): float
     {
+        $itemPrice = $this->item->getPrice();
+        return $this->cartQuantity * $itemPrice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalPriceAfterDiscount(): float
+    {
         //TODO : Gérer les promo
         $itemPrice = $this->item->getPrice();
         return $this->cartQuantity * $itemPrice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalCartPrice(): float
+    {
+        $total = 0;
+        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId()) as $test) {
+            $total+=$test->getTotalPrice();
+        }
+        return $total;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalCartPriceAfterDiscount(): float
+    {
+        //TODO : Gérer les promo
+        $total = 0;
+        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId()) as $test) {
+            $total+=$test->getTotalPrice();
+        }
+        return $total;
     }
 
     /**
