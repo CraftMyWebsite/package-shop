@@ -34,7 +34,9 @@ class ShopPublicController extends CoreController
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        if (UsersController::isUserLogged()) {
+            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        }
 
         $view = new View("Shop", "main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart]);
@@ -48,7 +50,9 @@ class ShopPublicController extends CoreController
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $imagesItem = ShopImagesModel::getInstance();
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        if (UsersController::isUserLogged()) {
+            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        }
 
         $view = new View("Shop", "cat");
         $view->addVariableList(["items" => $items , "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
@@ -63,7 +67,9 @@ class ShopPublicController extends CoreController
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        if (UsersController::isUserLogged()) {
+            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        }
 
         $view = new View("Shop", "item");
         $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart]);
@@ -93,8 +99,9 @@ class ShopPublicController extends CoreController
             Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de consulter votre historique d'achat");
             Redirect::redirect('login');
         }
-
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        if (UsersController::isUserLogged()) {
+            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        }
 
         $view = new View("Shop", "history");
         $view->addVariableList(["itemInCart" => $itemInCart]);
