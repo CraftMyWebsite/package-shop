@@ -110,6 +110,7 @@ $description = "";
         let img = document.createElement('img');
         let btnDelete = document.createElement('button');
         input.type = "file";
+        input.accept = "image/png, image/jpg, image/jpeg, image/webp, image/gif"
         input.name = 'image-' + i;
         div.className = "col-12 col-lg-6 card-in-card";
         div.id = 'delete-' + i;
@@ -119,7 +120,6 @@ $description = "";
         setTimeout(function () {
             (input).click();
         }, 200);
-        //without this next line, you'll get nuthin' on the display
         let mydiv = document.getElementById('img_div').appendChild(div);
         mydiv.appendChild(input);
         mydiv.appendChild(img);

@@ -82,7 +82,9 @@ class ShopItemsController extends AbstractController
             $i=0;
             while ($numberOfImage !== 0 ) {
                 $image = $_FILES['image-'.$i];
-                ShopImagesModel::getInstance()->addShopItemImage($image, $itemId);
+                if ($image != null) {
+                    ShopImagesModel::getInstance()->addShopItemImage($image, $itemId);
+                }
                 $i++;
                 $numberOfImage--;
             }
