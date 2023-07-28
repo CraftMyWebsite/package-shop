@@ -31,7 +31,7 @@ $description = "";
                 </div>
                 <div class="card-body">
 
-                    <div class="modal-body">
+
                         <input type="hidden" name="shop_category_id" value="<?= $category->getId() ?>">
                         <div class="row">
                             <div class="col-12 col-lg-6 mt-2">
@@ -69,11 +69,6 @@ $description = "";
                                 <textarea class="tinymce" name="shop_item_description"></textarea>
                             </div>
                         </div>
-                    </div>
-                    <div class="text-center">
-
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -91,9 +86,9 @@ $description = "";
                             <p class="mt-2">Ajouter une image</p>
                         </div>
                     </div>
-                    <div id="img_div" class="row">
 
-                    </div>
+                    <div id="img_div" class="row"></div>
+
                     <input hidden="" type="text" name="numberOfImage" id="numberOfImage">
                 </div>
             </div>
@@ -107,42 +102,54 @@ $description = "";
     function addImg() {
         let input = document.createElement('input');
         let div = document.createElement('div');
+        let div_in_div = document.createElement('div');
+        let btn_div = document.createElement('div');
         let img = document.createElement('img');
         let btnDelete = document.createElement('button');
+        let label = document.createElement('label');
+
         input.type = "file";
         input.accept = "image/png, image/jpg, image/jpeg, image/webp, image/gif"
         input.name = 'image-' + i;
-        div.className = "col-12 col-lg-6 card-in-card";
-        div.id = 'delete-' + i;
-        img.className = "w-50 mx-auto";
-        btnDelete.type = "button";
-        btnDelete.innerText = "Supprimé";
-        setTimeout(function () {
-            (input).click();
-        }, 200);
-        let mydiv = document.getElementById('img_div').appendChild(div);
-        mydiv.appendChild(input);
-        mydiv.appendChild(img);
-        mydiv.appendChild(btnDelete);
+        input.id = 'image-' + i;
+        input.style.display = 'none';
+        input.click();
 
         input.onchange = evt => {
             const [file] = input.files
             if (file) {
                 img.src = URL.createObjectURL(file)
-            } else {
-                img.src = "https://voyza.fr/Admin/Resources/Assets/Images/Logo/logo_compact.png"
+                div.className = "col-12 col-lg-6";
+                div.id = 'delete-' + i;
+                btn_div.className = "d-flex flex-wrap justify-content-between";
+                div_in_div.className = "card-in-card p-2";
+                img.className = "w-50 mx-auto";
+                btnDelete.type = "button";
+                btnDelete.innerText = "<?= LangManager::translate("core.btn.delete") ?>";
+                btnDelete.className = "btn btn-danger mt-2";
+                label.htmlFor = 'image-' + i;
+                label.innerText = "<?= LangManager::translate("core.btn.edit") ?>"
+                label.className = "btn btn-primary mt-2";
+
+                let fisrtDiv = document.getElementById('img_div').appendChild(div);
+                fisrtDiv.appendChild(div_in_div);
+                div_in_div.appendChild(img);
+                div_in_div.appendChild(input);
+                div_in_div.appendChild(btn_div);
+                btn_div.appendChild(label);
+                btn_div.appendChild(btnDelete);
+                btnDelete.onclick = evt => {
+                    input.remove()
+                    div.remove()
+                    img.remove()
+                    btnDelete.remove()
+                }
+                i++;
             }
         }
-        btnDelete.onclick = evt => {
-            input.remove()
-            div.remove()
-            img.remove()
-            btnDelete.remove()
-        }
-        i++;
-        let test = document.getElementById('numberOfImage')
-        test.value = i;
+
+        let number_Image_post = document.getElementById('numberOfImage')
+        number_Image_post.value = i;
     }
-
-
 </script>
+
