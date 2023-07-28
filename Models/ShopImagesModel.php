@@ -4,6 +4,9 @@ namespace CMW\Model\Shop;
 
 use CMW\Entity\Shop\ShopImageEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Manager\Uploads\ImagesManager;
 
@@ -90,18 +93,21 @@ class ShopImagesModel extends AbstractModel
     {
         $imageName = ImagesManager::upload($image, "Shop");
 
-        $data = array(
-            "shop_image_name" => $imageName,
-            "shop_item_id" => $itemId,
-        );
+        if (!str_contains($imageName, "ERROR")) {
+            $data = array(
+                "shop_image_name" => $imageName,
+                "shop_item_id" => $itemId,
+            );
 
-        $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id)
+            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id)
                 VALUES (:shop_image_name, :shop_item_id)";
 
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare($sql);
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
 
-        $req->execute($data);
-
+            $req->execute($data);
+        } else {
+            Flash::send(Alert::ERROR, "Boutique", "Impossible d'envoyer une image pour la raison :" . $imageName);
+        }
     }
 }
