@@ -23,7 +23,7 @@ class ShopCategoriesModel extends AbstractModel
     public function getShopCategories(): array
     {
 
-        $sql = "SELECT shop_category_id FROM cmw_shops_categories ORDER BY shop_category_id ASC";
+        $sql = "SELECT shop_category_id FROM cmw_shops_categories WHERE shop_sub_category_id IS NULL ORDER BY shop_category_id ASC";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -56,12 +56,15 @@ class ShopCategoriesModel extends AbstractModel
 
         $res = $res->fetch();
 
+        $element = is_null($res["shop_sub_category_id"]) ? null : $this->getShopCategoryById($res["shop_sub_category_id"]);
+
         return new ShopCategoryEntity(
             $res["shop_category_id"],
             $res["shop_category_name"],
-            $res["shop_category_description"],
+            $res["shop_category_icon"] ?? null,
+            $res["shop_category_description"] ?? null,
             $res["shop_category_slug"],
-            $res["shop_image_id"] ?? null,
+            $element,
             $res["shop_category_created_at"],
             $res["shop_category_updated_at"]
         );
@@ -86,16 +89,17 @@ class ShopCategoriesModel extends AbstractModel
         return $res['shop_category_id'] ?? 0;
     }
 
-    public function createShopCategory(string $name, string $description): ?ShopCategoryEntity
+    public function createShopCategory(string $name, string $description, string $icon): ?ShopCategoryEntity
     {
         $data = array(
             "shop_category_name" => $name,
             "shop_category_description" => $description,
+            "shop_category_icon" => $icon,
             "shop_category_slug" => "NOT_DEFINED"
         );
 
-        $sql = "INSERT INTO cmw_shops_categories(shop_category_name, shop_category_description, shop_category_slug)
-                VALUES (:shop_category_name, :shop_category_description, :shop_category_slug)";
+        $sql = "INSERT INTO cmw_shops_categories(shop_category_name, shop_category_description, shop_category_slug, shop_category_icon)
+                VALUES (:shop_category_name, :shop_category_description, :shop_category_slug, :shop_category_icon)";
 
 
         $db = DatabaseManager::getInstance();
@@ -105,6 +109,56 @@ class ShopCategoriesModel extends AbstractModel
             $id = $db->lastInsertId();
             $this->setShopCategorySlug($id, $name);
             return $this->getShopCategoryById($id);
+        }
+
+        return null;
+    }
+
+    public function createShopSubCategory(string $name, string $description, string $icon, int $reattached_Id): ?ShopCategoryEntity
+    {
+        $data = array(
+            "shop_category_name" => $name,
+            "shop_category_description" => $description,
+            "shop_category_icon" => $icon,
+            "shop_category_slug" => "NOT_DEFINED",
+            "shop_sub_category_id" => $reattached_Id
+        );
+
+        $sql = "INSERT INTO cmw_shops_categories(shop_category_name, shop_category_description, shop_category_slug, shop_category_icon, shop_sub_category_id)
+                VALUES (:shop_category_name, :shop_category_description, :shop_category_slug, :shop_category_icon, :shop_sub_category_id)";
+
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            $this->setShopCategorySlug($id, $name);
+            return $this->getShopCategoryById($id);
+        }
+
+        return null;
+    }
+
+    public function editCategory(string $name, string $description, string $icon, ?int $reattached_Id, int $catId): ?ShopCategoryEntity
+    {
+        $data = array(
+            "shop_category_name" => $name,
+            "shop_category_description" => $description,
+            "shop_category_icon" => $icon,
+            "shop_category_slug" => "NOT_DEFINED",
+            "shop_sub_category_id" => $reattached_Id,
+            "shop_category_id" => $catId
+        );
+
+        $sql = "UPDATE cmw_shops_categories SET shop_category_name=:shop_category_name, shop_category_description=:shop_category_description, shop_category_slug=:shop_category_slug, shop_category_icon=:shop_category_icon, shop_sub_category_id=:shop_sub_category_id WHERE shop_category_id=:shop_category_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $this->setShopCategorySlug($catId, $name);
+            return $this->getShopCategoryById($catId);
         }
 
         return null;
@@ -131,6 +185,30 @@ class ShopCategoriesModel extends AbstractModel
         return Utils::normalizeForSlug($name) . "-$id";
     }
 
+    /**
+     * @param int $catId
+     * @return ShopCategoryEntity[]
+     */
+    public function getSubCatByCat(int $catId): array
+    {
+        $sql = "SELECT shop_category_id FROM cmw_shops_categories WHERE shop_sub_category_id = :cat_id";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(["cat_id" => $catId])) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($cat = $res->fetch()) {
+            $toReturn[] = $this->getShopCategoryById($cat["shop_category_id"]);
+        }
+
+        return $toReturn;
+    }
+
     public function deleteShopCat(int $id): bool
     {
         $sql = "DELETE FROM cmw_shops_categories WHERE shop_category_id = :shop_category_id";
@@ -138,6 +216,36 @@ class ShopCategoriesModel extends AbstractModel
         $db = DatabaseManager::getInstance();
 
         return $db->prepare($sql)->execute(array("shop_category_id" => $id));
+    }
+
+
+    /**
+     * @param int $catId
+     * @return ShopSubCategoryEntity[]
+     */
+    public function getSubsCat(int $catId): array
+    {
+        return $this->getSubCatRecursively($catId, 1);
+    }
+
+    /**
+     * @param int $catId
+     * @param int $depth
+     * @return ShopSubCategoryEntity[]
+     */
+    private function getSubCatRecursively(int $catId, int $depth): array
+    {
+        $toReturn = [];
+        $subCat = $this->getSubCatByCat($catId);
+
+        foreach ($subCat as $subCats) {
+            $toReturn[] = new ShopSubCategoryEntity($subCats, $depth);
+
+            $subToReturn = $this->getSubCatRecursively($subCats->getId(), $depth + 1);
+            $toReturn = [...$toReturn, ...$subToReturn];
+        }
+
+        return $toReturn;
     }
 
 

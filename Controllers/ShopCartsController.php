@@ -41,4 +41,16 @@ class ShopCartsController extends AbstractController
             ->addVariableList(["carts" => $carts, "user" => $user])
             ->view();
     }
+
+    /*
+     * METHODE
+     * */
+
+    public function getCartItemNumber(int $userId, int $itemId): int {
+
+    }
+
+    public function itemIsInCart(int $userId, int $itemId): bool {
+
+    }
 }

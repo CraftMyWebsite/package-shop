@@ -46,6 +46,7 @@ $description = "";
                 <a data-bs-target="#delete-<?= $category->getId() ?>" type="button" data-bs-toggle="modal" class="btn btn-sm btn-danger">Supprimé cette catégorie</a>
             </div>
             <div class="row mt-2">
+
                 <?php foreach ($items->getShopItemByCat($category->getId()) as $item): ?>
                     <div class="col-12 col-lg-3">
                         <div class="card p-2">

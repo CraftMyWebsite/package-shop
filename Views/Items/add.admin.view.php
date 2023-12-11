@@ -30,8 +30,6 @@ $description = "";
                     <h4>Informations</h4>
                 </div>
                 <div class="card-body">
-
-
                         <input type="hidden" name="shop_category_id" value="<?= $category->getId() ?>">
                         <div class="row">
                             <div class="col-12 col-lg-6 mt-2">

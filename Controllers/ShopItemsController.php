@@ -39,18 +39,6 @@ class ShopItemsController extends AbstractController
             ->view();
     }
 
-    #[Link("/items/add_cat", Link::POST, [], "/cmw-admin/shop")]
-    public function adminAddShopCategoryPost(): void
-    {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
-
-        [$name, $description] = Utils::filterInput("name", "description");
-
-        ShopCategoriesModel::getInstance()->createShopCategory($name, $description);
-
-        Redirect::redirectPreviousRoute();
-    }
-
     #[Link("/items/add_item/:categoryId", Link::GET, [], "/cmw-admin/shop")]
     public function adminAddShopItem(Request $request, int $categoryId): void
     {
@@ -65,6 +53,7 @@ class ShopItemsController extends AbstractController
             )
             ->view();
     }
+
     #[Link("/items/add_item/:categoryId", Link::POST, [], "/cmw-admin/shop")]
     public function adminAddShopItemPost(): void
     {
@@ -72,9 +61,7 @@ class ShopItemsController extends AbstractController
 
         [$name, $category, $description, $type, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
 
-
         $itemId = ShopItemsModel::getInstance()->createShopItem($name, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
-
 
         [$numberOfImage] = Utils::filterInput("numberOfImage");
         if ($numberOfImage !== "")
@@ -89,8 +76,6 @@ class ShopItemsController extends AbstractController
                 $numberOfImage--;
             }
         }
-
-
 
         Flash::send(Alert::SUCCESS,"Success","Items ajouté !");
 
@@ -109,15 +94,39 @@ class ShopItemsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/cat/delete/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminDeleteShopCat(Request $request, int $id): void
-    {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+    /*
+     * METHODE
+     * */
 
-        ShopCategoriesModel::getInstance()->deleteShopCat($id);
+    public function isArchived(int $itemId): bool {
 
-        Flash::send(Alert::SUCCESS, "Success", "C'est chao");
+    }
 
-        Redirect::redirectPreviousRoute();
+    public function inStock(int $itemId): bool {
+
+    }
+
+    public function addToWishList(int $itemId): bool {
+
+    }
+
+    public function isUserBuyLimitReached(int $userId, int $itemId): bool {
+
+    }
+
+    public function isUserOrderLimitReached(int $userId, int $itemId): bool {
+
+    }
+
+    public function isUserAlreadyHaveBuyItem(int $userId, int $itemId): bool {
+
+    }
+
+    public function isUserAlreadyHaveWishItem(int $userId, int $itemId): bool {
+
+    }
+
+    public function isGlobalLimitReached(int $itemId): bool {
+
     }
 }

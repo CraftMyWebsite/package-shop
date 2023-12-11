@@ -22,12 +22,15 @@ CREATE TABLE IF NOT EXISTS cmw_shops_shopping_session
 CREATE TABLE IF NOT EXISTS cmw_shops_categories
 (
     shop_category_id          INT AUTO_INCREMENT PRIMARY KEY,
+    shop_sub_category_id         INT          NULL,
     shop_category_name        VARCHAR(50) NOT NULL,
+    shop_category_icon        VARCHAR(50)  NULL,
     shop_category_description TEXT NULL,
     shop_category_slug        VARCHAR(255) NOT NULL,
-    shop_image_id             INT NULL,
     shop_category_created_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_category_updated_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    shop_category_updated_at     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shops_categories_id
+        FOREIGN KEY (shop_sub_category_id) REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

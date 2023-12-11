@@ -49,6 +49,11 @@ class Package implements IPackageConfig
                         url: 'shop/settings',
                     ),
                     new PackageSubMenuType(
+                        title: 'Catégories',
+                        permission: 'todo', //TODO PERM
+                        url: 'shop/cat',
+                    ),
+                    new PackageSubMenuType(
                         title: 'Articles',
                         permission: 'todo', //TODO PERM
                         url: 'shop/items',
@@ -91,6 +96,11 @@ class Package implements IPackageConfig
                         title: 'Configuration',
                         permission: 'todo', //TODO PERM
                         url: 'shop/settings',
+                    ),
+                    new PackageSubMenuType(
+                        title: 'Categories',
+                        permission: 'todo', //TODO PERM
+                        url: 'shop/cat',
                     ),
                     new PackageSubMenuType(
                         title: 'Items',

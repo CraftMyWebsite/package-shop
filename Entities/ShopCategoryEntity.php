@@ -11,20 +11,22 @@ class ShopCategoryEntity
 
     private int $categoryId;
     private string $categoryName;
-    private string $categoryDescription;
+    private ?string $categoryIcon;
+    private ?string $categoryDescription;
     private string $categorySlug;
-    private ?int $categoryImage;
+    private ?ShopCategoryEntity $categoryParent;
     private string $categoryCreated;
     private string $categoryUpdated;
 
 
-    public function __construct(int $categoryId, string $categoryName, string $categoryDescription, string $categorySlug, ?int $categoryImage, string $categoryCreated, string $categoryUpdated)
+    public function __construct(int $categoryId, string $categoryName, ?string $categoryIcon, ?string $categoryDescription, string $categorySlug, ?ShopCategoryEntity $categoryParent, string $categoryCreated, string $categoryUpdated)
     {
         $this->categoryId = $categoryId;
         $this->categoryName = $categoryName;
+        $this->categoryIcon = $categoryIcon;
         $this->categoryDescription = $categoryDescription;
         $this->categorySlug = $categorySlug;
-        $this->categoryImage = $categoryImage;
+        $this->categoryParent = $categoryParent;
         $this->categoryCreated = $categoryCreated;
         $this->categoryUpdated = $categoryUpdated;
     }
@@ -45,11 +47,10 @@ class ShopCategoryEntity
         return $this->categoryName;
     }
 
-
     /**
-     * @return string
+     * @return ?string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->categoryDescription;
     }
@@ -63,11 +64,25 @@ class ShopCategoryEntity
     }
 
     /**
-     * @return int
+     * @param string|null $param
+     * @return ?string
      */
-    public function getImage(): int
+    public function getFontAwesomeIcon(?string $param = null): ?string
     {
-        return $this->categoryImage;
+        return '<i class="' . $this->categoryIcon . '  ' . $param . '"></i>';
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getIcon(): ?string
+    {
+        return $this->categoryIcon;
+    }
+
+    public function getParent(): ?ShopCategoryEntity
+    {
+        return $this->categoryParent;
     }
 
     /**
