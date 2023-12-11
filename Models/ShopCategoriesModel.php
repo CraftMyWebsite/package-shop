@@ -3,6 +3,7 @@
 namespace CMW\Model\Shop;
 
 use CMW\Entity\Shop\ShopCategoryEntity;
+use CMW\Entity\Shop\ShopSubCategoryEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Utils\Utils;
