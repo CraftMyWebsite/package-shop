@@ -20,13 +20,12 @@ use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
 /**
-* Class: @ShopItemsController
-* @desc this controller manages: categories, items requirement, items actions, items tags
-* @package shop
-* @author CraftMyWebsite Team <contact@craftmywebsite.fr>
-* @version 1.0
-*/
-
+ * Class: @ShopItemsController
+ * @desc this controller manages: categories, items requirement, items actions, items tags
+ * @package shop
+ * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
+ * @version 1.0
+ */
 class ShopCatController extends AbstractController
 {
 
@@ -103,12 +102,7 @@ class ShopCatController extends AbstractController
 
         [$name, $description, $icon, $move] = Utils::filterInput("name", "description", "icon", "move");
 
-        if ($move === $catId) {
-            $move = ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()->getId();
-        }
-        if ($move === "") {
-            $move = null;
-        }
+        $move = ($move === $catId) ? (is_null(ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()) ? null : ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()->getId()) : (($move === "") ? null : $move);
 
         ShopCategoriesModel::getInstance()->editCategory($name, $description, $icon, $move, $catId);
 
