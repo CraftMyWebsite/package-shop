@@ -5,6 +5,7 @@ namespace CMW\Entity\Shop;
 use CMW\Controller\Core\CoreController;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
 class ShopItemEntity
@@ -187,7 +188,7 @@ class ShopItemEntity
     public function getTotalPriceInCart(): float
     {
         //TODO : Gérer les promo
-        $quantity = ShopCartsModel::getInstance()->getQuantity($this->itemId);
+        $quantity = ShopCartsModel::getInstance()->getQuantity($this->itemId, UsersModel::getCurrentUser()?->getId(), session_id());
         return $quantity * $this->getPrice();
     }
 
@@ -197,7 +198,7 @@ class ShopItemEntity
      */
     public function getQuantityInCart(): string
     {
-        return ShopCartsModel::getInstance()->getQuantity($this->itemId);
+        return ShopCartsModel::getInstance()->getQuantity($this->itemId, UsersModel::getCurrentUser()?->getId(), session_id());
     }
 
     /**

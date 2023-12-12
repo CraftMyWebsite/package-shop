@@ -6,7 +6,6 @@ use CMW\Controller\Core\CoreController;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\ShopCartsModel;
-use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
@@ -71,7 +70,7 @@ class ShopCartEntity
     public function getFirstImageItemUrl(): string
     {
         $return = ShopCartsModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
-        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/". $return;
+        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $return;
     }
 
     /**
@@ -107,8 +106,8 @@ class ShopCartEntity
     public function getTotalCartPrice(): float
     {
         $total = 0;
-        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId()) as $test) {
-            $total+=$test->getTotalPrice();
+        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $test) {
+            $total += $test->getTotalPrice();
         }
         return $total;
     }
@@ -120,8 +119,8 @@ class ShopCartEntity
     {
         //TODO : Gérer les promo
         $total = 0;
-        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId()) as $test) {
-            $total+=$test->getTotalPrice();
+        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $test) {
+            $total += $test->getTotalPrice();
         }
         return $total;
     }
@@ -148,7 +147,7 @@ class ShopCartEntity
     public function getIncreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/increase_quantity/$itemId";
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/increase_quantity/$itemId";
     }
 
     /**
@@ -157,7 +156,7 @@ class ShopCartEntity
     public function getDecreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/decrease_quantity/$itemId";
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/decrease_quantity/$itemId";
     }
 
     /**
@@ -166,7 +165,7 @@ class ShopCartEntity
     public function getRemoveLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/remove/$itemId";
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/remove/$itemId";
     }
 
 }

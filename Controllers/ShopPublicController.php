@@ -4,9 +4,11 @@
 namespace CMW\Controller\Shop;
 
 use CMW\Controller\Core\CoreController;
-use CMW\Controller\Users\UsersController;
+use CMW\Event\Users\LoginEvent;
+use CMW\Manager\Events\Listener;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
@@ -17,6 +19,7 @@ use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use JetBrains\PhpStorm\NoReturn;
 
 
 /**
@@ -25,7 +28,6 @@ use CMW\Utils\Utils;
  * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-
 class ShopPublicController extends CoreController
 {
     #[Link("/", Link::GET, [], "/shop")]
@@ -34,12 +36,14 @@ class ShopPublicController extends CoreController
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
-        if (UsersController::isUserLogged()) {
-            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
-        }
+
+        $sessionId = session_id();
+
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), $sessionId) ?? 0;
 
         $view = new View("Shop", "main");
-        $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart]);
+        $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
+            $imagesItem, "itemInCart" => $itemInCart]);
         $view->view();
     }
 
@@ -50,12 +54,10 @@ class ShopPublicController extends CoreController
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $imagesItem = ShopImagesModel::getInstance();
-        if (UsersController::isUserLogged()) {
-            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
-        }
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "cat");
-        $view->addVariableList(["items" => $items , "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
+        $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
         $view->view();
     }
 
@@ -67,9 +69,7 @@ class ShopPublicController extends CoreController
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
-        if (UsersController::isUserLogged()) {
-            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
-        }
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "item");
         $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart]);
@@ -79,12 +79,7 @@ class ShopPublicController extends CoreController
     #[Link("/cart", Link::GET, [], "/shop")]
     public function publicCartView(): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de consulter votre panier");
-            Redirect::redirect('login');
-        }
-
-        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()->getId());
+        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $imagesItem = ShopImagesModel::getInstance();
 
         $view = new View("Shop", "cart");
@@ -95,13 +90,7 @@ class ShopPublicController extends CoreController
     #[Link("/history", Link::GET, [], "/shop")]
     public function publicHistoryView(): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de consulter votre historique d'achat");
-            Redirect::redirect('login');
-        }
-        if (UsersController::isUserLogged()) {
-            $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
-        }
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "history");
         $view->addVariableList(["itemInCart" => $itemInCart]);
@@ -111,12 +100,7 @@ class ShopPublicController extends CoreController
     #[Link("/settings", Link::GET, [], "/shop")]
     public function publicSettingsView(): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de modifier vos paramètres boutique");
-            Redirect::redirect('login');
-        }
-
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()->getId());
+        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "settings");
         $view->addVariableList(["itemInCart" => $itemInCart]);
@@ -126,89 +110,126 @@ class ShopPublicController extends CoreController
     /*
      * ACTIONS
      * */
-    #[Link("/add_to_cart/:itemId", Link::GET, [], "/shop")]
+    #[NoReturn] #[Link("/add_to_cart/:itemId", Link::GET, [], "/shop")]
     public function publicAddCart(Request $request, int $itemId): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant d'ajouter cet article dans votre panier'");
-            Redirect::redirect('login');
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        if (!$sessionId) {
+            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                LangManager::translate('core.toaster.internalError'));
+            Redirect::redirectPreviousRoute();
         }
 
-        if (ShopCartsModel::getInstance()->itemIsInCart($itemId)) {
-            ShopCartsModel::getInstance()->addToCart($itemId);
-            Flash::send(Alert::SUCCESS,"Boutique","Nouvel article ajouté au panier !");
+        if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+            ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId);
+            Flash::send(Alert::SUCCESS, "Boutique",
+                "Nouvel article ajouté au panier !");
         } else {
-            //TODO : Verif setting boutique : La quantité d'article s'ajoute tout seul ou l'utilisateur reçois simplement une alerte ?
-            ShopCartsModel::getInstance()->increaseQuantity($itemId);
-            Flash::send(Alert::SUCCESS,"Boutique","Vous aviez déjà cet article, nous avons rajouté une quantité pour vous");
+            ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+            Flash::send(Alert::SUCCESS, "Boutique",
+                "Vous aviez déjà cet article, nous avons rajouté une quantité pour vous");
         }
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/cat/:catSlug/item/:itemSlug", Link::POST, ['.*?'], "/shop")]
+    #[NoReturn] #[Link("/cat/:catSlug/item/:itemSlug", Link::POST, ['.*?'], "/shop")]
     public function publicAddCartQuantity(Request $request, string $catSlug, string $itemSlug): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant d'ajouter cet article dans votre panier'");
-            Redirect::redirect('login');
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        if (!$sessionId) {
+            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                LangManager::translate('core.toaster.internalError'));
+            Redirect::redirectPreviousRoute();
         }
 
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         //TODO : Verifier la quantité max qu'il peut mettre
         [$quantity] = Utils::filterInput('quantity');
 
-        if (ShopCartsModel::getInstance()->itemIsInCart($itemId)) {
+        if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
             ShopCartsModel::getInstance()->addToCartWithQuantity($itemId, $quantity);
-            Flash::send(Alert::SUCCESS,"Boutique","Nouvel article ajouté au panier !");
+            Flash::send(Alert::SUCCESS, "Boutique", "Nouvel article ajouté au panier !");
         } else {
-            Flash::send(Alert::ERROR,"Boutique","Vous avez déjà cet article dans le panier !");
+            Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà cet article dans le panier !");
         }
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/cart/increase_quantity/:itemId", Link::GET, [], "/shop")]
+    #[NoReturn] #[Link("/cart/increase_quantity/:itemId", Link::GET, [], "/shop")]
     public function publicAddQuantity(Request $request, int $itemId): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de modifier la quantité d'article");
-            Redirect::redirect('login');
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        if (!$sessionId) {
+            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                LangManager::translate('core.toaster.internalError'));
+            Redirect::redirectPreviousRoute();
         }
 
-        //TODO : getItemUserLimit for stop increase and alert user (need to know if user has already purchased getItemUserLimit value can be change before this)
-        ShopCartsModel::getInstance()->increaseQuantity($itemId);
+        ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/cart/decrease_quantity/:itemId", Link::GET, [], "/shop")]
+    #[NoReturn] #[Link("/cart/decrease_quantity/:itemId", Link::GET, [], "/shop")]
     public function publicRemoveQuantity(Request $request, int $itemId): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de modifier la quantité d'article");
-            Redirect::redirect('login');
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        $currentQuantity = ShopCartsModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
+
+        if ($currentQuantity === 1) {
+            ShopCartsModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+            Flash::send(Alert::SUCCESS, LangManager::translate('core.toaster.success'),
+                "Article " . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . " enlevé de votre panier");
         }
 
-        //TODO : getItemUserLimit for stop increase and alert user (need to know if user has already purchased getItemUserLimit value can be change before this)
-        ShopCartsModel::getInstance()->decreaseQuantity($itemId);
+        if ($currentQuantity <= 0) {
+            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                "Hep hep hep, pas de nombres négatifs mon chère");
+            Redirect::redirectPreviousRoute();
+        }
+
+        if (!$sessionId) {
+            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                LangManager::translate('core.toaster.internalError'));
+            Redirect::redirectPreviousRoute();
+        }
+
+        ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, false);
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/cart/remove/:itemId", Link::GET, [], "/shop")]
+    #[NoReturn] #[Link("/cart/remove/:itemId", Link::GET, [], "/shop")]
     public function publicRemoveItem(Request $request, int $itemId): void
     {
-        if (!UsersController::isUserLogged()){
-            Flash::send(Alert::ERROR,"Boutique","Connectez-vous avant de supprimé l'articel dans le panier");
-            Redirect::redirect('login');
-        }
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
 
-        ShopCartsModel::getInstance()->removeItem($itemId);
+        ShopCartsModel::getInstance()->removeItem($itemId, $userId, $sessionId);
 
-        Flash::send(Alert::SUCCESS,"Boutique","Cet article n'est plus dans votre panier");
+        Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
 
         Redirect::redirectPreviousRoute();
+    }
+
+    #[Listener(eventName: LoginEvent::class, times: 0, weight: 1)]
+    public static function onLogin(mixed $userId): void
+    {
+        //Migrate cart
+        $sessionId = session_id();
+        if ($sessionId) {
+            ShopCartsModel::getInstance()->switchSessionToUserCart($sessionId, $userId);
+        }
     }
 }
 
