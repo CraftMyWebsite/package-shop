@@ -15,6 +15,7 @@ class ShopItemEntity
     private ?ShopCategoryEntity $category;
     private ?string $itemName;
     private string $itemDescription;
+    private string $itemShortDescription;
     private string $itemSlug;
     private ?int $itemImage;
     private int $itemType;
@@ -27,12 +28,13 @@ class ShopItemEntity
     private string $itemUpdated;
 
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
     {
         $this->itemId = $itemId;
         $this->category = $category;
         $this->itemName = $itemName;
         $this->itemDescription = $itemDescription;
+        $this->itemShortDescription = $itemShortDescription;
         $this->itemSlug = $itemSlug;
         $this->itemImage = $itemImage;
         $this->itemType = $itemType;
@@ -81,6 +83,14 @@ class ShopItemEntity
     /**
      * @return string
      */
+    public function geShortDescription(): string
+    {
+        return $this->itemShortDescription;
+    }
+
+    /**
+     * @return string
+     */
     public function getSlug(): string
     {
         return $this->itemSlug;
@@ -116,6 +126,18 @@ class ShopItemEntity
     public function getCurrentStock(): ?int
     {
         return $this->itemCurrentStock;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getFormatedStock(): ?string
+    {
+        if (is_null($this->getDefaultStock())) {
+            return "Illimité";
+        } else {
+            return $this->itemCurrentStock ." / ". $this->itemDefaultStock;
+        }
     }
 
     /**

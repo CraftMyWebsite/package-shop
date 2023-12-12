@@ -13,7 +13,7 @@ $description = "";
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-envelope"></i> <span
-                class="m-lg-auto">Ajouter d'un article</span></h3>
+            class="m-lg-auto">Ajouter d'un article</span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
                 class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
@@ -26,20 +26,20 @@ $description = "";
         <div class="col-12 col-lg-6">
             <div class="card">
                 <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mt-2">
-                                <h6>Nom<span style="color: red">*</span> :</h6>
-                                <input type="text" class="form-control" name="shop_item_name" required>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <h6>Déscription courte<span style="color: red">*</span> :</h6>
-                                <input type="text" class="form-control" name="shop_item_short_desc" required>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <h6>Déscription détailler<span style="color: red">*</span> :</h6>
-                                <textarea  class="tinymce" name="shop_item_description"></textarea>
-                            </div>
+                    <div class="row">
+                        <div class="col-12 mt-2">
+                            <h6>Nom<span style="color: red">*</span> :</h6>
+                            <input type="text" class="form-control" name="shop_item_name" required>
                         </div>
+                        <div class="col-12 mt-2">
+                            <h6>Déscription courte<span style="color: red">*</span> :</h6>
+                            <input type="text" class="form-control" name="shop_item_short_desc" required>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Déscription détailler<span style="color: red">*</span> :</h6>
+                            <textarea  class="tinymce" name="shop_item_description"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

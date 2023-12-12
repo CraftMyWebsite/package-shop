@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_category_id        INT          NULL,
     shop_item_name          VARCHAR(50)  NULL,
     shop_item_description   LONGTEXT     NOT NULL,
+    shop_item_short_description   TEXT     NOT NULL,
     shop_item_slug          VARCHAR(255) NOT NULL,
     shop_image_id           INT          NULL,
     shop_item_type          TINYINT      NOT NULL,
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_item_user_limit    INT          NULL,
     shop_item_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_item_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_item_archived      TINYINT      NOT NULL DEFAULT 0,
     CONSTRAINT fk_shop_category_id_items FOREIGN KEY (shop_category_id)
         REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB

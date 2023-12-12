@@ -30,56 +30,87 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
 
         View::createAdminView('Shop', 'Items/manage')
-            ->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" => $imagesItem])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem])
+            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
     }
 
-    #[Link("/items/add_item/:categoryId", Link::GET, [], "/cmw-admin/shop")]
-    public function adminAddShopItem(Request $request, int $categoryId): void
+    #[Link("/items/archived", Link::GET, [], "/cmw-admin/shop")]
+    public function shopItemsArchived(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        $category = ShopCategoriesModel::getInstance()->getShopCategoryById($categoryId);
+        $items = ShopItemsModel::getInstance();
+        $imagesItem = ShopImagesModel::getInstance();
+
+        View::createAdminView('Shop', 'Items/archived')
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem])
+            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->view();
+    }
+
+    #[Link("/items/add", Link::GET, [], "/cmw-admin/shop")]
+    public function adminAddShopItem(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        $categoryModel = ShopCategoriesModel::getInstance();
 
         View::createAdminView('Shop', 'Items/add')
-            ->addVariableList(["category" => $category])
+            ->addVariableList(["categoryModel" => $categoryModel])
             ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
                 "Admin/Resources/Vendors/Tinymce/Config/full.js"
             )
             ->view();
     }
 
-    #[Link("/items/add_item/:categoryId", Link::POST, [], "/cmw-admin/shop")]
+    #[Link("/items/add", Link::POST, [], "/cmw-admin/shop")]
     public function adminAddShopItemPost(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        [$name, $category, $description, $type, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
+        [$name, $shortDesc, $category, $description, $type, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_item_short_desc", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
 
-        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
+        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
+
 
         [$numberOfImage] = Utils::filterInput("numberOfImage");
-        if ($numberOfImage !== "")
-        {
-            $i=0;
-            while ($numberOfImage !== 0 ) {
-                $image = $_FILES['image-'.$i];
-                if ($image != null) {
+        if ($numberOfImage !== "") {
+            for ($i = 0; $i < $numberOfImage; $i++) {
+                $imageKey = 'image-' . $i;
+
+                if (isset($_FILES[$imageKey]) && $_FILES[$imageKey]['error'] === UPLOAD_ERR_OK) {
+                    $image = $_FILES[$imageKey];
                     ShopImagesModel::getInstance()->addShopItemImage($image, $itemId);
                 }
-                $i++;
-                $numberOfImage--;
             }
         }
 
         Flash::send(Alert::SUCCESS,"Success","Items ajouté !");
 
         Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/items/edit/:id", Link::GET, [], "/cmw-admin/shop")]
+    public function adminEditShopItem(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        $categoryModel = ShopCategoriesModel::getInstance();
+        $item = ShopItemsModel::getInstance()->getShopItems($id);
+
+        View::createAdminView('Shop', 'Items/edit')
+            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item])
+            ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
+                "Admin/Resources/Vendors/Tinymce/Config/full.js"
+            )
+            ->view();
     }
 
     #[Link("/items/delete/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]

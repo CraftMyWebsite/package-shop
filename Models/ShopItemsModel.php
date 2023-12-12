@@ -45,6 +45,7 @@ class ShopItemsModel extends AbstractModel
             $category ?? null,
             $res["shop_item_name"] ?? null,
             $res["shop_item_description"],
+            $res["shop_item_short_description"],
             $res["shop_item_slug"],
             $res["shop_image_id"] ?? null,
             $res["shop_item_type"],
@@ -64,7 +65,32 @@ class ShopItemsModel extends AbstractModel
     public function getShopItems(): array
     {
 
-        $sql = "SELECT shop_item_id FROM cmw_shops_items ORDER BY shop_item_id DESC";
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 0 ORDER BY shop_item_id DESC";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item["shop_item_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopItemEntity []
+     */
+    public function getShopArchivedItems(): array
+    {
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 1 ORDER BY shop_item_id DESC";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -149,11 +175,12 @@ class ShopItemsModel extends AbstractModel
         return $res['shop_item_id'] ?? 0;
     }
 
-    public function createShopItem(?string $name, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $globalLimit, ?int $userLimit): int
+    public function createShopItem(?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $globalLimit, ?int $userLimit): int
     {
         $data = array(
             "shop_item_name" => $name,
             "shop_category_id" => $category,
+            "shop_item_short_description" => $shortDesc,
             "shop_item_description" => $description,
             "shop_category_slug" => "NOT_DEFINED",
             "shop_item_type" => $type,
@@ -164,8 +191,8 @@ class ShopItemsModel extends AbstractModel
             "shop_item_user_limit" => $userLimit,
         );
 
-        $sql = "INSERT INTO cmw_shops_items(shop_item_name, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_global_limit, shop_item_user_limit )
-                VALUES (:shop_item_name, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_global_limit, :shop_item_user_limit )";
+        $sql = "INSERT INTO cmw_shops_items(shop_item_name, shop_item_short_description, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_global_limit, shop_item_user_limit )
+                VALUES (:shop_item_name, :shop_item_short_description, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_global_limit, :shop_item_user_limit )";
 
 
         $db = DatabaseManager::getInstance();
