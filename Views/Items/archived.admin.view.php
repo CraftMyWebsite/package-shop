@@ -98,7 +98,11 @@ $description = "";
                                 <?= $item->getDescription() ?>
                             </td>
                             <td class="text-center" style="width: fit-content;">
+                                <?php if ($item->getCategory()): ?>
                                 <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="text-primary"><?= $item->getCategory()->getName() ?></h6></a>
+                                <?php else: ?>
+                                <p>Aucune</p>
+                                <?php endif; ?>
                             </td>
                             <td class="text-center">
                                 <?= $item->getPrice() ?> <?= ShopSettingsModel::getSettingValue('currency') ?>
