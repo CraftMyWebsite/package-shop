@@ -77,15 +77,81 @@ $description = "";
                                                    class="text-primary me-3 fas fa-edit"></i>
                                             </a>
                                             <a type="button" data-bs-toggle="modal"
-                                               data-bs-target="#deletee->">
+                                               data-bs-target="#deletee-<?= $subCategory->getSubCategory()->getId() ?>">
                                                 <i data-bs-toggle="tooltip" title="Supprimé"
                                                    class="text-danger fas fa-trash-alt"></i>
                                             </a>
                                         </td>
                                     </tr>
+
+                                    <!--
+                                    --MODAL SUPPRESSION SOUS CAT--
+                                    -->
+                                    <div class="modal fade text-left" id="deletee-<?= $subCategory->getSubCategory()->getId() ?>" tabindex="-1"
+                                         role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                             role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger">
+                                                    <h5 class="modal-title white" id="myModalLabel160">Supression de
+                                                        : <?= $subCategory->getSubCategory()->getName() ?></h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Cette suppression est définitive.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-light-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        <i class="bx bx-x"></i>
+                                                        <span
+                                                            class=""><?= LangManager::translate("core.btn.close") ?></span>
+                                                    </button>
+                                                    <a href="cat/delete/<?= $subCategory->getSubCategory()->getId() ?>"
+                                                       class="btn btn-danger ml-1">
+                                                        <i class="bx bx-check"></i>
+                                                        <span
+                                                            class=""><?= LangManager::translate("core.btn.delete") ?></span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
+                        <!--
+                       --MODAL SUPPRESSION CAT--
+                         -->
+                        <div class="modal fade text-left" id="delete-<?= $category->getId() ?>" tabindex="-1"
+                             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                 role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger">
+                                        <h5 class="modal-title white" id="myModalLabel160">Supression de
+                                            : <?= $category->getName() ?></h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Cette suppression est définitive.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light-secondary"
+                                                data-bs-dismiss="modal">
+                                            <i class="bx bx-x"></i>
+                                            <span
+                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
+                                        </button>
+                                        <a href="cat/delete/<?= $category->getId() ?>"
+                                           class="btn btn-danger ml-1">
+                                            <i class="bx bx-check"></i>
+                                            <span
+                                                class=""><?= LangManager::translate("core.btn.delete") ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
