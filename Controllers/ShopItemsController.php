@@ -3,6 +3,10 @@
 namespace CMW\Controller\Shop;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Event\Shop\ShopAddItemEvent;
+use CMW\Event\Shop\ShopDeleteCatEvent;
+use CMW\Event\Shop\ShopDeleteItemEvent;
+use CMW\Manager\Events\Emitter;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
@@ -76,14 +80,18 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        $categoryModel = ShopCategoriesModel::getInstance();
+        if (ShopCategoriesModel::getInstance()->getShopCategories()) {
+            $categoryModel = ShopCategoriesModel::getInstance();
 
-        View::createAdminView('Shop', 'Items/add')
-            ->addVariableList(["categoryModel" => $categoryModel])
-            ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
-                "Admin/Resources/Vendors/Tinymce/Config/full.js"
-            )
-            ->view();
+            View::createAdminView('Shop', 'Items/add')
+                ->addVariableList(["categoryModel" => $categoryModel])
+                ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
+                    "Admin/Resources/Vendors/Tinymce/Config/full.js"
+                )
+                ->view();
+        } else {
+            Redirect::redirect("cmw-admin/shop/cat");
+        }
     }
 
     #[Link("/items/add", Link::POST, [], "/cmw-admin/shop")]
@@ -110,6 +118,8 @@ class ShopItemsController extends AbstractController
 
         Flash::send(Alert::SUCCESS,"Success","Items ajouté !");
 
+        Emitter::send(ShopAddItemEvent::class, $itemId);
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -119,10 +129,11 @@ class ShopItemsController extends AbstractController
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
         $categoryModel = ShopCategoriesModel::getInstance();
-        $item = ShopItemsModel::getInstance()->getShopItems($id);
+        $item = ShopItemsModel::getInstance()->getShopItemsById($id);
+        $imagesItem = ShopImagesModel::getInstance()->getShopImagesByItem($id);
 
         View::createAdminView('Shop', 'Items/edit')
-            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item])
+            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item, "imagesItem" => $imagesItem])
             ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
                 "Admin/Resources/Vendors/Tinymce/Config/full.js"
             )
@@ -137,6 +148,8 @@ class ShopItemsController extends AbstractController
         ShopItemsModel::getInstance()->deleteShopItem($id);
 
         Flash::send(Alert::SUCCESS, "Success", "C'est chao");
+
+        Emitter::send(ShopDeleteItemEvent::class, $id);
 
         Redirect::redirectPreviousRoute();
     }
