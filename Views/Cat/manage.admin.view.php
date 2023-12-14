@@ -25,10 +25,10 @@ $description = "";
                                 <tr>
                                     <th id="categorie-<?= $category->getId() ?>">
                                         <small><i class="text-secondary fa-solid fa-circle-dot"></i></small>
-                                        <?= $category->getFontAwesomeIcon() ?> <?= $category->getName() ?> <?= $category->getDescription() ?>
+                                        <?= $category->getFontAwesomeIcon() ?> <?= $category->getName() ?> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> articles)
                                     </th>
                                     <th class="text-end">
-                                        <a href="item/cat/<?= $category->getSlug() ?>"><i data-bs-toggle="tooltip"
+                                        <a href="items/cat/<?= $category->getId() ?>"><i data-bs-toggle="tooltip"
                                                                                           title="Voir les articles lié"
                                                                                           class="me-3 fa-solid fa-eye"></i></a>
                                         <a target="_blank"
@@ -58,10 +58,10 @@ $description = "";
                                             class="text-bold-500">
                                             <small><i
                                                     class="text-secondary fa-solid fa-turn-up fa-rotate-90"></i></small>
-                                            <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <?= $subCategory->getSubCategory()->getName() ?> <?= $subCategory->getSubCategory()->getDescription() ?>
+                                            <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <?= $subCategory->getSubCategory()->getName() ?> <?= $subCategory->getSubCategory()->getDescription() ?> (<?= $subCategory->getSubCategory()->countItemsInCat() ?> articles)
                                         </td>
                                         <td class="text-end">
-                                            <a href="item/cat/<?= $subCategory->getSubCategory()->getSlug() ?>"><i
+                                            <a href="items/cat/<?= $subCategory->getSubCategory()->getId() ?>"><i
                                                     data-bs-toggle="tooltip" title="Voir les articles lié"
                                                     class="me-3 fa-solid fa-eye"></i></a>
                                             <a target="_blank"

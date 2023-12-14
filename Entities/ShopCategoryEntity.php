@@ -4,6 +4,7 @@ namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Utils\Website;
 
 class ShopCategoryEntity
@@ -107,6 +108,14 @@ class ShopCategoryEntity
     public function getCatLink(): string
     {
         return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cat/$this->categorySlug";
+    }
+
+    /**
+     * @return int
+     */
+    public function countItemsInCat(): int
+    {
+        return ShopCategoriesModel::getInstance()->countItemsByCatId($this->categoryId);
     }
 
 }

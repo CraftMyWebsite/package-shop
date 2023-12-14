@@ -249,5 +249,24 @@ class ShopCategoriesModel extends AbstractModel
         return $toReturn;
     }
 
+    /**
+     * @param int $catId
+     * @return int
+     */
+    public function countItemsByCatId(int $catId): int
+    {
+        $sql = "SELECT COUNT(cmw_shops_items.shop_item_id) AS `count` FROM cmw_shops_items WHERE shop_category_id = :shop_category_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(["shop_category_id" => $catId])) {
+            return 0;
+        }
+
+        return $res->fetch()['count'] ?? 0;
+    }
+
 
 }
