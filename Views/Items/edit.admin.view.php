@@ -9,14 +9,16 @@ $title = "Boutique";
 $description = "";
 
 /* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
+/* @var CMW\Entity\Shop\ShopItemEntity $item */
+/* @var CMW\Entity\Shop\ShopImageEntity[] $imagesItem */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-envelope"></i> <span
-            class="m-lg-auto">Ajouter d'un article</span></h3>
+            class="m-lg-auto">Édition de <?= $item->getName() ?></span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
-                class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
+                class="btn btn-primary"><?= LangManager::translate("core.btn.edit") ?></button>
     </div>
 </div>
 
@@ -29,15 +31,15 @@ $description = "";
                     <div class="row">
                         <div class="col-12 mt-2">
                             <h6>Nom<span style="color: red">*</span> :</h6>
-                            <input type="text" class="form-control" name="shop_item_name" required>
+                            <input type="text" class="form-control" name="shop_item_name" value="<?= $item->getName() ?>" required>
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Déscription courte<span style="color: red">*</span> :</h6>
-                            <input type="text" class="form-control" name="shop_item_short_desc" required>
+                            <input type="text" class="form-control" name="shop_item_short_desc" value="<?= $item->getShortDescription() ?>" required>
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Déscription détailler<span style="color: red">*</span> :</h6>
-                            <textarea  class="tinymce" name="shop_item_description"></textarea>
+                            <textarea  class="tinymce" name="shop_item_description"><?= $item->getDescription() ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -67,7 +69,7 @@ $description = "";
                                 </div>
                                 <div class="col-12 mt-2">
                                     <h6>Prix :</h6>
-                                    <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+                                    <input type="text" class="form-control" name="shop_item_price" value="<?= $item->getPrice() ?>" placeholder="19.99">
                                 </div>
                             </div>
                         </div>
@@ -132,7 +134,20 @@ $description = "";
 
                     <div id="img_div" class="row"></div>
 
+                    <div class="row">
+                        <?php foreach ($imagesItem as $image): ?>
+                            <div class="col-12 col-lg-6">
+                                <div class="card-in-card p-2">
+                                    <img alt="Img" class="w-50 mx-auto" src="<?= $image->getImageUrl() ?>">
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+
                     <input hidden="" type="text" name="numberOfImage" id="numberOfImage">
+
+
                 </div>
             </div>
         </div>

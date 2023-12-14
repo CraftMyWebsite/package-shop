@@ -117,7 +117,7 @@ $description = "";
                                 <a href="<?= $item->getItemLink() ?>" target="_blank">
                                     <i data-bs-toggle="tooltip" title="Voir le rendue" class="text-success me-3 fa-solid fa-up-right-from-square"></i>
                                 </a>
-                                <a href="edit">
+                                <a href="items/edit/<?= $item->getId() ?>">
                                     <i data-bs-toggle="tooltip" title="Éditer" class="me-3 fa-solid fa-edit"></i>
                                 </a>
                                 <a type="button" data-bs-toggle="modal"  data-bs-target="#delete-<?= $item->getId() ?>">
@@ -163,8 +163,6 @@ $description = "";
                                 </div>
                             </div>
                         </div>
-
-
                     <?php endforeach; ?>
                     </tbody>
                 </table>
