@@ -114,7 +114,7 @@ class ShopItemsModel extends AbstractModel
      */
     public function getShopItemByCat(int $id): array
     {
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id";
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id AND shop_item_archived = 0";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -138,7 +138,7 @@ class ShopItemsModel extends AbstractModel
     public function getShopItemByCatSlug(string $catSlug): array
     {
         $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id";
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);

@@ -9,7 +9,6 @@ use CMW\Utils\Website;
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Entity\Shop\ShopCategoryEntity[] $categories */
 /* @var CMW\Model\Shop\ShopItemsModel $items */
 /* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
 
