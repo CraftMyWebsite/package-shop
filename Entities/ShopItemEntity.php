@@ -83,7 +83,7 @@ class ShopItemEntity
     /**
      * @return string
      */
-    public function geShortDescription(): string
+    public function getShortDescription(): string
     {
         return $this->itemShortDescription;
     }
