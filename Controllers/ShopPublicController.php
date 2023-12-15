@@ -79,7 +79,15 @@ class ShopPublicController extends CoreController
     #[Link("/cart", Link::GET, [], "/shop")]
     public function publicCartView(): void
     {
-        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        if (ShopCartsModel::getInstance()->cartItemIdAsNullValue($userId, $sessionId)) {
+            ShopCartsModel::getInstance()->removeUnreachableItem($userId, $sessionId);
+            Flash::send(Alert::ERROR, "Boutique", "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
+        }
+
+        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, session_id());
         $imagesItem = ShopImagesModel::getInstance();
 
         $view = new View("Shop", "cart");
