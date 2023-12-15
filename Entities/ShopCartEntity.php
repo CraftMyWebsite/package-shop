@@ -13,7 +13,7 @@ class ShopCartEntity
 {
 
     private int $cartId;
-    private ?int $sessionId;
+    private ?string $sessionId;
     private ?ShopItemEntity $item;
     private ?userEntity $user;
     private int $cartQuantity;
@@ -21,7 +21,7 @@ class ShopCartEntity
     private string $cartUpdated;
 
 
-    public function __construct(int $cartId, ?int $sessionId, ?ShopItemEntity $item, ?userEntity $user, int $cartQuantity, string $cartCreated, string $cartUpdated)
+    public function __construct(int $cartId, ?string $sessionId, ?ShopItemEntity $item, ?userEntity $user, int $cartQuantity, string $cartCreated, string $cartUpdated)
     {
         $this->cartId = $cartId;
         $this->sessionId = $sessionId;
@@ -41,9 +41,9 @@ class ShopCartEntity
     }
 
     /**
-     * @return ?int
+     * @return ?string
      */
-    public function getSessionId(): ?int
+    public function getSessionId(): ?string
     {
         return $this->sessionId;
     }

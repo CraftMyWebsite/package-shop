@@ -42,22 +42,11 @@ class ShopCartsModel extends AbstractModel
         $res = $res->fetch();
 
         $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
-
-        //Catch if item is not in the database anymore
-        if (is_null($res["shop_item_id"])) {
-            $userId = UsersModel::getCurrentUser()?->getId();
-            $sessionId = session_id();
-            $this->removeUnreachableItem($userId, $sessionId);
-            Flash::send(Alert::ERROR, "Boutique", "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
-            Redirect::redirect("shop/cart");
-        } else {
-            $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
-        }
-
+        $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
 
         return new ShopCartEntity(
             $res["shop_cart_item_id"],
-            $res["shop_shopping_session_id"] ?? null,
+            $res["shop_client_session_id"] ?? null,
             $item ?? null,
             $user,
             $res["shop_cart_item_quantity"],
@@ -69,10 +58,35 @@ class ShopCartsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\ShopCartEntity []
      */
-    public function getShopCarts(): array
+    public function getShopCartsForConnectedUsers(): array
     {
 
-        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items ORDER BY shop_cart_item_updated_at DESC";
+        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_user_id IS NOT NULL ORDER BY shop_cart_item_updated_at DESC";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($cart = $res->fetch()) {
+            $toReturn[] = $this->getShopCartsById($cart["shop_cart_item_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopCartEntity []
+     */
+    public function getShopCartsForSessions(): array
+    {
+
+        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_user_id IS NULL ORDER BY shop_cart_item_updated_at DESC";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -120,29 +134,6 @@ class ShopCartsModel extends AbstractModel
 
         while ($cart = $res->fetch()) {
             $toReturn[] = $this->getShopCartsById($cart["shop_cart_item_id"]);
-        }
-
-        return $toReturn;
-    }
-
-    /**
-     * @return array
-     */
-    public function countItemsInCartByUser(): array
-    {
-        $sql = "SELECT shop_user_id, COUNT(shop_cart_item_id) AS shop_item_in_cart FROM cmw_shops_cart_items GROUP BY shop_user_id";
-        $db = DatabaseManager::getInstance();
-
-        $res = $db->prepare($sql);
-
-        if (!$res->execute()) {
-            return [];
-        }
-
-        $toReturn = [];
-
-        while ($cart = $res->fetch()) {
-            $toReturn[] = $cart;
         }
 
         return $toReturn;
@@ -339,9 +330,48 @@ class ShopCartsModel extends AbstractModel
         return $db->prepare($sql)->execute($data);
     }
 
+    public function cartItemIdAsNullValue(?int $userId, string $sessionId): bool
+    {
+        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_item_id IS NULL";
+
+        if (is_null($userId)){
+            $sql .= " AND shop_client_session_id = :session_id";
+            $data['session_id'] = $sessionId;
+        } else {
+            $sql .= " AND shop_user_id = :user_id";
+            $data['user_id'] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return true;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function removeSessionCart(string $sessionId): bool
+    {
+        $data = ['shop_client_session_id' => $sessionId];
+
+        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_client_session_id = :shop_client_session_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
     public function removeUnreachableItem(?int $userId, string $sessionId): bool
     {
-
         $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id IS NULL";
 
         if (is_null($userId)){
