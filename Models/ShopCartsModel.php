@@ -4,8 +4,11 @@ namespace CMW\Model\Shop;
 
 use CMW\Entity\Shop\ShopCartEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Users\UsersModel;
+use CMW\Utils\Redirect;
 
 /**
  * Class: @ShopCartsModel
@@ -39,7 +42,18 @@ class ShopCartsModel extends AbstractModel
         $res = $res->fetch();
 
         $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
-        $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
+
+        //Catch if item is not in the database anymore
+        if (is_null($res["shop_item_id"])) {
+            $userId = UsersModel::getCurrentUser()?->getId();
+            $sessionId = session_id();
+            $this->removeUnreachableItem($userId, $sessionId);
+            Flash::send(Alert::ERROR, "Boutique", "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
+            Redirect::redirect("shop/cart");
+        } else {
+            $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
+        }
+
 
         return new ShopCartEntity(
             $res["shop_cart_item_id"],
@@ -311,6 +325,24 @@ class ShopCartsModel extends AbstractModel
         $data = ['shop_item_id' => $itemId];
 
         $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id";
+
+        if (is_null($userId)){
+            $sql .= " AND shop_client_session_id = :session_id";
+            $data['session_id'] = $sessionId;
+        } else {
+            $sql .= " AND shop_user_id = :user_id";
+            $data['user_id'] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
+    public function removeUnreachableItem(?int $userId, string $sessionId): bool
+    {
+
+        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id IS NULL";
 
         if (is_null($userId)){
             $sql .= " AND shop_client_session_id = :session_id";
