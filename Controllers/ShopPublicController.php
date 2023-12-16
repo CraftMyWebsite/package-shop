@@ -88,10 +88,11 @@ class ShopPublicController extends CoreController
         }
 
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, session_id());
+        $asideCartContent = ShopCartsModel::getInstance()->getShopCartsAsideByUserId($userId, session_id());
         $imagesItem = ShopImagesModel::getInstance();
 
         $view = new View("Shop", "cart");
-        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem]);
+        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "asideCartContent" => $asideCartContent]);
         $view->view();
     }
 
@@ -123,6 +124,28 @@ class ShopPublicController extends CoreController
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
+
+        if (ShopItemsModel::getInstance()->itemStillExist($itemId) || ShopItemsModel::getInstance()->isArchivedItem($itemId)) {
+            Flash::send(Alert::ERROR, "Boutique", "Nous somme désolé mais l'article que vous essayez d'ajouter au panier n'existe plus.");
+            Redirect::redirectPreviousRoute();
+        }
+
+        if (ShopItemsModel::getInstance()->itemNotInStock($itemId)) {
+            if (ShopCartsModel::getInstance()->isAlreadyAside($itemId, $userId, $sessionId)) {
+                Flash::send(Alert::ERROR, "Boutique", "Cet article est déjà dans le panier 'Mise de côté', les stock ne sont pas mis à jour.");
+                Redirect::redirectPreviousRoute();
+            } else {
+                ShopCartsModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
+                Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus en stock. Mais nous l'avons ajouté au panier 'Mise de côté'.");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if (ShopCartsModel::getInstance()->isAlreadyAside($itemId, $userId, $sessionId)) {
+            ShopCartsModel::getInstance()->switchAsideToCart($itemId, $userId, $sessionId);
+            Flash::send(Alert::SUCCESS, "Boutique", "Cet article est dans le panier 'Mise de côté' nous le déplaçons dans le panier principal.");
+            Redirect::redirectPreviousRoute();
+        }
 
         if (!$sessionId) {
             Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),

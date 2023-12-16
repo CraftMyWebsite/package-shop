@@ -237,4 +237,67 @@ class ShopItemsModel extends AbstractModel
         return $db->prepare($sql)->execute(array("shop_item_id" => $id));
     }
 
+    public function isArchivedItem(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_item_id =:shop_item_id;";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return false;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function itemStillExist(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id =:shop_item_id;";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return false;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function itemNotInStock(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id = :shop_item_id AND (shop_item_current_stock > 0 OR shop_item_current_stock IS NULL);";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if (!$req->execute($data)) {
+            return true;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
