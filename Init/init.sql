@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
     shop_cart_item_quantity   INT          NOT NULL DEFAULT 1,
     shop_cart_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_cart_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_cart_item_aside      TINYINT      NOT NULL DEFAULT 0,
     CONSTRAINT fk_user_id_cart_items FOREIGN KEY (shop_user_id)
         REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_shop_item_id_cart_items FOREIGN KEY (shop_item_id)

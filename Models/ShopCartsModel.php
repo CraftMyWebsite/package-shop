@@ -113,7 +113,45 @@ class ShopCartsModel extends AbstractModel
         $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
                 FROM cmw_shops_cart_items csci
                 JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
-                WHERE csi.shop_item_archived = 0";
+                WHERE csi.shop_item_archived = 0
+                AND csci.shop_cart_item_aside = 0";
+
+        if (is_null($userId)) {
+            $sql .= " AND csci.shop_client_session_id = :session_id";
+            $data = ['session_id' => $sessionId];
+        } else {
+            $sql .= " AND csci.shop_user_id = :user_id";
+            $data = ["user_id" => $userId];
+        }
+
+        $sql .= " ORDER BY shop_cart_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($cart = $res->fetch()) {
+            $toReturn[] = $this->getShopCartsById($cart["shop_cart_item_id"]);
+        }
+
+        $this->clearArchivedItemsFromCart($userId, $sessionId);
+
+        return $toReturn;
+    }
+
+    public function getShopCartsAsideByUserId(?int $userId, string $sessionId): array
+    {
+        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+                FROM cmw_shops_cart_items csci
+                JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
+                WHERE csi.shop_item_archived = 0
+                AND csci.shop_cart_item_aside = 1";
 
         if (is_null($userId)) {
             $sql .= " AND csci.shop_client_session_id = :session_id";
@@ -241,6 +279,76 @@ class ShopCartsModel extends AbstractModel
         }
 
         return null;
+    }
+
+    public function addToAsideCart(int $itemId, ?int $userId, string $sessionId): ?ShopCartEntity
+    {
+        $data = ["shop_item_id" => $itemId];
+
+        if (is_null($userId)) {
+            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_client_session_id, shop_cart_item_aside)
+                VALUES (:shop_item_id, :session_id, 1)";
+            $data['session_id'] = $sessionId;
+        } else {
+            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_user_id, shop_cart_item_aside)
+                VALUES (:shop_item_id, :shop_user_id, 1)";
+            $data["shop_user_id"] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            return $this->getShopCartsById($id);
+        }
+
+        return null;
+    }
+
+    public function switchAsideToCart(int $itemId, ?int $userId, string $sessionId): void
+    {
+        $data = ["shop_item_id" => $itemId];
+
+        if (is_null($userId)) {
+            $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 0 WHERE shop_item_id = :shop_item_id AND shop_client_session_id = :session_id";
+            $data["session_id"] = $sessionId;
+        } else {
+            $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 0 WHERE shop_item_id = :shop_item_id AND shop_user_id = :user_id";
+            $data["user_id"] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
+    }
+
+    public function isAlreadyAside(int $itemId, ?int $userId, string $sessionId): bool
+    {
+        $data = ["shop_item_id" => $itemId];
+
+        if (is_null($userId)) {
+            $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_cart_item_aside = 1 AND shop_item_id =:shop_item_id AND shop_client_session_id = :session_id";
+            $data['session_id'] = $sessionId;
+        } else {
+            $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_cart_item_aside = 1 AND shop_item_id =:shop_item_id AND shop_user_id = :shop_user_id";
+            $data["shop_user_id"] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return true;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return false;
+        }
+
+        return true;
     }
 
     public function addToCartWithQuantity(int $itemId, int $quantity): ?ShopCartEntity
