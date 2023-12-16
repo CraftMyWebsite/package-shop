@@ -110,13 +110,16 @@ class ShopCartsModel extends AbstractModel
      */
     public function getShopCartsByUserId(?int $userId, string $sessionId): array
     {
-        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items";
+        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+                FROM cmw_shops_cart_items csci
+                JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
+                WHERE csi.shop_item_archived = 0";
 
         if (is_null($userId)) {
-            $sql .= " WHERE shop_client_session_id = :session_id";
+            $sql .= " AND csci.shop_client_session_id = :session_id";
             $data = ['session_id' => $sessionId];
         } else {
-            $sql .= " WHERE shop_user_id = :user_id";
+            $sql .= " AND csci.shop_user_id = :user_id";
             $data = ["user_id" => $userId];
         }
 
@@ -136,7 +139,51 @@ class ShopCartsModel extends AbstractModel
             $toReturn[] = $this->getShopCartsById($cart["shop_cart_item_id"]);
         }
 
+        $this->clearArchivedItemsFromCart($userId, $sessionId);
+
         return $toReturn;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopCartEntity []
+     */
+    public function getCartArchivedItems(?int $userId, string $sessionId) : array
+    {
+        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+                FROM cmw_shops_cart_items csci
+                JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
+                WHERE csi.shop_item_archived = 1";
+
+        if (is_null($userId)) {
+            $sql .= " AND csci.shop_client_session_id = :session_id";
+            $data = ['session_id' => $sessionId];
+        } else {
+            $sql .= " AND csci.shop_user_id = :user_id";
+            $data = ["user_id" => $userId];
+        }
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($cart = $res->fetch()) {
+            $toReturn[] = $this->getShopCartsById($cart["shop_cart_item_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    public function clearArchivedItemsFromCart(?int $userId, string $sessionId): void
+    {
+        foreach ($this->getCartArchivedItems($userId, $sessionId) as $archivedItem) {
+            $this->removeItem($archivedItem->getItem()->getId(),$userId, $sessionId);
+        }
     }
 
     /**
@@ -147,13 +194,16 @@ class ShopCartsModel extends AbstractModel
      */
     public function countItemsByUserId(?int $userId, string $sessionId): mixed
     {
-        $sql = "SELECT COUNT(`shop_cart_item_id`) AS count FROM cmw_shops_cart_items";
+        $sql = "SELECT COUNT(shop_cart_item_id) AS count
+                FROM cmw_shops_cart_items csci
+                JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
+                WHERE csi.shop_item_archived = 0";
 
         if (is_null($userId)) {
-            $sql .= " WHERE `shop_client_session_id` = :session_id";
+            $sql .= " AND csci.shop_client_session_id = :session_id";
             $data = ["session_id" => $sessionId];
         } else {
-            $sql .= " WHERE `shop_user_id` = :user_id";
+            $sql .= " AND csci.shop_user_id = :user_id";
             $data = ["user_id" => $userId];
         }
 
