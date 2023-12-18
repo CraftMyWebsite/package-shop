@@ -300,4 +300,38 @@ class ShopItemsModel extends AbstractModel
         return false;
     }
 
+    public function itemHaveUserLimit(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id = :shop_item_id AND shop_item_user_limit IS NOT NULL;";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if (!$req->execute($data)) {
+            return false;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getItemUserLimit(int $itemId) : int
+    {
+        $sql = "SELECT shop_item_user_limit FROM cmw_shops_items WHERE shop_item_id = :shop_item_id";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+        if (!$req->execute($data)) {
+            return 0;
+        }
+        $res = $req->fetch();
+        return $res['shop_item_user_limit']?? 0;
+    }
+
 }
