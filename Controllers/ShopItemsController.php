@@ -120,7 +120,7 @@ class ShopItemsController extends AbstractController
 
         Emitter::send(ShopAddItemEvent::class, $itemId);
 
-        Redirect::redirectPreviousRoute();
+        Redirect::redirect("cmw-admin/shop/items");
     }
 
     #[Link("/items/edit/:id", Link::GET, [], "/cmw-admin/shop")]
@@ -152,41 +152,5 @@ class ShopItemsController extends AbstractController
         Emitter::send(ShopDeleteItemEvent::class, $id);
 
         Redirect::redirectPreviousRoute();
-    }
-
-    /*
-     * METHODE
-     * */
-
-    public function isArchived(int $itemId): bool {
-
-    }
-
-    public function inStock(int $itemId): bool {
-
-    }
-
-    public function addToWishList(int $itemId): bool {
-
-    }
-
-    public function isUserBuyLimitReached(int $userId, int $itemId): bool {
-
-    }
-
-    public function isUserOrderLimitReached(int $userId, int $itemId): bool {
-
-    }
-
-    public function isUserAlreadyHaveBuyItem(int $userId, int $itemId): bool {
-
-    }
-
-    public function isUserAlreadyHaveWishItem(int $userId, int $itemId): bool {
-
-    }
-
-    public function isGlobalLimitReached(int $itemId): bool {
-
     }
 }
