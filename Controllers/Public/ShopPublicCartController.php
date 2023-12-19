@@ -15,6 +15,7 @@ use CMW\Manager\Views\View;
 use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
@@ -76,18 +77,44 @@ class ShopPublicCartController extends CoreController
         }
 
         if (ShopItemsModel::getInstance()->itemHaveUserLimit($itemId)) {
-            Flash::send(Alert::SUCCESS, "Boutique", "Cet article est limité à ". ShopItemsModel::getInstance()->getItemUserLimit($itemId). " achat par utilisateur.");
             if (is_null($userId)) {
                 Flash::send(Alert::ERROR, "Boutique", ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() ." à besoin d'une vérification supplémentaire pour être ajouté au panier.");
                 Redirect::redirect("login");
             }
+            $numberBuyedByUser = ShopOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
+            if ($numberBuyedByUser) {
+                //Il en as acheter
+                if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                    //N'est pas dans le panier
+                    if ($numberBuyedByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                        //Il en à acheter et il a déjà atteint le nombre maximum d'achats
+                        Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà atteint le nombre maximum d'achat de cet article. Veuillez contacter le support pour plus d'informations.");
+                        Redirect::redirectPreviousRoute();
+                    } //On laisse continuer
+                } else {
+                    //est dans le panier
+                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId)->getQuantity() + $numberBuyedByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                        //Il en a déjà acheté et à atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                        Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                        Redirect::redirectPreviousRoute();
+                    } //On laisse continuer
+                }
+            } else {
+                //Il n'en as pas acheter
+                if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                    //n'est pas dans le panier
+                    //TODO Rajouter ici une verif sur la quantité à ajouter d'un coup au panier (Mais je suis pas sûr de l'appliqué a cette fonction)
+                    Flash::send(Alert::SUCCESS, "Boutique", "Vous pouvez ajouter cet article au panier.");
+                } else {
+                    //est dans le panier
+                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId)->getQuantity() >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                        //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                        Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                        Redirect::redirectPreviousRoute();
+                    } //On laisse continuer
+                }
+            }
         }
-
-
-
-
-
-
 
         if (!$sessionId) {
             Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),

@@ -55,6 +55,34 @@ class ShopCartsModel extends AbstractModel
         );
     }
 
+    public function getShopCartsByItemIdAndUserId(int $itemId, int $userId): ?ShopCartEntity
+    {
+        $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_user_id = :shop_user_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(["shop_item_id" => $itemId, "shop_user_id" => $userId])) {
+            return null;
+        }
+
+        $res = $res->fetch();
+
+        $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
+        $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
+
+        return new ShopCartEntity(
+            $res["shop_cart_item_id"],
+            $res["shop_client_session_id"] ?? null,
+            $item ?? null,
+            $user,
+            $res["shop_cart_item_quantity"],
+            $res["shop_cart_item_created_at"],
+            $res["shop_cart_item_updated_at"]
+        );
+    }
+
     /**
      * @return \CMW\Entity\Shop\ShopCartEntity []
      */

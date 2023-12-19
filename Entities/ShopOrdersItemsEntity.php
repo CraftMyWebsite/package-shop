@@ -64,9 +64,17 @@ class ShopOrdersItemsEntity {
         return $this->orderItemQuantity;
     }
 
-    public function getOrderItemStatus(): int
+    public function getOrderItemStatus(): string
     {
-        return $this->orderItemStatus;
+        if ($this->orderItemStatus == -1) {
+            return "Remboursé";
+        }
+        if ($this->orderItemStatus == 0) {
+            return "Annulé";
+        }
+        if ($this->orderItemStatus == 1) {
+            return "Terminé";
+        }
     }
 
     public function getOrderItemPrice(): float

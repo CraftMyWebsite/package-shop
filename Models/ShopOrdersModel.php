@@ -22,6 +22,10 @@ class ShopOrdersModel extends AbstractModel
         $this->userModel = new UsersModel();
     }
 
+    /**
+     * @param int $id
+     * @return \CMW\Entity\Shop\ShopOrdersEntity|null
+     */
     public function getOrdersById(int $id): ?ShopOrdersEntity
     {
         $sql = "SELECT * FROM cmw_shops_orders WHERE shop_order_id = :shop_order_id";
@@ -69,5 +73,31 @@ class ShopOrdersModel extends AbstractModel
 
         return $toReturn;
 
+    }
+
+    /**
+     * @param int $userId
+     * @param int $itemId
+     * @return int
+     */
+    public function countOrderByUserIdAndItemId(int $userId, int $itemId): int
+    {
+        $sql = "SELECT COUNT(*) AS user_count_ordered_item
+                FROM cmw_shops_orders o
+                JOIN cmw_shops_orders_items i ON o.shop_order_id = i.shop_order_id
+                WHERE o.shop_user_id = :shop_user_id
+                AND i.shop_item_id = :shop_item_id;";
+
+        $data = ["shop_item_id" => $itemId, "shop_user_id" => $userId];
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return 0;
+        }
+
+        return $res->fetch(0)['user_count_ordered_item'];
     }
 }
