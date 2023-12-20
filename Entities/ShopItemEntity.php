@@ -22,13 +22,14 @@ class ShopItemEntity
     private ?int $itemDefaultStock;
     private ?int $itemCurrentStock;
     private ?float $itemPrice;
+    private ?int $itemByOrderLimit;
     private ?int $itemGlobalLimit;
     private ?int $itemUserLimit;
     private string $itemCreated;
     private string $itemUpdated;
 
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -41,6 +42,7 @@ class ShopItemEntity
         $this->itemDefaultStock = $itemDefaultStock;
         $this->itemCurrentStock = $itemCurrentStock;
         $this->itemPrice = $itemPrice;
+        $this->itemByOrderLimit = $itemByOrderLimit;
         $this->itemGlobalLimit = $itemGlobalLimit;
         $this->itemUserLimit = $itemUserLimit;
         $this->itemCreated = $itemCreated;
@@ -146,6 +148,14 @@ class ShopItemEntity
     public function getPrice(): ?float
     {
         return $this->itemPrice;
+    }
+
+    /**
+     * @return ?int
+     */
+    public function getByOrderLimit(): ?int
+    {
+        return $this->itemByOrderLimit;
     }
 
     /**

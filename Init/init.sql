@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_item_default_stock INT          NULL,
     shop_item_current_stock INT          NULL,
     shop_item_price         FLOAT(10, 2) NULL,
+    shop_item_by_order_limit  INT          NULL,
     shop_item_global_limit  INT          NULL,
     shop_item_user_limit    INT          NULL,
     shop_item_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,

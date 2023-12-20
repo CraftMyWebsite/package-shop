@@ -69,6 +69,13 @@ $description = "";
                                     <h6>Prix :</h6>
                                     <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
                                 </div>
+                                <div class="col-12 mt-2">
+                                    <h6>Type<span style="color: red">*</span> :</h6>
+                                    <select class="form-select super-choice" name="shop_item_type" required>
+                                        <option value="1">Virtuel</option>
+                                        <option value="0">Physique</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -93,6 +100,11 @@ $description = "";
                                     <input type="number" class="form-control" name="shop_item_user_limit"
                                            placeholder="0">
                                 </div>
+                                <div class="col-12 mt-2">
+                                    <h6>Limite d'achat par commande :</h6>
+                                    <input type="number" class="form-control" name="shop_item_by_order_limit"
+                                           placeholder="0">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -102,11 +114,7 @@ $description = "";
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 col-lg-6 mt-2">
-                                    <h6>Type<span style="color: red">*</span> :</h6>
-                                    <select class="form-select super-choice" name="shop_item_type" required>
-                                        <option value="1">Virtuel</option>
-                                        <option value="0">Physique</option>
-                                    </select>
+                                    Type info ++
                                 </div>
                             </div>
                         </div>

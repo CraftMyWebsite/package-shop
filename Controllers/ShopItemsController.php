@@ -99,9 +99,9 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        [$name, $shortDesc, $category, $description, $type, $stock, $price, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_item_short_desc", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_global_limit", "shop_item_user_limit");
+        [$name, $shortDesc, $category, $description, $type, $stock, $price, $byOrderLimit, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_item_short_desc", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_by_order_limit", "shop_item_global_limit", "shop_item_user_limit");
 
-        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
+        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price),($byOrderLimit === "" ? null : $byOrderLimit), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
 
 
         [$numberOfImage] = Utils::filterInput("numberOfImage");
