@@ -55,6 +55,7 @@ class ShopPublicCartController extends CoreController
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
+        $quantity = 1;
 
         $this->handleSessionHealth($sessionId);
 
@@ -62,7 +63,9 @@ class ShopPublicCartController extends CoreController
 
         $this->handleStock($itemId, $userId, $sessionId);
 
-        $this->handleLimitPerUser($itemId, $userId, $sessionId);
+        $this->handleLimitPerUser($itemId, $userId, $sessionId, $quantity);
+
+        $this->handleGlobalLimit($itemId, $userId, $sessionId, $quantity);
 
         if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
             ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId);
@@ -169,7 +172,7 @@ class ShopPublicCartController extends CoreController
             Redirect::redirectPreviousRoute();
         }
     }
-    private function handleLimitPerUser($itemId, $userId, $sessionId) : void
+    private function handleLimitPerUser($itemId, $userId, $sessionId, $quantity) : void
     {
         if (ShopItemsModel::getInstance()->itemHaveUserLimit($itemId)) {
             if (is_null($userId)) {
@@ -188,7 +191,7 @@ class ShopPublicCartController extends CoreController
                     } //On laisse continuer
                 } else {
                     //est dans le panier
-                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId)->getQuantity() + $numberBuyedByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() + $numberBuyedByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         //Il en a déjà acheté et à atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
                         Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
                         Redirect::redirectPreviousRoute();
@@ -198,15 +201,38 @@ class ShopPublicCartController extends CoreController
                 //Il n'en as pas acheter
                 if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                     //n'est pas dans le panier
-                    //TODO Rajouter ici une verif sur la quantité à ajouter d'un coup au panier (Mais je suis pas sûr de l'appliqué a cette fonction)
-                    Flash::send(Alert::SUCCESS, "Boutique", "Vous pouvez ajouter cet article au panier.");
+                    if ($quantity >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                        //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                        Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                        Redirect::redirectPreviousRoute();
+                    }
                 } else {
                     //est dans le panier
-                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId)->getQuantity() >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
                         Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
                         Redirect::redirectPreviousRoute();
                     } //On laisse continuer
+                }
+            }
+        }
+    }
+    private function handleGlobalLimit($itemId, $userId, $sessionId, $quantity) : void
+    {
+        $itemGlobalLimit = ShopItemsModel::getInstance()->getItemGlobalLimit($itemId);
+        if ($itemGlobalLimit) {
+            if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                if ($quantity >= $itemGlobalLimit) {
+                    //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en ajouter autant dans votre panier.");
+                    Redirect::redirectPreviousRoute();
+                }
+            } else {
+                //est dans le panier
+                if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= $itemGlobalLimit) {
+                    //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                    Redirect::redirectPreviousRoute();
                 }
             }
         }

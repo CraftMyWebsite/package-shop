@@ -55,15 +55,23 @@ class ShopCartsModel extends AbstractModel
         );
     }
 
-    public function getShopCartsByItemIdAndUserId(int $itemId, int $userId): ?ShopCartEntity
+    public function getShopCartsByItemIdAndUserId(int $itemId, ?int $userId, $sessionId): ?ShopCartEntity
     {
-        $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_user_id = :shop_user_id";
+        $data = ["shop_item_id" => $itemId];
+
+        if (is_null($userId)) {
+            $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_client_session_id = :session_id";
+            $data['session_id'] = $sessionId;
+        } else {
+            $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_user_id = :shop_user_id";
+            $data["shop_user_id"] = $userId;
+        }
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_item_id" => $itemId, "shop_user_id" => $userId])) {
+        if (!$res->execute($data)) {
             return null;
         }
 
