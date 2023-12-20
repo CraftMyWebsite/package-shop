@@ -136,7 +136,7 @@ class ShopItemEntity
     public function getFormatedStock(): ?string
     {
         if (is_null($this->getDefaultStock())) {
-            return "Illimité";
+            return "<b style='color: #0ab312'>Illimité</b>";
         } else {
             return $this->itemCurrentStock ." / ". $this->itemDefaultStock;
         }

@@ -67,6 +67,8 @@ class ShopPublicCartController extends CoreController
 
         $this->handleGlobalLimit($itemId, $userId, $sessionId, $quantity);
 
+        $this->handleByOrderLimit($itemId, $userId, $sessionId, $quantity);
+
         if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
             ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId);
             Flash::send(Alert::SUCCESS, "Boutique",
@@ -230,6 +232,26 @@ class ShopPublicCartController extends CoreController
             } else {
                 //est dans le panier
                 if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= $itemGlobalLimit) {
+                    //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                    Redirect::redirectPreviousRoute();
+                }
+            }
+        }
+    }
+    private function handleByOrderLimit($itemId, $userId, $sessionId, $quantity) : void
+    {
+        $itemByOrderLimit = ShopItemsModel::getInstance()->getItemByOrderLimit($itemId);
+        if ($itemByOrderLimit) {
+            if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                if ($quantity >= $itemByOrderLimit) {
+                    //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
+                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en ajouter autant par commande dans votre panier.");
+                    Redirect::redirectPreviousRoute();
+                }
+            } else {
+                //est dans le panier
+                if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= $itemByOrderLimit) {
                     //Il a atteint le nombre maximum qu'il peut ajouter au panier avant d'atteindre le nombre maximum d'achats
                     Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
                     Redirect::redirectPreviousRoute();
