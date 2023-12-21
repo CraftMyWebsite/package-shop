@@ -336,9 +336,68 @@ class ShopItemsModel extends AbstractModel
         return $res->fetch(0)['shop_item_by_order_limit'] ?? 0;
     }
 
+    public function getItemCurrentStock(int $itemId): int
+    {
+        $sql = "SELECT shop_item_current_stock FROM cmw_shops_items WHERE shop_item_id = :shop_item_id;";
+
+        $data = ["shop_item_id" => $itemId];
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return 0;
+        }
+
+        return $res->fetch(0)['shop_item_current_stock'] ?? 999999;//TODO : 999999 est correct ?
+    }
+
     public function itemHaveUserLimit(int $itemId): bool
     {
         $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id = :shop_item_id AND shop_item_user_limit IS NOT NULL;";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if (!$req->execute($data)) {
+            return false;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function itemHaveGlobalLimit(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id = :shop_item_id AND shop_item_global_limit IS NOT NULL;";
+        $data['shop_item_id'] = $itemId;
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if (!$req->execute($data)) {
+            return false;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function itemHaveByOrderLimit(int $itemId): bool
+    {
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_id = :shop_item_id AND shop_item_by_order_limit IS NOT NULL;";
         $data['shop_item_id'] = $itemId;
         $db = DatabaseManager::getInstance();
 
