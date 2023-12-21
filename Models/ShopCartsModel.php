@@ -292,17 +292,20 @@ class ShopCartsModel extends AbstractModel
         return $res->fetch(0)['count'];
     }
 
-    public function addToCart(int $itemId, ?int $userId, string $sessionId): ?ShopCartEntity
+    public function addToCart(int $itemId, ?int $userId, string $sessionId, int $quantity): ?ShopCartEntity
     {
-        $data = ["shop_item_id" => $itemId];
+        $data = [
+            "shop_item_id" => $itemId,
+            "shop_cart_item_quantity" => $quantity,
+        ];
 
         if (is_null($userId)) {
-            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_client_session_id)
-                VALUES (:shop_item_id, :session_id)";
+            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_client_session_id, shop_cart_item_quantity)
+                VALUES (:shop_item_id, :session_id, :shop_cart_item_quantity)";
             $data['session_id'] = $sessionId;
         } else {
-            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_user_id)
-                VALUES (:shop_item_id, :shop_user_id)";
+            $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_user_id, shop_cart_item_quantity)
+                VALUES (:shop_item_id, :shop_user_id, :shop_cart_item_quantity)";
             $data["shop_user_id"] = $userId;
         }
 
@@ -385,30 +388,6 @@ class ShopCartsModel extends AbstractModel
         }
 
         return true;
-    }
-
-    public function addToCartWithQuantity(int $itemId, int $quantity): ?ShopCartEntity
-    {
-        $userId = UsersModel::getCurrentUser()?->getId();
-        $data = [
-            "shop_item_id" => $itemId,
-            "shop_user_id" => $userId,
-            "shop_cart_item_quantity" => $quantity,
-        ];
-
-        $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_user_id, shop_cart_item_quantity)
-                VALUES (:shop_item_id, :shop_user_id, :shop_cart_item_quantity)";
-
-
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare($sql);
-
-        if ($req->execute($data)) {
-            $id = $db->lastInsertId();
-            return $this->getShopCartsById($id);
-        }
-
-        return null;
     }
 
     /**
