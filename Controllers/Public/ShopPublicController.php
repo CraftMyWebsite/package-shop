@@ -93,34 +93,5 @@ class ShopPublicController extends CoreController
         $view->addVariableList(["itemInCart" => $itemInCart]);
         $view->view();
     }
-
-    /*
-     * ACTIONS
-     * */
-    #[NoReturn] #[Link("/cat/:catSlug/item/:itemSlug", Link::POST, ['.*?'], "/shop")]
-    public function publicAddCartQuantity(Request $request, string $catSlug, string $itemSlug): void
-    {
-        $userId = UsersModel::getCurrentUser()?->getId();
-        $sessionId = session_id();
-
-        if (!$sessionId) {
-            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
-                LangManager::translate('core.toaster.internalError'));
-            Redirect::redirectPreviousRoute();
-        }
-
-        $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
-        //TODO : Verifier la quantité max qu'il peut mettre
-        [$quantity] = Utils::filterInput('quantity');
-
-        if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
-            ShopCartsModel::getInstance()->addToCartWithQuantity($itemId, $quantity);
-            Flash::send(Alert::SUCCESS, "Boutique", "Nouvel article ajouté au panier !");
-        } else {
-            Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà cet article dans le panier !");
-        }
-
-        Redirect::redirectPreviousRoute();
-    }
 }
 
