@@ -3,10 +3,8 @@
 
 namespace CMW\Controller\Shop\Public;
 
-use CMW\Controller\Core\CoreController;
-use CMW\Manager\Flash\Alert;
-use CMW\Manager\Flash\Flash;
-use CMW\Manager\Lang\LangManager;
+
+use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
@@ -15,9 +13,6 @@ use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Users\UsersModel;
-use CMW\Utils\Redirect;
-use CMW\Utils\Utils;
-use JetBrains\PhpStorm\NoReturn;
 
 
 /**
@@ -26,7 +21,7 @@ use JetBrains\PhpStorm\NoReturn;
  * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
  * @version 1.0
  */
-class ShopPublicController extends CoreController
+class ShopPublicController extends AbstractController
 {
     #[Link("/", Link::GET, [], "/shop")]
     public function publicBaseView(): void

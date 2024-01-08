@@ -587,13 +587,63 @@ class ShopCartsModel extends AbstractModel
         return count($res->fetchAll()) === 0;
     }
 
-    public function switchSessionToUserCart(string $session_id, mixed $userId): void
+    public function userHaveAlreadyItemInCart (?int $itemId ,string $userId) : bool
     {
-        $sql = "UPDATE cmw_shops_cart_items SET shop_user_id = :user_id, shop_client_session_id = null 
-                            WHERE shop_client_session_id = :session_id";
+        if ($itemId === null) {
+            return false;
+        }
+
+        $data = ["shop_item_id" => $itemId, "shop_user_id" => $userId];
+
+        $sql = "SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id AND shop_user_id = :shop_user_id";
 
         $db = DatabaseManager::getInstance();
-        $db->prepare($sql)->execute(['user_id' => $userId, 'session_id' => $session_id]);
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return true;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function switchSessionToUserCart(int $itemId, string $session_id, mixed $userId): void
+    {
+        $sql = "UPDATE cmw_shops_cart_items SET shop_user_id = :user_id, shop_client_session_id = null 
+                            WHERE shop_client_session_id = :session_id AND shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute(['user_id' => $userId, 'session_id' => $session_id, 'shop_item_id' => $itemId]);
+    }
+
+    public function updateQuantity(?int $userId, string $sessionId, int $itemId, int $quantity) : void
+    {
+        $data = [
+            "shop_cart_item_quantity" => $quantity,
+            "shop_item_id" => $itemId,
+        ];
+
+        $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity 
+                            WHERE shop_item_id = :shop_item_id";
+
+        if (is_null($userId)) {
+            $sql .= " AND shop_client_session_id = :session_id";
+            $data["session_id"] = $sessionId;
+        } else {
+            $sql .= " AND shop_user_id = :shop_user_id";
+            $data["shop_user_id"] = $userId;
+        }
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+        $req->execute($data);
     }
 
 }
