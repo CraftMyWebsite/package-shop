@@ -82,11 +82,9 @@ class ShopOrdersModel extends AbstractModel
      */
     public function countOrderByUserIdAndItemId(int $userId, int $itemId): int
     {
-        $sql = "SELECT COUNT(*) AS user_count_ordered_item
-                FROM cmw_shops_orders o
-                JOIN cmw_shops_orders_items i ON o.shop_order_id = i.shop_order_id
-                WHERE o.shop_user_id = :shop_user_id
-                AND i.shop_item_id = :shop_item_id;";
+        $sql = "SELECT SUM(soi.shop_order_item_quantity) AS total_quantity FROM cmw_shops_orders_items soi
+                JOIN cmw_shops_orders so ON soi.shop_order_id = so.shop_order_id
+                WHERE so.shop_user_id = :shop_user_id AND soi.shop_item_id = :shop_item_id;";
 
         $data = ["shop_item_id" => $itemId, "shop_user_id" => $userId];
 
@@ -98,6 +96,6 @@ class ShopOrdersModel extends AbstractModel
             return 0;
         }
 
-        return $res->fetch(0)['user_count_ordered_item'];
+        return $res->fetch(0)['total_quantity'];
     }
 }
