@@ -45,7 +45,7 @@ class ShopCartController extends AbstractController
             $this->handleByOrderLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
         }
 
-        $view = new View("Shop", "cart");
+        $view = new View("Shop", "Cart/cart");
         $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "asideCartContent" => $asideCartContent]);
         $view->view();
     }
@@ -66,7 +66,7 @@ class ShopCartController extends AbstractController
      * @param ?int $userId
      * @param string $sessionId
      */
-    private function handleItemHealth(?int $userId, string $sessionId) : void
+    public function handleItemHealth(?int $userId, string $sessionId) : void
     {
         if (ShopCartsModel::getInstance()->cartItemIdAsNullValue($userId, $sessionId)) {
             ShopCartsModel::getInstance()->removeUnreachableItem($userId, $sessionId);
@@ -74,7 +74,7 @@ class ShopCartController extends AbstractController
         }
     }
 
-    private function handleStock (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleStock (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         $currentStock = ShopItemsModel::getInstance()->getItemCurrentStock($itemId);
         if ($quantity > $currentStock) {
@@ -93,7 +93,7 @@ class ShopCartController extends AbstractController
         }
     }
 
-    private function handleLimitePerUser (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleLimitePerUser (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         if (ShopItemsModel::getInstance()->itemHaveUserLimit($itemId)) {
             if (is_null($userId)) {
@@ -131,7 +131,7 @@ class ShopCartController extends AbstractController
         }
     }
 
-    private function handleGlobalLimit (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleGlobalLimit (ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         if (ShopItemsModel::getInstance()->itemHaveGlobalLimit($itemId)) {
             $itemGlobalLimit = ShopItemsModel::getInstance()->getItemGlobalLimit($itemId);
@@ -150,7 +150,7 @@ class ShopCartController extends AbstractController
         }
     }
 
-    private function handleByOrderLimit(ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleByOrderLimit(ShopCartEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         if (ShopItemsModel::getInstance()->itemHaveByOrderLimit($itemId)) {
             $itemByOrderLimit = ShopItemsModel::getInstance()->getItemByOrderLimit($itemId);

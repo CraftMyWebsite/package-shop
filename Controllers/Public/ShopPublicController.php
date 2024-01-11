@@ -34,7 +34,7 @@ class ShopPublicController extends AbstractController
 
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), $sessionId) ?? 0;
 
-        $view = new View("Shop", "main");
+        $view = new View("Shop", "Main/main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
             $imagesItem, "itemInCart" => $itemInCart]);
         $view->view();
@@ -49,7 +49,7 @@ class ShopPublicController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
-        $view = new View("Shop", "cat");
+        $view = new View("Shop", "Main/cat");
         $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
         $view->view();
     }
@@ -64,7 +64,7 @@ class ShopPublicController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
-        $view = new View("Shop", "item");
+        $view = new View("Shop", "Main/item");
         $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart]);
         $view->view();
     }
@@ -74,7 +74,7 @@ class ShopPublicController extends AbstractController
     {
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
-        $view = new View("Shop", "history");
+        $view = new View("Shop", "Users/history");
         $view->addVariableList(["itemInCart" => $itemInCart]);
         $view->view();
     }
@@ -84,7 +84,7 @@ class ShopPublicController extends AbstractController
     {
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
-        $view = new View("Shop", "settings");
+        $view = new View("Shop", "Users/settings");
         $view->addVariableList(["itemInCart" => $itemInCart]);
         $view->view();
     }
