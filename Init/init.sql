@@ -244,6 +244,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery
 CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
 (
     shop_delivery_user_address_id          INT AUTO_INCREMENT PRIMARY KEY,
+    shop_delivery_is_fav                   INT         NOT NULL DEFAULT 0,
     shop_delivery_user_address_label       VARCHAR(50) NOT NULL,
     shop_user_id                           INT         NULL,
     shop_delivery_user_address_first_name  VARCHAR(50) NOT NULL,
