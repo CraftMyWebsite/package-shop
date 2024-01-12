@@ -263,6 +263,36 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shops_shipping
+(
+    shops_shipping_id              INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_name            VARCHAR(50) NOT NULL,
+    shops_shipping_price           FLOAT(10, 2) NULL,
+    shops_shipping_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_shipping_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_command_tunnel
+(
+    shop_command_tunnel_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_command_tunnel_step       INT         NOT NULL DEFAULT 0,
+    shop_user_id                   INT         NULL UNIQUE ,
+    shops_shipping_id              INT         NULL,
+    shop_delivery_user_address_id  INT         NULL,
+    shop_command_tunnel_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_command_tunnel_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_id_command_tunnel FOREIGN KEY (shop_user_id)
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_shop_command_tunnel_id_delivery_user_address FOREIGN KEY (shop_delivery_user_address_id)
+        REFERENCES cmw_shops_delivery_user_address (shop_delivery_user_address_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_shop_command_tunnel_shipping_id FOREIGN KEY (shops_shipping_id)
+        REFERENCES cmw_shops_shipping (shops_shipping_id) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)

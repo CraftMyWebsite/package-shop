@@ -10,6 +10,7 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\ShopCommandTunnelModel;
 use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
@@ -38,6 +39,10 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleAddToCart($itemId, $userId, $sessionId, $quantity);
 
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -58,6 +63,10 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleAddToCart($itemId, $userId, $sessionId, $quantity);
 
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -73,6 +82,10 @@ class ShopActionsCartController extends AbstractController
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
         ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
 
         Redirect::redirectPreviousRoute();
     }
@@ -101,6 +114,10 @@ class ShopActionsCartController extends AbstractController
 
         ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, false);
 
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -115,6 +132,10 @@ class ShopActionsCartController extends AbstractController
         ShopCartsModel::getInstance()->removeItem($itemId, $userId, $sessionId);
 
         Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
+
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
 
         Redirect::redirectPreviousRoute();
     }
@@ -377,6 +398,9 @@ class ShopActionsCartController extends AbstractController
             foreach ($cart as $car) {
                 if (!ShopCartsModel::getInstance()->userHaveAlreadyItemInCart($car->getItem()->getId(), $userId)) {
                     ShopCartsModel::getInstance()->switchSessionToUserCart($car->getItem()->getId(), $sessionId, $userId);
+                    if (!is_null($userId)) {
+                        ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+                    }
                 }
             }
         }
