@@ -13,7 +13,7 @@ $description = "";
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-envelope"></i> <span
-                class="m-lg-auto">Ajouter d'un article</span></h3>
+                class="m-lg-auto">Nouvel article</span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
                 class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
@@ -23,105 +23,104 @@ $description = "";
 <form id="addItem" method="post" enctype="multipart/form-data">
     <?php (new SecurityManager())->insertHiddenToken() ?>
     <section class="row">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-9">
             <div class="card">
                 <div class="card-body">
+                    <div class="row">
                         <div class="row">
-                            <div class="col-12 mt-2">
+                            <div class="col-12 col-lg-4">
                                 <h6>Nom<span style="color: red">*</span> :</h6>
                                 <input type="text" class="form-control" name="shop_item_name" required>
                             </div>
-                            <div class="col-12 mt-2">
+                            <div class="col-12 col-lg-8">
                                 <h6>Déscription courte<span style="color: red">*</span> :</h6>
                                 <input type="text" class="form-control" name="shop_item_short_desc" required>
                             </div>
-                            <div class="col-12 mt-2">
-                                <h6>Déscription détailler<span style="color: red">*</span> :</h6>
-                                <textarea  class="tinymce" name="shop_item_description"></textarea>
-                            </div>
                         </div>
+                        <div class="col-12 mt-2">
+                            <h6>Déscription détailler<span style="color: red">*</span> :</h6>
+                            <textarea  class="tinymce" name="shop_item_description"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div id="typeNeeds" class="row">
+                    </div>
+                    <hr>
+
+                    <div class="d-flex flex-wrap justify-content-between">
+                        <div><h6>Variantes (optionnel) : </h6></div>
+                        <div class="buttons">
+                            <button class="btn btn-primary" type="button" onclick="ajouterVariante()">Ajouter une variante</button>
+                        </div>
+                    </div>
+                    <p>Les variantes sont assez pratique quand vous souhaitez ajouter un article qui peut avoir plusieurs configurations disponnible sans pour autant créer autant d'article que vous avez de variantes de celui-ci, à vous de créer autant de variantes que vous le souhaiter. (Couleur,Taille,Poids ...)<br> Cependant, noter bien que si vous utilisez les variantes celle-ci devienne obligatoire pour vos consommateurs.</p>
+                    <div id="variantsContainer">
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-12 col-lg-6">
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <h6>Catégorie<span style="color: red">*</span> :</h6>
-                                    <select name="shop_category_id" class="form-select">
-                                        <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
-                                            <option value="<?= $cat->getId() ?>"> <?= $cat->getName() ?> </option>
-                                            <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
-                                                <option value="<?= $subCategory->getSubCategory()->getId() ?>"> <?php echo str_repeat("      ", $subCategory->getDepth()) . " ↪ ". $subCategory->getSubCategory()->getName() ?></option>
-                                            <?php endforeach; ?>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Tags :</h6>
-                                    <input type="text" class="form-control" name="">
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Prix :</h6>
-                                    <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Type<span style="color: red">*</span> :</h6>
-                                    <select class="form-select super-choice" name="shop_item_type" required>
-                                        <option value="1">Virtuel</option>
-                                        <option value="0">Physique</option>
-                                    </select>
-                                </div>
-                            </div>
+        <div class="col-12 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 mt-2">
+                            <h6>Catégorie<span style="color: red">*</span> :</h6>
+                            <select name="shop_category_id" class="form-select">
+                                <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
+                                    <option value="<?= $cat->getId() ?>"> <?= $cat->getName() ?> </option>
+                                    <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
+                                        <option value="<?= $subCategory->getSubCategory()->getId() ?>"> <?php echo str_repeat("      ", $subCategory->getDepth()) . " ↪ ". $subCategory->getSubCategory()->getName() ?></option>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 mt-2">
-                                    <h6>Stock :</h6>
-                                    <input type="number" class="form-control" name="shop_item_default_stock"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Limite d'achat global :</h6>
-                                    <input type="number" class="form-control" name="shop_item_global_limit"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Limite d'achat par utilisateur :</h6>
-                                    <input type="number" class="form-control" name="shop_item_user_limit"
-                                           placeholder="0">
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <h6>Limite d'achat par commande :</h6>
-                                    <input type="number" class="form-control" name="shop_item_by_order_limit"
-                                           placeholder="0">
-                                </div>
-                            </div>
+                        <div class="col-12 mt-2">
+                            <h6>Tags :</h6>
+                            <input type="text" class="form-control" name="">
                         </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 col-lg-6 mt-2">
-                                    Type info ++
-                                </div>
-                            </div>
+                        <div class="col-12 mt-2">
+                            <h6>Prix :</h6>
+                            <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Type<span style="color: red">*</span> :</h6>
+                            <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
+                                <option value="1">Virtuel</option>
+                                <option selected value="0">Physique</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 mt-2">
+                            <h6>Stock :</h6>
+                            <input type="number" class="form-control" name="shop_item_default_stock"
+                                   placeholder="0">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Limite d'achat global :</h6>
+                            <input type="number" class="form-control" name="shop_item_global_limit"
+                                   placeholder="0">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Limite d'achat par utilisateur :</h6>
+                            <input type="number" class="form-control" name="shop_item_user_limit"
+                                   placeholder="0">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Limite d'achat par commande :</h6>
+                            <input type="number" class="form-control" name="shop_item_by_order_limit"
+                                   placeholder="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-12">
@@ -146,6 +145,142 @@ $description = "";
         </div>
     </section>
 </form>
+
+<script>
+    function ajouterVariante() {
+        let inputNom = document.createElement("input");
+        inputNom.type = "text";
+        inputNom.className = "form-control";
+        inputNom.placeholder = "Couleur, Taille, etc";
+        inputNom.name = "shop_item_variant_name[]";
+        inputNom.required = true;
+        let labelNom = document.createElement("h6");
+        labelNom.innerHTML = "Nom<span style='color: red'>*</span> : ";
+
+        let textareaValeur = document.createElement("textarea");
+        textareaValeur.className = "form-control";
+        textareaValeur.name = "shop_item_variant_value[]";
+        textareaValeur.placeholder = "Rouge| Vert| Blanc";
+        textareaValeur.required = true;
+
+
+        let labelValeur = document.createElement("h6");
+        labelValeur.innerHTML = "Valeur<span style='color: red'>*</span> <small>(Séparer vos valeur par \"|\")</small> : ";
+        labelValeur.appendChild(textareaValeur);
+
+        // Créer un bouton de suppression
+        let boutonSupprimer = document.createElement("a");
+        boutonSupprimer.textContent = "Supprimer";
+        boutonSupprimer.className = "text-danger font-bold";
+        boutonSupprimer.style.cursor = "pointer";
+        boutonSupprimer.onclick = function() {
+            // Supprimer le conteneur de variante lors du clic sur le bouton
+            document.getElementById("variantsContainer").removeChild(varianteContainer);
+        };
+
+        // Créer un conteneur pour les champs de variante
+        let varianteContainer = document.createElement("div");
+        varianteContainer.className = "card-in-card p-3 mt-2 mb-4";
+        let row = document.createElement("div");
+        row.className = "row";
+        let nameContainer = document.createElement("div");
+        nameContainer.className = "col-12 col-lg-3";
+        let valueContainer = document.createElement("div");
+        valueContainer.className = "col-12 col-lg-9";
+
+        varianteContainer.appendChild(row);
+        row.appendChild(nameContainer);
+        nameContainer.appendChild(labelNom);
+        nameContainer.appendChild(inputNom);
+        nameContainer.appendChild(boutonSupprimer);
+        row.appendChild(valueContainer);
+        valueContainer.appendChild(labelValeur);
+        valueContainer.appendChild(textareaValeur);
+
+        // Ajouter le conteneur au conteneur principal
+        document.getElementById("variantsContainer").appendChild(varianteContainer);
+    }
+</script>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        // Appeler la fonction au chargement de la page
+        afficherChamps();
+    });
+
+    function afficherChamps() {
+        let choix = document.getElementById("type").value;
+        let champsDynamiquesDiv = document.getElementById("typeNeeds");
+
+        // Effacer les champs précédents
+        champsDynamiquesDiv.innerHTML = "";
+
+        if (choix === "0") {
+            let weightDiv = document.createElement("div");
+            weightDiv.className = "col-12 col-lg-6";
+            let lengthDiv = document.createElement("div");
+            lengthDiv.className = "col-12 col-lg-6";
+            let widthDiv = document.createElement("div");
+            widthDiv.className = "col-12 col-lg-6";
+            let heightDiv = document.createElement("div");
+            heightDiv.className = "col-12 col-lg-6";
+
+            let weightTitle = document.createElement("h6");
+            weightTitle.innerHTML = "Poids<span style='color: red'>*</span> : <small>(en gramme)</small>";
+            let weightInput = document.createElement("input");
+            weightInput.type = "text";
+            weightInput.className = "form-control";
+            weightInput.placeholder = "150";
+            weightInput.name = "shop_item_weight";
+
+            let lengthTitle = document.createElement("h6");
+            lengthTitle.innerHTML = "Largeur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            let lengthInput = document.createElement("input");
+            lengthInput.type = "text";
+            lengthInput.className = "form-control";
+            lengthInput.placeholder = "150";
+            lengthInput.name = "shop_item_length";
+
+            let widthTitle = document.createElement("h6");
+            widthTitle.innerHTML = "Longueur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            let widthInput = document.createElement("input");
+            widthInput.type = "text";
+            widthInput.className = "form-control";
+            widthInput.placeholder = "150";
+            widthInput.name = "shop_item_width";
+
+            let heightTitle = document.createElement("h6");
+            heightTitle.innerHTML = "Hauteur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            let heightInput = document.createElement("input");
+            heightInput.type = "text";
+            heightInput.className = "form-control";
+            heightInput.placeholder = "150";
+            heightInput.name = "shop_item_height";
+
+
+            champsDynamiquesDiv.appendChild(weightDiv);
+            weightDiv.appendChild(weightTitle);
+            weightDiv.appendChild(weightInput);
+            champsDynamiquesDiv.appendChild(lengthDiv);
+            lengthDiv.appendChild(lengthTitle);
+            lengthDiv.appendChild(lengthInput);
+            champsDynamiquesDiv.appendChild(widthDiv);
+            widthDiv.appendChild(widthTitle);
+            widthDiv.appendChild(widthInput);
+            champsDynamiquesDiv.appendChild(heightDiv);
+            heightDiv.appendChild(heightTitle);
+            heightDiv.appendChild(heightInput);
+        } else if (choix === "1") {
+            let label = document.createElement("label");
+            label.innerHTML = "Champ Virtuel 1 : ";
+            let input = document.createElement("input");
+            input.type = "text";
+            input.name = "virtuel1";
+            champsDynamiquesDiv.appendChild(label);
+            champsDynamiquesDiv.appendChild(input);
+        }
+    }
+</script>
 
 <script type="text/javascript">
     let i = 0;
@@ -182,8 +317,8 @@ $description = "";
                 label.innerText = "<?= LangManager::translate("core.btn.edit") ?>"
                 label.className = "btn btn-primary mt-2";
 
-                let fisrtDiv = document.getElementById('img_div').appendChild(div);
-                fisrtDiv.appendChild(div_in_div);
+                let firstDiv = document.getElementById('img_div').appendChild(div);
+                firstDiv.appendChild(div_in_div);
                 div_in_div.appendChild(img);
                 div_in_div.appendChild(input);
                 div_in_div.appendChild(btn_div);

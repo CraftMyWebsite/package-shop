@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\ShopCartsModel;
@@ -57,7 +58,7 @@ class ShopCartEntity
     }
 
     /**
-     * @return ?\CMW\Entity\Shop\ShopItemEntity
+     * @return ?\CMW\Entity\Shop\Items\ShopItemEntity
      */
     public function getItem(): ?ShopItemEntity
     {

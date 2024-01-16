@@ -1,8 +1,9 @@
 <?php
 
-namespace CMW\Entity\Shop;
+namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Entity\Shop\ShopCategoryEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Users\UsersModel;

@@ -55,7 +55,7 @@ class ShopCommandController extends AbstractController
             $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "userAddresses" => $userAddresses]);
             $view->view();
         } else {
-            $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getCurrentStepByUserId($userId);
+            $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if (is_null($currentStep)) {
                 $view = new View("Shop", "Command/address");

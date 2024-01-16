@@ -9,8 +9,11 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\ShopCartVariantesModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopItemVariantModel;
+use CMW\Model\Shop\ShopItemVariantValueModel;
 use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
@@ -31,6 +34,7 @@ class ShopCartController extends AbstractController
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, session_id());
         $asideCartContent = ShopCartsModel::getInstance()->getShopCartsAsideByUserId($userId, session_id());
         $imagesItem = ShopImagesModel::getInstance();
+        $itemsVariantes = ShopCartVariantesModel::getInstance();
 
         $this->handleSessionHealth($sessionId);
 
@@ -46,7 +50,7 @@ class ShopCartController extends AbstractController
         }
 
         $view = new View("Shop", "Cart/cart");
-        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "asideCartContent" => $asideCartContent]);
+        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes]);
         $view->view();
     }
 

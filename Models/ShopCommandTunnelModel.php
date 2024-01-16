@@ -61,30 +61,6 @@ class ShopCommandTunnelModel extends AbstractModel
         );
     }
 
-    /**
-     * @return \CMW\Entity\Shop\ShopCommandTunnelEntity []
-     */
-    public function getShopCommandTunnelByUserId(int $userId): array
-    {
-        $sql = "SELECT shop_command_tunnel_id FROM cmw_shops_command_tunnel WHERE shop_user_id = :userId";
-
-        $db = DatabaseManager::getInstance();
-
-        $res = $db->prepare($sql);
-
-        if (!$res->execute(array("userId" => $userId))) {
-            return [];
-        }
-
-        $toReturn = [];
-
-        while ($tunnel = $res->fetch()) {
-            $toReturn[] = $this->getShopCommandTunnelById($tunnel["shop_command_tunnel_id"]);
-        }
-
-        return $toReturn;
-    }
-
     public function createTunnel(int $userId, int $deliveryId): ?ShopCommandTunnelEntity
     {
         $var = array(
@@ -149,7 +125,7 @@ class ShopCommandTunnelModel extends AbstractModel
      * @param int $userId
      * @return \CMW\Entity\Shop\ShopCommandTunnelEntity
      */
-    public function getCurrentStepByUserId(int $userId): ?ShopCommandTunnelEntity
+    public function getShopCommandTunnelByUserId(int $userId): ?ShopCommandTunnelEntity
     {
         $sql = "SELECT * FROM cmw_shops_command_tunnel WHERE shop_user_id = :userId LIMIT 1;";
 

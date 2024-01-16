@@ -89,9 +89,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
     shop_cart_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     shop_cart_item_aside      TINYINT      NOT NULL DEFAULT 0,
     CONSTRAINT fk_user_id_cart_items FOREIGN KEY (shop_user_id)
-        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_item_id_cart_items FOREIGN KEY (shop_item_id)
-        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_shopping_session_id_cart_items FOREIGN KEY (shop_shopping_session_id)
         REFERENCES cmw_shops_shopping_session (shop_shopping_session_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
@@ -109,6 +109,63 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items_requirement
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_required_shop_item_id_items_requirement FOREIGN KEY (required_shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_items_physical_requirement
+(
+    shop_item_physical_requirement_id           INT AUTO_INCREMENT PRIMARY KEY,
+    shop_item_id                                INT       NOT NULL,
+    shop_physical_requirement_weight            FLOAT(10, 2) NULL,
+    shop_physical_requirement_length            FLOAT(10, 2) NULL,
+    shop_physical_requirement_width             FLOAT(10, 2) NULL,
+    shop_physical_requirement_height            FLOAT(10, 2) NULL,
+    shop_physical_requirement_created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_physical_requirement_updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_id_items_physical_requirement FOREIGN KEY (shop_item_id)
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_items_variants
+(
+    shop_variants_id           INT AUTO_INCREMENT PRIMARY KEY,
+    shop_item_id                                INT       NOT NULL,
+    shop_variants_name                      VARCHAR(50) NOT NULL,
+    shop_variants_created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_variants_updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_id_items_variants FOREIGN KEY (shop_item_id)
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_items_variants_values
+(
+    shop_variants_values_id                INT AUTO_INCREMENT PRIMARY KEY,
+    shop_variants_id                       INT       NOT NULL,
+    shop_variants_value                    VARCHAR(50) NOT NULL,
+    shop_variants_values_created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_variants_values_updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_id_variants_values FOREIGN KEY (shop_variants_id)
+        REFERENCES cmw_shops_items_variants (shop_variants_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_cart_items_variantes
+(
+    shop_cart_items_variantes_id            INT AUTO_INCREMENT PRIMARY KEY,
+    shop_cart_item_id                       INT       NOT NULL,
+    shop_variants_values_id                     INT NOT NULL,
+    shop_cart_items_variantes_created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_cart_items_variantes_updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_cart_items_variantes FOREIGN KEY (shop_cart_item_id)
+        REFERENCES cmw_shops_cart_items (shop_cart_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_shop_variante_cart_items_variantes FOREIGN KEY (shop_variants_values_id)
+        REFERENCES cmw_shops_items_variants_values (shop_variants_values_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

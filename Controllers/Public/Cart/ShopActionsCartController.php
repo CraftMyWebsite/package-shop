@@ -10,8 +10,10 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\ShopCartVariantesModel;
 use CMW\Model\Shop\ShopCommandTunnelModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopItemVariantModel;
 use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
@@ -33,11 +35,18 @@ class ShopActionsCartController extends AbstractController
         $sessionId = session_id();
         $quantity = 1;
 
+        if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
+            Flash::send(Alert::ERROR ,"Boutique", "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
+            $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)->getItemLink();
+            header("Location:" . $itemUrl);
+            die();
+        }
+
         $this->handleSessionHealth($sessionId);
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
-        $this->handleAddToCart($itemId, $userId, $sessionId, $quantity);
+        $this->handleAddToCart($itemId, $userId, $sessionId, $quantity, null);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -57,11 +66,13 @@ class ShopActionsCartController extends AbstractController
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         [$quantity] = Utils::filterInput('quantity');
 
+        $selectedVariants = $_POST['selected_variantes'];
+
         $this->handleSessionHealth($sessionId);
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
-        $this->handleAddToCart($itemId, $userId, $sessionId, $quantity);
+        $this->handleAddToCart($itemId, $userId, $sessionId, $quantity, $selectedVariants);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -150,10 +161,15 @@ class ShopActionsCartController extends AbstractController
      * @param string $sessionId
      * @param int $quantity
      */
-    private function handleAddToCart(int $itemId, ?int $userId, string $sessionId, int $quantity) : void
+    private function handleAddToCart(int $itemId, ?int $userId, string $sessionId, int $quantity, ?array $selectedVariants) : void
     {
         if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
-            ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId, $quantity);
+            $cart = ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId, $quantity);
+            if (!empty($selectedVariants)) {
+                foreach ($selectedVariants as $selectedVariant) {
+                    ShopCartVariantesModel::getInstance()->setVariantToItemInCart($cart->getId(), $selectedVariant);
+                }
+            }
             Flash::send(Alert::SUCCESS, "Boutique",
                 "Nouvel article ajouté au panier !");
         } else {

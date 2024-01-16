@@ -16,6 +16,8 @@ use CMW\Manager\Views\View;
 use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopItemVariantModel;
+use CMW\Model\Shop\ShopItemVariantValueModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
@@ -102,6 +104,28 @@ class ShopItemsController extends AbstractController
         [$name, $shortDesc, $category, $description, $type, $stock, $price, $byOrderLimit, $globalLimit, $userLimit] = Utils::filterInput("shop_item_name", "shop_item_short_desc", "shop_category_id", "shop_item_description", "shop_item_type", "shop_item_default_stock", "shop_item_price", "shop_item_by_order_limit", "shop_item_global_limit", "shop_item_user_limit");
 
         $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price),($byOrderLimit === "" ? null : $byOrderLimit), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
+
+        //Variantes
+        $variants = $_POST['shop_item_variant_name'];
+        $variantValues = $_POST['shop_item_variant_value'];
+
+        if (!empty($variants) &&!empty($variantValues)) {
+            if (count($variants) === count($variantValues)) {
+                // Utilisez une seule boucle pour parcourir les deux tableaux simultanément
+                for ($i = 0; $i < count($variants); $i++) {
+                    $variant = $variants[$i];
+                    $variantId = ShopItemVariantModel::getInstance()->createVariant($variant, $itemId);
+                    // Traitement des valeurs de variante associées à chaque variante
+                    $variantValue = explode("|", $variantValues[$i]);
+                    foreach ($variantValue as $key => $value) {
+                        if (empty($value)) {
+                            continue;
+                        }
+                        ShopItemVariantValueModel::getInstance()->addVariantValue($value, $variantId->getId() ?? null);
+                    }
+                }
+            }
+        }
 
 
         [$numberOfImage] = Utils::filterInput("numberOfImage");

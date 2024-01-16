@@ -12,6 +12,8 @@ use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopItemVariantModel;
+use CMW\Model\Shop\ShopItemVariantValueModel;
 use CMW\Model\Users\UsersModel;
 
 
@@ -63,9 +65,11 @@ class ShopPublicController extends AbstractController
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);
+        $variantValuesModel = ShopItemVariantValueModel::getInstance();
 
         $view = new View("Shop", "Main/item");
-        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart]);
+        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel]);
         $view->view();
     }
 

@@ -2,7 +2,7 @@
 
 namespace CMW\Model\Shop;
 
-use CMW\Entity\Shop\ShopItemEntity;
+use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Utils\Utils;
@@ -24,6 +24,10 @@ class ShopItemsModel extends AbstractModel
         $this->shopCategoriesModel = new ShopCategoriesModel();
     }
 
+    /**
+     * @param int $id
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity
+     */
     public function getShopItemsById(int $id): ?ShopItemEntity
     {
         $sql = "SELECT * FROM cmw_shops_items WHERE shop_item_id = :shop_item_id";
@@ -61,7 +65,7 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * @return \CMW\Entity\Shop\ShopItemEntity []
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
     public function getShopItems(): array
     {
@@ -86,7 +90,7 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * @return \CMW\Entity\Shop\ShopItemEntity []
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
     public function getShopArchivedItems(): array
     {
@@ -111,7 +115,7 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * @return \CMW\Entity\Shop\ShopItemEntity []
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
     public function getShopItemByCat(int $id): array
     {
@@ -134,7 +138,7 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * @return \CMW\Entity\Shop\ShopItemEntity []
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
     public function getShopItemByCatSlug(string $catSlug): array
     {
