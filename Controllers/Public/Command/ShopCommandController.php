@@ -46,6 +46,10 @@ class ShopCommandController extends AbstractController
             Redirect::redirectPreviousRoute();
         }
 
+        if (!ShopCommandTunnelModel::getInstance()->tunnelExist($userId)) {
+            ShopCommandTunnelModel::getInstance()->createTunnel($userId);
+        }
+
         ShopCartController::getInstance()->handleItemHealth($userId, $sessionId);
 
         $this->handleBeforeCommandCheck($userId, $sessionId, $cartContent);
@@ -57,7 +61,7 @@ class ShopCommandController extends AbstractController
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
-            if (is_null($currentStep)) {
+            if ($currentStep === 0) {
                 $view = new View("Shop", "Command/address");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "userAddresses" => $userAddresses]);
                 $view->view();
@@ -121,7 +125,12 @@ class ShopCommandController extends AbstractController
 
         [$addressId] = Utils::filterInput('addressId');
 
-        ShopCommandTunnelModel::getInstance()->createTunnel($userId, $addressId);
+        if (is_null($addressId)) {
+            Flash::send(Alert::ERROR, "Boutique", "Veuillez sélectionner une adresse.");
+            Redirect::redirectPreviousRoute();
+        }
+
+        ShopCommandTunnelModel::getInstance()->addDelivery($userId, $addressId);
 
         Redirect::redirectPreviousRoute();
     }
@@ -142,6 +151,11 @@ class ShopCommandController extends AbstractController
         $userId = UsersModel::getCurrentUser()?->getId();
 
         [$shippingId] = Utils::filterInput('shippingId');
+
+        if (is_null($shippingId)) {
+            Flash::send(Alert::ERROR, "Boutique", "Veuillez sélectionner un mode de livraison.");
+            Redirect::redirectPreviousRoute();
+        }
 
         ShopCommandTunnelModel::getInstance()->addShipping($userId, $shippingId);
 

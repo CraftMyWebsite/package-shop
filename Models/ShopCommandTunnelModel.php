@@ -61,15 +61,37 @@ class ShopCommandTunnelModel extends AbstractModel
         );
     }
 
-    public function createTunnel(int $userId, int $deliveryId): ?ShopCommandTunnelEntity
+    public function tunnelExist(int $userId): bool
+    {
+        $data = ["shop_user_id" => $userId];
+
+        $sql = "SELECT shop_command_tunnel_id FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if(!$req->execute($data)){
+            return true;
+        }
+
+        $res = $req->fetch();
+
+        if (!$res){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function createTunnel(int $userId): ?ShopCommandTunnelEntity
     {
         $var = array(
-            "shop_user_id" => $userId,
-            "shop_delivery_user_address_id" => $deliveryId
+            "shop_user_id" => $userId
         );
 
-        $sql = "INSERT INTO cmw_shops_command_tunnel  (shop_user_id,shop_command_tunnel_step, shop_delivery_user_address_id) 
-                VALUES (:shop_user_id,1, :shop_delivery_user_address_id)";
+        $sql = "INSERT INTO cmw_shops_command_tunnel  (shop_user_id,shop_command_tunnel_step) 
+                VALUES (:shop_user_id,0)";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -81,6 +103,21 @@ class ShopCommandTunnelModel extends AbstractModel
 
         return null;
 
+    }
+
+    public function addDelivery(int $userId, int $deliveryId): void
+    {
+        $var = array(
+            "shop_user_id" => $userId,
+            "shop_delivery_user_address_id" => $deliveryId
+        );
+
+        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 1, shop_delivery_user_address_id = :shop_delivery_user_address_id WHERE shop_user_id = :shop_user_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
     }
 
     public function addShipping(int $userId, int $shippingId): void
