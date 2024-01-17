@@ -123,7 +123,8 @@ class ShopCartEntity
         foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $test) {
             $total += $test->getTotalPrice();
         }
-        return $total;
+
+        return number_format($total, 2);
     }
 
     /**

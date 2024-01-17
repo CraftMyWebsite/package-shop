@@ -24,7 +24,7 @@ class ShopSettingsModel extends AbstractModel
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('SELECT shop_settings_value FROM cmw_shops_settings WHERE shop_settings_key = ?');
 
-        return ($req->execute(array($key))) ? $req->fetch()["shop_settings_value"] : "";
+        return ($req->execute(array($key))) ? $req->fetch()["shop_settings_value"] : "EUR";
     }
 
     /**

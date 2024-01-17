@@ -1,8 +1,11 @@
 <?php
 namespace CMW\Controller\Shop\Public\Command;
 
+use CMW\Controller\Shop\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
+use CMW\Exception\Shop\Payment\ShopPaymentException;
+use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
@@ -79,8 +82,11 @@ class ShopCommandController extends AbstractController
                 $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
                 $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
                 $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+                $paymentMethods = ShopPaymentsController::getInstance()->getPaymentsMethods();
                 $view = new View("Shop", "Command/payment");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod]);
+                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,
+                    "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
+                    "paymentMethods" => $paymentMethods]);
                 $view->view();
             }
         }
@@ -170,6 +176,76 @@ class ShopCommandController extends AbstractController
         ShopCommandTunnelModel::getInstance()->clearShipping($userId);
 
         Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn] #[Link("/command/finalize", Link::POST, [], "/shop")]
+    public function publicFinalizeCommand(): void
+    {
+        $user = UsersModel::getCurrentUser();
+
+        if (!$user){
+            //TODO Internal error.
+            Redirect::redirectToHome();
+        }
+
+        $sessionId = session_id();
+
+        if (!$sessionId){
+            Flash::send(Alert::ERROR, 'Erreur', 'Impossible de récupérer votre session !');
+            Redirect::redirectToHome();
+        }
+
+        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($user->getId(), $sessionId);
+
+        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
+
+        if (!$commandTunnelModel){
+            //TODO Internal error.
+            Redirect::redirectToHome();
+        }
+
+        $addressId = $commandTunnelModel->getShopDeliveryUserAddress()?->getId();
+
+        if (!$addressId){
+            //TODO Error unable to reach delivery ID
+            Redirect::redirectToHome();
+        }
+
+        $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
+
+        if (!$selectedAddress){
+            //TODO Error no address selected / valid
+            Redirect::redirectToHome();
+        }
+
+        $shipping = $commandTunnelModel->getShipping();
+
+        if (!$shipping){
+            //TODO Error no delivery method selected
+            Redirect::redirectToHome();
+        }
+
+        if (!isset($_POST['paymentName'])){
+            Flash::send(Alert::ERROR, 'Erreur', 'Merci de sélectionner une méthode de paiement !');
+            Redirect::redirectPreviousRoute();
+        }
+
+        $paymentName = FilterManager::filterInputStringPost('paymentName');
+
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName($paymentName);
+
+        if (!$paymentMethod){
+            Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver ce mode de paiement !');
+            Redirect::redirectPreviousRoute();
+        }
+
+        try {
+            $paymentMethod->doPayment($cartContent, $user, $shipping, $selectedAddress);
+        }
+        catch (ShopPaymentException $e) {
+            Flash::send(Alert::ERROR, 'Erreur', "Erreur de paiement => $e");
+            Redirect::redirectPreviousRoute();
+        }
     }
 
     /**

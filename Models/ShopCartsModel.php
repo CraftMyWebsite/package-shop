@@ -543,6 +543,15 @@ class ShopCartsModel extends AbstractModel
         return $db->prepare($sql)->execute($data);
     }
 
+    public function clearUserCart(int $userId): bool
+    {
+        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_user_id  = :user_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute(['user_id' => $userId]);
+    }
+
     public function removeUnreachableItem(?int $userId, string $sessionId): bool
     {
         $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id IS NULL";

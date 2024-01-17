@@ -3,9 +3,13 @@
 namespace CMW\Interface\Shop;
 
 
+use CMW\Entity\Shop\ShopDeliveryUserAddressEntity;
+use CMW\Entity\Shop\ShopShippingEntity;
+use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 
-interface IPaymentMethod {
+interface IPaymentMethod
+{
     /**
      * @return string
      * @desc The name of the payment method
@@ -33,9 +37,14 @@ interface IPaymentMethod {
     public function includeConfigWidgets(): void;
 
     /**
-     * @param int $amount
-     * @return bool
-     * @desc Je sais pas encore ce que ça va faire, mais oklm
+     * @param \CMW\Entity\Shop\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Users\UserEntity $user
+     * @param \CMW\Entity\Shop\ShopShippingEntity $shipping
+     * @param \CMW\Entity\Shop\ShopDeliveryUserAddressEntity $address
+     * @return void
+     * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
+     * @desc Do payment logic
      */
-    public function action(int $amount): bool;
+    public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping,
+                              ShopDeliveryUserAddressEntity $address): void;
 }

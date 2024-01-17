@@ -1,9 +1,13 @@
 <?php
 
-namespace CMW\Controller\Shop;
+namespace CMW\Controller\Shop\Payment;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Event\Shop\ShopPaymentCancelEvent;
+use CMW\Event\Shop\ShopPaymentCompleteEvent;
+use CMW\Event\Users\RegisterEvent;
 use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Manager\Events\Listener;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -18,8 +22,8 @@ use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopPaymentsController
- * @package shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
+ * @package Shop
+ * @author Teyir
  * @version 1.0
  */
 class ShopPaymentsController extends AbstractController
@@ -31,6 +35,20 @@ class ShopPaymentsController extends AbstractController
     public function getPaymentsMethods(): array
     {
         return Loader::loadImplementations(IPaymentMethod::class);
+    }
+
+    /**
+     * @param string $name
+     * @return \CMW\Interface\Shop\IPaymentMethod|null
+     */
+    public function getPaymentByName(string $name): ?IPaymentMethod
+    {
+        foreach ($this->getPaymentsMethods() as $paymentsMethod) {
+            if ($paymentsMethod->name() === $name){
+                return $paymentsMethod;
+            }
+        }
+        return null;
     }
 
     #[Link("/payments", Link::GET, [], "/cmw-admin/shop")]
@@ -65,4 +83,21 @@ class ShopPaymentsController extends AbstractController
         Flash::send(Alert::SUCCESS,'Succès', "Les paramètres ont été mis à jour");
         Redirect::redirectPreviousRoute();
     }
+
+    #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
+    private function onPaymentComplete(): void
+    {
+        //TODO LOGS
+
+        Flash::send(Alert::SUCCESS, "Achat effectué", "Merci pour votre achat");
+        Redirect::redirect("shop");
+    }
+
+    #[NoReturn] #[Listener(eventName: ShopPaymentCancelEvent::class, times: 0, weight: 1)]
+    private function onPaymentCancel(): void
+    {
+        Flash::send(Alert::WARNING, "Paiement annulé", "Transaction PayPal annulée.");
+        Redirect::redirect("shop");
+    }
+
 }
