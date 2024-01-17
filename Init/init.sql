@@ -350,6 +350,17 @@ CREATE TABLE IF NOT EXISTS cmw_shops_command_tunnel
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shops_payment_method_settings
+(
+    shop_payment_method_settings_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_payment_method_settings_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
+    shop_payment_method_settings_value      VARCHAR(255) NOT NULL,
+    shop_payment_method_settings_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_payment_method_settings_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)
