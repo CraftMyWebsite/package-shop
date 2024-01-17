@@ -148,29 +148,20 @@ $description = "";
 
 <script>
     function ajouterVariante() {
+        let index = document.querySelectorAll(".card-in-card").length;
+
         let inputNom = document.createElement("input");
         inputNom.type = "text";
         inputNom.className = "form-control";
         inputNom.placeholder = "Couleur, Taille, etc";
-        inputNom.name = "shop_item_variant_name[]";
+        inputNom.name = "shop_item_variant_name[" + index + "]";
         inputNom.required = true;
         let labelNom = document.createElement("h6");
         labelNom.innerHTML = "Nom<span style='color: red'>*</span> : ";
 
-        let textareaValeur = document.createElement("textarea");
-        textareaValeur.className = "form-control";
-        textareaValeur.name = "shop_item_variant_value[]";
-        textareaValeur.placeholder = "Rouge| Vert| Blanc";
-        textareaValeur.required = true;
-
-
-        let labelValeur = document.createElement("h6");
-        labelValeur.innerHTML = "Valeur<span style='color: red'>*</span> <small>(Séparer vos valeur par \"|\")</small> : ";
-        labelValeur.appendChild(textareaValeur);
-
         // Créer un bouton de suppression
         let boutonSupprimer = document.createElement("a");
-        boutonSupprimer.textContent = "Supprimer";
+        boutonSupprimer.textContent = "Supprimer la variante";
         boutonSupprimer.className = "text-danger font-bold";
         boutonSupprimer.style.cursor = "pointer";
         boutonSupprimer.onclick = function() {
@@ -178,15 +169,40 @@ $description = "";
             document.getElementById("variantsContainer").removeChild(varianteContainer);
         };
 
+        let inputValeur = document.createElement("input");
+        inputValeur.className = "form-control";
+        inputValeur.name = "shop_item_variant_value[" + index + "][]";
+        inputValeur.placeholder = "Rouge";
+        inputValeur.required = true;
+
+        let labelValeurDiv = document.createElement("div")
+        labelValeurDiv.className = "d-flex justify-content-between";
+
+        let labelValeur = document.createElement("h6");
+        labelValeur.innerHTML = "Valeur<span style='color: red'>*</span> : ";
+
+        // Ajouter un bouton "Ajouter une valeur"
+        let boutonAjouterValeur = document.createElement("a");
+        boutonAjouterValeur.textContent = "+ Ajouter une valeur";
+        boutonAjouterValeur.className = "text-success font-bold";
+        boutonAjouterValeur.type = "button";
+        boutonAjouterValeur.onclick = function() {
+            ajouterValeur(valueContainer, index);
+        };
+
+        labelValeurDiv.appendChild(labelValeur);
+        labelValeurDiv.appendChild(boutonAjouterValeur);
+
         // Créer un conteneur pour les champs de variante
         let varianteContainer = document.createElement("div");
+        varianteContainer.setAttribute("data-index", index);
         varianteContainer.className = "card-in-card p-3 mt-2 mb-4";
         let row = document.createElement("div");
         row.className = "row";
         let nameContainer = document.createElement("div");
-        nameContainer.className = "col-12 col-lg-3";
+        nameContainer.className = "col-12 col-lg-4";
         let valueContainer = document.createElement("div");
-        valueContainer.className = "col-12 col-lg-9";
+        valueContainer.className = "col-12 col-lg-8";
 
         varianteContainer.appendChild(row);
         row.appendChild(nameContainer);
@@ -194,11 +210,41 @@ $description = "";
         nameContainer.appendChild(inputNom);
         nameContainer.appendChild(boutonSupprimer);
         row.appendChild(valueContainer);
-        valueContainer.appendChild(labelValeur);
-        valueContainer.appendChild(textareaValeur);
+        valueContainer.appendChild(labelValeurDiv);
+        valueContainer.appendChild(inputValeur);
 
         // Ajouter le conteneur au conteneur principal
         document.getElementById("variantsContainer").appendChild(varianteContainer);
+
+        // Ajouter le premier champ de valeur
+        ajouterValeur(valueContainer, index);
+
+
+        function ajouterValeur(container, parentIndex) {
+            let inputDiv = document.createElement("div");
+            inputDiv.className = "input-group mt-2";
+
+            let inputValeur = document.createElement("input");
+            inputValeur.className = "form-control";
+            inputValeur.name = "shop_item_variant_value[" + parentIndex + "][]";
+            inputValeur.placeholder = "Vert";
+            inputValeur.required = true;
+
+            let boutonSupprimerValeur = document.createElement("button");
+            boutonSupprimerValeur.textContent = "X";
+            boutonSupprimerValeur.className = "btn btn-sm btn-danger";
+            boutonSupprimerValeur.type = "button";
+            boutonSupprimerValeur.onclick = function() {
+                // Supprimer le champ de valeur lors du clic sur le bouton
+                container.removeChild(inputDiv);
+                inputDiv.removeChild(inputValeur);
+                inputDiv.removeChild(boutonSupprimerValeur);
+            };
+
+            container.appendChild(inputDiv);
+            inputDiv.appendChild(inputValeur);
+            inputDiv.appendChild(boutonSupprimerValeur);
+        }
     }
 </script>
 

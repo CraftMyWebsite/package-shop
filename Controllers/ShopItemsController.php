@@ -106,23 +106,18 @@ class ShopItemsController extends AbstractController
         $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === "" ? null : $stock) , ($price === "" ? 0 : $price),($byOrderLimit === "" ? null : $byOrderLimit), ($globalLimit === "" ? null : $globalLimit), ($userLimit === "" ? null : $userLimit));
 
         //Variantes
-        $variants = $_POST['shop_item_variant_name'];
-        $variantValues = $_POST['shop_item_variant_value'];
+        $variantNames = $_POST['shop_item_variant_name'] ?? [];
+        $variantValues = $_POST['shop_item_variant_value'] ?? [];
 
-        if (!empty($variants) &&!empty($variantValues)) {
-            if (count($variants) === count($variantValues)) {
-                // Utilisez une seule boucle pour parcourir les deux tableaux simultanément
-                for ($i = 0; $i < count($variants); $i++) {
-                    $variant = $variants[$i];
-                    $variantId = ShopItemVariantModel::getInstance()->createVariant($variant, $itemId);
-                    // Traitement des valeurs de variante associées à chaque variante
-                    $variantValue = explode("|", $variantValues[$i]);
-                    foreach ($variantValue as $key => $value) {
-                        if (empty($value)) {
-                            continue;
-                        }
-                        ShopItemVariantValueModel::getInstance()->addVariantValue($value, $variantId->getId() ?? null);
+        if (!empty($variantNames) &&!empty($variantValues)) {
+            foreach ($variantNames as $parentIndex => $variantName) {
+                $variantId = ShopItemVariantModel::getInstance()->createVariant($variantName, $itemId);
+
+                foreach ($variantValues[$parentIndex] as $variantValue) {
+                    if ($variantValue === "") {
+                        continue;
                     }
+                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId->getId() ?? null);
                 }
             }
         }
