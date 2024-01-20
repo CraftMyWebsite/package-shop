@@ -16,12 +16,6 @@ use CMW\Model\Users\UsersModel;
  */
 class ShopOrdersModel extends AbstractModel
 {
-    private UsersModel $userModel;
-    public function __construct()
-    {
-        $this->userModel = new UsersModel();
-    }
-
     /**
      * @param int $id
      * @return \CMW\Entity\Shop\ShopOrdersEntity|null
@@ -40,11 +34,16 @@ class ShopOrdersModel extends AbstractModel
 
         $res = $res->fetch();
 
-        $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
+        $user = is_null($res["shop_user_id"]) ? null : UsersModel::getInstance()->getUserById($res["shop_user_id"]);
+        $shipping = is_null($res["shops_shipping_id"])? null : ShopShippingModel::getInstance()->getShopShippingById($res["shops_shipping_id"]);
+        $deliveryAddress = is_null($res["shop_delivery_user_address_id"])? null : ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($res["shop_delivery_user_address_id"]);
 
         return new ShopOrdersEntity(
             $res["shop_order_id"],
             $user,
+            $res["shop_order_status"],
+            $shipping,
+            $deliveryAddress,
             $res["shop_order_created_at"],
             $res["shop_order_updated_at"]
         );
@@ -97,5 +96,27 @@ class ShopOrdersModel extends AbstractModel
         }
 
         return $res->fetch(0)['total_quantity'];
+    }
+
+    public function createOrder(int $userId, int $shippingId, int $deliveryAddress): ?ShopOrdersEntity
+    {
+        $var = array(
+            "shop_user_id" => $userId,
+            "shops_shipping_id" => $shippingId,
+            "shop_delivery_user_address_id" => $deliveryAddress
+        );
+
+        $sql = "INSERT INTO cmw_shops_orders (shop_user_id, shops_shipping_id, shop_delivery_user_address_id) VALUES (:shop_user_id, :shops_shipping_id, :shop_delivery_user_address_id)";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($var)) {
+            $id = $db->lastInsertId();
+            return $this->getOrdersById($id);
+        }
+
+        return null;
+
     }
 }

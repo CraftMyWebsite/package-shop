@@ -59,7 +59,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::url,
+            CURLOPT_URL => self::sandBoxUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -277,9 +277,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
             Redirect::redirectToHome();
         }
 
-        ShopCartsModel::getInstance()->clearUserCart($user->getId());
-
-        Emitter::send(ShopPaymentCompleteEvent::class, ['user' => $user]);
+        Emitter::send(ShopPaymentCompleteEvent::class, $user);
     }
 
     #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/paypal")]

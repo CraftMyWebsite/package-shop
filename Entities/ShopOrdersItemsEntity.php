@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Entity\Shop\Items\ShopItemEntity;
 
 class ShopOrdersItemsEntity {
     private int $orderItemId;
@@ -10,7 +11,6 @@ class ShopOrdersItemsEntity {
     private ?ShopOrdersEntity $order;
     private ?ShopPaymentDiscountEntity $discount;
     private ?int $orderItemQuantity;
-    private int $orderItemStatus;
     private float $orderItemPrice;
     private string $orderItemCreated;
     private string $orderItemUpdated;
@@ -21,19 +21,17 @@ class ShopOrdersItemsEntity {
      * @param \CMW\Entity\Shop\ShopOrdersEntity|null $order
      * @param \CMW\Entity\Shop\ShopPaymentDiscountEntity|null $discount
      * @param int|null $orderItemQuantity
-     * @param int $orderItemStatus
      * @param float $orderItemPrice
      * @param string $orderItemCreated
      * @param string $orderItemUpdated
      */
-    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopPaymentDiscountEntity $discount, ?int $orderItemQuantity, int $orderItemStatus, float $orderItemPrice, string $orderItemCreated, string $orderItemUpdated)
+    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopPaymentDiscountEntity $discount, ?int $orderItemQuantity, float $orderItemPrice, string $orderItemCreated, string $orderItemUpdated)
     {
         $this->orderItemId = $orderItemId;
         $this->item = $item;
         $this->order = $order;
         $this->discount = $discount;
         $this->orderItemQuantity = $orderItemQuantity;
-        $this->orderItemStatus = $orderItemStatus;
         $this->orderItemPrice = $orderItemPrice;
         $this->orderItemCreated = $orderItemCreated;
         $this->orderItemUpdated = $orderItemUpdated;
@@ -62,19 +60,6 @@ class ShopOrdersItemsEntity {
     public function getOrderItemQuantity(): ?int
     {
         return $this->orderItemQuantity;
-    }
-
-    public function getOrderItemStatus(): string
-    {
-        if ($this->orderItemStatus == -1) {
-            return "Remboursé";
-        }
-        if ($this->orderItemStatus == 0) {
-            return "Annulé";
-        }
-        if ($this->orderItemStatus == 1) {
-            return "Terminé";
-        }
     }
 
     public function getOrderItemPrice(): float

@@ -43,12 +43,11 @@ class ShopOrdersItemsModel extends AbstractModel
         $paymentDiscount = is_null($res["shop_payment_discount_id"]) ? null : $this->shopPaymentDiscountModel->getPaymentDiscountById($res["shop_payment_discount_id"]);
 
         return new ShopOrdersItemsEntity(
-            $res["shop_order_item_id "],
+            $res["shop_order_item_id"],
             $item,
             $order,
             $paymentDiscount,
             $res["shop_order_item_quantity"],
-            $res["shop_order_item_status"],
             $res["shop_order_item_price"],
             $res["shop_order_item_created_at"],
             $res["shop_order_item_updated_at"]
@@ -77,6 +76,32 @@ class ShopOrdersItemsModel extends AbstractModel
         }
 
         return $toReturn;
+
+    }
+
+    public function createOrderItems(int $orderId, int $itemId, int $itemQuantity, float $price): ?ShopOrdersItemsEntity
+    {
+
+        //TODO : prise en charge des variables et promotions appliqué.
+
+        $var = array(
+            "shop_order_id" => $orderId,
+            "shop_item_id" => $itemId,
+            "shop_order_item_quantity" => $itemQuantity,
+            "shop_order_item_price" => $price
+        );
+
+        $sql = "INSERT INTO cmw_shops_orders_items (shop_item_id, shop_order_id, shop_order_item_quantity, shop_order_item_price) VALUES (:shop_item_id, :shop_order_id, :shop_order_item_quantity, :shop_order_item_price)";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($var)) {
+            $id = $db->lastInsertId();
+            return $this->getOrdersItemsById($id);
+        }
+
+        return null;
 
     }
 }

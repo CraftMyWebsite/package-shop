@@ -15,10 +15,15 @@ use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\ShopCartVariantesModel;
+use CMW\Model\Shop\ShopCommandTunnelModel;
+use CMW\Model\Shop\ShopItemsModel;
+use CMW\Model\Shop\ShopOrdersItemsModel;
+use CMW\Model\Shop\ShopOrdersItemsVariantesModel;use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Shop\ShopPaymentMethodSettingsModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
-
 
 /**
  * Class: @ShopPaymentsController
@@ -85,12 +90,31 @@ class ShopPaymentsController extends AbstractController
     }
 
     #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
-    private function onPaymentComplete(): void
+    private function onPaymentComplete(mixed $user): void
     {
-        //TODO LOGS
+        /* @var \CMW\Entity\Users\UserEntity $user */
+        //TODO : Gestion physique / virtuel
+        $sessionId = session_id();
+        $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
+        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId());
+        $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($user->getId(), $sessionId);
 
-        Flash::send(Alert::SUCCESS, "Achat effectué", "Merci pour votre achat");
-        Redirect::redirect("shop");
+        foreach ($cartContent as $cartItem) {
+            $orderItem = ShopOrdersItemsModel::getInstance()->createOrderItems($order->getOrderId(), $cartItem->getItem()->getId(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice());
+            $itemsVariantes = ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($cartItem->getId());
+            if (!empty($itemsVariantes)) {
+                foreach ($itemsVariantes as $itemVariantes) {
+                    ShopOrdersItemsVariantesModel::getInstance()->setVariantToItemInOrder($orderItem->getOrderItemId(), $itemVariantes->getVariantValue()->getId());
+                }
+            }
+        }
+
+        ShopCartsModel::getInstance()->clearUserCart($user->getId());
+        ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
+
+        Flash::send(Alert::SUCCESS, "Achat effectué", "Merci pour votre achat " . $user->getPseudo());
+
+        Redirect::redirect("shop/history");
     }
 
     #[NoReturn] #[Listener(eventName: ShopPaymentCancelEvent::class, times: 0, weight: 1)]

@@ -43,6 +43,7 @@ use CMW\Model\Shop\ShopPaymentMethodSettingsModel;
                 <p>
                     TODO: Documentation CMW
                 </p>
+                <p>En attendant : <a href="https://developer.paypal.com/dashboard/" target="_blank">Panel de gestion Paypal</a></p>
 
                 <div>
                     <button type="submit" class="btn btn-primary">Envoyer</button>
