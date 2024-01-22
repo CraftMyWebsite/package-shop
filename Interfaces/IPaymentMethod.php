@@ -24,10 +24,10 @@ interface IPaymentMethod
     public function description(): string;
 
     /**
-     * @return int|null
+     * @return int
      * @desc Fees are optional
      */
-    public function fees(): ?int;
+    public function fees(): int;
 
     /**
      * @return void

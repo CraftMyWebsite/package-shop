@@ -128,6 +128,23 @@ class ShopCartEntity
     }
 
     /**
+     * @param int $paymentMethodFees
+     * @param int $shippingFees
+     * @return float
+     * @desc Please use this method for final price after discounts, payment fees, shipping fees and more...
+     */
+    public function getTotalPriceComplete(int $paymentMethodFees, int $shippingFees): float
+    {
+        $total = $this->getTotalCartPriceAfterDiscount();
+
+        $total += $paymentMethodFees;
+
+        $total += $shippingFees;
+
+        return number_format($total, 2);
+    }
+
+    /**
      * @return string
      */
     public function getCreated(): string

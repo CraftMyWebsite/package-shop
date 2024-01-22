@@ -21,7 +21,7 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
         return "TODO DESC I18N";
     }
 
-    public function fees(): ?int
+    public function fees(): int
     {
         return 0; //TODO Var ?
     }

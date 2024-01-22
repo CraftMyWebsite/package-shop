@@ -14,11 +14,9 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
-use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Shop\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
-use CMW\Utils\Log;
 use CMW\Utils\Redirect;
 use CMW\Utils\Website;
 use JetBrains\PhpStorm\NoReturn;
@@ -33,8 +31,8 @@ use JsonException;
  */
 class ShopPaymentMethodPayPalController extends AbstractController
 {
-    private const url = 'https://api-m.paypal.com/v2/checkout/orders';
-    private const sandBoxUrl = 'https://api-m.sandbox.paypal.com/v2/checkout/orders'; //Only for dev.
+    private const url = 'https://api-m.paypal.com';
+    private const sandBoxUrl = 'https://api-m.sandbox.paypal.com'; //Only for dev.
 
     /**
      * @param \CMW\Entity\Shop\ShopCartEntity[] $cartItems
@@ -59,7 +57,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::sandBoxUrl,
+            CURLOPT_URL => self::url . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -86,12 +84,12 @@ class ShopPaymentMethodPayPalController extends AbstractController
             throw new ShopPaymentException(message: "Unable to decode JSON for PayPal Payment action. Err: " . $e->getMessage());
         }
 
-        if (isset($json['error']) && $json['error'] === "invalid_token"){
+        if (isset($json['error']) && $json['error'] === "invalid_token") {
             throw new ShopPaymentException(message: "Wrong PayPal configuration.");
         }
 
         if (!isset($json['links'][1]['href'])) {
-            throw new ShopPaymentException(message: "Unable to find checkout link");
+            throw new ShopPaymentException(message: "Error " . $json['name'] . ". " . $json['message']);
         }
 
         $checkoutLink = $json['links'][1]['href'];
@@ -110,7 +108,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://api-m.sandbox.paypal.com/v1/oauth2/token',
+            CURLOPT_URL => self::url . '/v1/oauth2/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
