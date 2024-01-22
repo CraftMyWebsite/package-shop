@@ -22,6 +22,7 @@ use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Shop\ShopOrdersItemsModel;
 use CMW\Model\Shop\ShopOrdersItemsVariantesModel;use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Shop\ShopPaymentMethodSettingsModel;
+use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 
@@ -90,13 +91,16 @@ class ShopPaymentsController extends AbstractController
     }
 
     #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
-    private function onPaymentComplete(mixed $user): void
+    private function onPaymentComplete(): void
     {
-        /* @var \CMW\Entity\Users\UserEntity $user */
+        $user = UsersModel::getCurrentUser();
         //TODO : Gestion physique / virtuel
         $sessionId = session_id();
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
+
+        //TODO : Ajout de la methode de paiement utiliser
         $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId());
+
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($user->getId(), $sessionId);
 
         foreach ($cartContent as $cartItem) {

@@ -248,9 +248,11 @@ CREATE TABLE IF NOT EXISTS cmw_shops_orders
 (
     shop_order_id         INT AUTO_INCREMENT PRIMARY KEY,
     shop_user_id          INT       NULL,
+    shop_order_number     VARCHAR(50) NULL,
     shop_order_status     INT          NOT NULL DEFAULT 0,
     shops_shipping_id     INT          NULL,
     shop_delivery_user_address_id INT          NULL,
+    shop_used_payment_method INT          NULL,
     shop_order_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_order_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_orders FOREIGN KEY (shop_user_id)

@@ -277,7 +277,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
             Redirect::redirectToHome();
         }
 
-        Emitter::send(ShopPaymentCompleteEvent::class, $user);
+        Emitter::send(ShopPaymentCompleteEvent::class, []);
     }
 
     #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/paypal")]

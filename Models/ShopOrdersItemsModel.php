@@ -79,6 +79,34 @@ class ShopOrdersItemsModel extends AbstractModel
 
     }
 
+    /**
+     * @return \CMW\Entity\Shop\ShopOrdersItemsEntity []
+     */
+    public function getOrdersItemsByOrderId(int $orderId): array
+    {
+        $var = array(
+            "shop_order_id" => $orderId,
+        );
+
+        $sql = "SELECT shop_order_item_id FROM cmw_shops_orders_items WHERE shop_order_id = :shop_order_id";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($var)) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($orderItem = $res->fetch()) {
+            $toReturn[] = $this->getOrdersItemsById($orderItem["shop_order_item_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
     public function createOrderItems(int $orderId, int $itemId, int $itemQuantity, float $price): ?ShopOrdersItemsEntity
     {
 

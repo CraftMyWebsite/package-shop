@@ -8,6 +8,7 @@ use CMW\Entity\Users\UserEntity;
 class ShopOrdersEntity {
     private int $orderId;
     private ?userEntity $user;
+    private string $orderNumber;
     private int $orderStatus;
     private ?ShopShippingEntity $shipping;
     private ?ShopDeliveryUserAddressEntity $deliveryAddress;
@@ -17,16 +18,18 @@ class ShopOrdersEntity {
     /**
      * @param int $orderId
      * @param \CMW\Entity\Users\UserEntity|null $user
+     * @param string $orderNumber
      * @param int $orderStatus
      * @param ShopShippingEntity|null $shipping
      * @param ShopDeliveryUserAddressEntity|null $deliveryAddress
      * @param string $orderCreated
      * @param string $orderUpdated
      */
-    public function __construct(int $orderId, ?UserEntity $user, int $orderStatus, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $deliveryAddress, string $orderCreated, string $orderUpdated)
+    public function __construct(int $orderId, ?UserEntity $user, string $orderNumber, int $orderStatus, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $deliveryAddress, string $orderCreated, string $orderUpdated)
     {
         $this->orderId = $orderId;
         $this->user = $user;
+        $this->orderNumber = $orderNumber;
         $this->orderStatus = $orderStatus;
         $this->shipping = $shipping;
         $this->deliveryAddress = $deliveryAddress;
@@ -44,6 +47,11 @@ class ShopOrdersEntity {
         return $this->user;
     }
 
+    public function getNumber(): string
+    {
+        return $this->orderNumber;
+    }
+
     public function getOrderStatus(): string
     {
         if ($this->orderStatus == -2) {
@@ -53,16 +61,16 @@ class ShopOrdersEntity {
             return "Annulé";
         }
         if ($this->orderStatus == 0) {
-            return "En attente de validation";
+            return "<i style='color: orangered' class='fa-solid fa-spinner fa-spin-pulse'></i> En attente de validation";
         }
         if ($this->orderStatus == 1) {
-            return "En attente de la livraison";
+            return "<i style='color: orange' class='fa-solid fa-spinner fa-spin-pulse'></i> En attente de la livraison";
         }
         if ($this->orderStatus == 2) {
-            return "Livraison en cours";
+            return "<i style='color: lawngreen' class='fa-solid fa-truck-fast fa-fade'></i> Livraison en cours";
         }
         if ($this->orderStatus == 3) {
-            return "Terminé";
+            return "<i style='color: green' class='fa-regular fa-circle-check'></i> Terminé";
         }
     }
 

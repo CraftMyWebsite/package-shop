@@ -41,6 +41,7 @@ class ShopOrdersModel extends AbstractModel
         return new ShopOrdersEntity(
             $res["shop_order_id"],
             $user,
+            $res["shop_order_number"],
             $res["shop_order_status"],
             $shipping,
             $deliveryAddress,
@@ -55,7 +56,82 @@ class ShopOrdersModel extends AbstractModel
     public function getOrders(): array
     {
 
-        $sql = "SELECT shop_order_id FROM cmw_shops_orders ORDER BY shop_item_id DESC";
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($order = $res->fetch()) {
+            $toReturn[] = $this->getOrdersById($order["shop_order_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopOrdersEntity []
+     */
+    public function getInProgressOrders(): array
+    {
+
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (1, 2, 0);";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($order = $res->fetch()) {
+            $toReturn[] = $this->getOrdersById($order["shop_order_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopOrdersEntity []
+     */
+    public function getFinishedOrders(): array
+    {
+
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status = 3;";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($order = $res->fetch()) {
+            $toReturn[] = $this->getOrdersById($order["shop_order_id"]);
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\ShopOrdersEntity []
+     */
+    public function getErrorOrders(): array
+    {
+
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (-1, -2);";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -113,10 +189,20 @@ class ShopOrdersModel extends AbstractModel
 
         if ($req->execute($var)) {
             $id = $db->lastInsertId();
+            $this->generateOrderNumber($id);
             return $this->getOrdersById($id);
         }
 
         return null;
+    }
 
+    public function generateOrderNumber(int $orderId): void
+    {
+        $number = date("njy"). $orderId;
+        $data = ["shop_order_id" => $orderId, "number" => $number];
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_number = :number WHERE shop_order_id = :shop_order_id";
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
     }
 }
