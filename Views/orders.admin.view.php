@@ -21,6 +21,10 @@ $description = "";
                 <h4>En cours</h4>
             </div>
             <div class="card-body">
+                <div class="alert alert-warning">
+                    <p><i class="fa-solid fa-triangle-exclamation"></i> Vous n'avez pas encoré terminé la configuration des alertes pour les nouvelles commandes, rendez-vous dans <a href="settings">configuration</a> pour ne louper aucune commande !</p>
+                </div>
+
                 <table class="table" id="table1">
                     <thead>
                     <tr>
@@ -28,6 +32,7 @@ $description = "";
                         <th class="text-center">N° de commande</th>
                         <th class="text-center">Montant</th>
                         <th class="text-center">Status</th>
+                        <th class="text-center">Paiement</th>
                         <th class="text-center">Date</th>
                         <th class="text-center">Gérer</th>
                     </tr>
@@ -41,11 +46,12 @@ $description = "";
                                 <?php $totalPrice = 0;foreach ($orderItemsModel->getOrdersItemsByOrderId($inProgressOrder->getOrderId()) as $orderItem):$totalPrice += $orderItem->getItem()->getPrice();endforeach; ?>
                                 <?= "<b style='color: #6f6fad'>" . $totalPrice ." € </b>" ?>
                             </td>
-                            <td><?= $inProgressOrder->getOrderStatus() ?></td>
+                            <td><?= $inProgressOrder->getAdminStatus() ?></td>
+                            <td><?= $inProgressOrder->getPaymentName() ?></td>
                             <td><?= $inProgressOrder->getOrderCreated() ?></td>
                             <td>
-                                <a href="">
-                                    <i class="text-primary fa-solid fa-gears"></i>
+                                <a href="orders/manage/<?= $inProgressOrder->getOrderId() ?>">
+                                    <i class="text-success fa-solid fa-wand-magic-sparkles"></i>
                                 </a>
                             </td>
                         </tr>
@@ -67,7 +73,7 @@ $description = "";
                 <h4>Terminé</h4>
             </div>
             <div class="card-body">
-                <table class="table" id="table1">
+                <table class="table" id="table2">
                     <thead>
                     <tr>
                         <th class="text-center">Utilisateur</th>
@@ -84,10 +90,10 @@ $description = "";
                             <td><?= $finishedOrder->getUser()->getPseudo() ?></td>
                             <td>#<?= $finishedOrder->getNumber() ?></td>
                             <td>
-                                <?php $totalPrice = 0;foreach ($orderItemsModel->getOrdersItemsByOrderId($finishedOrder->getOrderId()) as $orderItem):$totalPrice += $orderItem->getItem()->getPrice();endforeach; ?>
+                                <?php $totalPrice = 0;foreach ($orderItemsModel->getOrdersItemsByOrderId($finishedOrder->getOrderId()) as $orderItem):$totalPrice += $orderItem->getOrderItemPrice();endforeach; ?>
                                 <?= "<b style='color: #6f6fad'>" . $totalPrice ." € </b>" ?>
                             </td>
-                            <td><?= $finishedOrder->getOrderStatus() ?></td>
+                            <td><?= $finishedOrder->getAdminStatus() ?></td>
                             <td><?= $finishedOrder->getOrderCreated() ?></td>
                             <td>
                                 <a href="">
@@ -107,7 +113,7 @@ $description = "";
                 <h4>Terminé avec problème</h4>
             </div>
             <div class="card-body">
-                <table class="table" id="table1">
+                <table class="table" id="table3">
                     <thead>
                     <tr>
                         <th class="text-center">Utilisateur</th>
@@ -126,7 +132,7 @@ $description = "";
                                 <?php $totalPrice = 0;foreach ($orderItemsModel->getOrdersItemsByOrderId($errorOrder->getOrderId()) as $orderItem):$totalPrice += $orderItem->getItem()->getPrice();endforeach; ?>
                                 <?= "<b style='color: #6f6fad'>" . $totalPrice ." € </b>" ?>
                             </td>
-                            <td><?= $errorOrder->getOrderStatus() ?></td>
+                            <td><?= $errorOrder->getAdminStatus() ?></td>
                             <td><?= $errorOrder->getOrderCreated() ?></td>
                         </tr>
                     <?php endforeach; ?>

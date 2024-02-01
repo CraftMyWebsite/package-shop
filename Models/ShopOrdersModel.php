@@ -45,6 +45,7 @@ class ShopOrdersModel extends AbstractModel
             $res["shop_order_status"],
             $shipping,
             $deliveryAddress,
+            $res["shop_used_payment_method"] ?? null,
             $res["shop_order_created_at"],
             $res["shop_order_updated_at"]
         );
@@ -81,7 +82,7 @@ class ShopOrdersModel extends AbstractModel
     public function getInProgressOrders(): array
     {
 
-        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (1, 2, 0);";
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (1, 2, 0) ORDER BY shop_order_status ASC;";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -174,15 +175,16 @@ class ShopOrdersModel extends AbstractModel
         return $res->fetch(0)['total_quantity'];
     }
 
-    public function createOrder(int $userId, int $shippingId, int $deliveryAddress): ?ShopOrdersEntity
+    public function createOrder(int $userId, int $shippingId, int $deliveryAddress, string $paymentName): ?ShopOrdersEntity
     {
         $var = array(
             "shop_user_id" => $userId,
             "shops_shipping_id" => $shippingId,
+            "payment_name" => $paymentName,
             "shop_delivery_user_address_id" => $deliveryAddress
         );
 
-        $sql = "INSERT INTO cmw_shops_orders (shop_user_id, shops_shipping_id, shop_delivery_user_address_id) VALUES (:shop_user_id, :shops_shipping_id, :shop_delivery_user_address_id)";
+        $sql = "INSERT INTO cmw_shops_orders (shop_user_id, shops_shipping_id, shop_delivery_user_address_id, shop_used_payment_method) VALUES (:shop_user_id, :shops_shipping_id, :shop_delivery_user_address_id, :payment_name)";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

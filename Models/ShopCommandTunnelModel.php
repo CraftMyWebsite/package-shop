@@ -56,6 +56,7 @@ class ShopCommandTunnelModel extends AbstractModel
             $user,
             $shipping,
             $deliveryUserAddress,
+            $res["shop_payment_method_name"] ?? null,
             $res["shop_command_tunnel_created_at"] ?? null,
             $res["shop_command_tunnel_updated_at"] ?? null
         );
@@ -149,6 +150,21 @@ class ShopCommandTunnelModel extends AbstractModel
         $req->execute($var);
     }
 
+    public function setPaymentName(int $userId, string $paymentName): void
+    {
+        $var = array(
+            "shop_user_id" => $userId,
+            "payment_name" => $paymentName,
+        );
+
+        $sql = "UPDATE cmw_shops_command_tunnel SET shop_payment_method_name = :payment_name WHERE shop_user_id = :shop_user_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
     public function clearTunnel(int $userId): bool
     {
         $sql = "DELETE FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id";
@@ -186,6 +202,7 @@ class ShopCommandTunnelModel extends AbstractModel
             $user,
             $shipping,
             $deliveryUserAddress,
+            $res["shop_payment_method_name"] ?? null,
             $res["shop_command_tunnel_created_at"] ?? null,
             $res["shop_command_tunnel_updated_at"] ?? null
         );

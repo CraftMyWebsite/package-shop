@@ -12,6 +12,7 @@ class ShopCommandTunnelEntity
     private ?UserEntity $user;
     private ?ShopShippingEntity $shipping;
     private ?ShopDeliveryUserAddressEntity $shopDeliveryUserAddress;
+    private ?string $paymentName;
     private ?string $tunnelCreated;
     private ?string $tunnelUpdated;
 
@@ -21,16 +22,18 @@ class ShopCommandTunnelEntity
      * @param \CMW\Entity\Users\UserEntity|null $user
      * @param \CMW\Entity\Shop\ShopShippingEntity|null $shipping
      * @param \CMW\Entity\Shop\ShopDeliveryUserAddressEntity|null $shopDeliveryUserAddress
+     * @param string|null $paymentName
      * @param string|null $tunnelCreated
      * @param string|null $tunnelUpdated
      */
-    public function __construct(?int $tunnelId, ?int $tunnelStep, ?UserEntity $user, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $shopDeliveryUserAddress, ?string $tunnelCreated, ?string $tunnelUpdated)
+    public function __construct(?int $tunnelId, ?int $tunnelStep, ?UserEntity $user, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $shopDeliveryUserAddress, ?string $paymentName, ?string $tunnelCreated, ?string $tunnelUpdated)
     {
         $this->tunnelId = $tunnelId;
         $this->tunnelStep = $tunnelStep;
         $this->user = $user;
         $this->shipping = $shipping;
         $this->shopDeliveryUserAddress = $shopDeliveryUserAddress;
+        $this->paymentName = $paymentName;
         $this->tunnelCreated = $tunnelCreated;
         $this->tunnelUpdated = $tunnelUpdated;
     }
@@ -58,6 +61,11 @@ class ShopCommandTunnelEntity
     public function getShopDeliveryUserAddress(): ?ShopDeliveryUserAddressEntity
     {
         return $this->shopDeliveryUserAddress;
+    }
+
+    public function getPaymentName(): ?string
+    {
+        return $this->paymentName;
     }
 
     public function getCreated(): string

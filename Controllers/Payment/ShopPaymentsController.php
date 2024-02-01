@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Payment;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Entity\Users\UserEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Event\Users\RegisterEvent;
@@ -90,16 +91,13 @@ class ShopPaymentsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
-    private function onPaymentComplete(): void
+    public function handleCreateOrder(UserEntity $user): void
     {
-        $user = UsersModel::getCurrentUser();
         //TODO : Gestion physique / virtuel
         $sessionId = session_id();
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
 
-        //TODO : Ajout de la methode de paiement utiliser
-        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId());
+        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId(), $commandTunnel->getPaymentName());
 
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($user->getId(), $sessionId);
 
@@ -113,8 +111,18 @@ class ShopPaymentsController extends AbstractController
             }
         }
 
+        //handleNotification
+
         ShopCartsModel::getInstance()->clearUserCart($user->getId());
         ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
+    }
+
+    #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
+    private function onPaymentComplete(): void
+    {
+        $user = UsersModel::getCurrentUser();
+
+        $this->handleCreateOrder($user);
 
         Flash::send(Alert::SUCCESS, "Achat effectué", "Merci pour votre achat " . $user->getPseudo());
 

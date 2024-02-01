@@ -232,6 +232,8 @@ class ShopCommandController extends AbstractController
 
         $paymentName = FilterManager::filterInputStringPost('paymentName');
 
+        ShopCommandTunnelModel::getInstance()->setPaymentName($user->getId(), $paymentName);
+
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName($paymentName);
 
         if (!$paymentMethod){
