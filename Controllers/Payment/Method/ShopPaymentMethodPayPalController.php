@@ -136,7 +136,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         }
 
         if (!isset($json->access_token)) {
-            throw new ShopPaymentException(message: "Unable to fin access_token");
+            throw new ShopPaymentException(message: "Unable to find access_token");
         }
 
         curl_close($curl);
