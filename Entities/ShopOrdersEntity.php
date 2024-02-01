@@ -103,7 +103,7 @@ class ShopOrdersEntity {
      * @return string
      * @desc : return the order status code as integer. Between -2 and 3 | -2 = refunded | -1 = canceled | 0 = new order | 1 = ready to send | 2 = delivery in progress | 3 = finished
      */
-    public function getStatusCode(): string
+    public function getStatusCode(): int
     {
         return $this->orderStatus ;
     }
