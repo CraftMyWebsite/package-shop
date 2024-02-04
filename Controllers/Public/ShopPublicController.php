@@ -73,16 +73,6 @@ class ShopPublicController extends AbstractController
         $view->view();
     }
 
-    #[Link("/history", Link::GET, [], "/shop")]
-    public function publicHistoryView(): void
-    {
-        $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
-
-        $view = new View("Shop", "Users/history");
-        $view->addVariableList(["itemInCart" => $itemInCart]);
-        $view->view();
-    }
-
     #[Link("/settings", Link::GET, [], "/shop")]
     public function publicSettingsView(): void
     {

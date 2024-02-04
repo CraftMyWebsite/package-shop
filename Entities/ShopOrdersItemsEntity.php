@@ -4,6 +4,8 @@ namespace CMW\Entity\Shop;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
+use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\ShopImagesModel;
 
 class ShopOrdersItemsEntity {
     private int $orderItemId;
@@ -75,5 +77,14 @@ class ShopOrdersItemsEntity {
     public function getOrderItemUpdated(): string
     {
         return CoreController::formatDate($this->orderItemUpdated);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstImageItemUrl(): string
+    {
+        $return = ShopImagesModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
+        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $return;
     }
 }

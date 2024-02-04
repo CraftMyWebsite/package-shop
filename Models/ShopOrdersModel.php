@@ -54,26 +54,24 @@ class ShopOrdersModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\ShopOrdersEntity []
      */
-    public function getOrders(): array
+    public function getOrdersByUserId(int $userId): array
     {
-
-        $sql = "SELECT shop_order_id FROM cmw_shops_orders";
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_user_id = :user_id ORDER BY shop_order_created_at DESC";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute()) {
-            return array();
+        if (!$res->execute(["user_id" => $userId])) {
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($order = $res->fetch()) {
             $toReturn[] = $this->getOrdersById($order["shop_order_id"]);
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -206,5 +204,19 @@ class ShopOrdersModel extends AbstractModel
         $sql = "UPDATE cmw_shops_orders SET shop_order_number = :number WHERE shop_order_id = :shop_order_id";
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute($data);
+    }
+
+    public function toSendStep(int $orderId): void
+    {
+        $var = array(
+            "order_id" => $orderId,
+        );
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_status = 1 WHERE shop_order_id = :order_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
     }
 }

@@ -7,6 +7,7 @@ use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
@@ -70,7 +71,7 @@ class ShopCartEntity
      */
     public function getFirstImageItemUrl(): string
     {
-        $return = ShopCartsModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
+        $return = ShopImagesModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
         return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $return;
     }
 

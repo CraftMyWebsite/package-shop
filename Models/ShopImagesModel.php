@@ -110,4 +110,24 @@ class ShopImagesModel extends AbstractModel
             Flash::send(Alert::ERROR, "Boutique", "Impossible d'envoyer une image pour la raison :" . $imageName);
         }
     }
+
+    /**
+     * @return string
+     * @desc Get the first image by item Id
+     */
+    public function getFirstImageByItemId(int $itemId): string
+    {
+        $sql = "SELECT `shop_image_name` FROM cmw_shops_images WHERE shop_item_id = :shop_item_id LIMIT 1;";
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if (!$req->execute(["shop_item_id" => $itemId])) {
+            return 0;
+        }
+        $res = $req->fetch();
+        if (!$res) {
+            return 0;
+        }
+        return $res['shop_image_name'] ?? 0;
+    }
 }

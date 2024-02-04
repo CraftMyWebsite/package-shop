@@ -29,13 +29,13 @@ class ShopOrdersItemsVariantesModel extends AbstractModel
      */
     public function getOrdersItemsVariantById(int $id): ?ShopOrdersItemsVariantesEntity
     {
-        $sql = "SELECT * FROM cmw_shops_cart_items_variantes WHERE shop_cart_items_variantes_id = :shop_cart_items_variantes_id";
+        $sql = "SELECT * FROM cmw_shops_orders_items_variantes WHERE shop_orders_items_variantes_id = :shop_orders_items_variantes_id";
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_cart_items_variantes_id" => $id])) {
+        if (!$res->execute(["shop_orders_items_variantes_id" => $id])) {
             return null;
         }
 
@@ -79,7 +79,7 @@ class ShopOrdersItemsVariantesModel extends AbstractModel
      * @param int $id
      * @return \CMW\Entity\Shop\ShopCartVariantesEntity []
      */
-    public function getShopItemVariantValueByOrderId(int $id): array
+    public function getShopItemVariantValueByOrderItemId(int $id): array
     {
         $sql = "SELECT * FROM cmw_shops_orders_items_variantes WHERE shop_order_item_id = :shop_order_item_id";
 
@@ -94,7 +94,7 @@ class ShopOrdersItemsVariantesModel extends AbstractModel
         $toReturn = [];
 
         while ($variants = $res->fetch()) {
-            $toReturn[] = $this->getOrdersItemsVariantById($variants["shop_cart_items_variantes_id"]);
+            $toReturn[] = $this->getOrdersItemsVariantById($variants["shop_orders_items_variantes_id"]);
         }
 
         return $toReturn;
