@@ -46,6 +46,7 @@ class ShopOrdersModel extends AbstractModel
             $shipping,
             $deliveryAddress,
             $res["shop_used_payment_method"] ?? null,
+            $res["shop_shipping_link"] ?? null,
             $res["shop_order_created_at"],
             $res["shop_order_updated_at"]
         );
@@ -80,7 +81,7 @@ class ShopOrdersModel extends AbstractModel
     public function getInProgressOrders(): array
     {
 
-        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (1, 2, 0) ORDER BY shop_order_status ASC;";
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (1, 2, 0, -1) ORDER BY shop_order_status ASC;";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -130,7 +131,7 @@ class ShopOrdersModel extends AbstractModel
     public function getErrorOrders(): array
     {
 
-        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status IN (-1, -2);";
+        $sql = "SELECT shop_order_id FROM cmw_shops_orders WHERE shop_order_status = -2;";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -213,6 +214,63 @@ class ShopOrdersModel extends AbstractModel
         );
 
         $sql = "UPDATE cmw_shops_orders SET shop_order_status = 1 WHERE shop_order_id = :order_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function toFinalStep(int $orderId, ?string $shippingLink): void
+    {
+        $var = array(
+            "order_id" => $orderId,
+            "shipping_link" => $shippingLink,
+        );
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_status = 2, shop_shipping_link = :shipping_link WHERE shop_order_id = :order_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function endOrder(int $orderId): void
+    {
+        $var = array(
+            "order_id" => $orderId,
+        );
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_status = 3 WHERE shop_order_id = :order_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function toCancelStep(int $orderId): void
+    {
+        $var = array(
+            "order_id" => $orderId,
+        );
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_status = -1 WHERE shop_order_id = :order_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function refundStep(int $orderId): void
+    {
+        $var = array(
+            "order_id" => $orderId,
+        );
+
+        $sql = "UPDATE cmw_shops_orders SET shop_order_status = -2 WHERE shop_order_id = :order_id";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

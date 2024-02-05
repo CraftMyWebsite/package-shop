@@ -4,6 +4,7 @@
 namespace CMW\Controller\Shop\Public;
 
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
@@ -15,6 +16,7 @@ use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Shop\ShopItemVariantModel;
 use CMW\Model\Shop\ShopItemVariantValueModel;
 use CMW\Model\Users\UsersModel;
+use CMW\Utils\Redirect;
 
 
 /**
@@ -76,6 +78,10 @@ class ShopPublicController extends AbstractController
     #[Link("/settings", Link::GET, [], "/shop")]
     public function publicSettingsView(): void
     {
+        $userId = UsersModel::getCurrentUser()?->getId();
+        if (!$userId) {
+            Redirect::redirect(EnvManager::getInstance()->getValue("PATH_SUBFOLDER")."login");
+        }
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "Users/settings");

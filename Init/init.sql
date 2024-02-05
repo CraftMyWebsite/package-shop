@@ -286,6 +286,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_orders
     shops_shipping_id             INT         NULL,
     shop_delivery_user_address_id INT         NULL,
     shop_used_payment_method      VARCHAR(50) NULL,
+    shop_shipping_link            VARCHAR(255)NULL,
     shop_order_created_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_order_updated_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_orders FOREIGN KEY (shop_user_id)

@@ -94,6 +94,7 @@ class ShopPaymentsController extends AbstractController
     public function handleCreateOrder(UserEntity $user): void
     {
         //TODO : Gestion physique / virtuel
+        //TODO : Baisser les stock
         $sessionId = session_id();
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
 

@@ -1,6 +1,4 @@
 <?php
-use CMW\Manager\Lang\LangManager;
-use CMW\Manager\Security\SecurityManager;
 
 /* @var \CMW\Entity\Shop\ShopOrdersEntity [] $inProgressOrders */
 /* @var \CMW\Entity\Shop\ShopOrdersEntity [] $errorOrders */
@@ -97,7 +95,7 @@ $description = "";
                             <td><?= $finishedOrder->getOrderCreated() ?></td>
                             <td>
                                 <a href="">
-                                    <i class="text-primary fa-solid fa-gears"></i>
+                                    <i class="text-primary fa-solid fa-eye"></i>
                                 </a>
                             </td>
                         </tr>
@@ -110,7 +108,7 @@ $description = "";
     <div class="col-12 col-lg-6">
         <div class="card">
             <div class="card-header">
-                <h4>Terminé avec problème</h4>
+                <h4>Terminé et remboursé</h4>
             </div>
             <div class="card-body">
                 <table class="table" id="table3">

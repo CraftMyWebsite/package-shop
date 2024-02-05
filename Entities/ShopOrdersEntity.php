@@ -13,6 +13,7 @@ class ShopOrdersEntity {
     private ?ShopShippingEntity $shipping;
     private ?ShopDeliveryUserAddressEntity $deliveryAddress;
     private ?string $paymentName;
+    private ?string $shippingLink;
     private string $orderCreated;
     private string $orderUpdated;
 
@@ -24,10 +25,11 @@ class ShopOrdersEntity {
      * @param ShopShippingEntity|null $shipping
      * @param ShopDeliveryUserAddressEntity|null $deliveryAddress
      * @param string|null $paymentName
+     * @param string|null $shippingLink
      * @param string $orderCreated
      * @param string $orderUpdated
      */
-    public function __construct(int $orderId, ?UserEntity $user, string $orderNumber, int $orderStatus, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $deliveryAddress, ?string $paymentName, string $orderCreated, string $orderUpdated)
+    public function __construct(int $orderId, ?UserEntity $user, string $orderNumber, int $orderStatus, ?ShopShippingEntity $shipping, ?ShopDeliveryUserAddressEntity $deliveryAddress, ?string $paymentName, ?string $shippingLink, string $orderCreated, string $orderUpdated)
     {
         $this->orderId = $orderId;
         $this->user = $user;
@@ -36,6 +38,7 @@ class ShopOrdersEntity {
         $this->shipping = $shipping;
         $this->deliveryAddress = $deliveryAddress;
         $this->paymentName = $paymentName;
+        $this->shippingLink = $shippingLink;
         $this->orderCreated = $orderCreated;
         $this->orderUpdated = $orderUpdated;
     }
@@ -61,7 +64,7 @@ class ShopOrdersEntity {
             return "Remboursé";
         }
         if ($this->orderStatus == -1) {
-            return "Annulé";
+            return "<b style='color: orangered'>Annulé !</b>";
         }
         if ($this->orderStatus == 0) {
             return "<i style='color: orangered' class='fa-solid fa-triangle-exclamation fa-fade'></i> Nouvelle commande !";
@@ -83,7 +86,7 @@ class ShopOrdersEntity {
             return "Remboursé" ;
         }
         if ($this->orderStatus == -1) {
-            return "Annulé";
+            return "Annulé (Remboursement en cours ...)";
         }
         if ($this->orderStatus == 0) {
             return "Commande en préparation";
@@ -121,6 +124,10 @@ class ShopOrdersEntity {
     public function getPaymentName(): ?string
     {
         return $this->paymentName;
+    }
+    public function getShippingLink(): ?string
+    {
+        return $this->shippingLink;
     }
 
     public function getOrderCreated(): string

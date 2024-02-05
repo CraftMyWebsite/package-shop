@@ -4,6 +4,7 @@
 namespace CMW\Controller\Shop\Public\History;
 
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
@@ -11,6 +12,7 @@ use CMW\Model\Shop\ShopOrdersItemsModel;
 use CMW\Model\Shop\ShopOrdersItemsVariantesModel;
 use CMW\Model\Shop\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
+use CMW\Utils\Redirect;
 
 
 /**
@@ -25,6 +27,10 @@ class ShopHistoryController extends AbstractController
     public function publicHistoryView(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
+        if (!$userId) {
+            Redirect::redirect(EnvManager::getInstance()->getValue("PATH_SUBFOLDER")."login");
+        }
+
         $historyOrders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
         $OrderItemsModel = ShopOrdersItemsModel::getInstance();
         $variantItemsModel = ShopOrdersItemsVariantesModel::getInstance();

@@ -173,6 +173,7 @@ class ShopActionsCartController extends AbstractController
             Flash::send(Alert::SUCCESS, "Boutique",
                 "Nouvel article ajouté au panier !");
         } else {
+            // TODO : Si l'article est une variante il faut verifier que l'utilisateur à choisis la même variante, si ce n'est pas le cas il faut ajouter l'article en plus !
             ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
             Flash::send(Alert::SUCCESS, "Boutique",
                 "Vous aviez déjà cet article, nous avons rajouté une quantité pour vous");
