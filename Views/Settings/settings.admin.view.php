@@ -1,6 +1,6 @@
 <?php
 
-use CMW\Controller\Shop\ShopSettingsController;
+use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
