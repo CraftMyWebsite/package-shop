@@ -4,6 +4,7 @@ namespace CMW\Model\Shop;
 
 use CMW\Entity\Shop\ShopImageEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Lang\LangManager;
@@ -129,5 +130,60 @@ class ShopImagesModel extends AbstractModel
             return 0;
         }
         return $res['shop_image_name'] ?? 0;
+    }
+
+    /**
+     * @return ?string
+     * @desc Get the first image by item Id
+     */
+    public function getDefaultImg(): string
+    {
+        $sql = "SELECT shop_image_name FROM cmw_shops_images WHERE shop_default_image = 1;";
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if (!$req->execute()) {
+            return "null";
+        }
+        $res = $req->fetch();
+        if (!$res) {
+            return "null";
+        }
+        if ($res['shop_image_name'] == "default") {
+            return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "App/Package/Shop/Views/Settings/Images/default.png";
+        } else {
+            return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $res['shop_image_name'];
+        }
+    }
+
+    /**
+     * @param array $image
+     * @return void
+     * @throws \JsonException
+     */
+    public function setDefaultImage(array $image): void
+    {
+        $imageName = ImagesManager::upload($image, "Shop");
+        $var = array(
+            "image_name" => $imageName,
+        );
+
+        $sql = "UPDATE cmw_shops_images SET shop_image_name = :image_name WHERE shop_default_image = 1";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function resetDefaultImage(): void
+    {
+
+        $sql = "UPDATE cmw_shops_images SET shop_image_name = 'default' WHERE shop_default_image = 1";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute();
     }
 }

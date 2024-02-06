@@ -33,6 +33,7 @@ class ShopPublicController extends AbstractController
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $sessionId = session_id();
 
@@ -40,7 +41,7 @@ class ShopPublicController extends AbstractController
 
         $view = new View("Shop", "Main/main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
-            $imagesItem, "itemInCart" => $itemInCart]);
+            $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart]);
         $view->view();
     }
 
@@ -51,10 +52,11 @@ class ShopPublicController extends AbstractController
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $view = new View("Shop", "Main/cat");
-        $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
+        $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
         $view->view();
     }
 
@@ -66,12 +68,13 @@ class ShopPublicController extends AbstractController
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
 
         $view = new View("Shop", "Main/item");
-        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel]);
+        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel]);
         $view->view();
     }
 

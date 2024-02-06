@@ -7,6 +7,7 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopOrdersItemsModel;
 use CMW\Model\Shop\ShopOrdersItemsVariantesModel;
 use CMW\Model\Shop\ShopOrdersModel;
@@ -49,27 +50,28 @@ class ShopOrdersController extends AbstractController
         $order = ShopOrdersModel::getInstance()->getOrdersById($orderId);
         $orderItems = ShopOrdersItemsModel::getInstance()->getOrdersItemsByOrderId($orderId);
         $itemsVariantes = ShopOrdersItemsVariantesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $orderStatus = $order->getStatusCode();
 
         if ($orderStatus == 0) {
             View::createAdminView('Shop', 'Orders/Manage/new')
-                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes])
+                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes,"defaultImage" => $defaultImage])
                 ->view();
         }
         if ($orderStatus == 1) {
             View::createAdminView('Shop', 'Orders/Manage/send')
-                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes])
+                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes,"defaultImage" => $defaultImage])
                 ->view();
         }
         if ($orderStatus == 2) {
             View::createAdminView('Shop', 'Orders/Manage/finish')
-                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes])
+                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes,"defaultImage" => $defaultImage])
                 ->view();
         }
         if ($orderStatus == -1) {
             View::createAdminView('Shop', 'Orders/Manage/cancel')
-                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes])
+                ->addVariableList(["order" => $order,"orderItems" => $orderItems,"itemsVariantes" => $itemsVariantes,"defaultImage" => $defaultImage])
                 ->view();
         }
     }

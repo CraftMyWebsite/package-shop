@@ -3,6 +3,7 @@
 /* @var \CMW\Entity\Shop\ShopOrdersEntity $order */
 /* @var \CMW\Entity\Shop\ShopOrdersItemsEntity [] $orderItems */
 /* @var CMW\Model\Shop\ShopOrdersItemsVariantesModel $itemsVariantes */
+/* @var \CMW\Model\Shop\ShopImagesModel $defaultImage */
 
 use CMW\Manager\Security\SecurityManager;
 
@@ -36,9 +37,11 @@ $description = "";
             </div>
             <div class="card-body row">
                 <?php foreach ($orderItems as $orderItem):?>
-                    <div style="align-items: baseline" class="d-flex justify-between">
+                    <div style="align-items: baseline" class="d-flex justify-between mb-2">
                         <?php if ($orderItem->getFirstImageItemUrl() !== "/Public/Uploads/Shop/0"): ?>
                             <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $orderItem->getFirstImageItemUrl() ?>" alt="Panier"></div>
+                        <?php else: ?>
+                            <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $defaultImage ?>" alt="Panier"></div>
                         <?php endif; ?>
                         <p><?= $orderItem->getItem()->getName() ?> |
                             Quantité : <b><?= $orderItem->getOrderItemQuantity() ?></b> |

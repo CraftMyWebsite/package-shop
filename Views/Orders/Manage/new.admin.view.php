@@ -3,6 +3,7 @@
 /* @var \CMW\Entity\Shop\ShopOrdersEntity $order */
 /* @var \CMW\Entity\Shop\ShopOrdersItemsEntity [] $orderItems */
 /* @var CMW\Model\Shop\ShopOrdersItemsVariantesModel $itemsVariantes */
+/* @var \CMW\Model\Shop\ShopImagesModel $defaultImage */
 
 use CMW\Manager\Security\SecurityManager;
 
@@ -29,7 +30,9 @@ $description = "";
                                 <img style="width: 10rem; height: 10rem; object-fit: cover" src="<?= $orderItem->getFirstImageItemUrl() ?>" alt="Panier">
                             </div>
                             <?php else: ?>
-                                <p class="text-center">Aucune image pour cet article</p>
+                            <div class="text-center" >
+                                <img style="width: 10rem; height: 10rem; object-fit: cover" src="<?= $defaultImage ?>" alt="..."/>
+                            </div>
                             <?php endif; ?>
                             <h4 class="text-center"><?= $orderItem->getItem()->getName() ?></h4>
                             <br>

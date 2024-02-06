@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
     shop_image_name       VARCHAR(50) NOT NULL,
     shop_category_id      INT         NULL,
     shop_item_id          INT         NULL,
+    shop_default_image    INT         NOT NULL DEFAULT 0,
     shop_image_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_image_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_category_id_images FOREIGN KEY (shop_category_id)
@@ -391,3 +392,5 @@ ALTER TABLE `cmw_shops_items`
             REFERENCES cmw_shops_images (`shop_image_id`) ON DELETE SET NULL;
 INSERT INTO cmw_shops_settings (`shop_settings_key`, `shop_settings_value`)
 VALUES ('currency', 'EUR');
+
+INSERT INTO cmw_shops_images (`shop_image_name`,`shop_default_image`) VALUES ('default','1');

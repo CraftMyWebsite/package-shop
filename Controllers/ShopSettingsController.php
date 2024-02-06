@@ -8,6 +8,7 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
@@ -59,11 +60,40 @@ class ShopSettingsController extends AbstractController
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
         $currentCurrency = ShopSettingsModel::getInstance()->getSettingValue("currency");
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'settings')
-            ->addVariableList(["currentCurrency" => $currentCurrency])
+            ->addVariableList(["currentCurrency" => $currentCurrency,"defaultImage" => $defaultImage])
             ->view();
     }
+
+    #[Link("/settings/apply_default_image", Link::POST, [], "/cmw-admin/shop")]
+    public function shopApplyDefaultImagePost(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
+
+        if (isset($_FILES['defaultPicture']) && $_FILES['defaultPicture']['error'] === UPLOAD_ERR_OK) {
+            $image = $_FILES['defaultPicture'];
+            ShopImagesModel::getInstance()->setDefaultImage($image);
+            Flash::send(Alert::SUCCESS, "Boutique", "Nouvelle image ajouté");
+        } else {
+            Flash::send(Alert::ERROR, "Boutique", "Une erreur est survenue lors de l'ajout de l'image");
+        }
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/settings/reset_default_image", Link::POST, [], "/cmw-admin/shop")]
+    public function shopResetDefaultImagePost(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
+
+        ShopImagesModel::getInstance()->resetDefaultImage();
+
+        Flash::send(Alert::SUCCESS, "Boutique", "Image par défaut réinitialisé");
+
+        Redirect::redirectPreviousRoute();
+    }
+
 
 
     #[Link("/settings/apply_currency", Link::POST, [], "/cmw-admin/shop")]

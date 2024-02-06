@@ -8,6 +8,7 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopOrdersItemsModel;
 use CMW\Model\Shop\ShopOrdersItemsVariantesModel;
 use CMW\Model\Shop\ShopOrdersModel;
@@ -34,9 +35,10 @@ class ShopHistoryController extends AbstractController
         $historyOrders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
         $OrderItemsModel = ShopOrdersItemsModel::getInstance();
         $variantItemsModel = ShopOrdersItemsVariantesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $view = new View("Shop", "Users/history");
-        $view->addVariableList(["historyOrders" => $historyOrders, "OrderItemsModel" => $OrderItemsModel, "variantItemsModel" => $variantItemsModel]);
+        $view->addVariableList(["historyOrders" => $historyOrders, "OrderItemsModel" => $OrderItemsModel,"defaultImage" => $defaultImage, "variantItemsModel" => $variantItemsModel]);
         $view->view();
     }
 }

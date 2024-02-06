@@ -38,9 +38,10 @@ class ShopItemsController extends AbstractController
 
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Items/manage')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
@@ -53,9 +54,10 @@ class ShopItemsController extends AbstractController
 
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Items/archived')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
@@ -69,9 +71,10 @@ class ShopItemsController extends AbstractController
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
         $items = ShopItemsModel::getInstance()->getShopItemByCat($catId);
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Items/filterCat')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem, "thisCat" => $thisCat])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "thisCat" => $thisCat])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
@@ -150,9 +153,10 @@ class ShopItemsController extends AbstractController
         $categoryModel = ShopCategoriesModel::getInstance();
         $item = ShopItemsModel::getInstance()->getShopItemsById($id);
         $imagesItem = ShopImagesModel::getInstance()->getShopImagesByItem($id);
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Items/edit')
-            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item, "imagesItem" => $imagesItem])
+            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage])
             ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
                 "Admin/Resources/Vendors/Tinymce/Config/full.js"
             )

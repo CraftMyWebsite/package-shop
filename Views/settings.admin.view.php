@@ -7,7 +7,8 @@ use CMW\Manager\Security\SecurityManager;
 $title = "";
 $description = "";
 
-/* @VAR \CMW\Model\Shop\SettingsModel\ $currentCurrency */
+/* @var \CMW\Model\Shop\SettingsModel $currentCurrency */
+/* @var \CMW\Model\Shop\ShopImagesModel $defaultImage */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -100,6 +101,36 @@ $description = "";
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Image d'article par default</h4>
+            </div>
+            <div class="card-body">
+                <form id="apply_default_image" action="settings/apply_default_image" method="post" enctype="multipart/form-data">
+                    <?php (new SecurityManager())->insertHiddenToken() ?>
+                    <div class="text-center">
+                        <img src="<?= $defaultImage ?>" alt="Default image">
+                    </div>
+                    <input class="mt-2 form-control form-control-lg" type="file"
+                           accept=".png, .jpg, .jpeg, .webp, .gif"
+                           name="defaultPicture">
+                </form>
+                <div class="d-flex justify-content-between mt-4">
+                    <form action="settings/reset_default_image" method="post">
+                        <?php (new SecurityManager())->insertHiddenToken() ?>
+                        <button type="submit" class="btn btn-warning">
+                            Reset
+                        </button>
+                    </form>
+                    <button form="apply_default_image" type="submit" class="btn btn-primary">
+                        <?= LangManager::translate("core.btn.save") ?>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

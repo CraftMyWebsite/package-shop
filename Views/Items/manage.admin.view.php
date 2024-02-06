@@ -11,6 +11,7 @@ $description = "";
 
 /* @var CMW\Model\Shop\ShopItemsModel $items */
 /* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
+/* @var \CMW\Model\Shop\ShopImagesModel $defaultImage */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -95,7 +96,10 @@ $description = "";
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     <?php else: ?>
-                                <p>Pas d'images pour cet article</p>
+
+                                    <img style="width: 12rem; max-height: 9rem; object-fit: contain"
+                                         src="<?= $defaultImage ?>" class="p-2 d-block"
+                                         alt="..."/>
                                 <?php endif; ?>
                             </td>
                             <td style="max-width: 5rem;">

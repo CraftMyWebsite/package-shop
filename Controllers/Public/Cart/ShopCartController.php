@@ -34,6 +34,7 @@ class ShopCartController extends AbstractController
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, session_id());
         $asideCartContent = ShopCartsModel::getInstance()->getShopCartsAsideByUserId($userId, session_id());
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemsVariantes = ShopCartVariantesModel::getInstance();
 
         $this->handleSessionHealth($sessionId);
@@ -50,7 +51,7 @@ class ShopCartController extends AbstractController
         }
 
         $view = new View("Shop", "Cart/cart");
-        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes]);
+        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes]);
         $view->view();
     }
 

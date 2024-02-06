@@ -41,6 +41,7 @@ class ShopCommandController extends AbstractController
         $sessionId = session_id();
         $cartContent = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, $sessionId);
         $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
 
@@ -59,14 +60,14 @@ class ShopCommandController extends AbstractController
 
         if (empty($userAddresses)) {
             $view = new View("Shop", "Command/newAddress");
-            $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "userAddresses" => $userAddresses]);
+            $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses]);
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
                 $view = new View("Shop", "Command/address");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "userAddresses" => $userAddresses]);
+                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses]);
                 $view->view();
             }
             if ($currentStep === 1) {
@@ -74,7 +75,7 @@ class ShopCommandController extends AbstractController
                 $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
                 $shippings = ShopShippingModel::getInstance()->getShopShipping();
                 $view = new View("Shop", "Command/delivery");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem, "selectedAddress" => $selectedAddress, "shippings" => $shippings]);
+                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings]);
                 $view->view();
             }
             if ($currentStep === 2) {
@@ -84,7 +85,7 @@ class ShopCommandController extends AbstractController
                 $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
                 $paymentMethods = ShopPaymentsController::getInstance()->getPaymentsMethods();
                 $view = new View("Shop", "Command/payment");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,
+                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
                     "paymentMethods" => $paymentMethods]);
                 $view->view();
