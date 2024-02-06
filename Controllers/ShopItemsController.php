@@ -13,11 +13,13 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\ShopCartsModel;
 use CMW\Model\Shop\ShopCategoriesModel;
 use CMW\Model\Shop\ShopImagesModel;
 use CMW\Model\Shop\ShopItemsModel;
 use CMW\Model\Shop\ShopItemVariantModel;
 use CMW\Model\Shop\ShopItemVariantValueModel;
+use CMW\Model\Shop\ShopOrdersItemsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
@@ -168,12 +170,37 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        ShopItemsModel::getInstance()->deleteShopItem($id);
+        $isInACart = ShopCartsModel::getInstance()->itemIsPresentInACart($id);
+        $isOrdered = ShopOrdersItemsModel::getInstance()->itemIsOrdered($id);
 
-        Flash::send(Alert::SUCCESS, "Success", "C'est chao");
+        if (!$isInACart || !$isOrdered) {
+            Flash::send(Alert::ERROR, "Boutique", "Suppression impossible. il est donc maintenant archivé !<br> Rendez-vous dans la page des archives pour en savoir plus");
+            if (!$isInACart) {
+                ShopItemsModel::getInstance()->archiveItem($id, 1);
+            }
+            if (!$isOrdered) {
+                ShopItemsModel::getInstance()->archiveItem($id, 2);
+            }
+        }
 
-        Emitter::send(ShopDeleteItemEvent::class, $id);
+        if ($isInACart && $isOrdered) {
+            ShopItemsModel::getInstance()->deleteShopItem($id);
+            Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'existe plus");
+            Emitter::send(ShopDeleteItemEvent::class, $id);
+        }
 
         Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/items/activate/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    public function adminActivateShopItem(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        ShopItemsModel::getInstance()->unarchivedItem($id);
+
+        Flash::send(Alert::SUCCESS, "Boutique", "L'article est à nouveau disponible");
+
+        Redirect::redirect("cmw-admin/shop/items");
     }
 }

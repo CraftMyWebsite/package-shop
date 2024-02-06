@@ -116,11 +116,20 @@ class ShopCatController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        ShopCategoriesModel::getInstance()->deleteShopCat($catId);
+        $itemInThisCat = ShopItemsModel::getInstance()->getShopItemByCat($catId);
+        $haveChild = ShopCategoriesModel::getInstance()->getSubsCat($catId);
 
-        Emitter::send(ShopDeleteCatEvent::class, $catId);
-
-        Flash::send(Alert::SUCCESS, "Success", "C'est chao");
+        if (empty($haveChild)) {
+            if (empty($itemInThisCat)) {
+                ShopCategoriesModel::getInstance()->deleteShopCat($catId);
+                Emitter::send(ShopDeleteCatEvent::class, $catId);
+                Flash::send(Alert::SUCCESS, "Boutique", "Cette catégorie n'existe plus.");
+            } else {
+                Flash::send(Alert::ERROR, "Boutique", "Vous devez supprimer tous les articles de cette catégorie avant de pouvoir faire ceci !");
+            }
+        } else {
+            Flash::send(Alert::ERROR, "Boutique", "Vous devez supprimer ou déplacer toutes les sous catégories avant de pouvoir faire ceci !");
+        }
 
         Redirect::redirectPreviousRoute();
     }

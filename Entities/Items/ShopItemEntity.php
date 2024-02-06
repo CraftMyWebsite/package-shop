@@ -28,9 +28,11 @@ class ShopItemEntity
     private ?int $itemUserLimit;
     private string $itemCreated;
     private string $itemUpdated;
+    private int $itemArchived;
+    private int $itemArchivedReason;
 
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated,int $itemArchived,int $itemArchivedReason)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -48,6 +50,8 @@ class ShopItemEntity
         $this->itemUserLimit = $itemUserLimit;
         $this->itemCreated = $itemCreated;
         $this->itemUpdated = $itemUpdated;
+        $this->itemArchived = $itemArchived;
+        $this->itemArchivedReason = $itemArchivedReason;
     }
 
     /**
@@ -189,6 +193,30 @@ class ShopItemEntity
     public function getUpdate(): string
     {
         return CoreController::formatDate($this->itemUpdated);
+    }
+
+    /**
+     * @return int
+     */
+    public function getArchived(): int
+    {
+        return $this->itemArchived;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArchivedReason(): string
+    {
+        if ($this->itemArchivedReason == 0) {
+            return "N'est pas archivé !";
+        }
+        if ($this->itemArchivedReason == 1) {
+            return "Est présent dans des paniers";
+        }
+        if ($this->itemArchivedReason == 2) {
+            return "A déjà fait l'objet d'une commande";
+        }
     }
 
     /**

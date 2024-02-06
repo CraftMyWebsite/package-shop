@@ -18,7 +18,7 @@ $description = "";
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-cubes-stacked"></i> <span class="m-lg-auto">Articles archivés</span></h3>
 </div>
-<div class="alert alert-warning">Les articles archivés sont souvent des articles qui ont déjà était commandé, vous en gardez une trace pour le suivie des commandes client, facture ...<br>Une fois archivés les articles ne sont plus activable</div>
+<div class="alert alert-warning">Les articles archivés sont souvent des articles qui ont déjà était commandé, vous en gardez une trace pour le suivie des commandes client, facture ...</div>
 
 <section>
     <div>
@@ -30,11 +30,10 @@ $description = "";
                     <tr>
                         <th class="text-center">Nom</th>
                         <th class="text-center">Images</th>
-                        <th class="text-center">Description</th>
-                        <th class="text-center">Catégorie</th>
+                        <th class="text-center">Raison d'archivage</th>
                         <th class="text-center">Prix</th>
                         <th class="text-center">Stock</th>
-                        <th class="text-center">En panier</th>
+                        <th class="text-center"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -98,14 +97,7 @@ $description = "";
                                 <?php endif; ?>
                             </td>
                             <td style="max-width: 5rem;">
-                                <?= $item->getDescription() ?>
-                            </td>
-                            <td class="text-center" style="width: fit-content;">
-                                <?php if ($item->getCategory()): ?>
-                                <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="text-primary"><?= $item->getCategory()->getName() ?></h6></a>
-                                <?php else: ?>
-                                <p>Aucune</p>
-                                <?php endif; ?>
+                                <?= $item->getArchivedReason() ?>
                             </td>
                             <td class="text-center">
                                 <?= $item->getPrice() ?> <?= ShopSettingsModel::getSettingValue('currency') ?>
@@ -114,9 +106,45 @@ $description = "";
                                 <?= $item->getFormatedStock() ?>
                             </td>
                             <td class="text-center">
-                                <?= $item->getQuantityInCart() ?>
+                                <a type="button" data-bs-toggle="modal"  data-bs-target="#active-<?= $item->getId() ?>">
+                                    <i data-bs-toggle="tooltip" title="Activer" class="text-success fas fa-rocket"></i>
+                                </a>
                             </td>
                         </tr>
+
+                        <!--
+                             --MODAL SUPPRESSION ARTICLE--
+                             -->
+                        <div class="modal fade text-left" id="active-<?= $item->getId() ?>" tabindex="-1"
+                             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                                 role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary">
+                                        <h5 class="modal-title white" id="myModalLabel160">Désarchivage
+                                            : <?= $item->getName() ?></h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Vos clients pourront à nouveau acheter cet article !</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light-secondary"
+                                                data-bs-dismiss="modal">
+                                            <i class="bx bx-x"></i>
+                                            <span
+                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
+                                        </button>
+                                        <a href="activate/<?= $item->getId() ?>"
+                                           class="btn btn-primary ml-1">
+                                            <i class="bx bx-check"></i>
+                                            <span
+                                                class="">Confirmer</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     <?php endforeach; ?>
                     </tbody>
                 </table>

@@ -130,6 +130,23 @@ class ShopOrdersItemsModel extends AbstractModel
         }
 
         return null;
+    }
 
+    public function itemIsOrdered(?int $itemId): bool
+    {
+        if ($itemId === null) {
+            return false;
+        }
+
+        $var = ["shop_item_id" => $itemId];
+
+        $sql = "SELECT shop_order_item_id FROM `cmw_shops_orders_items` WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
+
+        $res->execute($var);
+
+        return count($res->fetchAll()) === 0;
     }
 }

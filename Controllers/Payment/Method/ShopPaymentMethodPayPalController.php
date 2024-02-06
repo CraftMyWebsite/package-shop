@@ -57,7 +57,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::url . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
+            CURLOPT_URL => self::sandBoxUrl . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -108,7 +108,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::url . '/v1/oauth2/token',
+            CURLOPT_URL => self::sandBoxUrl . '/v1/oauth2/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,

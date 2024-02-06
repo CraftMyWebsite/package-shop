@@ -60,7 +60,9 @@ class ShopItemsModel extends AbstractModel
             $res["shop_item_global_limit"] ?? null,
             $res["shop_item_user_limit"] ?? null,
             $res["shop_item_created_at"],
-            $res["shop_item_updated_at"]
+            $res["shop_item_updated_at"],
+            $res["shop_item_archived"],
+            $res["shop_item_archived_reason"]
         );
     }
 
@@ -222,6 +224,37 @@ class ShopItemsModel extends AbstractModel
         );
 
         $sql = "UPDATE cmw_shops_items SET shop_item_slug = :shop_item_slug WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($data);
+    }
+
+    public function archiveItem(int $id, int $reason): void
+    {
+
+        $data = array(
+            "shop_item_id" => $id,
+            "shop_item_archived_reason" => $reason
+        );
+
+        $sql = "UPDATE cmw_shops_items SET shop_item_archived = 1, shop_item_archived_reason = :shop_item_archived_reason WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($data);
+    }
+
+    public function unarchivedItem(int $id): void
+    {
+
+        $data = array(
+            "shop_item_id" => $id
+        );
+
+        $sql = "UPDATE cmw_shops_items SET shop_item_archived = 0, shop_item_archived_reason = 0 WHERE shop_item_id = :shop_item_id";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

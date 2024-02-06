@@ -603,6 +603,24 @@ class ShopCartsModel extends AbstractModel
         return true;
     }
 
+    public function itemIsPresentInACart(?int $itemId): bool
+    {
+        if ($itemId === null) {
+            return false;
+        }
+
+        $var = ["shop_item_id" => $itemId];
+
+        $sql = "SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
+
+        $res->execute($var);
+
+        return count($res->fetchAll()) === 0;
+    }
+
     public function switchSessionToUserCart(int $itemId, string $session_id, mixed $userId): void
     {
         $sql = "UPDATE cmw_shops_cart_items SET shop_user_id = :user_id, shop_client_session_id = null 
