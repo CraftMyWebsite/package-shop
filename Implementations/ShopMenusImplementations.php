@@ -3,7 +3,7 @@
 namespace CMW\Implementation\Shop;
 
 use CMW\Interface\Core\IMenus;
-use CMW\Model\Shop\ShopCategoriesModel;
+use CMW\Model\Shop\Category\ShopCategoriesModel;
 
 class ShopMenusImplementations implements IMenus {
 

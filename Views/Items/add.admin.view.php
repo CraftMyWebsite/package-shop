@@ -8,7 +8,7 @@ use CMW\Utils\Website;
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">

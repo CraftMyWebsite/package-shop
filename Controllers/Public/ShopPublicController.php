@@ -9,12 +9,12 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\ShopCartsModel;
-use CMW\Model\Shop\ShopCategoriesModel;
-use CMW\Model\Shop\ShopImagesModel;
-use CMW\Model\Shop\ShopItemsModel;
-use CMW\Model\Shop\ShopItemVariantModel;
-use CMW\Model\Shop\ShopItemVariantValueModel;
+use CMW\Model\Shop\Cart\ShopCartsModel;
+use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\Image\ShopImagesModel;
+use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Model\Shop\Item\ShopItemVariantModel;
+use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 

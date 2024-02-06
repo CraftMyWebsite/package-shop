@@ -3,8 +3,8 @@
 namespace CMW\Implementation\Shop;
 
 use CMW\Controller\Shop\Payment\Method\ShopPaymentMethodPayPalController;
-use CMW\Entity\Shop\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\ShopShippingEntity;
+use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
+use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Manager\Env\EnvManager;

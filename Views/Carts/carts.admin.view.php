@@ -8,7 +8,7 @@ use CMW\Model\Users\UsersModel;
 $title = "Paniers";
 $description = "";
 
-/* @var \CMW\Model\Shop\ShopCartsModel $cartModel */
+/* @var \CMW\Model\Shop\Cart\ShopCartsModel $cartModel */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">

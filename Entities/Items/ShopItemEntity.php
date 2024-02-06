@@ -3,9 +3,9 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Core\CoreController;
-use CMW\Entity\Shop\ShopCategoryEntity;
+use CMW\Entity\Shop\Categories\ShopCategoryEntity;
 use CMW\Manager\Env\EnvManager;
-use CMW\Model\Shop\ShopCartsModel;
+use CMW\Model\Shop\Cart\ShopCartsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 

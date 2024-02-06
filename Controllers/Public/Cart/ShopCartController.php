@@ -1,20 +1,18 @@
 <?php
 namespace CMW\Controller\Shop\Public\Cart;
 
-use CMW\Entity\Shop\ShopCartEntity;
+use CMW\Entity\Shop\Carts\ShopCartEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\ShopCartsModel;
-use CMW\Model\Shop\ShopCartVariantesModel;
-use CMW\Model\Shop\ShopImagesModel;
-use CMW\Model\Shop\ShopItemsModel;
-use CMW\Model\Shop\ShopItemVariantModel;
-use CMW\Model\Shop\ShopItemVariantValueModel;
-use CMW\Model\Shop\ShopOrdersModel;
+use CMW\Model\Shop\Cart\ShopCartsModel;
+use CMW\Model\Shop\Cart\ShopCartVariantesModel;
+use CMW\Model\Shop\Image\ShopImagesModel;
+use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 

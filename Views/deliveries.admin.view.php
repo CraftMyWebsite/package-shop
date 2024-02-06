@@ -20,6 +20,8 @@ $description = "";
 
                 Prix de base : X€<br><br>
 
+                Pays autoriser<br><br>
+
                 Utiliser les variantes de poids : oui/non<br>
                 Si oui > Poids au dessus de Xgrammes = Xgrammes = X€<br>
                 Tant que ...<br><br>

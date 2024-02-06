@@ -1,7 +1,7 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopCategoryEntity $category */
-/* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
+/* @var \CMW\Entity\Shop\Categories\ShopCategoryEntity $category */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;

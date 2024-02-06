@@ -8,10 +8,10 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\ShopImagesModel;
-use CMW\Model\Shop\ShopOrdersItemsModel;
-use CMW\Model\Shop\ShopOrdersItemsVariantesModel;
-use CMW\Model\Shop\ShopOrdersModel;
+use CMW\Model\Shop\Image\ShopImagesModel;
+use CMW\Model\Shop\Order\ShopOrdersItemsModel;
+use CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel;
+use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 

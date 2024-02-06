@@ -1,6 +1,6 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopCartEntity[] $carts */
+/* @var \CMW\Entity\Shop\Carts\ShopCartEntity[] $carts */
 
 $title = "Paniers de ". $sessionId;
 $description = "";

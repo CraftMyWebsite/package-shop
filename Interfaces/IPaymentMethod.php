@@ -3,8 +3,8 @@
 namespace CMW\Interface\Shop;
 
 
-use CMW\Entity\Shop\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\ShopShippingEntity;
+use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
+use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 
@@ -37,10 +37,10 @@ interface IPaymentMethod
     public function includeConfigWidgets(): void;
 
     /**
-     * @param \CMW\Entity\Shop\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Shop\Carts\ShopCartEntity[] $cartItems
      * @param \CMW\Entity\Users\UserEntity $user
-     * @param \CMW\Entity\Shop\ShopShippingEntity $shipping
-     * @param \CMW\Entity\Shop\ShopDeliveryUserAddressEntity $address
+     * @param \CMW\Entity\Shop\Deliveries\ShopShippingEntity $shipping
+     * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity $address
      * @return void
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      * @desc Do payment logic

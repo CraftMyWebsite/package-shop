@@ -1,9 +1,9 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopOrdersEntity [] $inProgressOrders */
-/* @var \CMW\Entity\Shop\ShopOrdersEntity [] $errorOrders */
-/* @var \CMW\Entity\Shop\ShopOrdersEntity [] $finishedOrders */
-/* @var \CMW\Model\Shop\ShopOrdersItemsModel $orderItemsModel */
+/* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity [] $inProgressOrders */
+/* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity [] $errorOrders */
+/* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity [] $finishedOrders */
+/* @var \CMW\Model\Shop\Order\ShopOrdersItemsModel $orderItemsModel */
 
 $title = "Commandes";
 $description = "";

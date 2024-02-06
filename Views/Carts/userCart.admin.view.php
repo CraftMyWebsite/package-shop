@@ -1,6 +1,6 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopCartEntity[] $carts */
+/* @var \CMW\Entity\Shop\Carts\ShopCartEntity[] $carts */
 /* @var \CMW\Entity\Users\UserEntity $user */
 
 $title = "Paniers de ". $user->getPseudo();

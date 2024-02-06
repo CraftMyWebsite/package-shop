@@ -4,7 +4,7 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Utils\Website;
 
-/* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 
 $title = "";
 $description = "";

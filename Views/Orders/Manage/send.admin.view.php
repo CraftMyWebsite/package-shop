@@ -1,9 +1,9 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopOrdersEntity $order */
-/* @var \CMW\Entity\Shop\ShopOrdersItemsEntity [] $orderItems */
-/* @var CMW\Model\Shop\ShopOrdersItemsVariantesModel $itemsVariantes */
-/* @var \CMW\Model\Shop\ShopImagesModel $defaultImage */
+/* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity $order */
+/* @var \CMW\Entity\Shop\Orders\ShopOrdersItemsEntity [] $orderItems */
+/* @var CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel $itemsVariantes */
+/* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 
 use CMW\Manager\Security\SecurityManager;
 
