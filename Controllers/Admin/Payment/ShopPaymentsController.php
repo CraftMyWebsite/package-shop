@@ -6,7 +6,6 @@ use CMW\Controller\Users\UsersController;
 use CMW\Entity\Users\UserEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
-use CMW\Event\Users\RegisterEvent;
 use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Manager\Events\Listener;
 use CMW\Manager\Filter\FilterManager;

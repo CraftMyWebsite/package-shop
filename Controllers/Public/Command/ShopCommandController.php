@@ -1,7 +1,7 @@
 <?php
 namespace CMW\Controller\Shop\Public\Command;
 
-use CMW\Controller\Shop\Payment\ShopPaymentsController;
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
 use CMW\Exception\Shop\Payment\ShopPaymentException;

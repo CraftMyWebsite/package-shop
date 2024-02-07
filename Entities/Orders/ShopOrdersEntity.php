@@ -66,7 +66,7 @@ class ShopOrdersEntity {
             return "Remboursé";
         }
         if ($this->orderStatus == -1) {
-            return "<b style='color: orangered'>Annulé !</b>";
+            return "<b style='color: orangered'>Annulé !</b><br> <small>Remboursement en attente</small>";
         }
         if ($this->orderStatus == 0) {
             return "<i style='color: orangered' class='fa-solid fa-triangle-exclamation fa-fade'></i> Nouvelle commande !";

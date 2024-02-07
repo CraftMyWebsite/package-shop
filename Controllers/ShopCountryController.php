@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Controller\Shop\Admin\Setting;
+namespace CMW\Controller\Shop;
 
 use CMW\Manager\Package\AbstractController;
 

@@ -2,7 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
-use CMW\Controller\Shop\ShopCountryController;
+use CMW\Controller\Shop\Admin\Setting\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
@@ -57,7 +57,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::sandBoxUrl . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
+            CURLOPT_URL => self::url . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -108,7 +108,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::sandBoxUrl . '/v1/oauth2/token',
+            CURLOPT_URL => self::url . '/v1/oauth2/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -193,9 +193,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
                             'admin_area_1' => $address->getCity(),
                             'admin_area_2' => $address->getCity(),
                             'postal_code' => $address->getPostalCode(),
-                            'country_code' => ShopCountryController::getInstance()->findCountryCodeByName(
-                                $address->getCountry(), //TODO DON'T WORK
-                            ),
+                            'country_code' => ShopCountryController::getInstance()->findCountryCodeByName($address->getCountry()),
                         ],
                     ],
                     ...$this->buildItems($cartItems, $currencyCode),
