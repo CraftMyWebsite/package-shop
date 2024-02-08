@@ -108,8 +108,8 @@ class ShopCartEntity
     public function getTotalCartPrice(): float
     {
         $total = 0;
-        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $test) {
-            $total += $test->getTotalPrice();
+        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $itemPrice) {
+            $total += $itemPrice->getTotalPrice();
         }
         return $total;
     }
@@ -120,12 +120,7 @@ class ShopCartEntity
     public function getTotalCartPriceAfterDiscount(): float
     {
         //TODO : Gérer les promo
-        $total = 0;
-        foreach (ShopCartsModel::getInstance()->getShopCartsByUserId(UsersModel::getCurrentUser()?->getId(), session_id()) as $test) {
-            $total += $test->getTotalPrice();
-        }
-
-        return number_format($total, 2);
+        return $this->getTotalCartPrice() - 10;
     }
 
     /**
@@ -136,6 +131,7 @@ class ShopCartEntity
      */
     public function getTotalPriceComplete(int $paymentMethodFees, int $shippingFees): float
     {
+        //TODO : J'aime pas les entity qui ont besoin de param (faudrait les faire passer via le model du CommandTunnel)
         $total = $this->getTotalCartPriceAfterDiscount();
 
         $total += $paymentMethodFees;

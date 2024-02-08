@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_discount
     shop_payment_discount_status                         TINYINT      NULL,
     shop_item_id                                         INT          NULL,
     shop_category_id                                     INT          NULL,
-    shop_payment_discount_code                           INT          NULL,
+    shop_payment_discount_code                           VARCHAR(50)  NULL,
     shop_payment_discount_default_active                 INT          NOT NULL DEFAULT 0,
     shop_payment_discount_users_need_purchase_before_use INT          NULL,
     shop_payment_discount_created_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -6,6 +6,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 
 
 /**
@@ -19,9 +20,11 @@ class ShopDiscountsController extends AbstractController
     #[Link("/discounts", Link::GET, [], "/cmw-admin/shop")]
     public function shopDiscounts(): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
+        $discounts = ShopDiscountModel::getInstance()->getShopDiscounts();
+
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
         View::createAdminView('Shop', 'discounts')
-            ->addVariableList([])
+            ->addVariableList(["discounts" => $discounts])
             ->view();
     }
 }
