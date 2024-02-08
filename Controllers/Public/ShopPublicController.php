@@ -13,6 +13,7 @@ use CMW\Model\Shop\Cart\ShopCartsModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Users\UsersModel;
@@ -72,9 +73,10 @@ class ShopPublicController extends AbstractController
         $itemInCart = ShopCartsModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
+        $physicalInfo = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($itemId);
 
         $view = new View("Shop", "Main/item");
-        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel]);
+        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel, "physicalInfo" => $physicalInfo ?? null]);
         $view->view();
     }
 

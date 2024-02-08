@@ -16,6 +16,7 @@ use CMW\Model\Shop\Cart\ShopCartsModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
@@ -139,7 +140,12 @@ class ShopItemsController extends AbstractController
             }
         }
 
-        Flash::send(Alert::SUCCESS,"Success","Items ajouté !");
+        if ($type == "0") {
+            [$weight,$length,$width,$height] = Utils::filterInput("shop_item_weight","shop_item_length","shop_item_width","shop_item_height");
+            ShopItemsPhysicalRequirementModel::getInstance()->createPhysicalRequirement($itemId,$weight,$length,$width,$height);
+        }
+
+        Flash::send(Alert::SUCCESS,"Success","Article ajouté !");
 
         Emitter::send(ShopAddItemEvent::class, $itemId);
 

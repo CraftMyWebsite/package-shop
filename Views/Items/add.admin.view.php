@@ -275,32 +275,33 @@ $description = "";
             weightTitle.innerHTML = "Poids<span style='color: red'>*</span> : <small>(en gramme)</small>";
             let weightInput = document.createElement("input");
             weightInput.type = "text";
+            weightInput.required = true;
             weightInput.className = "form-control";
-            weightInput.placeholder = "150";
+            weightInput.placeholder = "150.00";
             weightInput.name = "shop_item_weight";
 
             let lengthTitle = document.createElement("h6");
-            lengthTitle.innerHTML = "Largeur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            lengthTitle.innerHTML = "Largeur : <small>(en cm)</small>";
             let lengthInput = document.createElement("input");
             lengthInput.type = "text";
             lengthInput.className = "form-control";
-            lengthInput.placeholder = "150";
+            lengthInput.placeholder = "150.00";
             lengthInput.name = "shop_item_length";
 
             let widthTitle = document.createElement("h6");
-            widthTitle.innerHTML = "Longueur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            widthTitle.innerHTML = "Longueur : <small>(en cm)</small>";
             let widthInput = document.createElement("input");
             widthInput.type = "text";
             widthInput.className = "form-control";
-            widthInput.placeholder = "150";
+            widthInput.placeholder = "150.00";
             widthInput.name = "shop_item_width";
 
             let heightTitle = document.createElement("h6");
-            heightTitle.innerHTML = "Hauteur<span style='color: red'>*</span> : <small>(en cm)</small>";
+            heightTitle.innerHTML = "Hauteur : <small>(en cm)</small>";
             let heightInput = document.createElement("input");
             heightInput.type = "text";
             heightInput.className = "form-control";
-            heightInput.placeholder = "150";
+            heightInput.placeholder = "150.00";
             heightInput.name = "shop_item_height";
 
 
