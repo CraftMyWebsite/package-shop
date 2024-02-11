@@ -79,23 +79,33 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+#TODO !! : Gros refac du panier à faire !!
+CREATE TABLE IF NOT EXISTS cmw_shops_cart
+(
+    shop_cart_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_user_id              INT          NULL,
+    shop_client_session_id    VARCHAR(255) NULL,
+    shop_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_id_cart FOREIGN KEY (shop_user_id)
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
 (
     shop_cart_item_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shop_shopping_session_id  INT          NULL,
+    shop_cart_id              INT          NOT NULL,
     shop_item_id              INT          NULL,
-    shop_user_id              INT          NULL,
-    shop_client_session_id    VARCHAR(255) NULL,
     shop_cart_item_quantity   INT          NOT NULL DEFAULT 1,
     shop_cart_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_cart_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     shop_cart_item_aside      TINYINT      NOT NULL DEFAULT 0,
-    CONSTRAINT fk_user_id_cart_items FOREIGN KEY (shop_user_id)
-        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_cart_id_cart_items FOREIGN KEY (shop_cart_id)
+        REFERENCES cmw_shops_cart (shop_cart_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_item_id_cart_items FOREIGN KEY (shop_item_id)
-        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_shop_shopping_session_id_cart_items FOREIGN KEY (shop_shopping_session_id)
-        REFERENCES cmw_shops_shopping_session (shop_shopping_session_id) ON UPDATE CASCADE ON DELETE SET NULL
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -217,31 +227,58 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_history
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS cmw_shops_payment_discount
+CREATE TABLE IF NOT EXISTS cmw_shops_discount
 (
-    shop_payment_discount_id                             INT AUTO_INCREMENT PRIMARY KEY,
-    shop_payment_discount_name                           VARCHAR(50)  NOT NULL,
-    shop_payment_discount_description                    VARCHAR(50)  NOT NULL,
-    shop_payment_discount_start_date                     TIMESTAMP    NOT NULL,
-    shop_payment_discount_end_date                       TIMESTAMP    NULL,
-    shop_payment_discount_default_uses                   INT          NULL,
-    shop_payment_discount_uses_left                      INT          NULL,
-    shop_payment_discount_percent                        INT          NULL,
-    shop_payment_discount_price                          FLOAT(10, 2) NULL,
-    shop_payment_discount_use_multiple_per_users         TINYINT      NULL,
-    shop_payment_discount_cumulative                     TINYINT      NULL,
-    shop_payment_discount_status                         TINYINT      NULL,
-    shop_item_id                                         INT          NULL,
-    shop_category_id                                     INT          NULL,
-    shop_payment_discount_code                           VARCHAR(50)  NULL,
-    shop_payment_discount_default_active                 INT          NOT NULL DEFAULT 0,
-    shop_payment_discount_users_need_purchase_before_use INT          NULL,
-    shop_payment_discount_created_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_payment_discount_updated_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_shop_item_id_payment_discount FOREIGN KEY (shop_item_id)
+    shop_discount_id                             INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_name                           VARCHAR(50)  NOT NULL,
+    shop_discount_description                    VARCHAR(50)  NOT NULL,
+    shop_discount_start_date                     TIMESTAMP    NOT NULL,
+    shop_discount_end_date                       TIMESTAMP    NULL,
+    shop_discount_default_uses                   INT          NULL,
+    shop_discount_uses_left                      INT          NULL,
+    shop_discount_percent                        INT          NULL,
+    shop_discount_price                          FLOAT(10, 2) NULL,
+    shop_discount_use_multiple_per_users         TINYINT      NULL,
+    shop_discount_cumulative                     TINYINT      NULL,
+    shop_discount_status                         TINYINT      NULL,
+    shop_discount_code                           VARCHAR(50)  NULL,
+    shop_discount_default_active                 INT          NOT NULL DEFAULT 0,
+    shop_discount_users_need_purchase_before_use INT          NULL,
+    shop_discount_created_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_discount_updated_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_discount_items
+(
+    shop_discount_items_id     INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_id           INT NULL,
+    shop_item_id               INT NULL,
+    CONSTRAINT fk_shop_item_id_discount_items FOREIGN KEY (shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
-    CONSTRAINT fk_shop_category_id_payment_discount FOREIGN KEY (shop_category_id)
-        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL
+    CONSTRAINT fk_shop_discount_id_discount_items FOREIGN KEY (shop_discount_id)
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_discount_categories
+(
+    shop_discount_categories_id     INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_id                INT NULL,
+    shop_category_id                INT NULL,
+    CONSTRAINT fk_shop_item_id_discount_categories FOREIGN KEY (shop_category_id)
+        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_shop_discount_id_discount_categories FOREIGN KEY (shop_discount_id)
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_cart_discounts
+(
+    # TODO: doit créer une table cmw_shops_cart (pour linké les discount avec le panier)
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

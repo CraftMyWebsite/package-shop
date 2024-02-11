@@ -21,8 +21,6 @@ class ShopDiscountEntity
     private ?int $discountUsesMultipleByUser;
     private ?int $discountCumulative;
     private ?int $discountStatus;
-    private ?ShopItemEntity $itemId;
-    private ?ShopCategoryEntity $categoryId;
     private ?string $discountCode;
     private int $discountDefaultActive;
     private ?int $discountUserHaveOrderBeforeUse;
@@ -42,15 +40,13 @@ class ShopDiscountEntity
      * @param int|null $discountUsesMultipleByUser
      * @param int|null $discountCumulative
      * @param int|null $discountStatus
-     * @param \CMW\Entity\Shop\Items\ShopItemEntity|null $itemId
-     * @param \CMW\Entity\Shop\Categories\ShopCategoryEntity|null $categoryId
      * @param string|null $discountCode
      * @param int $discountDefaultActive
      * @param int|null $discountUserHaveOrderBeforeUse
      * @param string $discountCreated
      * @param string $discountUpdated
      */
-    public function __construct(int $id, string $discountName, string $discountDescription, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountCumulative, ?int $discountStatus, ?ShopItemEntity $itemId, ?ShopCategoryEntity $categoryId, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, string $discountCreated, string $discountUpdated)
+    public function __construct(int $id, string $discountName, string $discountDescription, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountCumulative, ?int $discountStatus, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, string $discountCreated, string $discountUpdated)
     {
         $this->id = $id;
         $this->discountName = $discountName;
@@ -64,8 +60,6 @@ class ShopDiscountEntity
         $this->discountUsesMultipleByUser = $discountUsesMultipleByUser;
         $this->discountCumulative = $discountCumulative;
         $this->discountStatus = $discountStatus;
-        $this->itemId = $itemId;
-        $this->categoryId = $categoryId;
         $this->discountCode = $discountCode;
         $this->discountDefaultActive = $discountDefaultActive;
         $this->discountUserHaveOrderBeforeUse = $discountUserHaveOrderBeforeUse;
@@ -138,16 +132,6 @@ class ShopDiscountEntity
         }
     }
 
-    public function getItem(): ?ShopItemEntity
-    {
-        return $this->itemId;
-    }
-
-    public function getCategory(): ?ShopCategoryEntity
-    {
-        return $this->categoryId;
-    }
-
     public function getCode(): ?string
     {
         return $this->discountCode;
@@ -173,6 +157,8 @@ class ShopDiscountEntity
         return CoreController::formatDate($this->discountUpdated);
     }
 
-
-
+    public function getLinkedType(): string
+    {
+        return "Article(s)";
+    }
 }

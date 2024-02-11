@@ -58,6 +58,8 @@ class ShopCommandController extends AbstractController
 
         $this->handleBeforeCommandCheck($userId, $sessionId, $cartContent);
 
+        //TODO: Verifier si les promotions appliquées au panier sont encore valides
+
         if (empty($userAddresses)) {
             $view = new View("Shop", "Command/newAddress");
             $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses]);

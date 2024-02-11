@@ -12,6 +12,7 @@ use CMW\Manager\Router\Link;
 use CMW\Model\Shop\Cart\ShopCartsModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
@@ -77,6 +78,39 @@ class ShopActionsCartController extends AbstractController
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
         }
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn] #[Link("/cart/discount/apply", Link::POST, [], "/shop")]
+    public function publicTestAndApplyDiscountCode(Request $request, string $code): void
+    {
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        // TODO IF : Si j'ai déjà une promo appliquée non cumulative, je sors et j'alerte ("Vous avez déjà une promotion non cumulable appliquée")
+
+        $codeExist = ShopDiscountModel::getInstance()->codeExist($code);
+
+        if ($codeExist) {
+            // TODO IF : Le code existe mais est il actif (between start and end date)? si c'est pas le cas on sors
+            // TODO IF : Le code existe mais lui reste il des uses left? si non on sors et on affiche un message
+            // TODO IF : Mon user à déja utiliser ce code? si oui à il le droit de le faire encore ? si non on sors et on affiche un message
+
+            //TODO IF : le code à passer toutes les verifs mais est il lié à un item du panier ? si c'est pas le cas on sors sinon on l'ajoute
+            $itemInCart = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, $sessionId);
+            foreach ($itemInCart as $item) {
+                //TODO IF : on doit verifier si le code peut s'appliqué plusieurs fois par rapport a la quantité
+            }
+        }
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn] #[Link("/cart/discount/remove", Link::GET, [], "/shop")]
+    public function publicRemoveDiscountCode(): void
+    {
+        //TODO : Faire cette fonction
 
         Redirect::redirectPreviousRoute();
     }

@@ -23,7 +23,7 @@ class ShopDiscountsController extends AbstractController
         $discounts = ShopDiscountModel::getInstance()->getShopDiscounts();
 
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
-        View::createAdminView('Shop', 'discounts')
+        View::createAdminView('Shop', 'Discount/discounts')
             ->addVariableList(["discounts" => $discounts])
             ->view();
     }
