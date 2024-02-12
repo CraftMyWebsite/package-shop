@@ -2,10 +2,7 @@
 
 namespace CMW\Entity\Shop\Discounts;
 
-
 use CMW\Controller\Core\CoreController;
-use CMW\Entity\Shop\Categories\ShopCategoryEntity;
-use CMW\Entity\Shop\Items\ShopItemEntity;
 
 class ShopDiscountEntity
 {

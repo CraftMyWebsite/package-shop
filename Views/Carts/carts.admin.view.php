@@ -8,7 +8,8 @@ use CMW\Model\Users\UsersModel;
 $title = "Paniers";
 $description = "";
 
-/* @var \CMW\Model\Shop\Cart\ShopCartsModel $cartModel */
+/* @var \CMW\Model\Shop\Cart\ShopCartModel $cartModel */
+/* @var \CMW\Model\Shop\Cart\ShopCartItemModel $cartItemsModel */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -32,7 +33,7 @@ $description = "";
                                          alt="...">
                                 </div>
                                 <h6 class="text-center"><?= $user->getPseudo() ?></h6>
-                                <p class="text-center"><b style="font-size: large"><?= $cartModel->countItemsByUserId($user->getId(), "") ?></b> articles</p>
+                                <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId($user->getId(), "") ?></b> articles</p>
                                 <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/user/<?= $user->getId() ?>" class="btn btn-primary">Voir le panier</a>
                             </div>
                         </div>
@@ -51,13 +52,13 @@ $description = "";
                 <div class="alert alert-info">Les sessions sont des paniers temporaire.<br>Elle permet à vos utilisateurs non connecté de créer un panier.<br>Une fois connecté le panier sera automatique transmis vers un panier utilisateur, évitez de supprimez des sessions qui on moins de 24 heures.</div>
                 <div class="row">
                     <?php foreach ($cartModel->getShopCartsForSessions() as $sessionCart):
-                        $session = $sessionCart->getSessionId();
+                        $session = $sessionCart->getSession();
                         ?>
                         <div class="col-12 col-lg-2">
                             <div href="ss" class="card-in-card p-2">
                                 <small class="text-center"><?= $session ?></small>
-                                <p class="text-center"><b style="font-size: large"><?= $cartModel->countItemsByUserId( null, $session) ?></b> articles</p>
-                                <small class="text-center mb-2"> Créer le <?= $sessionCart->getCreated() ?></small>
+                                <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId(null, $session) ?></b> articles</p>
+                                <small class="text-center mb-2"> Créer le <?= $sessionCart->getCartCreated() ?></small>
                                 <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/session/<?= $session ?>" class="btn btn-primary mb-2">Voir le panier</a>
                                 <a type="button" data-bs-toggle="modal"
                                    data-bs-target="#delete-<?= $session ?>" class="btn btn-danger">Supprimer</a>

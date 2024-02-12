@@ -9,7 +9,8 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
-use CMW\Model\Shop\Cart\ShopCartsModel;
+use CMW\Model\Shop\Cart\ShopCartModel;
+use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
@@ -98,7 +99,7 @@ class ShopActionsCartController extends AbstractController
             // TODO IF : Mon user à déja utiliser ce code? si oui à il le droit de le faire encore ? si non on sors et on affiche un message
 
             //TODO IF : le code à passer toutes les verifs mais est il lié à un item du panier ? si c'est pas le cas on sors sinon on l'ajoute
-            $itemInCart = ShopCartsModel::getInstance()->getShopCartsByUserId($userId, $sessionId);
+            $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
             foreach ($itemInCart as $item) {
                 //TODO IF : on doit verifier si le code peut s'appliqué plusieurs fois par rapport a la quantité
             }
@@ -126,7 +127,7 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
-        ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+        ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -143,10 +144,10 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleSessionHealth($sessionId);
 
-        $currentQuantity = ShopCartsModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
+        $currentQuantity = ShopCartItemModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
 
         if ($currentQuantity === 1) {
-            ShopCartsModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+            ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
             Flash::send(Alert::SUCCESS, LangManager::translate('core.toaster.success'),
                 "Article " . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . " enlevé de votre panier");
         }
@@ -157,7 +158,7 @@ class ShopActionsCartController extends AbstractController
             Redirect::redirectPreviousRoute();
         }
 
-        ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, false);
+        ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, false);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -174,7 +175,7 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleSessionHealth($sessionId);
 
-        ShopCartsModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+        ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
 
         Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
 
@@ -197,8 +198,8 @@ class ShopActionsCartController extends AbstractController
      */
     private function handleAddToCart(int $itemId, ?int $userId, string $sessionId, int $quantity, ?array $selectedVariants) : void
     {
-        if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
-            $cart = ShopCartsModel::getInstance()->addToCart($itemId, $userId, $sessionId, $quantity);
+        if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+            $cart = ShopCartItemModel::getInstance()->addToCart($itemId, $userId, $sessionId, $quantity);
             if (!empty($selectedVariants)) {
                 foreach ($selectedVariants as $selectedVariant) {
                     ShopCartVariantesModel::getInstance()->setVariantToItemInCart($cart->getId(), $selectedVariant);
@@ -208,7 +209,7 @@ class ShopActionsCartController extends AbstractController
                 "Nouvel article ajouté au panier !");
         } else {
             // TODO : Si l'article est une variante il faut verifier que l'utilisateur à choisis la même variante, si ce n'est pas le cas il faut ajouter l'article en plus !
-            ShopCartsModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+            ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
             Flash::send(Alert::SUCCESS, "Boutique",
                 "Vous aviez déjà cet article, nous avons rajouté une quantité pour vous");
         }
@@ -227,14 +228,14 @@ class ShopActionsCartController extends AbstractController
         $stockStatus = $this->handleStock($itemId, $userId, $sessionId, $quantity);
         switch ($stockStatus) {
             case StockStatus::NOT_IN_STOCK_NOT_ASIDE:
-                ShopCartsModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
+                ShopCartItemModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
                 Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus en stock. Mais nous l'avons ajouté au panier 'Mise de côté'.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::NOT_IN_STOCK_ASIDE:
                 Flash::send(Alert::ERROR, "Boutique", "Cet article est déjà dans le panier 'Mise de côté', les stock ne sont pas mis à jour.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::IN_STOCK_ASIDE:
-                ShopCartsModel::getInstance()->switchAsideToCart($itemId, $userId, $sessionId);
+                ShopCartItemModel::getInstance()->switchAsideToCart($itemId, $userId, $sessionId);
                 Redirect::redirectPreviousRoute();
             case StockStatus::CART_OVER_LIMIT_REACHED:
                 Flash::send(Alert::ERROR, "Boutique", "Navré mais il ne reste que " . ShopItemsModel::getInstance()->getItemCurrentStock($itemId) . " articles en stock.");
@@ -325,8 +326,8 @@ class ShopActionsCartController extends AbstractController
     private function handleStock(int $itemId, ?int $userId, string $sessionId, int $quantity): StockStatus
     {
         $itemNotInStock = ShopItemsModel::getInstance()->itemNotInStock($itemId);
-        $alreadyAside = ShopCartsModel::getInstance()->isAlreadyAside($itemId, $userId, $sessionId);
-        $itemInCart = ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId);
+        $alreadyAside = ShopCartItemModel::getInstance()->isAlreadyAside($itemId, $userId, $sessionId);
+        $itemInCart = ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId);
         $currentStock = ShopItemsModel::getInstance()->getItemCurrentStock($itemId);
 
         if ($itemNotInStock) {
@@ -338,7 +339,8 @@ class ShopActionsCartController extends AbstractController
         }
 
         if (!$itemInCart) {
-            if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() + $quantity > $currentStock) {
+            $cartItem = ShopCartItemModel::getInstance()->getShopCartsByItemIdAndUserId($itemId,$userId,$sessionId);
+            if ($cartItem->getQuantity() + $quantity > $currentStock) {
                 return StockStatus::CART_LIMIT_REACHED;
             }
         } else {
@@ -365,22 +367,24 @@ class ShopActionsCartController extends AbstractController
             }
             $numberBoughtByUser = ShopOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
             if ($numberBoughtByUser) {
-                if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                     if ($numberBoughtByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         return LimitPerUserStatus::BOUGHT_NOT_IN_CART_ITEM_LIMIT_REACHED;
                     }
                 } else {
-                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() + $numberBoughtByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                    $cartItem = ShopCartItemModel::getInstance()->getShopCartsByItemIdAndUserId($itemId,$userId,$sessionId);
+                    if ($cartItem->getQuantity() + $numberBoughtByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         return LimitPerUserStatus::BOUGHT_IN_CART_ITEM_LIMIT_REACHED;
                     }
                 }
             } else {
-                if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+                if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                     if ($quantity >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         return LimitPerUserStatus::NOT_IN_CART_ITEM_LIMIT_REACHED;
                     }
                 } else {
-                    if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                    $cartItem = ShopCartItemModel::getInstance()->getShopCartsByItemIdAndUserId($itemId,$userId,$sessionId);
+                    if ($cartItem->getQuantity() >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         return LimitPerUserStatus::IN_CART_ITEM_LIMIT_REACHED;
                     }
                 }
@@ -400,12 +404,13 @@ class ShopActionsCartController extends AbstractController
     {
         $itemGlobalLimit = ShopItemsModel::getInstance()->getItemGlobalLimit($itemId);
         if (ShopItemsModel::getInstance()->itemHaveGlobalLimit($itemId)) {
-            if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+            if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                 if ($quantity > $itemGlobalLimit) {
                     return GlobalLimitStatus::NOT_IN_CART_GLOBAL_LIMIT_REACHED;
                 }
             } else {
-                if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= $itemGlobalLimit) {
+                $cartItem = ShopCartItemModel::getInstance()->getShopCartsByItemIdAndUserId($itemId,$userId,$sessionId);
+                if ($cartItem->getQuantity() >= $itemGlobalLimit) {
                     return GlobalLimitStatus::IN_CART_GLOBAL_LIMIT_REACHED;
                 }
             }
@@ -424,13 +429,14 @@ class ShopActionsCartController extends AbstractController
     {
         $itemByOrderLimit = ShopItemsModel::getInstance()->getItemByOrderLimit($itemId);
         if (ShopItemsModel::getInstance()->itemHaveByOrderLimit($itemId)) {
-            if (ShopCartsModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
+            if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                 if ($quantity > $itemByOrderLimit) {
                     return ByOrderLimitStatus::NOT_IN_CART_ORDER_LIMIT_REACHED;
                 }
             } else {
                 //est dans le panier
-                if (ShopCartsModel::getInstance()->getShopCartsByItemIdAndUserId($itemId, $userId, $sessionId)->getQuantity() >= $itemByOrderLimit) {
+                $cartItem = ShopCartItemModel::getInstance()->getShopCartsByItemIdAndUserId($itemId,$userId,$sessionId);
+                if ($cartItem->getQuantity() >= $itemByOrderLimit) {
                     return ByOrderLimitStatus::IN_CART_ORDER_LIMIT_REACHED;
                 }
             }
@@ -445,10 +451,10 @@ class ShopActionsCartController extends AbstractController
     {
         $sessionId = session_id();
         if ($sessionId) {
-            $cart = ShopCartsModel::getInstance()->getShopCartsForSessions();
+            $cart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(null, $sessionId);
             foreach ($cart as $car) {
-                if (!ShopCartsModel::getInstance()->userHaveAlreadyItemInCart($car->getItem()->getId(), $userId)) {
-                    ShopCartsModel::getInstance()->switchSessionToUserCart($car->getItem()->getId(), $sessionId, $userId);
+                if (!ShopCartItemModel::getInstance()->userHaveAlreadyItemInCart($car->getItem()->getId(), $userId)) {
+                    ShopCartModel::getInstance()->switchSessionToUserCart($sessionId, $userId);
                     if (!is_null($userId)) {
                         ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
                     }

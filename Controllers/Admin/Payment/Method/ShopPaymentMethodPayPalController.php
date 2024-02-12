@@ -2,7 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
-use CMW\Controller\Shop\Admin\Setting\ShopCountryController;
+use CMW\Controller\Shop\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
@@ -35,7 +35,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     private const sandBoxUrl = 'https://api-m.sandbox.paypal.com'; //Only for dev.
 
     /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
     public function sendPayPalPayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
@@ -57,7 +57,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::url . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
+            CURLOPT_URL => self::sandBoxUrl . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -108,7 +108,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => self::url . '/v1/oauth2/token',
+            CURLOPT_URL => self::sandBoxUrl . '/v1/oauth2/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -170,7 +170,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     }
 
     /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity $address
      * @param string $cancelUrl
      * @param string $completeUrl
@@ -233,7 +233,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     }
 
     /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @param string $currencyCode
      * @return array
      */

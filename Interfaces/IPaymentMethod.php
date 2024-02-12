@@ -37,7 +37,7 @@ interface IPaymentMethod
     public function includeConfigWidgets(): void;
 
     /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartEntity[] $cartItems
+     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @param \CMW\Entity\Users\UserEntity $user
      * @param \CMW\Entity\Shop\Deliveries\ShopShippingEntity $shipping
      * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity $address

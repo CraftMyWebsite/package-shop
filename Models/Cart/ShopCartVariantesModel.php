@@ -15,12 +15,12 @@ use CMW\Model\Shop\Item\ShopItemVariantValueModel;
  */
 class ShopCartVariantesModel extends AbstractModel
 {
-    private ShopCartsModel $cartModel;
+    private ShopCartItemModel $cartModel;
     private ShopItemVariantValueModel $itemVariantModel;
 
     public function __construct()
     {
-        $this->cartModel = new ShopCartsModel();
+        $this->cartModel = new ShopCartItemModel();
         $this->itemVariantModel = new ShopItemVariantValueModel();
     }
 
@@ -42,7 +42,7 @@ class ShopCartVariantesModel extends AbstractModel
 
         $res = $res->fetch();
 
-        $cart = $this->cartModel->getShopCartsById($res["shop_cart_item_id"]);
+        $cart = $this->cartModel->getShopCartsItemsById($res["shop_cart_item_id"]);
         $itemVariantValue = $this->itemVariantModel->getShopItemVariantValueById($res["shop_variants_values_id"]);
 
 

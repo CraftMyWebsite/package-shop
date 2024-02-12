@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-#TODO !! : Gros refac du panier à faire !!
 CREATE TABLE IF NOT EXISTS cmw_shops_cart
 (
     shop_cart_id         INT AUTO_INCREMENT PRIMARY KEY,

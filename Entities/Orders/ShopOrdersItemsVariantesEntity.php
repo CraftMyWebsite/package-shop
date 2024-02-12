@@ -4,11 +4,6 @@ namespace CMW\Entity\Shop\Orders;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Items\ShopItemVariantValueEntity;
-use CMW\Entity\Users\UserEntity;
-use CMW\Manager\Env\EnvManager;
-use CMW\Model\Shop\Cart\ShopCartsModel;
-use CMW\Model\Users\UsersModel;
-use CMW\Utils\Website;
 
 class ShopOrdersItemsVariantesEntity
 {

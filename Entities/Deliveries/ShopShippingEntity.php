@@ -3,7 +3,6 @@
 namespace CMW\Entity\Shop\Deliveries;
 
 use CMW\Controller\Core\CoreController;
-use CMW\Entity\Users\UserEntity;
 
 class ShopShippingEntity
 {

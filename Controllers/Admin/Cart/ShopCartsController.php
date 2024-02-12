@@ -9,7 +9,8 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\Cart\ShopCartsModel;
+use CMW\Model\Shop\Cart\ShopCartModel;
+use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
@@ -26,11 +27,12 @@ class ShopCartsController extends AbstractController
     public function shopCarts(): void
     {
 
-        $cartModel = ShopCartsModel::getInstance();
+        $cartModel = ShopCartModel::getInstance();
+        $cartItemsModel = ShopCartItemModel::getInstance();
 
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
         View::createAdminView('Shop', 'Carts/carts')
-            ->addVariableList(["cartModel" => $cartModel])
+            ->addVariableList(["cartModel" => $cartModel, "cartItemsModel" => $cartItemsModel])
             ->view();
     }
 
@@ -39,7 +41,7 @@ class ShopCartsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
 
-        $carts = ShopCartsModel::getInstance()->getShopCartsByUserId($userId,"");
+        $carts = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, "");
         $user = UsersModel::getInstance()->getUserById($userId);
 
         View::createAdminView('Shop', 'Carts/userCart')
@@ -54,7 +56,7 @@ class ShopCartsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
 
-        $carts = ShopCartsModel::getInstance()->getShopCartsByUserId(null,$sessionId);
+        $carts = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(null, $sessionId);
 
         View::createAdminView('Shop', 'Carts/sessionCart')
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
@@ -68,7 +70,7 @@ class ShopCartsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
-        ShopCartsModel::getInstance()->removeSessionCart($sessionId);
+        ShopCartModel::getInstance()->removeSessionCart($sessionId);
 
         Flash::send(Alert::SUCCESS, "Success", "C'est chao");
 
