@@ -21,25 +21,51 @@ class ShopCartDiscountModel extends AbstractModel
      */
     public function getCartDiscountById(int $id): ?ShopCartDiscountEntity
     {
-        $sql = "SELECT * FROM cmw_shops_cart_discounts WHERE shop_cart_discounts_id = :shop_cart_discounts_id";
+        $sql = "SELECT * FROM cmw_shops_cart_discounts WHERE shop_cart_discount_id = :shop_cart_discount_id";
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_cart_discounts_id" => $id])) {
+        if (!$res->execute(["shop_cart_discount_id" => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $cart = //TODO : En attente de la table cmw_shops_cart qui devra lié les articles et les discount sous le même panier
+        $cart = ShopCartModel::getInstance()->getShopCartsById($res["shop_cart_id"]);
         $discount = ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
 
         return new ShopCartDiscountEntity(
-            $res["shop_cart_discounts_id"],
+            $res["shop_cart_discount_id"],
             $cart,
             $discount
         );
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Carts\ShopCartDiscountEntity []
+     */
+    public function getCartDiscountByCartId(int $cartId): array
+    {
+        $sql = "SELECT shop_cart_discount_id FROM cmw_shops_cart_discounts WHERE shop_cart_id = :shop_cart_id";
+
+        $data = ['shop_cart_id' => $cartId];
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($cart = $res->fetch()) {
+            $toReturn[] = $this->getCartDiscountById($cart["shop_cart_discount_id"]);
+        }
+
+        return $toReturn;
     }
 }

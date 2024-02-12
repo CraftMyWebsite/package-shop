@@ -8,6 +8,7 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
@@ -35,6 +36,8 @@ class ShopCartController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemsVariantes = ShopCartVariantesModel::getInstance();
+        $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
+        $appliedDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByCartId($cartId);
 
         $this->handleSessionHealth($sessionId);
 
@@ -52,7 +55,7 @@ class ShopCartController extends AbstractController
         }
 
         $view = new View("Shop", "Cart/cart");
-        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes]);
+        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes, "appliedDiscounts" => $appliedDiscounts]);
         $view->view();
     }
 

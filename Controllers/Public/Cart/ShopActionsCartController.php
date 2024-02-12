@@ -9,6 +9,7 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
@@ -84,16 +85,41 @@ class ShopActionsCartController extends AbstractController
     }
 
     #[NoReturn] #[Link("/cart/discount/apply", Link::POST, [], "/shop")]
-    public function publicTestAndApplyDiscountCode(Request $request, string $code): void
+    public function publicTestAndApplyDiscountCode(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
+        [$code] = Utils::filterInput('code');
 
-        // TODO IF : Si j'ai déjà une promo appliquée non cumulative, je sors et j'alerte ("Vous avez déjà une promotion non cumulable appliquée")
+        if ($code == "") {
+            Flash::send(Alert::ERROR, "Boutique", "Vous n'avez pas entré de code");
+            Redirect::redirectPreviousRoute();
+        }
 
         $codeExist = ShopDiscountModel::getInstance()->codeExist($code);
 
         if ($codeExist) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
+
+            // handle if the code is already used for this cart
+            foreach (ShopCartDiscountModel::getInstance()->getCartDiscountByCartId($cartId) as $discount) {
+                if ($discount->getDiscount()->getCode() == $code) {
+                    Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà appliqué ce code de réduction !");
+                    Redirect::redirectPreviousRoute();
+                }
+                if ($discount->getDiscount()->getCumulative() !== 1) {
+                    Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà une promotion non cumulable appliquée");
+                    Redirect::redirectPreviousRoute();
+                }
+            }
+
+            $discountCode = ShopDiscountModel::getInstance()->getShopDiscountsByCode($code);
+
+            if ($this->checkDate($discountCode->getStartDate(), $discountCode->getEndDate())) {
+                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus actif");
+                Redirect::redirectPreviousRoute();
+            }
+
             // TODO IF : Le code existe mais est il actif (between start and end date)? si c'est pas le cas on sors
             // TODO IF : Le code existe mais lui reste il des uses left? si non on sors et on affiche un message
             // TODO IF : Mon user à déja utiliser ce code? si oui à il le droit de le faire encore ? si non on sors et on affiche un message
@@ -103,9 +129,24 @@ class ShopActionsCartController extends AbstractController
             foreach ($itemInCart as $item) {
                 //TODO IF : on doit verifier si le code peut s'appliqué plusieurs fois par rapport a la quantité
             }
+            Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel appliqué avec succès !");
+            Redirect::redirectPreviousRoute();
+        } else {
+            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas valable");
+            Redirect::redirectPreviousRoute();
         }
+    }
 
-        Redirect::redirectPreviousRoute();
+    private function checkDate($dateDebut, $dateFin): bool
+    {
+        $dateActuelle = time();
+        $dateDebut = strtotime($dateDebut);
+        if ($dateFin !== null) {
+            $dateFin = strtotime($dateFin);
+            return ($dateActuelle >= $dateDebut && $dateActuelle <= $dateFin);
+        } else {
+            return ($dateActuelle >= $dateDebut);
+        }
     }
 
     #[NoReturn] #[Link("/cart/discount/remove", Link::GET, [], "/shop")]

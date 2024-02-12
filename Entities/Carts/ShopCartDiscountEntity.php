@@ -8,15 +8,15 @@ use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 class ShopCartDiscountEntity
 {
     private $id;
-    private ShopCartItemEntity $cartId;
+    private ShopCartEntity $cartId;
     private ShopDiscountEntity $discountId;
 
     /**
      * @param $id
-     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity $cartId
+     * @param \CMW\Entity\Shop\Carts\ShopCartEntity $cartId
      * @param \CMW\Entity\Shop\Discounts\ShopDiscountEntity $discountId
      */
-    public function __construct($id, ShopCartItemEntity $cartId, ShopDiscountEntity $discountId)
+    public function __construct($id, ShopCartEntity $cartId, ShopDiscountEntity $discountId)
     {
         $this->id = $id;
         $this->cartId = $cartId;
@@ -31,7 +31,7 @@ class ShopCartDiscountEntity
         return $this->id;
     }
 
-    public function getCart(): ShopCartItemEntity
+    public function getCart(): ShopCartEntity
     {
         return $this->cartId;
     }
@@ -40,5 +40,6 @@ class ShopCartDiscountEntity
     {
         return $this->discountId;
     }
+
 
 }

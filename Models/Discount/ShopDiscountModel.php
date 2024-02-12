@@ -30,7 +30,7 @@ class ShopDiscountModel extends AbstractModel
         $res = $res->fetch();
 
         return new ShopDiscountEntity(
-            $res["shop_payment_discount_id"],
+            $res["shop_discount_id"],
             $res["shop_discount_name"] ?? null,
             $res["shop_discount_description"] ?? null,
             $res["shop_discount_start_date"] ?? null,
@@ -94,6 +94,29 @@ class ShopDiscountModel extends AbstractModel
         }
 
         return true;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity
+     */
+    public function getShopDiscountsByCode(string $code): ?ShopDiscountEntity
+    {
+        $sql = "SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_code = :shop_discount_code";
+
+        $data = ['shop_discount_code' => $code];
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute($data)) {
+            return null;
+        }
+
+        $res = $res->fetch();
+
+        return $this->getShopDiscountById($res["shop_discount_id"]);
+
     }
 
     /**

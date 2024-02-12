@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
     shop_discount_use_multiple_per_users         TINYINT      NULL,
     shop_discount_cumulative                     TINYINT      NULL,
     shop_discount_status                         TINYINT      NULL,
-    shop_discount_code                           VARCHAR(50)  NULL,
+    shop_discount_code                           VARCHAR(50)  NULL UNIQUE,
     shop_discount_default_active                 INT          NOT NULL DEFAULT 0,
     shop_discount_users_need_purchase_before_use INT          NULL,
     shop_discount_created_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -277,7 +277,13 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount_categories
 
 CREATE TABLE IF NOT EXISTS cmw_shops_cart_discounts
 (
-    # TODO: doit créer une table cmw_shops_cart (pour linké les discount avec le panier)
+    shop_cart_discount_id           INT AUTO_INCREMENT PRIMARY KEY,
+    shop_cart_id                    INT NULL,
+    shop_discount_id                INT NULL,
+    CONSTRAINT fk_shop_discount_id_cart_discounts FOREIGN KEY (shop_discount_id)
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_cart_id_cart_discounts FOREIGN KEY (shop_cart_id)
+        REFERENCES cmw_shops_cart (shop_cart_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
