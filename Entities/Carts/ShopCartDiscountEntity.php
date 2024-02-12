@@ -4,6 +4,8 @@ namespace CMW\Entity\Shop\Carts;
 
 
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
+use CMW\Manager\Env\EnvManager;
+use CMW\Utils\Website;
 
 class ShopCartDiscountEntity
 {
@@ -39,6 +41,15 @@ class ShopCartDiscountEntity
     public function getDiscount(): ShopDiscountEntity
     {
         return $this->discountId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRemoveLink(): string
+    {
+        $discountId = $this->getDiscount()->getId();
+        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/discount/remove/$discountId";
     }
 
 

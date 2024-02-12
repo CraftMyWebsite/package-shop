@@ -14,9 +14,12 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
+use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
@@ -115,20 +118,116 @@ class ShopActionsCartController extends AbstractController
 
             $discountCode = ShopDiscountModel::getInstance()->getShopDiscountsByCode($code);
 
-            if ($this->checkDate($discountCode->getStartDate(), $discountCode->getEndDate())) {
-                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus actif");
+            // handle if the code is between start and end date?
+            if (!$this->checkDate($discountCode->getStartDate(), $discountCode->getEndDate())) {
+                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus actif ou ne l'est pas encore");
                 Redirect::redirectPreviousRoute();
             }
 
-            // TODO IF : Le code existe mais est il actif (between start and end date)? si c'est pas le cas on sors
-            // TODO IF : Le code existe mais lui reste il des uses left? si non on sors et on affiche un message
-            // TODO IF : Mon user à déja utiliser ce code? si oui à il le droit de le faire encore ? si non on sors et on affiche un message
-
-            //TODO IF : le code à passer toutes les verifs mais est il lié à un item du panier ? si c'est pas le cas on sors sinon on l'ajoute
-            $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
-            foreach ($itemInCart as $item) {
-                //TODO IF : on doit verifier si le code peut s'appliqué plusieurs fois par rapport a la quantité
+            // handle if the code have left uses?
+            if ($discountCode->getUsesLeft() !== null && $discountCode->getUsesLeft() <= 0) {
+                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus utilisable");
+                Redirect::redirectPreviousRoute();
             }
+
+            // handle if the code can be used multiple by user and if user have used it in past order?
+            if ($discountCode->getUsesMultipleByUser() == 1) {
+                $orders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
+                foreach ($orders as $order) {
+                    $orderItems = ShopOrdersItemsModel::getInstance()->getOrdersItemsByOrderId($order->getOrderId());
+                        foreach ($orderItems as $orderItem) {
+                            if ($orderItem->getDiscount() !== null && $code == $orderItem->getDiscount()->getCode()) {
+                                Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà utiliser ce code");
+                                Redirect::redirectPreviousRoute();
+                            }
+                    }
+                }
+            }
+
+            // handle if the code need to have ordered before use
+            if ($discountCode->getUserHaveOrderBeforeUse() == 1) {
+                $orders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
+                if (empty($orders)) {
+                    Flash::send(Alert::ERROR, "Boutique", "Vous devez avoir passé au moins une commande avant de pour pouvoir utiliser ce code");
+                    Redirect::redirectPreviousRoute();
+                }
+            }
+
+            // handle if the code can be applied to items in cart?
+            if ($discountCode->getLinked() != 0) {
+                $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+
+                if ($discountCode->getLinked() == 1) {
+                    foreach ($itemInCart as $cartItem) {
+                        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsByItemId($cartItem->getItem()->getId());
+                        if (empty($discountItems)) {
+                            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas lié à " . $cartItem->getItem()->getName());
+                        } else {
+                            foreach ($discountItems as $discountItem) {
+                                Flash::send(Alert::SUCCESS, "Boutique", "Ce code est lié à " . $cartItem->getItem()->getName());
+                                //handle if the code can be applied to multiple items in cart?
+                                if ($discountCode->getDiscountQuantityImpacted() == 1) {
+                                    $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+                                    foreach ($itemInCart as $cartItem) {
+                                        $itemQuantity = $cartItem->getQuantity();
+                                        $i = 0;
+                                        while ($i < $itemQuantity) {
+                                            ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+                                            $i++;
+                                        }
+                                    }
+                                } else {
+                                    ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+                                }
+                            }
+                        }
+                    }
+                }
+                if ($discountCode->getLinked() == 2) {
+                    foreach ($itemInCart as $cartItem) {
+                        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesByCategoryId($cartItem->getItem()->getCategory()->getId());
+                        if (empty($discountCategories)) {
+                            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas lié à " . $cartItem->getItem()->getCategory()->getName());
+                        } else {
+                            foreach ($discountCategories as $discountCategory) {
+                                Flash::send(Alert::SUCCESS, "Boutique", "Ce code est lié à " . $cartItem->getItem()->getCategory()->getName());
+                                //handle if the code can be applied to multiple items in cart?
+                                if ($discountCode->getDiscountQuantityImpacted() == 1) {
+                                    $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+                                    foreach ($itemInCart as $cartItem) {
+                                        $itemQuantity = $cartItem->getQuantity();
+                                        $i = 0;
+                                        while ($i < $itemQuantity) {
+                                            ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+                                            $i++;
+                                        }
+                                    }
+                                } else {
+                                    ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Redirect::redirectPreviousRoute();
+            }
+
+            //handle if the code can be applied to multiple items in cart?
+            if ($discountCode->getDiscountQuantityImpacted() == 1) {
+                $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+                foreach ($itemInCart as $cartItem) {
+                    $itemQuantity = $cartItem->getQuantity();
+                    $i = 0;
+                    while ($i < $itemQuantity) {
+                        ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+                        $i++;
+                    }
+                }
+            } else {
+                ShopCartDiscountModel::getInstance()->applyCode($cartId, $discountCode->getId());
+            }
+
             Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel appliqué avec succès !");
             Redirect::redirectPreviousRoute();
         } else {
@@ -137,22 +236,29 @@ class ShopActionsCartController extends AbstractController
         }
     }
 
-    private function checkDate($dateDebut, $dateFin): bool
+    private function checkDate($startDate, $endDate): bool
     {
-        $dateActuelle = time();
-        $dateDebut = strtotime($dateDebut);
-        if ($dateFin !== null) {
-            $dateFin = strtotime($dateFin);
-            return ($dateActuelle >= $dateDebut && $dateActuelle <= $dateFin);
+        $currentTime = time();
+        $startDate = strtotime($startDate);
+        if ($endDate !== null) {
+            $endDate = strtotime($endDate);
+            return ($currentTime >= $startDate && $currentTime <= $endDate);
         } else {
-            return ($dateActuelle >= $dateDebut);
+            return ($currentTime >= $startDate);
         }
     }
 
-    #[NoReturn] #[Link("/cart/discount/remove", Link::GET, [], "/shop")]
-    public function publicRemoveDiscountCode(): void
+    #[NoReturn] #[Link("/cart/discount/remove/:discountId", Link::GET, [], "/shop")]
+    public function publicRemoveDiscountCode(Request $request, int $discountId): void
     {
-        //TODO : Faire cette fonction
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
+
+        ShopCartDiscountModel::getInstance()->removeCode($cartId ,$discountId);
+
+        Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel supprimé avec succès !");
 
         Redirect::redirectPreviousRoute();
     }
@@ -167,6 +273,8 @@ class ShopActionsCartController extends AbstractController
         $this->handleSessionHealth($sessionId);
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
+
+        //TODO : Gérer les promotions
 
         ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
 
@@ -184,6 +292,8 @@ class ShopActionsCartController extends AbstractController
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
+
+        //TODO : Gérer les promotions
 
         $currentQuantity = ShopCartItemModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
 
@@ -217,6 +327,8 @@ class ShopActionsCartController extends AbstractController
         $this->handleSessionHealth($sessionId);
 
         ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+
+        //TODO : Virer les pormotions
 
         Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
 

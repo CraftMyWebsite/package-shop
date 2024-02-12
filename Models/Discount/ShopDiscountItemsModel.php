@@ -18,20 +18,20 @@ class ShopDiscountItemsModel extends AbstractModel
 {
     public function getShopDiscountItemsById(int $id): ?ShopDiscountItemsEntity
     {
-        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_categories_id = :shop_discount_categories_id";
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_items_id = :shop_discount_items_id";
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_discount_categories_id" => $id])) {
+        if (!$res->execute(["shop_discount_items_id" => $id])) {
             return null;
         }
 
+        $res = $res->fetch();
+
         $discount = ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
         $item = ShopItemsModel::getInstance()->getShopItemsById($res["shop_item_id"]);
-
-        $res = $res->fetch();
 
         return new ShopDiscountItemsEntity(
             $res["shop_discount_items_id"],

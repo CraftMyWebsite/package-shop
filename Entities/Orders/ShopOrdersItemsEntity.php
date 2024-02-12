@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Orders;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Shop\Payments\ShopPaymentDiscountEntity;
 use CMW\Manager\Env\EnvManager;
@@ -12,7 +13,7 @@ class ShopOrdersItemsEntity {
     private int $orderItemId;
     private ?ShopItemEntity $item;
     private ?ShopOrdersEntity $order;
-    private ?ShopPaymentDiscountEntity $discount;
+    private ?ShopDiscountEntity $discount;
     private ?int $orderItemQuantity;
     private float $orderItemPrice;
     private string $orderItemCreated;
@@ -22,13 +23,13 @@ class ShopOrdersItemsEntity {
      * @param int $orderItemId
      * @param \CMW\Entity\Shop\Items\ShopItemEntity|null $item
      * @param \CMW\Entity\Shop\Orders\ShopOrdersEntity|null $order
-     * @param \CMW\Entity\Shop\Payments\ShopPaymentDiscountEntity|null $discount
+     * @param \CMW\Entity\Shop\Discounts\ShopDiscountEntity|null $discount
      * @param int|null $orderItemQuantity
      * @param float $orderItemPrice
      * @param string $orderItemCreated
      * @param string $orderItemUpdated
      */
-    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopPaymentDiscountEntity $discount, ?int $orderItemQuantity, float $orderItemPrice, string $orderItemCreated, string $orderItemUpdated)
+    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopDiscountEntity $discount, ?int $orderItemQuantity, float $orderItemPrice, string $orderItemCreated, string $orderItemUpdated)
     {
         $this->orderItemId = $orderItemId;
         $this->item = $item;
@@ -55,7 +56,7 @@ class ShopOrdersItemsEntity {
         return $this->order;
     }
 
-    public function getDiscount(): ?ShopPaymentDiscountEntity
+    public function getDiscount(): ?ShopDiscountEntity
     {
         return $this->discount;
     }

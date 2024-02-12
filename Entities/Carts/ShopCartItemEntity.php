@@ -113,7 +113,7 @@ class ShopCartItemEntity
     public function getTotalCartPriceAfterDiscount(): float
     {
         //TODO : Gérer les promo
-        return $this->getTotalCartPrice() - 10;
+        return $this->getTotalCartPrice();
     }
 
     /**

@@ -68,4 +68,34 @@ class ShopCartDiscountModel extends AbstractModel
 
         return $toReturn;
     }
+
+    public function applyCode(int $cartId, int $discountId): ?ShopCartDiscountEntity
+    {
+        $data = array(
+            "shop_cart_id" => $cartId,
+            "shop_discount_id" => $discountId,
+        );
+
+        $sql = "INSERT INTO cmw_shops_cart_discounts (shop_cart_id, shop_discount_id) VALUES (:shop_cart_id, :shop_discount_id)";
+
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            return $this->getCartDiscountById($id);
+        }
+
+        return null;
+    }
+
+    public function removeCode(int $cartId, int $discountId): bool
+    {
+        $sql = "DELETE FROM cmw_shops_cart_discounts WHERE shop_cart_id = :shop_cart_id AND shop_discount_id = :shop_discount_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute(array("shop_cart_id" => $cartId, "shop_discount_id" => $discountId));
+    }
 }

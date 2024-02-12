@@ -28,15 +28,40 @@ class ShopDiscountCategoriesModel extends AbstractModel
             return null;
         }
 
+        $res = $res->fetch();
+
         $discount = ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
         $cat = ShopCategoriesModel::getInstance()->getShopCategoryById($res["shop_category_id"]);
-
-        $res = $res->fetch();
 
         return new ShopDiscountCategoriesEntity(
             $res["shop_discount_categories_id"],
             $discount,
             $cat,
         );
+    }
+
+    /**
+     * @param int $catId
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountCategoriesEntity []
+     */
+    public function getShopDiscountCategoriesByCategoryId(int $catId): array
+    {
+        $sql = "SELECT * FROM cmw_shops_discount_categories WHERE shop_category_id = :shop_category_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_category_id" => $catId))) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($values = $res->fetch()) {
+            $toReturn[] = $this->getShopDiscountCategoriesById($values["shop_discount_categories_id"]);
+        }
+
+        return $toReturn;
     }
 }

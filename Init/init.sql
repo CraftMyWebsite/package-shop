@@ -231,6 +231,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
     shop_discount_id                             INT AUTO_INCREMENT PRIMARY KEY,
     shop_discount_name                           VARCHAR(50)  NOT NULL,
     shop_discount_description                    VARCHAR(50)  NOT NULL,
+    shop_discount_linked                         TINYINT      NOT NULL DEFAULT 0,
     shop_discount_start_date                     TIMESTAMP    NOT NULL,
     shop_discount_end_date                       TIMESTAMP    NULL,
     shop_discount_default_uses                   INT          NULL,
@@ -241,8 +242,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
     shop_discount_cumulative                     TINYINT      NULL,
     shop_discount_status                         TINYINT      NULL,
     shop_discount_code                           VARCHAR(50)  NULL UNIQUE,
-    shop_discount_default_active                 INT          NOT NULL DEFAULT 0,
-    shop_discount_users_need_purchase_before_use INT          NULL,
+    shop_discount_default_active                 TINYINT      NOT NULL DEFAULT 0,
+    shop_discount_users_need_purchase_before_use TINYINT      NULL,
+    shop_discount_quantity_impacted              TINYINT      NULL,
     shop_discount_created_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_discount_updated_at                     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
@@ -251,9 +253,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
 
 CREATE TABLE IF NOT EXISTS cmw_shops_discount_items
 (
-    shop_discount_items_id     INT AUTO_INCREMENT PRIMARY KEY,
-    shop_discount_id           INT NULL,
-    shop_item_id               INT NULL,
+    shop_discount_items_id      INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_id            INT NULL,
+    shop_item_id                INT NULL,
     CONSTRAINT fk_shop_item_id_discount_items FOREIGN KEY (shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_shop_discount_id_discount_items FOREIGN KEY (shop_discount_id)
@@ -348,7 +350,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_orders_items
     shop_order_item_id         INT AUTO_INCREMENT PRIMARY KEY,
     shop_item_id               INT          NULL,
     shop_order_id              INT          NULL,
-    shop_payment_discount_id   INT          NULL,
+    shop_discount_id           INT          NULL,
     shop_order_item_quantity   INT          NULL,
     shop_order_item_price      FLOAT(10, 2) NULL,
     shop_order_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -357,8 +359,8 @@ CREATE TABLE IF NOT EXISTS cmw_shops_orders_items
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_order_id_orders_items FOREIGN KEY (shop_order_id)
         REFERENCES cmw_shops_orders (shop_order_id) ON UPDATE CASCADE ON DELETE SET NULL,
-    CONSTRAINT fk_payment_discount_id_orders_items FOREIGN KEY (shop_payment_discount_id)
-        REFERENCES cmw_shops_payment_discount (shop_payment_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
+    CONSTRAINT fk_payment_discount_id_orders_items FOREIGN KEY (shop_discount_id)
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

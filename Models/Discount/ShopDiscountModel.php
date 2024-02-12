@@ -33,6 +33,7 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_id"],
             $res["shop_discount_name"] ?? null,
             $res["shop_discount_description"] ?? null,
+            $res["shop_discount_linked"],
             $res["shop_discount_start_date"] ?? null,
             $res["shop_discount_end_date"] ?? null,
             $res["shop_discount_default_uses"] ?? null,
@@ -45,6 +46,7 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_code"] ?? null,
             $res["shop_discount_default_active"] ?? null,
             $res["shop_discount_users_need_purchase_before_use"] ?? null,
+            $res["shop_discount_quantity_impacted"] ?? null,
             $res["shop_discount_created_at"] ?? null,
             $res["shop_discount_updated_at"] ?? null
         );
@@ -119,11 +121,4 @@ class ShopDiscountModel extends AbstractModel
 
     }
 
-    /**
-     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
-     */
-    public function getDefaultActiveDiscountByItemId(int $itemId): array
-    {
-        //TODO ! avec des check dans les models Items et Categories
-    }
 }

@@ -5,6 +5,7 @@ namespace CMW\Model\Shop\Order;
 use CMW\Entity\Shop\Orders\ShopOrdersItemsEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Payment\ShopPaymentDiscountModel;
 
@@ -18,12 +19,10 @@ class ShopOrdersItemsModel extends AbstractModel
 {
     private ShopItemsModel $shopItemsModel;
     private ShopOrdersModel $shopOrdersModel;
-    private ShopPaymentDiscountModel $shopPaymentDiscountModel;
     public function __construct()
     {
         $this->shopItemsModel = new ShopItemsModel();
         $this->shopOrdersModel = new ShopOrdersModel();
-        $this->shopPaymentDiscountModel = new ShopPaymentDiscountModel();
     }
 
     public function getOrdersItemsById(int $id): ?ShopOrdersItemsEntity
@@ -42,7 +41,7 @@ class ShopOrdersItemsModel extends AbstractModel
 
         $item = is_null($res["shop_item_id"]) ? null : $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
         $order = is_null($res["shop_order_id"]) ? null : $this->shopOrdersModel->getOrdersById($res["shop_order_id"]);
-        $paymentDiscount = is_null($res["shop_payment_discount_id"]) ? null : $this->shopPaymentDiscountModel->getPaymentDiscountById($res["shop_payment_discount_id"]);
+        $paymentDiscount = is_null($res["shop_discount_id"]) ? null : ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
 
         return new ShopOrdersItemsEntity(
             $res["shop_order_item_id"],

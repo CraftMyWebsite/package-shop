@@ -9,6 +9,7 @@ class ShopDiscountEntity
     private int $id;
     private string $discountName;
     private string $discountDescription;
+    private int $discountLinked;
     private string $discountStartDate;
     private ?string $discountEndDate;
     private ?int $discountDefaultUses;
@@ -21,6 +22,7 @@ class ShopDiscountEntity
     private ?string $discountCode;
     private int $discountDefaultActive;
     private ?int $discountUserHaveOrderBeforeUse;
+    private ?int $discountQuantityImpacted;
     private string $discountCreated;
     private string $discountUpdated;
 
@@ -28,6 +30,7 @@ class ShopDiscountEntity
      * @param int $id
      * @param string $discountName
      * @param string $discountDescription
+     * @param int $discountLinked
      * @param string $discountStartDate
      * @param string|null $discountEndDate
      * @param int|null $discountDefaultUses
@@ -40,14 +43,16 @@ class ShopDiscountEntity
      * @param string|null $discountCode
      * @param int $discountDefaultActive
      * @param int|null $discountUserHaveOrderBeforeUse
+     * @param int|null $discountQuantityImpacted
      * @param string $discountCreated
      * @param string $discountUpdated
      */
-    public function __construct(int $id, string $discountName, string $discountDescription, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountCumulative, ?int $discountStatus, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, string $discountCreated, string $discountUpdated)
+    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountCumulative, ?int $discountStatus, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
     {
         $this->id = $id;
         $this->discountName = $discountName;
         $this->discountDescription = $discountDescription;
+        $this->discountLinked = $discountLinked;
         $this->discountStartDate = $discountStartDate;
         $this->discountEndDate = $discountEndDate;
         $this->discountDefaultUses = $discountDefaultUses;
@@ -60,6 +65,7 @@ class ShopDiscountEntity
         $this->discountCode = $discountCode;
         $this->discountDefaultActive = $discountDefaultActive;
         $this->discountUserHaveOrderBeforeUse = $discountUserHaveOrderBeforeUse;
+        $this->discountQuantityImpacted = $discountQuantityImpacted;
         $this->discountCreated = $discountCreated;
         $this->discountUpdated = $discountUpdated;
     }
@@ -77,6 +83,24 @@ class ShopDiscountEntity
     public function getDescription(): string
     {
         return $this->discountDescription;
+    }
+
+    public function getLinked(): int
+    {
+        return $this->discountLinked;
+    }
+
+    public function getLinkedFormatted(): string
+    {
+        if ($this->discountLinked == 0) {
+            return "Tout les produits";
+        }
+        if ($this->discountLinked == 1) {
+            return "Un ou Des article(s)";
+        }
+        if ($this->discountLinked == 2) {
+            return "Une ou Des catégorie(s)";
+        }
     }
 
     public function getStartDate(): string
@@ -143,6 +167,12 @@ class ShopDiscountEntity
     {
         return $this->discountUserHaveOrderBeforeUse;
     }
+
+    public function getDiscountQuantityImpacted(): ?int
+    {
+        return $this->discountQuantityImpacted;
+    }
+
 
     public function getCreated(): string
     {
