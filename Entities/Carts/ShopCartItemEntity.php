@@ -3,9 +3,14 @@
 namespace CMW\Entity\Shop\Carts;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
+use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Delivery\ShopShippingModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
@@ -16,17 +21,19 @@ class ShopCartItemEntity
     private int $id;
     private ShopCartEntity $cart;
     private ?ShopItemEntity $item;
+    private ?ShopDiscountEntity $discount;
     private int $cartQuantity;
     private string $cartCreated;
     private string $cartUpdated;
     private int $cartAside;
 
 
-    public function __construct(int $id, ShopCartEntity $cart, ?ShopItemEntity $item, int $cartQuantity, string $cartCreated, string $cartUpdated, int $cartAside)
+    public function __construct(int $id, ShopCartEntity $cart, ?ShopItemEntity $item, ?ShopDiscountEntity $discount, int $cartQuantity, string $cartCreated, string $cartUpdated, int $cartAside)
     {
         $this->id = $id;
         $this->cart = $cart;
         $this->item = $item;
+        $this->discount = $discount;
         $this->cartQuantity = $cartQuantity;
         $this->cartCreated = $cartCreated;
         $this->cartUpdated = $cartUpdated;
@@ -58,6 +65,30 @@ class ShopCartItemEntity
     }
 
     /**
+     * @return ?\CMW\Entity\Shop\Discounts\ShopDiscountEntity
+     */
+    public function getDiscount(): ?ShopDiscountEntity
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getDiscountFormatted(): ?string
+    {
+        if (!is_null($this->discount)) {
+            if ($this->discount->getPrice()) {
+                return "- " . $this->discount->getPrice() . "€";
+            }
+            if ($this->discount->getPercentage()) {
+                return "- " . $this->discount->getPercentage() . "%";
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return string
      */
     public function getFirstImageItemUrl(): string
@@ -76,8 +107,9 @@ class ShopCartItemEntity
 
     /**
      * @return float
+     * @desc Use for count the total price of one item in the cart
      */
-    public function getTotalPrice(): float
+    public function getItemTotalPrice(): float
     {
         $itemPrice = $this->item->getPrice();
         return $this->cartQuantity * $itemPrice;
@@ -85,46 +117,74 @@ class ShopCartItemEntity
 
     /**
      * @return float
+     * @desc Use for count the total price of one item in the cart
      */
-    public function getTotalPriceAfterDiscount(): float
+    public function getItemTotalPriceAfterDiscount(): float
     {
-        //TODO : Gérer les promo
         $itemPrice = $this->item->getPrice();
-        return $this->cartQuantity * $itemPrice;
+        $discount = $this->discount;
+        return $this->cartQuantity * $itemPrice - ($itemPrice * $discount->getPercentage() / 100);
     }
 
     /**
      * @return float
+     * @desc use for count the total price of all items in the cart (Is never the final price)
      */
-    public function getTotalCartPrice(): float
+    public function getTotalCartPriceBeforeDiscount(): float
     {
-        $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
         $total = 0;
-        foreach ($cartContent as $itemPrice) {
-            $total += $itemPrice->getTotalPrice();
+        foreach ($cartContents as $cartContent) {
+            $total += $cartContent->getItemTotalPrice();
         }
         return $total;
     }
 
     /**
      * @return float
+     * @desc use for count the total price of all items in the cart including discount (Is always the final CART view price but never the final price)
      */
     public function getTotalCartPriceAfterDiscount(): float
     {
-        //TODO : Gérer les promo
-        return $this->getTotalCartPrice();
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $basePrice = $this->getTotalCartPriceBeforeDiscount();
+        $discount = 0;
+        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, session_id());
+        $discountsCart = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, session_id());
+
+        foreach ($cartContents as $cartContent) {
+            foreach ($discountsCart as $discountCart) {
+                if ($discountCart->getDiscount()->getLinked() != 0) {
+
+                } else {
+                    //Lié a tout les items on l'applique sur tout les articles
+                    if ($discountCart->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                        $discount += ($discountCart->getDiscount()->getPrice())*$cartContent->getQuantity();
+                    } else {
+                        $discount += ($discountCart->getDiscount()->getPrice());
+                    }
+
+                }
+            }
+        }
+
+
+
+        return $basePrice - $discount;
     }
 
     /**
-     * @param int $paymentMethodFees
-     * @param int $shippingFees
      * @return float
-     * @desc Please use this method for final price after discounts, payment fees, shipping fees and more...
+     * @desc Use for count the total final price including all discounts, payment fees, shipping fees and more... (Is always the final price used in payment view)
      */
-    public function getTotalPriceComplete(int $paymentMethodFees, int $shippingFees): float
+    public function getTotalPriceComplete(): float
     {
-        //TODO : J'aime pas les entity qui ont besoin de param (faudrait les faire passer via le model du CommandTunnel)
+        $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()?->getId());
+
+        $shippingFees = $commandTunnel->getShipping()->getPrice();
+        $paymentMethodFees = 0; //TODO : à rajouter dans le command tunnel
+
         $total = $this->getTotalCartPriceAfterDiscount();
 
         $total += $paymentMethodFees;

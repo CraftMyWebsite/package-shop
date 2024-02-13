@@ -37,7 +37,7 @@ $description = "";
                         <?= $cart->getItem()->getPrice() ?> €
                     </td>
                     <td>
-                        <?= $cart->getTotalPrice() ?> €
+                        <?= $cart->getItemTotalPrice() ?> €
                     </td>
                     <td>
                         <?= $cart->getCreated() ?>

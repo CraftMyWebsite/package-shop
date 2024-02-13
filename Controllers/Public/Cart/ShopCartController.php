@@ -36,14 +36,13 @@ class ShopCartController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemsVariantes = ShopCartVariantesModel::getInstance();
-        $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
-        $appliedDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByCartId($cartId);
+        $appliedDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
 
         $this->handleSessionHealth($sessionId);
 
         $this->handleItemHealth($userId, $sessionId);
 
-        //TODO: Verifier si les promotions appliquées au panier sont encore valides
+        //TODO: Verifier si les promotions appliquées au panier sont encore valides / les appliquer si nécessaire
 
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();

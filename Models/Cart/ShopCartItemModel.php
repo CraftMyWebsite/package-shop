@@ -5,6 +5,7 @@ namespace CMW\Model\Shop\Cart;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 
 /**
@@ -38,11 +39,13 @@ class ShopCartItemModel extends AbstractModel
 
         $cart = ShopCartModel::getInstance()->getShopCartsById($res["shop_cart_id"]);
         $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
+        $discount = is_null($res["shop_discount_id"]) ? null : ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
 
         return new ShopCartItemEntity(
             $res["shop_cart_item_id"],
             $cart,
             $item ?? null,
+            $discount ?? null,
             $res["shop_cart_item_quantity"],
             $res["shop_cart_item_created_at"],
             $res["shop_cart_item_updated_at"],
@@ -579,6 +582,46 @@ class ShopCartItemModel extends AbstractModel
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
         $req->execute($data);
+    }
+
+    public function applyCodeToItem(?int $userId, string $sessionId, int $itemId, int $discountId): void
+    {
+        if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+        } else {
+            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+        }
+
+        $data = [
+            "shop_item_id" => $itemId,
+            "shop_cart_id" => $cartId,
+            "shop_discount_id" => $discountId,
+        ];
+
+        $sql = "UPDATE cmw_shops_cart_items SET shop_discount_id = :shop_discount_id WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
+    }
+
+    public function removeCodeToItem(?int $userId, string $sessionId, int $itemId, int $discountId): void
+    {
+        if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+        } else {
+            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+        }
+
+        $data = [
+            "shop_item_id" => $itemId,
+            "shop_cart_id" => $cartId,
+            "shop_discount_id" => $discountId,
+        ];
+
+        $sql = "UPDATE cmw_shops_cart_items SET shop_discount_id = NULL WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id AND shop_discount_id = :shop_discount_id";
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
     }
 
 }

@@ -183,9 +183,4 @@ class ShopDiscountEntity
     {
         return CoreController::formatDate($this->discountUpdated);
     }
-
-    public function getLinkedType(): string
-    {
-        return "Article(s)";
-    }
 }

@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
     shop_cart_item_id         INT AUTO_INCREMENT PRIMARY KEY,
     shop_cart_id              INT          NOT NULL,
     shop_item_id              INT          NULL,
+    shop_discount_id          INT          NULL,
     shop_cart_item_quantity   INT          NOT NULL DEFAULT 1,
     shop_cart_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_cart_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -435,7 +436,14 @@ ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)
             REFERENCES cmw_shops_images (`shop_image_id`) ON DELETE SET NULL;
+
+ALTER TABLE `cmw_shops_cart_items`
+    ADD
+        CONSTRAINT fk_shop_discount_id_cmw_shops_cart_items FOREIGN KEY (shop_discount_id)
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL;
+
 INSERT INTO cmw_shops_settings (`shop_settings_key`, `shop_settings_value`)
 VALUES ('currency', 'EUR');
+
 
 INSERT INTO cmw_shops_images (`shop_image_name`,`shop_default_image`) VALUES ('default','1');

@@ -46,8 +46,14 @@ class ShopCartDiscountModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Carts\ShopCartDiscountEntity []
      */
-    public function getCartDiscountByCartId(int $cartId): array
+    public function getCartDiscountByUserId(?int $userId, string $sessionId): array
     {
+        if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+        } else {
+            $cartId = null;
+        }
+
         $sql = "SELECT shop_cart_discount_id FROM cmw_shops_cart_discounts WHERE shop_cart_id = :shop_cart_id";
 
         $data = ['shop_cart_id' => $cartId];
@@ -69,8 +75,14 @@ class ShopCartDiscountModel extends AbstractModel
         return $toReturn;
     }
 
-    public function applyCode(int $cartId, int $discountId): ?ShopCartDiscountEntity
+    public function applyCode(?int $userId, string $sessionId, int $discountId): ?ShopCartDiscountEntity
     {
+        if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+        } else {
+            $cartId = null;
+        }
+
         $data = array(
             "shop_cart_id" => $cartId,
             "shop_discount_id" => $discountId,
