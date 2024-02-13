@@ -386,3 +386,17 @@ $description = "";
     }
 </script>
 
+<script>
+    let inputElement = document.querySelector('input[name="shop_item_price"]');
+
+    inputElement.addEventListener('input', function() {
+        let inputValue = this.value;
+        inputValue = inputValue.replace(/,/g, '.');
+        inputValue = inputValue.replace(/[^\d.]/g, '');
+        if (/\.\d{3,}/.test(inputValue)) {
+            let decimalIndex = inputValue.indexOf('.');
+            inputValue = inputValue.substring(0, decimalIndex + 3);
+        }
+        this.value = inputValue;
+    });
+</script>

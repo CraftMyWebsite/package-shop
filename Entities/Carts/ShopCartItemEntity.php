@@ -78,11 +78,20 @@ class ShopCartItemEntity
     public function getDiscountFormatted(): ?string
     {
         if (!is_null($this->discount)) {
-            if ($this->discount->getPrice()) {
-                return "- " . $this->discount->getPrice() . "€";
-            }
-            if ($this->discount->getPercentage()) {
-                return "- " . $this->discount->getPercentage() . "%";
+            if ($this->discount->getDiscountQuantityImpacted() == 1) {
+                if ($this->discount->getPrice()) {
+                    return "- " . $this->discount->getPrice() . "€";
+                }
+                if ($this->discount->getPercentage()) {
+                    return "- " . $this->discount->getPercentage() . "%";
+                }
+            } else {
+                if ($this->discount->getPrice()) {
+                    return "- " . $this->discount->getPrice() . "€ sur le 1er article";
+                }
+                if ($this->discount->getPercentage()) {
+                    return "- " . $this->discount->getPercentage() . "% sur le 1er article";
+                }
             }
         }
         return null;
@@ -121,9 +130,27 @@ class ShopCartItemEntity
      */
     public function getItemTotalPriceAfterDiscount(): float
     {
-        $itemPrice = $this->item->getPrice();
-        $discount = $this->discount;
-        return $this->cartQuantity * $itemPrice - ($itemPrice * $discount->getPercentage() / 100);
+        $basePrice = $this->getItemTotalPrice();
+        $discount = 0;
+        if (!is_null($this->discount)) {
+            if ($this->discount->getDiscountQuantityImpacted() == 1) {
+                if ($this->discount->getPrice()) {
+                    $discount = $this->discount->getPrice() * $this->cartQuantity;
+                }
+                if ($this->discount->getPercentage()) {
+                    $discount = ($basePrice*$this->discount->getPercentage()/100);
+                }
+            } else {
+                if ($this->discount->getPrice()) {
+                    $discount = $this->discount->getPrice();
+                }
+                if ($this->discount->getPercentage()) {
+                    $discount = ($this->getItem()->getPrice()*$this->discount->getPercentage()/100);
+                }
+            }
+            return number_format($basePrice - $discount, 2);
+        }
+        return $basePrice;
     }
 
     /**
@@ -147,36 +174,18 @@ class ShopCartItemEntity
      */
     public function getTotalCartPriceAfterDiscount(): float
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
-        $basePrice = $this->getTotalCartPriceBeforeDiscount();
-        $discount = 0;
-        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, session_id());
-        $discountsCart = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, session_id());
+        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
 
+        $total = 0;
         foreach ($cartContents as $cartContent) {
-            foreach ($discountsCart as $discountCart) {
-                if ($discountCart->getDiscount()->getLinked() != 0) {
-
-                } else {
-                    //Lié a tout les items on l'applique sur tout les articles
-                    if ($discountCart->getDiscount()->getDiscountQuantityImpacted() == 1) {
-                        $discount += ($discountCart->getDiscount()->getPrice())*$cartContent->getQuantity();
-                    } else {
-                        $discount += ($discountCart->getDiscount()->getPrice());
-                    }
-
-                }
-            }
+            $total += $cartContent->getItemTotalPriceAfterDiscount();
         }
-
-
-
-        return $basePrice - $discount;
+        return $total;
     }
 
     /**
      * @return float
-     * @desc Use for count the total final price including all discounts, payment fees, shipping fees and more... (Is always the final price used in payment view)
+     * @desc Use for count the total final price including all discounts, payment fees, shipping fees and more... (Is always the final price used in payment interface)
      */
     public function getTotalPriceComplete(): float
     {

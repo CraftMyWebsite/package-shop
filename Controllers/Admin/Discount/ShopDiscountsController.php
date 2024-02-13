@@ -28,3 +28,5 @@ class ShopDiscountsController extends AbstractController
             ->view();
     }
 }
+
+//TODO Note : Lors de la suppression d'une promotion, on doit verifier que la promotion n'as pas encore été utilisée dans un order.

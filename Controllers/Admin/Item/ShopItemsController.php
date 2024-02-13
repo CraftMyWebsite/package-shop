@@ -142,6 +142,9 @@ class ShopItemsController extends AbstractController
 
         if ($type == "0") {
             [$weight,$length,$width,$height] = Utils::filterInput("shop_item_weight","shop_item_length","shop_item_width","shop_item_height");
+            $length = is_string($length) ? 0 : $length;
+            $width = is_string($width) ? 0 : $length;
+            $height = is_string($height) ? 0 : $length;
             ShopItemsPhysicalRequirementModel::getInstance()->createPhysicalRequirement($itemId,$weight,$length,$width,$height);
         }
 

@@ -195,6 +195,14 @@ class ShopActionsCartController extends AbstractController
                 Redirect::redirectPreviousRoute();
             }
 
+            // handle if the item price is lower than the discount price
+            foreach ($itemInCart as $item) {
+                if ($item->getItem()->getPrice() <= $discountCode->getPrice()) {
+                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas appliquer de code de réduction sur un article qui côute moins cher que le prix de la réduction");
+                    Redirect::redirectPreviousRoute();
+                }
+            }
+
             foreach ($itemInCart as $cartItem) {
                 ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(), $discountCode->getId());
             }
@@ -250,8 +258,6 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
-        //TODO : Gérer les promotions
-
         ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
 
         if (!is_null($userId)) {
@@ -269,14 +275,15 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleSessionHealth($sessionId);
 
-        //TODO : Gérer les promotions
-
         $currentQuantity = ShopCartItemModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
 
         if ($currentQuantity === 1) {
             ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
-            Flash::send(Alert::SUCCESS, LangManager::translate('core.toaster.success'),
-                "Article " . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . " enlevé de votre panier");
+            if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+                Flash::send (Alert::SUCCESS, "Boutique", "Article " . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . " enlevé de votre panier (Vos promotions ont été réinitialisées)");
+            } else {
+                Flash::send(Alert::SUCCESS, "Boutique", "Article " . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . " enlevé de votre panier");
+            }
         }
 
         if ($currentQuantity <= 0) {
@@ -304,9 +311,11 @@ class ShopActionsCartController extends AbstractController
 
         ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
 
-        //TODO : Virer les pormotions
-
-        Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
+        if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+            Flash::send (Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier (Vos promotions ont été réinitialisées)");
+        } else {
+            Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus dans votre panier");
+        }
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -334,8 +343,13 @@ class ShopActionsCartController extends AbstractController
                     ShopCartVariantesModel::getInstance()->setVariantToItemInCart($cart->getId(), $selectedVariant);
                 }
             }
-            Flash::send(Alert::SUCCESS, "Boutique",
-                "Nouvel article ajouté au panier !");
+
+            if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+                Flash::send (Alert::SUCCESS, "Boutique", "Article ajouté ! (Vos promotions ont été réinitialisées)");
+            } else {
+                Flash::send(Alert::SUCCESS, "Boutique", "Nouvel article ajouté au panier !");
+            }
+
         } else {
             // TODO : Si l'article est une variante il faut verifier que l'utilisateur à choisis la même variante, si ce n'est pas le cas il faut ajouter l'article en plus !
             ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
@@ -571,6 +585,22 @@ class ShopActionsCartController extends AbstractController
             }
         }
         return ByOrderLimitStatus::PASS;
+    }
+
+    private function handleForceClearAllDiscount(?int $userId, string $sessionId): bool
+    {
+        $appliedDiscount = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
+        if (!empty($appliedDiscount)) {
+            $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+            foreach ($appliedDiscount as $discount) {
+                ShopCartDiscountModel::getInstance()->removeCode($discount->getCart()->getId() ,$discount->getDiscount()->getId());
+                foreach ($itemInCart as $cartItem) {
+                    ShopCartItemModel::getInstance()->removeCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(),$discount->getDiscount()->getId());
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 

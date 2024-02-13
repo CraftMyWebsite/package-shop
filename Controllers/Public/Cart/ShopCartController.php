@@ -42,7 +42,7 @@ class ShopCartController extends AbstractController
 
         $this->handleItemHealth($userId, $sessionId);
 
-        //TODO: Verifier si les promotions appliquées au panier sont encore valides / les appliquer si nécessaire
+        //TODO: Verifier si les promotions appliquées au panier sont encore valides
 
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();

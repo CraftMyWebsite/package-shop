@@ -70,7 +70,7 @@ class ShopDiscountModel extends AbstractModel
         $toReturn = [];
 
         while ($discount = $res->fetch()) {
-            $toReturn[] = $this->getShopDiscountById($discount["shop_payment_discount_id"]);
+            $toReturn[] = $this->getShopDiscountById($discount["shop_discount_id"]);
         }
 
         return $toReturn;

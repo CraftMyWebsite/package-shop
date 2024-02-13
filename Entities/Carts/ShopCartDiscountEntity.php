@@ -44,6 +44,20 @@ class ShopCartDiscountEntity
     }
 
     /**
+     * @return ?string
+     */
+    public function getDiscountFormatted(): ?string
+    {
+        if ($this->discountId->getPrice()) {
+            return "- " . $this->discountId->getPrice() . "€";
+        }
+        if ($this->discountId->getPercentage()) {
+            return "- " . $this->discountId->getPercentage() . "%";
+        }
+        return null;
+    }
+
+    /**
      * @return string
      */
     public function getRemoveLink(): string
