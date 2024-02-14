@@ -40,6 +40,30 @@ class ShopDiscountItemsModel extends AbstractModel
         );
     }
 
+    public function getShopDiscountItemsDefaultAppliedById(int $id): ?ShopDiscountItemsEntity
+    {
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_items_id = :shop_discount_items_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(["shop_discount_items_id" => $id])) {
+            return null;
+        }
+
+        $res = $res->fetch();
+
+        $discount = ShopDiscountModel::getInstance()->getShopDiscountDefaultAppliedById($res["shop_discount_id"]);
+        $item = ShopItemsModel::getInstance()->getShopItemsById($res["shop_item_id"]);
+
+        return new ShopDiscountItemsEntity(
+            $res["shop_discount_items_id"],
+            $discount,
+            $item,
+        );
+    }
+
     /**
      * @param int $itemId
      * @return \CMW\Entity\Shop\Discounts\ShopDiscountItemsEntity []
@@ -60,6 +84,31 @@ class ShopDiscountItemsModel extends AbstractModel
 
         while ($values = $res->fetch()) {
             $toReturn[] = $this->getShopDiscountItemsById($values["shop_discount_items_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    /**
+     * @param int $itemId
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountItemsEntity []
+     */
+    public function getShopDiscountItemsDefaultAppliedByItemId(int $itemId): array
+    {
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_item_id" => $itemId))) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($values = $res->fetch()) {
+            $toReturn[] = $this->getShopDiscountItemsDefaultAppliedById($values["shop_discount_items_id"]);
         }
 
         return $toReturn;

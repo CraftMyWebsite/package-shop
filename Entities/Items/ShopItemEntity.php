@@ -6,6 +6,8 @@ use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
+use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
@@ -149,10 +151,82 @@ class ShopItemEntity
 
     /**
      * @return ?float
+     * @desc return the price for this item as float but not included the discount us also getPriceDiscountDefaultApplied() for public view
      */
     public function getPrice(): ?float
     {
         return $this->itemPrice;
+    }
+
+    /**
+     * @return ?float
+     * @desc return the price impacted by the discount as float if discount is not applied for this item he returns nothing
+     */
+    public function getPriceDiscountDefaultApplied(): ?float
+    {
+        $basePrice = $this->getPrice();
+        $discount = 0;
+        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
+        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
+
+        //TODO : Verifier que la promotion appliqué ne cause pas de balance négative
+        //TODO : Gérer les promotions en fonction du pourcentage ou du montant
+        if (!empty($discountItems)) {
+            foreach ($discountItems as $discountItem) {
+                if ($discountItem->getDiscount()->getLinked() == 2) {
+                    $discount = $discountItem->getDiscount()->getPrice();
+                } else {
+                    return null;
+                }
+            }
+            return $basePrice - $discount;
+        }
+        if (!empty($discountCategories)) {
+            foreach ($discountCategories as $discountCategory) {
+                if ($discountCategory->getDiscount()->getLinked() == 3) {
+                    $discount = $discountCategory->getDiscount()->getPrice();
+                } else {
+                    return null;
+                }
+            }
+            return $basePrice - $discount;
+        }
+        return null;
+    }
+
+    /**
+     * @return ?string
+     * @desc return the discount applied on the item with the percentage or the amount
+     */
+    public function getDiscountImpactDefaultApplied(): ?string
+    {
+        $discount = "0";
+        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
+        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
+
+        //TODO : Verifier que la promotion appliqué ne cause pas de balance négative
+        //TODO : Gérer les promotions en fonction du pourcentage ou du montant
+        if (!empty($discountItems)) {
+            foreach ($discountItems as $discountItem) {
+                if ($discountItem->getDiscount()->getLinked() == 2) {
+                    $discount = "-" . $discountItem->getDiscount()->getPrice() ." €";
+                } else {
+                    return null;
+                }
+            }
+            return $discount;
+        }
+        if (!empty($discountCategories)) {
+            foreach ($discountCategories as $discountCategory) {
+                if ($discountCategory->getDiscount()->getLinked() == 3) {
+                    $discount = "-" . $discountCategory->getDiscount()->getPrice() ." €";
+                } else {
+                    return null;
+                }
+            }
+            return $discount;
+        }
+        return null;
     }
 
     /**
