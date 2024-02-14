@@ -169,27 +169,44 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        //TODO : Verifier que la promotion appliqué ne cause pas de balance négative
-        //TODO : Gérer les promotions en fonction du pourcentage ou du montant
+        //items
         if (!empty($discountItems)) {
             foreach ($discountItems as $discountItem) {
                 if ($discountItem->getDiscount()->getLinked() == 2) {
-                    $discount = $discountItem->getDiscount()->getPrice();
-                } else {
+                    if ($discountItem->getDiscount()->getPrice()) {
+                        $discount = $discountItem->getDiscount()->getPrice();
+                    }
+                    if ($discountItem->getDiscount()->getPercentage()) {
+                        $discount = ($basePrice*$discountItem->getDiscount()->getPercentage())/100;
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
                     return null;
+                } else {
+                    return number_format($basePrice - $discount, 2, '.', '');
                 }
             }
-            return $basePrice - $discount;
         }
+
+        //cats
         if (!empty($discountCategories)) {
             foreach ($discountCategories as $discountCategory) {
                 if ($discountCategory->getDiscount()->getLinked() == 3) {
-                    $discount = $discountCategory->getDiscount()->getPrice();
-                } else {
+                    if ($discountCategory->getDiscount()->getPrice()) {
+                        $discount = $discountCategory->getDiscount()->getPrice();
+                    }
+                    if ($discountCategory->getDiscount()->getPercentage()) {
+                        $discount = ($basePrice*$discountCategory->getDiscount()->getPercentage())/100;
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
                     return null;
+                } else {
+                    return number_format($basePrice - $discount, 2, '.', '');
                 }
             }
-            return $basePrice - $discount;
         }
         return null;
     }
@@ -200,32 +217,57 @@ class ShopItemEntity
      */
     public function getDiscountImpactDefaultApplied(): ?string
     {
-        $discount = "0";
+        $basePrice = $this->getPrice();
+        $discount = 0;
+        $discountFormatted = "";
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        //TODO : Verifier que la promotion appliqué ne cause pas de balance négative
-        //TODO : Gérer les promotions en fonction du pourcentage ou du montant
+        //items
         if (!empty($discountItems)) {
             foreach ($discountItems as $discountItem) {
                 if ($discountItem->getDiscount()->getLinked() == 2) {
-                    $discount = "-" . $discountItem->getDiscount()->getPrice() ." €";
-                } else {
+                    if ($discountItem->getDiscount()->getPrice()) {
+                        $discount = $discountItem->getDiscount()->getPrice();
+                        $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() ." €";
+                    }
+                    if ($discountItem->getDiscount()->getPercentage()) {
+                        $discount = ($basePrice*$discountItem->getDiscount()->getPercentage())/100;
+                        $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() ." %";
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
                     return null;
+                } else {
+                    return $discountFormatted;
                 }
             }
-            return $discount;
         }
+
+        //cats
         if (!empty($discountCategories)) {
+
             foreach ($discountCategories as $discountCategory) {
                 if ($discountCategory->getDiscount()->getLinked() == 3) {
-                    $discount = "-" . $discountCategory->getDiscount()->getPrice() ." €";
-                } else {
+                    if ($discountCategory->getDiscount()->getPrice()) {
+                        $discount = $discountCategory->getDiscount()->getPrice();
+                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() ." €";
+                    }
+                    if ($discountCategory->getDiscount()->getPercentage()) {
+                        $discount = ($basePrice*$discountCategory->getDiscount()->getPercentage())/100;
+                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() ." %";
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
                     return null;
+                } else {
+                    return $discountFormatted;
                 }
             }
-            return $discount;
         }
+
         return null;
     }
 

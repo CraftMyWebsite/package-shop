@@ -120,7 +120,11 @@ class ShopCartItemEntity
      */
     public function getItemTotalPrice(): float
     {
-        $itemPrice = $this->item->getPrice();
+        if ($this->item->getPriceDiscountDefaultApplied()) {
+            $itemPrice = $this->item->getPriceDiscountDefaultApplied();
+        } else {
+            $itemPrice = $this->item->getPrice();
+        }
         return $this->cartQuantity * $itemPrice;
     }
 
@@ -138,17 +142,21 @@ class ShopCartItemEntity
                     $discount = $this->discount->getPrice() * $this->cartQuantity;
                 }
                 if ($this->discount->getPercentage()) {
-                    $discount = ($basePrice*$this->discount->getPercentage()/100);
+                    $discount = ($basePrice*$this->discount->getPercentage())/100;
                 }
             } else {
                 if ($this->discount->getPrice()) {
                     $discount = $this->discount->getPrice();
                 }
                 if ($this->discount->getPercentage()) {
-                    $discount = ($this->getItem()->getPrice()*$this->discount->getPercentage()/100);
+                    if ($this->item->getPriceDiscountDefaultApplied()) {
+                        $discount = ($this->item->getPriceDiscountDefaultApplied()*$this->discount->getPercentage()/100);
+                    } else {
+                        $discount = ($this->getItem()->getPrice()*$this->discount->getPercentage()/100);
+                    }
                 }
             }
-            return number_format($basePrice - $discount, 2);
+            return number_format($basePrice - $discount, 2, '.', '');
         }
         return $basePrice;
     }
@@ -200,7 +208,7 @@ class ShopCartItemEntity
 
         $total += $shippingFees;
 
-        return number_format($total, 2);
+        return number_format($total, 2, '.', '');
     }
 
     /**
