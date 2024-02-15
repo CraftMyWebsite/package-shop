@@ -5,6 +5,7 @@ namespace CMW\Model\Shop\Discount;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Model\Shop\Item\ShopItemsModel;
 
 
 /**
