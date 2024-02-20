@@ -42,7 +42,7 @@ class ShopDiscountItemsModel extends AbstractModel
 
     public function getShopDiscountItemsDefaultAppliedById(int $id): ?ShopDiscountItemsEntity
     {
-        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_items_id = :shop_discount_items_id";
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_items_id = :shop_discount_items_id AND shop_discount_default_applied = 1";
 
         $db = DatabaseManager::getInstance();
 
@@ -95,7 +95,7 @@ class ShopDiscountItemsModel extends AbstractModel
      */
     public function getShopDiscountItemsDefaultAppliedByItemId(int $itemId): array
     {
-        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_item_id = :shop_item_id";
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_item_id = :shop_item_id AND shop_discount_default_applied = 1";
 
         $db = DatabaseManager::getInstance();
 

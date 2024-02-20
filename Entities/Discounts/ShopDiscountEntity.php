@@ -17,8 +17,8 @@ class ShopDiscountEntity
     private ?int $discountPercentage;
     private ?float $discountPrice;
     private ?int $discountUsesMultipleByUser;
-    private ?int $discountCumulative;
     private ?int $discountStatus;
+    private ?int $discountTest;
     private ?string $discountCode;
     private int $discountDefaultActive;
     private ?int $discountUserHaveOrderBeforeUse;
@@ -38,8 +38,8 @@ class ShopDiscountEntity
      * @param int|null $discountPercentage
      * @param float|null $discountPrice
      * @param int|null $discountUsesMultipleByUser
-     * @param int|null $discountCumulative
      * @param int|null $discountStatus
+     * @param int|null $discountTest
      * @param string|null $discountCode
      * @param int $discountDefaultActive
      * @param int|null $discountUserHaveOrderBeforeUse
@@ -47,7 +47,7 @@ class ShopDiscountEntity
      * @param string $discountCreated
      * @param string $discountUpdated
      */
-    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountCumulative, ?int $discountStatus, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
+    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountStatus, ?int $discountTest, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
     {
         $this->id = $id;
         $this->discountName = $discountName;
@@ -60,8 +60,8 @@ class ShopDiscountEntity
         $this->discountPercentage = $discountPercentage;
         $this->discountPrice = $discountPrice;
         $this->discountUsesMultipleByUser = $discountUsesMultipleByUser;
-        $this->discountCumulative = $discountCumulative;
         $this->discountStatus = $discountStatus;
+        $this->discountTest = $discountTest;
         $this->discountCode = $discountCode;
         $this->discountDefaultActive = $discountDefaultActive;
         $this->discountUserHaveOrderBeforeUse = $discountUserHaveOrderBeforeUse;
@@ -138,12 +138,17 @@ class ShopDiscountEntity
         return $this->discountUsesMultipleByUser;
     }
 
-    public function getCumulative(): ?int
+    public function getStatus(): ?int
     {
-        return $this->discountCumulative;
+        return $this->discountStatus;
     }
 
-    public function getStatus(): ?string
+    public function getTestMode(): ?int
+    {
+        return $this->discountTest;
+    }
+
+    public function getStatusFormatted(): ?string
     {
         if ($this->discountStatus == 0) {
             return "Inactive";

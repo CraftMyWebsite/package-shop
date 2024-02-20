@@ -240,8 +240,8 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
     shop_discount_percent                        INT          NULL,
     shop_discount_price                          FLOAT(10, 2) NULL,
     shop_discount_use_multiple_per_users         TINYINT      NULL,
-    shop_discount_cumulative                     TINYINT      NULL,
     shop_discount_status                         TINYINT      NULL,
+    shop_discount_test                           TINYINT      NULL,
     shop_discount_code                           VARCHAR(50)  NULL UNIQUE,
     shop_discount_default_active                 TINYINT      NOT NULL DEFAULT 0,
     shop_discount_users_need_purchase_before_use TINYINT      NULL,
@@ -258,9 +258,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount_items
     shop_discount_id            INT NULL,
     shop_item_id                INT NULL,
     CONSTRAINT fk_shop_item_id_discount_items FOREIGN KEY (shop_item_id)
-        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL,
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_discount_id_discount_items FOREIGN KEY (shop_discount_id)
-        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -271,9 +271,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount_categories
     shop_discount_id                INT NULL,
     shop_category_id                INT NULL,
     CONSTRAINT fk_shop_item_id_discount_categories FOREIGN KEY (shop_category_id)
-        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL,
+        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_discount_id_discount_categories FOREIGN KEY (shop_discount_id)
-        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL
+        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

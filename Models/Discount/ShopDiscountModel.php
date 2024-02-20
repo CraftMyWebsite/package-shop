@@ -41,8 +41,8 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_percent"] ?? null,
             $res["shop_discount_price"] ?? null,
             $res["shop_discount_use_multiple_per_users"] ?? null,
-            $res["shop_discount_cumulative"] ?? null,
             $res["shop_discount_status"] ?? null,
+            $res["shop_discount_test"] ?? null,
             $res["shop_discount_code"] ?? null,
             $res["shop_discount_default_active"] ?? null,
             $res["shop_discount_users_need_purchase_before_use"] ?? null,
@@ -78,8 +78,8 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_percent"] ?? null,
             $res["shop_discount_price"] ?? null,
             $res["shop_discount_use_multiple_per_users"] ?? null,
-            $res["shop_discount_cumulative"] ?? null,
             $res["shop_discount_status"] ?? null,
+            $res["shop_discount_test"] ?? null,
             $res["shop_discount_code"] ?? null,
             $res["shop_discount_default_active"] ?? null,
             $res["shop_discount_users_need_purchase_before_use"] ?? null,
@@ -155,6 +155,31 @@ class ShopDiscountModel extends AbstractModel
         $res = $res->fetch();
 
         return $this->getShopDiscountById($res["shop_discount_id"]);
+
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
+     */
+    public function getShopDiscountsDefaultAppliedForAll(): array
+    {
+
+        $sql = "SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_linked = 0 AND shop_discount_default_active = 1 AND shop_discount_status = 1";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($discount = $res->fetch()) {
+            $toReturn[] = $this->getShopDiscountDefaultAppliedById($discount["shop_discount_id"]);
+        }
+
+        return $toReturn;
 
     }
 

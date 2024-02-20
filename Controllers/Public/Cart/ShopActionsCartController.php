@@ -14,12 +14,8 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
-use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
-use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
-use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
-use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
@@ -93,138 +89,8 @@ class ShopActionsCartController extends AbstractController
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
         [$code] = Utils::filterInput('code');
-        $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
 
-        if ($code == "") {
-            Flash::send(Alert::ERROR, "Boutique", "Vous n'avez pas entré de code");
-            Redirect::redirectPreviousRoute();
-        }
-
-        $codeExist = ShopDiscountModel::getInstance()->codeExist($code);
-
-        if ($codeExist) {
-            // handle if the code is already used for this cart
-            foreach (ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId) as $discount) {
-                if ($discount->getDiscount()->getCode() == $code) {
-                    Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà appliqué ce code de réduction !");
-                    Redirect::redirectPreviousRoute();
-                }
-                if ($discount->getDiscount()->getCumulative() !== 1) {
-                    Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà une promotion non cumulable appliquée");
-                    Redirect::redirectPreviousRoute();
-                }
-            }
-
-            $discountCode = ShopDiscountModel::getInstance()->getShopDiscountsByCode($code);
-
-            // handle if the code is between start and end date?
-            if (!$this->checkDate($discountCode->getStartDate(), $discountCode->getEndDate())) {
-                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus actif ou ne l'est pas encore");
-                Redirect::redirectPreviousRoute();
-            }
-
-            // handle if the code have left uses?
-            if ($discountCode->getUsesLeft() !== null && $discountCode->getUsesLeft() <= 0) {
-                Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus utilisable");
-                Redirect::redirectPreviousRoute();
-            }
-
-            // handle if the code can be used multiple by user and if user have used it in past order?
-            if ($discountCode->getUsesMultipleByUser() == 1) {
-                $orders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
-                foreach ($orders as $order) {
-                    $orderItems = ShopOrdersItemsModel::getInstance()->getOrdersItemsByOrderId($order->getOrderId());
-                        foreach ($orderItems as $orderItem) {
-                            if ($orderItem->getDiscount() !== null && $code == $orderItem->getDiscount()->getCode()) {
-                                Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà utiliser ce code");
-                                Redirect::redirectPreviousRoute();
-                            }
-                    }
-                }
-            }
-
-            // handle if the code need to have ordered before use
-            if ($discountCode->getUserHaveOrderBeforeUse() == 1) {
-                $orders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
-                if (empty($orders)) {
-                    Flash::send(Alert::ERROR, "Boutique", "Vous devez avoir passé au moins une commande avant de pour pouvoir utiliser ce code");
-                    Redirect::redirectPreviousRoute();
-                }
-            }
-
-            // handle if the code can be applied to items in cart?
-            if ($discountCode->getLinked() != 0) {
-                //linked to items
-                if ($discountCode->getLinked() == 1) {
-                    $itemFounded = 0;
-                    foreach ($itemInCart as $cartItem) {
-                        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsByItemId($cartItem->getItem()->getId());
-                        if (empty($discountItems)) {
-                            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas lié à " . $cartItem->getItem()->getName());
-                        } else {
-                            foreach ($discountItems as $discountItem) {
-                                Flash::send(Alert::SUCCESS, "Boutique", "Ce code est lié à " . $cartItem->getItem()->getName());
-                                ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(), $discountCode->getId());
-                                $itemFounded = 1;
-                            }
-                        }
-                    }
-                    if ($itemFounded === 1) {
-                        ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
-                    }
-                }
-                //linked to categories
-                if ($discountCode->getLinked() == 2) {
-                    $catFounded = 0;
-                    foreach ($itemInCart as $cartItem) {
-                        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesByCategoryId($cartItem->getItem()->getCategory()->getId());
-                        if (empty($discountCategories)) {
-                            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas lié à " . $cartItem->getItem()->getCategory()->getName());
-                        } else {
-                            foreach ($discountCategories as $discountCategory) {
-                                Flash::send(Alert::SUCCESS, "Boutique", "Ce code est lié à " . $cartItem->getItem()->getCategory()->getName());
-                                ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(), $discountCode->getId());
-                                $catFounded = 1;
-                            }
-                        }
-                    }
-                    if ($catFounded === 1) {
-                        ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
-                    }
-                }
-                Redirect::redirectPreviousRoute();
-            }
-
-            // handle if the item price is lower than the discount price
-            foreach ($itemInCart as $item) {
-                if ($item->getItem()->getPrice() <= $discountCode->getPrice()) {
-                    Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas appliquer de code de réduction sur un article qui côute moins cher que le prix de la réduction");
-                    Redirect::redirectPreviousRoute();
-                }
-            }
-
-            foreach ($itemInCart as $cartItem) {
-                ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(), $discountCode->getId());
-            }
-            ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
-            Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel appliqué avec succès !");
-            Redirect::redirectPreviousRoute();
-        } else {
-            Flash::send(Alert::ERROR, "Boutique", "Ce code n'est pas valable");
-            Redirect::redirectPreviousRoute();
-        }
-    }
-
-    private function checkDate($startDate, $endDate): bool
-    {
-        $currentTime = time();
-        $startDate = strtotime($startDate);
-        if ($endDate !== null) {
-            $endDate = strtotime($endDate);
-            return ($currentTime >= $startDate && $currentTime <= $endDate);
-        } else {
-            return ($currentTime >= $startDate);
-        }
+        ShopHandlerDiscountController::getInstance()->discountMasterHandler($userId, $sessionId, $code);
     }
 
     #[NoReturn] #[Link("/cart/discount/remove/:discountId", Link::GET, [], "/shop")]
