@@ -6,6 +6,8 @@ use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
@@ -134,6 +136,8 @@ class ShopCartItemEntity
      */
     public function getItemTotalPriceAfterDiscount(): float
     {
+
+        //TODO Finish this entity with all items
         $basePrice = $this->getItemTotalPrice();
         $discount = 0;
         if (!is_null($this->discount)) {

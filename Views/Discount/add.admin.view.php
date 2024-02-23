@@ -1,7 +1,6 @@
-Check : Est actif par defaut (Ne pourras pas se voir appliqué de promotions mannuel)
-Select : Lié à : Cat > Item > Tout (Obligatoire si "Est actif par defaut" = Non)
+Check : Est actif par defaut (Pour tout les verifier par defaut on doit s'assurer que l'article n'est pas déjà un appliqué par defaut)
+Select : Lié à : Cat > Item > Tout
 Select : Prix / Pourcentage
 Check : s'applique sur la quantité ?
-Check : S'applique de base (Est forcement impacté par la quantité)
 
-le CODE ne peut pas être identique à un autre CODE
+le CODE actif ne peut pas être identique à un autre CODE actif

@@ -20,7 +20,7 @@ class ShopDiscountsController extends AbstractController
     #[Link("/discounts", Link::GET, [], "/cmw-admin/shop")]
     public function shopDiscounts(): void
     {
-        $discounts = ShopDiscountModel::getInstance()->getShopDiscounts();
+        $discounts = ShopDiscountModel::getInstance()->getAllShopDiscounts();
 
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
         View::createAdminView('Shop', 'Discount/discounts')

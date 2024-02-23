@@ -5,6 +5,8 @@ namespace CMW\Entity\Shop\Items;
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
@@ -167,9 +169,29 @@ class ShopItemEntity
     {
         $basePrice = $this->getPrice();
         $discount = 0;
+        $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
+        //all
+        if (!empty($allDiscounts)) {
+            foreach ($allDiscounts as $allDiscount) {
+                if ($allDiscount->getLinked() == 0) {
+                    if ($allDiscount->getPrice()) {
+                        $discount = $allDiscount->getPrice();
+                    }
+                    if ($allDiscount->getPercentage()) {
+                        $discount = ($basePrice*$allDiscount->getPercentage())/100;
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
+                    return null;
+                } else {
+                    return number_format($basePrice - $discount, 2, '.', '');
+                }
+            }
+        }
         //cats
         if (!empty($discountCategories)) {
             foreach ($discountCategories as $discountCategory) {
@@ -189,7 +211,6 @@ class ShopItemEntity
                 }
             }
         }
-
         //items
         if (!empty($discountItems)) {
             foreach ($discountItems as $discountItem) {
@@ -221,21 +242,30 @@ class ShopItemEntity
         $basePrice = $this->getPrice();
         $discount = 0;
         $discountFormatted = "";
+        $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        //cats
-        if (!empty($discountCategories)) {
-
-            foreach ($discountCategories as $discountCategory) {
-                if ($discountCategory->getDiscount()->getLinked() == 2) {
-                    if ($discountCategory->getDiscount()->getPrice()) {
-                        $discount = $discountCategory->getDiscount()->getPrice();
-                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() ." €";
+        //all
+        if (!empty($allDiscounts)) {
+            foreach ($allDiscounts as $allDiscount) {
+                if ($allDiscount->getDiscountQuantityImpacted() == 1) {
+                    if ($allDiscount->getPrice()) {
+                        $discount = $allDiscount->getPrice();
+                        $discountFormatted = "-" . $allDiscount->getPrice() . " €";
                     }
-                    if ($discountCategory->getDiscount()->getPercentage()) {
-                        $discount = ($basePrice*$discountCategory->getDiscount()->getPercentage())/100;
-                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() ." %";
+                    if ($allDiscount->getPercentage()) {
+                        $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
+                        $discountFormatted = "-" . $allDiscount->getPercentage() . " %";
+                    }
+                } else {
+                    if ($allDiscount->getPrice()) {
+                        $discount = $allDiscount->getPrice();
+                        $discountFormatted = "-" . $allDiscount->getPrice() . " € sur le 1er";
+                    }
+                    if ($allDiscount->getPercentage()) {
+                        $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
+                        $discountFormatted = "-" . $allDiscount->getPercentage() . " % sur le 1er";
                     }
                 }
                 //prevent negative price
@@ -246,18 +276,60 @@ class ShopItemEntity
                 }
             }
         }
-
+        //cats
+        if (!empty($discountCategories)) {
+            foreach ($discountCategories as $discountCategory) {
+                if ($discountCategory->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                    if ($discountCategory->getDiscount()->getLinked() == 2) {
+                        if ($discountCategory->getDiscount()->getPrice()) {
+                            $discount = $discountCategory->getDiscount()->getPrice();
+                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() . " €";
+                        }
+                        if ($discountCategory->getDiscount()->getPercentage()) {
+                            $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
+                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " %";
+                        }
+                    }
+                } else {
+                    if ($discountCategory->getDiscount()->getPrice()) {
+                        $discount = $discountCategory->getDiscount()->getPrice();
+                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() . " € sur le 1er";
+                    }
+                    if ($discountCategory->getDiscount()->getPercentage()) {
+                        $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
+                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " % sur le 1er";
+                    }
+                }
+                //prevent negative price
+                if ($basePrice - $discount <= 0) {
+                    return null;
+                } else {
+                    return $discountFormatted;
+                }
+            }
+        }
         //items
         if (!empty($discountItems)) {
             foreach ($discountItems as $discountItem) {
                 if ($discountItem->getDiscount()->getLinked() == 1) {
-                    if ($discountItem->getDiscount()->getPrice()) {
-                        $discount = $discountItem->getDiscount()->getPrice();
-                        $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() ." €";
-                    }
-                    if ($discountItem->getDiscount()->getPercentage()) {
-                        $discount = ($basePrice*$discountItem->getDiscount()->getPercentage())/100;
-                        $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() ." %";
+                    if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                        if ($discountItem->getDiscount()->getPrice()) {
+                            $discount = $discountItem->getDiscount()->getPrice();
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() . " €";
+                        }
+                        if ($discountItem->getDiscount()->getPercentage()) {
+                            $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " %";
+                        }
+                    } else {
+                        if ($discountItem->getDiscount()->getPrice()) {
+                            $discount = $discountItem->getDiscount()->getPrice();
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() . " € sur le 1er";
+                        }
+                        if ($discountItem->getDiscount()->getPercentage()) {
+                            $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " % sur le 1er";
+                        }
                     }
                 }
                 //prevent negative price
