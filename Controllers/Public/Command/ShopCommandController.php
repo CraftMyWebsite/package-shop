@@ -15,6 +15,7 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Users\UsersModel;
@@ -37,6 +38,8 @@ class ShopCommandController extends AbstractController
         if (!UsersController::isUserLogged()) {
             Redirect::redirect('login');
         }
+
+        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();

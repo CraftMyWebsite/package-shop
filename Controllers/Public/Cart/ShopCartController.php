@@ -12,6 +12,7 @@ use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
@@ -43,6 +44,16 @@ class ShopCartController extends AbstractController
         $this->handleItemHealth($userId, $sessionId);
 
         //TODO: Verifier si les promotions appliquées au panier sont encore valides via date ou status
+        if (!empty($appliedDiscounts)) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
+            foreach ($appliedDiscounts as $appliedDiscount) {
+                if ($appliedDiscount->getDiscount()->getStatus() == 0) {
+                    ShopCartDiscountModel::getInstance()->removeCode($cartId->getId(), $appliedDiscount->getDiscount()->getCode());
+                }
+            }
+        }
+
+        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();

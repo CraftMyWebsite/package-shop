@@ -12,6 +12,8 @@ use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
+use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Users\UsersModel;
@@ -118,16 +120,47 @@ class ShopCartItemEntity
 
     /**
      * @return float
-     * @desc Use for count the total price of one item in the cart
+     * @desc Use for count the total price of one item in the cart with default applied discount
      */
     public function getItemTotalPrice(): float
     {
-        if ($this->item->getPriceDiscountDefaultApplied()) {
-            $itemPrice = $this->item->getPriceDiscountDefaultApplied();
-        } else {
-            $itemPrice = $this->item->getPrice();
+        $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
+        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getItem()->getCategory()->getId());
+        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getItem()->getId());
+        $quantityImpacted = 0;
+        if (!empty($allDiscounts)) {
+            foreach ($allDiscounts as $allDiscount) {
+                if ($allDiscount->getDiscountQuantityImpacted() == 1) {
+                    $quantityImpacted = 1;
+                }
+            }
         }
-        return $this->cartQuantity * $itemPrice;
+        if (!empty($discountCategories)) {
+            foreach ($discountCategories as $discountCategory) {
+                if ($discountCategory->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                    $quantityImpacted = 1;
+                }
+            }
+        }
+        if (!empty($discountItems)) {
+            foreach ($discountItems as $discountItem) {
+                if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                    $quantityImpacted = 1;
+                }
+            }
+        }
+
+        if ($this->item->getPriceDiscountDefaultApplied()) {
+            if ($quantityImpacted == 0) {
+                $itemPrice = $this->item->getPriceDiscountDefaultApplied() + ($this->cartQuantity-1) * $this->item->getPrice();
+            } else {
+                $itemPrice = $this->cartQuantity * $this->item->getPriceDiscountDefaultApplied();
+            }
+        } else {
+            $itemPrice = $this->cartQuantity * $this->item->getPrice();
+        }
+
+        return $itemPrice;
     }
 
     /**
@@ -136,8 +169,6 @@ class ShopCartItemEntity
      */
     public function getItemTotalPriceAfterDiscount(): float
     {
-
-        //TODO Finish this entity with all items
         $basePrice = $this->getItemTotalPrice();
         $discount = 0;
         if (!is_null($this->discount)) {
@@ -153,11 +184,7 @@ class ShopCartItemEntity
                     $discount = $this->discount->getPrice();
                 }
                 if ($this->discount->getPercentage()) {
-                    if ($this->item->getPriceDiscountDefaultApplied()) {
-                        $discount = ($this->item->getPriceDiscountDefaultApplied()*$this->discount->getPercentage()/100);
-                    } else {
                         $discount = ($this->getItem()->getPrice()*$this->discount->getPercentage()/100);
-                    }
                 }
             }
             return number_format($basePrice - $discount, 2, '.', '');

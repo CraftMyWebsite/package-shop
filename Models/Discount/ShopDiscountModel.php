@@ -218,7 +218,63 @@ class ShopDiscountModel extends AbstractModel
         }
 
         return $toReturn;
+    }
 
+    /**
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
+     * @desc WARNING : This model do not check linked type is only used for check discount default applied health !!!
+     */
+    private function getShopDiscountsDefaultApplied(): array
+    {
+
+        $sql = "SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_default_active = 1 AND shop_discount_status = 1";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($discount = $res->fetch()) {
+            $toReturn[] = $this->getShopDiscountDefaultAppliedById($discount["shop_discount_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    public function updateStatus(int $id, int $status): void
+    {
+        $sql = "UPDATE cmw_shops_discount SET shop_discount_status = :status WHERE shop_discount_id = :shop_discount_id";
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute(['shop_discount_id' => $id, 'status' => $status]);
+    }
+
+    public function autoStatusChecker():void {
+        $defaultAppliedDiscounts = $this->getShopDiscountsDefaultApplied();
+        if (!empty($defaultAppliedDiscounts)) {
+            foreach ($defaultAppliedDiscounts as $defaultAppliedDiscount) {
+                if (!$this->checkDate($defaultAppliedDiscount->getStartDate(), $defaultAppliedDiscount->getEndDate())) {
+                    ShopDiscountModel::getInstance()->updateStatus($defaultAppliedDiscount->getId(), 0);
+                }
+            }
+        }
+        //TODO : changer aussi le status des non default applied
+    }
+
+    private function checkDate($startDate, $endDate): bool
+    {
+        $currentTime = time();
+        $startDate = strtotime($startDate);
+        if ($endDate !== null) {
+            $endDate = strtotime($endDate);
+            return ($currentTime >= $startDate && $currentTime <= $endDate);
+        } else {
+            return ($currentTime >= $startDate);
+        }
     }
 
 }

@@ -12,6 +12,7 @@ use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
@@ -36,8 +37,8 @@ class ShopPublicController extends AbstractController
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
@@ -54,6 +55,7 @@ class ShopPublicController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/cat");
         $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories]);
@@ -73,6 +75,7 @@ class ShopPublicController extends AbstractController
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
         $physicalInfo = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($itemId);
+        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/item");
         $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel, "physicalInfo" => $physicalInfo ?? null]);

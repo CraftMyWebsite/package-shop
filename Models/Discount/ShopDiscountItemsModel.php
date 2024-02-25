@@ -42,7 +42,12 @@ class ShopDiscountItemsModel extends AbstractModel
 
     public function getShopDiscountItemsDefaultAppliedById(int $id): ?ShopDiscountItemsEntity
     {
-        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_items_id = :shop_discount_items_id AND shop_discount_default_applied = 1";
+        $sql = "SELECT cmw_shops_discount_items.*
+                FROM cmw_shops_discount_items
+                INNER JOIN cmw_shops_discount ON cmw_shops_discount_items.shop_discount_id = cmw_shops_discount.shop_discount_id
+                WHERE cmw_shops_discount_items.shop_discount_items_id = :shop_discount_items_id
+                AND cmw_shops_discount_items.shop_discount_default_applied = 1
+                AND cmw_shops_discount.shop_discount_status = 1;";
 
         $db = DatabaseManager::getInstance();
 
@@ -95,7 +100,12 @@ class ShopDiscountItemsModel extends AbstractModel
      */
     public function getShopDiscountItemsDefaultAppliedByItemId(int $itemId): array
     {
-        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_item_id = :shop_item_id AND shop_discount_default_applied = 1";
+        $sql = "SELECT cmw_shops_discount_items.*
+                FROM cmw_shops_discount_items
+                INNER JOIN cmw_shops_discount ON cmw_shops_discount_items.shop_discount_id = cmw_shops_discount.shop_discount_id
+                WHERE cmw_shops_discount_items.shop_item_id = :shop_item_id
+                AND cmw_shops_discount_items.shop_discount_default_applied = 1
+                AND cmw_shops_discount.shop_discount_status = 1;";
 
         $db = DatabaseManager::getInstance();
 
