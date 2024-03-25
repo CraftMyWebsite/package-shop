@@ -1,6 +1,5 @@
 <?php
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 
