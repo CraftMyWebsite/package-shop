@@ -39,6 +39,10 @@ class ShopPaymentMethodStripeController extends AbstractController
      */
     public function sendStripePayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
     {
+        if (!$this->isStripeConfigComplete()) {
+            throw new ShopPaymentException(message: "Stripe config is not complete");
+        }
+
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/complete';
 
@@ -138,6 +142,15 @@ class ShopPaymentMethodStripeController extends AbstractController
     private function getStripeSecretKey(): string
     {
         return ShopPaymentMethodSettingsModel::getInstance()->getSetting('stripe_secret_key');
+    }
+
+    /**
+     * @return bool
+     * @des We are checking if the Stripe config is complete.
+     */
+    private function isStripeConfigComplete(): bool
+    {
+        return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('stripe_secret_key'));
     }
 
     #[Link("/complete", Link::GET, [], "/shop/command/stripe")]
