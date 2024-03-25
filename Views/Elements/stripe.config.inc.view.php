@@ -5,7 +5,7 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 
 ?>
-
+sdsdqds
 <form id="paypal" action="payments/settings" method="post">
     <?php (new SecurityManager())->insertHiddenToken(); ?>
     <div class="row">

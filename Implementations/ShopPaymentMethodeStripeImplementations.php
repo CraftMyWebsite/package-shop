@@ -2,7 +2,7 @@
 
 namespace CMW\Implementation\Shop;
 
-use CMW\Controller\Shop\Payment\Method\ShopPaymentMethodPayPalController;
+use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodStripeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
@@ -10,26 +10,26 @@ use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 
-class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
+class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "PayPal";
+        return "Stripe";
     }
 
     public function faIcon(?string $customClass = null): ?string
     {
-        return "<i class='fa-brands fa-cc-paypal $customClass'></i>";
+        return "<i class='fa-brands fa-cc-stripe $customClass'></i>";
     }
 
     public function dashboardURL(): ?string
     {
-        return "https://developer.paypal.com/dashboard";
+        return "https://dashboard.stripe.com/dashboard";
     }
 
     public function documentationURL(): ?string
     {
-        return "";
+        return "test";
     }
 
     public function description(): string
@@ -47,14 +47,13 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
         $parsedName = str_replace(' ', '_', strtolower($this->name()));
         return ShopPaymentMethodSettingsModel::getInstance()->getSetting($parsedName.'_is_active') ?? 0;
     }
-
     public function includeConfigWidgets(): void
     {
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/paypal.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/stripe.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
     {
-        ShopPaymentMethodPayPalController::getInstance()->sendPayPalPayment($cartItems, $shipping, $address);
+        ShopPaymentMethodStripeController::getInstance()->sendPayPalPayment($cartItems, $shipping, $address);
     }
 }

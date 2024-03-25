@@ -13,6 +13,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
+use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartModel;
@@ -45,6 +46,16 @@ class ShopPaymentsController extends AbstractController
     }
 
     /**
+     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     */
+    public function getActivePaymentsMethods(): array {
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        return array_filter($allPaymentMethods, function($paymentMethod) {
+            return $paymentMethod->isActive();
+        });
+    }
+
+    /**
      * @param string $name
      * @return \CMW\Interface\Shop\IPaymentMethod|null
      */
@@ -65,6 +76,26 @@ class ShopPaymentsController extends AbstractController
         View::createAdminView('Shop', 'payments')
             ->addVariableList(['methods' => $this->getPaymentsMethods()])
             ->view();
+    }
+
+    #[NoReturn] #[Link("/payments/enable/:name", Link::GET, [], "/cmw-admin/shop")]
+    private function shopEnablePayments(Request $request, string $name): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
+        $nameWithStatus = $name . '_is_active';
+        ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 1);
+        Flash::send(Alert::SUCCESS, "Boutique", "Méthode de paiement activé !");
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn] #[Link("/payments/disable/:name", Link::GET, [], "/cmw-admin/shop")]
+    private function shopDisablePayments(Request $request, string $name): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
+        $nameWithStatus = $name . '_is_active';
+        ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 0);
+        Flash::send(Alert::SUCCESS, "Boutique", "Méthode de paiement désactivé !");
+        Redirect::redirectPreviousRoute();
     }
 
     #[NoReturn] #[Link("/payments/settings", Link::POST, [], "/cmw-admin/shop")]
