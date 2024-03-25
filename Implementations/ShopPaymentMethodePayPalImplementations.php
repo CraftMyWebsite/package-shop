@@ -17,6 +17,11 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
         return "PayPal";
     }
 
+    public function varName(): string
+    {
+        return str_replace(' ', '_', strtolower($this->name()));
+    }
+
     public function faIcon(?string $customClass = null): ?string
     {
         return "<i class='fa-brands fa-cc-paypal $customClass'></i>";
@@ -44,8 +49,7 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
 
     public function isActive(): bool
     {
-        $parsedName = str_replace(' ', '_', strtolower($this->name()));
-        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($parsedName.'_is_active') ?? 0;
+        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_is_active') ?? 0;
     }
 
     public function includeConfigWidgets(): void

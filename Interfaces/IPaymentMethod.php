@@ -18,6 +18,12 @@ interface IPaymentMethod
     public function name(): string;
 
     /**
+     * @return string
+     * @desc The variable name defined automatically
+     */
+    public function varName(): string;
+
+    /**
      * @return ?string
      * @desc The font-awesome icon
      * @example "fa-brands fa-cc-paypal"
