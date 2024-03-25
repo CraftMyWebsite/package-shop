@@ -14,11 +14,12 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
-use CMW\Utils\Website;
 use JetBrains\PhpStorm\NoReturn;
 use JsonException;
 
@@ -31,237 +32,115 @@ use JsonException;
  */
 class ShopPaymentMethodStripeController extends AbstractController
 {
-    private const url = 'https://api-m.paypal.com';
-    private const sandBoxUrl = 'https://api-m.sandbox.paypal.com'; //Only for dev.
-
+    private const STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendPayPalPayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
+    public function sendStripePayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
     {
-        if (!$this->isPayPalConfigComplete()) {
-            throw new ShopPaymentException(message: "PayPal config is not complete");
-        }
+        $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
+        $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/complete';
 
-        $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
-        $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/complete';
+        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
-        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency");
-        $totalCartPrice = $cartItems[0]->getTotalCartPriceAfterDiscount(); //TODO Improve that ??
+        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
+        $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
+        $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
 
-        $postFields = $this->buildCheckoutJsonBody($cartItems, $address, $cancelUrl, $completeUrl, $currencyCode, $totalCartPrice);
-
-        $accessToken = $this->getBearerToken();
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => self::sandBoxUrl . "/v2/checkout/orders", //TODO Don't push sandBoxUrl.
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $postFields,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $accessToken,
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-
-        if (!$response) {
-            throw new ShopPaymentException(message: "Unable to contact PayPal API.");
-        }
-
-        try {
-            $json = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new ShopPaymentException(message: "Unable to decode JSON for PayPal Payment action. Err: " . $e->getMessage());
-        }
-
-        if (isset($json['error']) && $json['error'] === "invalid_token") {
-            throw new ShopPaymentException(message: "Wrong PayPal configuration.");
-        }
-
-        if (!isset($json['links'][1]['href'])) {
-            throw new ShopPaymentException(message: "Error " . $json['name'] . ". " . $json['message']);
-        }
-
-        $checkoutLink = $json['links'][1]['href'];
-
-        header('location: ' . $checkoutLink);
-
-        curl_close($curl);
-    }
-
-    /**
-     * @return false|string
-     * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
-     */
-    private function getBearerToken(): false|string
-    {
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => self::sandBoxUrl . '/v1/oauth2/token',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/x-www-form-urlencoded',
-                'Authorization: Basic ' . $this->getAuthorizationToken(),
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-
-        if (!$response) {
-            return false;
-        }
-
-        try {
-            $json = json_decode($response, false, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new ShopPaymentException(message: "Unable to decode JSON for PayPal oAuth. Err: " . $e->getMessage());
-        }
-
-        if (!isset($json->access_token)) {
-            throw new ShopPaymentException(message: "Unable to find access_token");
-        }
-
-        curl_close($curl);
-
-        return $json->access_token;
-    }
-
-    /**
-     * @return string
-     * @desc We take clientId and client secret for oAuth Authorization.
-     * @see https://developer.paypal.com/api/rest/
-     */
-    private function getAuthorizationToken(): string
-    {
-        $clientId = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id');
-        $clientSecret = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret');
-
-        $completeToken = "$clientId:$clientSecret";
-
-        return base64_encode($completeToken);
-    }
-
-    /**
-     * @return bool
-     * @des We are checking if the PayPal config is complete.
-     */
-    private function isPayPalConfigComplete(): bool
-    {
-        return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id'))
-            && !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret'));
-    }
-
-    /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
-     * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity $address
-     * @param string $cancelUrl
-     * @param string $completeUrl
-     * @param string $currencyCode
-     * @param double $totalCartPrice
-     * @return string
-     * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
-     */
-    private function buildCheckoutJsonBody(array  $cartItems, ShopDeliveryUserAddressEntity $address, string $cancelUrl,
-                                           string $completeUrl, string $currencyCode, float $totalCartPrice): string
-    {
-        $data = [
-            'intent' => 'CAPTURE',
-            'purchase_units' => [
-                [
-                    'shipping' => [
-                        'address' => [
-                            'address_line_1' => $address->getLine1(),
-                            'address_line_2' => $address->getLine2(),
-                            'admin_area_1' => $address->getCity(),
-                            'admin_area_2' => $address->getCity(),
-                            'postal_code' => $address->getPostalCode(),
-                            'country_code' => ShopCountryController::getInstance()->findCountryCodeByName($address->getCountry()),
-                        ],
+        $Items = [];
+        foreach ($cartItems as $item) {
+            $lineItem = [
+                'price_data' => [
+                    'currency' => $currencyCode,
+                    'product_data' => [
+                        'name' => $item->getItem()->getName(),
                     ],
-                    ...$this->buildItems($cartItems, $currencyCode),
-                    'amount' => [
-                        'currency_code' => $currencyCode,
-                        'value' => $totalCartPrice,
-                        'breakdown' => [
-                            'item_total' => [
-                                'currency_code' => $currencyCode,
-                                'value' => $totalCartPrice,
-                            ],
-                        ],
-                    ],
+                    'unit_amount' => $item->getItem()->getPrice() * 100,
                 ],
-            ],
-            'payment_source' => [
-                'paypal' => [
-                    'experience_context' => [
-                        'payment_method_preference' => 'IMMEDIATE_PAYMENT_REQUIRED',
-                        'brand_name' => Website::getWebsiteName(),
-                        'locale' => 'fr-FR', //TODO VAR
-                        'landing_page' => 'LOGIN',
-                        'shipping_preference' => 'SET_PROVIDED_ADDRESS',
-                        'user_action' => 'PAY_NOW',
-                        'return_url' => $completeUrl,
-                        'cancel_url' => $cancelUrl,
-                    ],
+                'quantity' => $item->getQuantity(),
+            ];
+            $Items[] = $lineItem;
+        }
+
+        $Items[] = [
+            'price_data' => [
+                'currency' => $currencyCode,
+                'product_data' => [
+                    'name' => 'Frais de livraison',
                 ],
+                'unit_amount' => $shippingMethod->getPrice() * 100,
             ],
+            'quantity' => 1,
         ];
 
+        $sessionData = [
+            'payment_method_types' => ['card'],
+            'line_items' => $Items,
+            'mode' => 'payment',
+            'success_url' => $completeUrl,
+            'cancel_url' => $cancelUrl,
+        ];
+
+        $response = $this->createStripeSession($sessionData);
+
+        if (!isset($response['id'])) {
+            throw new ShopPaymentException("Failed to create Stripe payment session.");
+        }
+
+        $checkoutSessionId = $response['id'];
+
+        header('Location: ' . $response['url']);
+    }
+
+    /**
+     * Create a Stripe Checkout session
+     *
+     * @param array $sessionData
+     * @return array
+     * @throws ShopPaymentException
+     */
+    private function createStripeSession(array $sessionData): array
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => self::STRIPE_URL,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($sessionData),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/x-www-form-urlencoded',
+                'Authorization: Bearer ' . $this->getStripeSecretKey(),
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (!$response) {
+            throw new ShopPaymentException("Unable to contact Stripe API.");
+        }
+
+        curl_close($curl);
+
         try {
-            return json_encode($data, JSON_THROW_ON_ERROR);
+            return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ShopPaymentException(message: "Unable to encode JSON for PayPal checkout. Err: " . $e->getMessage());
+            throw new ShopPaymentException("Unable to decode JSON response from Stripe. Error: " . $e->getMessage());
         }
     }
 
     /**
-     * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
-     * @param string $currencyCode
-     * @return array
+     * Retrieve your Stripe secret key here
+     *
+     * @return string
      */
-    private function buildItems(array $cartItems, string $currencyCode): array
+    private function getStripeSecretKey(): string
     {
-        $data = [];
-
-        foreach ($cartItems as $item) {
-            $item = $item->getItem();
-            if (!$item) {
-                continue;
-            }
-
-            $data['items'][] = [
-                'name' => $item->getName(),
-                'quantity' => $item->getQuantityInCart(),
-                'description' => $item->getDescription(),
-                'unit_amount' => [
-                    'value' => $item->getPrice() * $item->getQuantityInCart(),
-                    'currency_code' => $currencyCode,
-                ],
-            ];
-        }
-
-        return $data;
+        return ShopPaymentMethodSettingsModel::getInstance()->getSetting('stripe_secret_key');
     }
 
-    #[Link("/complete", Link::GET, [], "/shop/command/paypal")]
+    #[Link("/complete", Link::GET, [], "/shop/command/stripe")]
     private function paypalCommandComplete(): void
     {
         $user = UsersModel::getCurrentUser();
@@ -276,7 +155,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         Emitter::send(ShopPaymentCompleteEvent::class, []);
     }
 
-    #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/paypal")]
+    #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/stripe")]
     private function paypalCommandCancel(): void
     {
         Emitter::send(ShopPaymentCancelEvent::class, ['user' => UsersModel::getCurrentUser()]);
