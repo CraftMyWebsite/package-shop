@@ -39,9 +39,9 @@ $description = "Gérez les méthodes de paiements";
                                                         <div class="mb-4">
                                                             <h4><?= $method->faIcon("fa-xl") ?> Configuration des paiements avec <?= $method->name() ?></h4>
                                                             <?php if ($method->isActive()): ?>
-                                                                <a href="payments/disable/<?= str_replace(' ', '_', strtolower($method->name())) ?>" class="btn btn-danger btn-sm me-2">Désactiver <?= $method->name() ?></a>
+                                                                <a href="payments/disable/<?= $method->varName() ?>" class="btn btn-danger btn-sm me-2">Désactiver <?= $method->name() ?></a>
                                                             <?php else: ?>
-                                                                <a href="payments/enable/<?= str_replace(' ', '_', strtolower($method->name())) ?>" class="btn btn-success btn-sm me-2">Activer <?= $method->name() ?></a>
+                                                                <a href="payments/enable/<?= $method->varName() ?>" class="btn btn-success btn-sm me-2">Activer <?= $method->name() ?></a>
                                                             <?php endif;?>
                                                             <?php if ($method->dashboardURL()) : ?>
                                                                 <a href="<?= $method->dashboardURL() ?>" target="_blank" class="btn btn-primary btn-sm me-2">Panel de gestion <?= $method->name() ?></a>
