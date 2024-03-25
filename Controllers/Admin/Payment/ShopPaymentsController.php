@@ -48,7 +48,8 @@ class ShopPaymentsController extends AbstractController
     /**
      * @return \CMW\Interface\Shop\IPaymentMethod[]
      */
-    public function getActivePaymentsMethods(): array {
+    public function getActivePaymentsMethods(): array
+    {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
         return array_filter($allPaymentMethods, function($paymentMethod) {
             return $paymentMethod->isActive();
@@ -83,7 +84,9 @@ class ShopPaymentsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
         $nameWithStatus = $name . '_is_active';
-        ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 1);
+        if (!ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 1)){
+            Flash::send(Alert::ERROR,'Boutique', "Impossible de d'activer la méthode de paiement'");
+        }
         Flash::send(Alert::SUCCESS, "Boutique", "Méthode de paiement activé !");
         Redirect::redirectPreviousRoute();
     }
@@ -93,7 +96,9 @@ class ShopPaymentsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
         $nameWithStatus = $name . '_is_active';
-        ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 0);
+        if (!ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 0)){
+            Flash::send(Alert::ERROR,'Boutique', "Impossible de désactiver la méthode de paiement'");
+        }
         Flash::send(Alert::SUCCESS, "Boutique", "Méthode de paiement désactivé !");
         Redirect::redirectPreviousRoute();
     }
@@ -164,8 +169,8 @@ class ShopPaymentsController extends AbstractController
     #[NoReturn] #[Listener(eventName: ShopPaymentCancelEvent::class, times: 0, weight: 1)]
     private function onPaymentCancel(): void
     {
-        Flash::send(Alert::WARNING, "Paiement annulé", "Transaction PayPal annulée.");
-        Redirect::redirect("shop");
+        Flash::send(Alert::WARNING, "Paiement annulé", "");
+        Redirect::redirect("shop/command");
     }
 
 }
