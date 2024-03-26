@@ -47,7 +47,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/complete';
 
-        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency");
+        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
         $totalCartPrice = $cartItems[0]->getTotalCartPriceAfterDiscount(); //TODO Improve that ??
 
         $postFields = $this->buildCheckoutJsonBody($cartItems, $address, $cancelUrl, $completeUrl, $currencyCode, $totalCartPrice);

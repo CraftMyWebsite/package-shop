@@ -19,6 +19,33 @@ interface IPaymentMethod
 
     /**
      * @return string
+     * @desc The variable name defined automatically
+     */
+    public function varName(): string;
+
+    /**
+     * @return ?string
+     * @desc The font-awesome icon
+     * @example "fa-brands fa-cc-paypal"
+     */
+    public function faIcon(?string $customClass = null): ?string;
+
+    /**
+     * @return ?string
+     * @desc The manage center of payment service
+     * @example "https://developer.paypal.com/dashboard/"
+     */
+    public function dashboardURL(): ?string;
+
+    /**
+     * @return ?string
+     * @desc The quick start documentation
+     * @example "https://craftmywebsite.fr/docs/paypal/"
+     */
+    public function documentationURL(): ?string;
+
+    /**
+     * @return string
      * @desc Small description of the payment method
      */
     public function description(): string;
@@ -28,6 +55,12 @@ interface IPaymentMethod
      * @desc Fees are optional
      */
     public function fees(): int;
+
+    /**
+     * @return bool
+     * @desc Return if the payment method is active
+     */
+    public function isActive(): bool;
 
     /**
      * @return void

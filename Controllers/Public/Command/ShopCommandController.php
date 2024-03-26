@@ -89,7 +89,7 @@ class ShopCommandController extends AbstractController
                 $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
                 $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
                 $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
-                $paymentMethods = ShopPaymentsController::getInstance()->getPaymentsMethods();
+                $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
                 $view = new View("Shop", "Command/payment");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
