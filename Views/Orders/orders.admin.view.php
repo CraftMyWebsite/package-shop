@@ -7,8 +7,6 @@
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 
-$payementMethod =
-
 $title = "Commandes";
 $description = "";
 

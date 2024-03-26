@@ -13,6 +13,7 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
+use JetBrains\PhpStorm\NoReturn;
 
 
 /**
@@ -65,14 +66,30 @@ class ShopCartsController extends AbstractController
             ->view();
     }
 
-    #[Link("/carts/session/delete/:sessionId", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    #[NoReturn] #[Link("/carts/session/delete/:sessionId", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
     public function adminDeleteShopSessionCart(Request $request, string $sessionId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
         ShopCartModel::getInstance()->removeSessionCart($sessionId);
 
-        Flash::send(Alert::SUCCESS, "Success", "C'est chao");
+        Flash::send(Alert::SUCCESS, "Success", "Panier supprimé");
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn] #[Link("/carts/session/delete/all/sessions", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    public function adminDeleteAllShopSessionCart(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        $cartSessions = ShopCartModel::getInstance()->getShopCartsForSessions();
+
+        foreach ($cartSessions as $cartSession) {
+            ShopCartModel::getInstance()->removeSessionCart($cartSession->getSession());
+        }
+
+        Flash::send(Alert::SUCCESS, "Success", "Tous les paniers de sessions sont nettoyé !");
 
         Redirect::redirectPreviousRoute();
     }

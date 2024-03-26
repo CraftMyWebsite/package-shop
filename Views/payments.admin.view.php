@@ -22,7 +22,18 @@ $description = "Gérez les méthodes de paiements";
                                         <a class="list-group-item list-group-item-action <?= $i === 1 ? 'active' : '' ?>" id="list-settings-list"
                                            data-bs-toggle="list" href="#method-<?= $method->name() ?>"
                                            role="tab" aria-selected="<?= $i === 1 ? 'true' : 'false' ?>">
-                                            <?= $method->faIcon("fa-xl") ?> <?= $method->name() ?>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <?= $method->faIcon("fa-xl") ?> <?= $method->name() ?>
+                                                </div>
+                                                <div>
+                                                    <?php if ($method->isActive()): ?>
+                                                        <span class="text-success"><i data-bs-toggle="tooltip" data-bs-placement="top" title="Paiement atif." class="fa-solid fa-circle-check"></i></span>
+                                                    <?php else: ?>
+                                                        <span class="text-warning"><i data-bs-toggle="tooltip" data-bs-placement="top" title="Paiement incatif." class="fa-solid fa-circle-xmark"></i></span>
+                                                    <?php endif;?>
+                                                </div>
+                                            </div>
                                         </a>
                                     <?php ++$i; endforeach; ?>
                                 </div>

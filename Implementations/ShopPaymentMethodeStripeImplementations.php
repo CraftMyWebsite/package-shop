@@ -34,7 +34,7 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 
     public function documentationURL(): ?string
     {
-        return "test";
+        return "";
     }
 
     public function description(): string
