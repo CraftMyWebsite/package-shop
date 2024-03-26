@@ -5,6 +5,10 @@
 /* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity [] $finishedOrders */
 /* @var \CMW\Model\Shop\Order\ShopOrdersItemsModel $orderItemsModel */
 
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+
+$payementMethod =
+
 $title = "Commandes";
 $description = "";
 
@@ -37,6 +41,7 @@ $description = "";
                     </thead>
                     <tbody class="text-center">
                     <?php foreach ($inProgressOrders as $inProgressOrder) : ?>
+                    <?php $payementMethod = ShopPaymentsController::getInstance()->getPaymentByName($inProgressOrder->getPaymentName()); ?>
                         <tr>
                             <td><?= $inProgressOrder->getUser()->getPseudo() ?></td>
                             <td>#<?= $inProgressOrder->getNumber() ?></td>
@@ -45,7 +50,13 @@ $description = "";
                                 <?= "<b style='color: #6f6fad'>" . $totalPrice ." € </b>" ?>
                             </td>
                             <td><?= $inProgressOrder->getAdminStatus() ?></td>
-                            <td><?= $inProgressOrder->getPaymentName() ?></td>
+                            <td>
+                                <?php if ($payementMethod->dashboardURL()): ?>
+                                <a target="_blank" href="<?= $payementMethod->dashboardURL() ?>"><?= $payementMethod->name() ?></a>
+                                <?php else: ?>
+                                <?= $payementMethod->name() ?>
+                                <?php endif; ?>
+                            </td>
                             <td><?= $inProgressOrder->getOrderCreated() ?></td>
                             <td>
                                 <a href="orders/manage/<?= $inProgressOrder->getOrderId() ?>">
