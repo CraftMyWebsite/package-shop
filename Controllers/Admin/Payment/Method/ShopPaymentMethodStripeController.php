@@ -79,7 +79,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         ];
 
         $sessionData = [
-            'payment_method_types' => ['card'],
+            'payment_method_types' => [],//if null is automatically handled by stripe and stripe payement account settings
             'line_items' => $Items,
             'mode' => 'payment',
             'success_url' => $completeUrl,
