@@ -124,7 +124,7 @@ class ShopHandlerDiscountController extends AbstractController
     {
         if ($discountCode->getUserHaveOrderBeforeUse() == 1) {
             if (empty($orders)) {
-                Flash::send(Alert::ERROR, "Boutique", "Vous devez avoir passé au moins une commande avant de pour pouvoir utiliser ce code");
+                Flash::send(Alert::WARNING, "Boutique", "Vous devez avoir passé au moins une commande avant de pour pouvoir utiliser ce code");
                 Redirect::redirectPreviousRoute();
             }
         }

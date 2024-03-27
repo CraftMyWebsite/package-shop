@@ -38,7 +38,7 @@ class ShopActionsCartController extends AbstractController
         $quantity = 1;
 
         if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
-            Flash::send(Alert::ERROR ,"Boutique", "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
+            Flash::send(Alert::WARNING ,"Boutique", "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
             $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)->getItemLink();
             header("Location:" . $itemUrl);
             die();
@@ -108,7 +108,7 @@ class ShopActionsCartController extends AbstractController
             ShopCartItemModel::getInstance()->removeCodeToItem($userId, $sessionId,$cartItem->getItem()->getId(),$discountId);
         }
 
-        Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel supprimé avec succès !");
+        Flash::send(Alert::SUCCESS, "Boutique", "Code promotionnel supprimé !");
 
         Redirect::redirectPreviousRoute();
     }
@@ -241,16 +241,16 @@ class ShopActionsCartController extends AbstractController
                 Flash::send(Alert::SUCCESS, "Boutique", "Cet article n'est plus en stock. Mais nous l'avons ajouté au panier 'Mise de côté'.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::NOT_IN_STOCK_ASIDE:
-                Flash::send(Alert::ERROR, "Boutique", "Cet article est déjà dans le panier 'Mise de côté', les stock ne sont pas mis à jour.");
+                Flash::send(Alert::WARNING, "Boutique", "Cet article est déjà dans le panier 'Mise de côté', les stock ne sont pas mis à jour.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::IN_STOCK_ASIDE:
                 ShopCartItemModel::getInstance()->switchAsideToCart($itemId, $userId, $sessionId);
                 Redirect::redirectPreviousRoute();
             case StockStatus::CART_OVER_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Navré mais il ne reste que " . ShopItemsModel::getInstance()->getItemCurrentStock($itemId) . " articles en stock.");
+                Flash::send(Alert::WARNING, "Boutique", "Navré mais il ne reste que " . ShopItemsModel::getInstance()->getItemCurrentStock($itemId) . " articles en stock.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::CART_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas ajouter plus de quantité pour cet article dans le panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas ajouter plus de quantité pour cet article dans le panier.");
                 Redirect::redirectPreviousRoute();
             case StockStatus::PASS:
                 break;
@@ -259,19 +259,19 @@ class ShopActionsCartController extends AbstractController
         $limitPerUserStatus = $this->handleLimitPerUser($itemId, $userId, $sessionId, $quantity);
         switch ($limitPerUserStatus) {
             case LimitPerUserStatus::USER_NOT_CONNECTED:
-                Flash::send(Alert::ERROR, "Boutique", ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() ." à besoin d'une vérification supplémentaire pour être ajouté au panier.");
+                Flash::send(Alert::WARNING, "Boutique", ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() ." à besoin d'une vérification supplémentaire pour être ajouté au panier.");
                 Redirect::redirect("login");
             case LimitPerUserStatus::BOUGHT_NOT_IN_CART_ITEM_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà atteint le nombre maximum d'achat de cet article.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous avez déjà atteint le nombre maximum d'achat de cet article.");
                 Redirect::redirectPreviousRoute();
             case LimitPerUserStatus::BOUGHT_IN_CART_ITEM_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
                 Redirect::redirectPreviousRoute();
             case LimitPerUserStatus::NOT_IN_CART_ITEM_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas ajouter " . $quantity. " quantité pour cet article dans le panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas ajouter " . $quantity. " quantité pour cet article dans le panier.");
                 Redirect::redirectPreviousRoute();
             case LimitPerUserStatus::IN_CART_ITEM_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
                 Redirect::redirectPreviousRoute();
             case LimitPerUserStatus::PASS:
                 break;
@@ -280,10 +280,10 @@ class ShopActionsCartController extends AbstractController
         $globalLimitStatus = $this->handleGlobalLimit($itemId, $userId, $sessionId, $quantity);
         switch ($globalLimitStatus) {
             case GlobalLimitStatus::NOT_IN_CART_GLOBAL_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en ajouter autant dans votre panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en ajouter autant dans votre panier.");
                 Redirect::redirectPreviousRoute();
             case GlobalLimitStatus::IN_CART_GLOBAL_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier.");
                 Redirect::redirectPreviousRoute();
             case GlobalLimitStatus::PASS:
                 break;
@@ -292,10 +292,10 @@ class ShopActionsCartController extends AbstractController
         $orderLimitStatus = $this->handleByOrderLimit($itemId, $userId, $sessionId, $quantity);
         switch ($orderLimitStatus) {
             case ByOrderLimitStatus::NOT_IN_CART_ORDER_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en ajouter autant par commande dans votre panier.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en ajouter autant par commande dans votre panier.");
                 Redirect::redirectPreviousRoute();
             case ByOrderLimitStatus::IN_CART_ORDER_LIMIT_REACHED:
-                Flash::send(Alert::ERROR, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas en rajouter d'avantage dans votre panier. Veuillez contacter le support pour plus d'informations.");
                 Redirect::redirectPreviousRoute();
             case ByOrderLimitStatus::PASS:
                 break;
@@ -320,7 +320,7 @@ class ShopActionsCartController extends AbstractController
     private function handleItemHealth(int $itemId) : void
     {
         if (ShopItemsModel::getInstance()->itemStillExist($itemId) || ShopItemsModel::getInstance()->isArchivedItem($itemId)) {
-            Flash::send(Alert::ERROR, "Boutique", "Nous somme désolé mais l'article que vous essayez d'ajouter au panier n'existe plus.");
+            Flash::send(Alert::WARNING, "Boutique", "Nous somme désolé mais l'article que vous essayez d'ajouter au panier n'existe plus.");
             Redirect::redirectPreviousRoute();
         }
     }
