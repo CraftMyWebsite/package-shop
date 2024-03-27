@@ -54,7 +54,7 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
 
     public function includeConfigWidgets(): void
     {
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/paypal.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/paypal.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void

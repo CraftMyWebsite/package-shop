@@ -53,7 +53,7 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
     }
     public function includeConfigWidgets(): void
     {
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/stripe.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/stripe.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void

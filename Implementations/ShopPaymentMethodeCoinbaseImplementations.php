@@ -3,7 +3,6 @@
 namespace CMW\Implementation\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodCoinbaseController;
-use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodCryptopayController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
@@ -54,7 +53,7 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
     }
     public function includeConfigWidgets(): void
     {
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/coinbase.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
