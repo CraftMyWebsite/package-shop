@@ -5,9 +5,13 @@ namespace CMW\Controller\Shop\Admin\Item;
 use CMW\Controller\Users\UsersController;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
+use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Events\Emitter;
+use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
@@ -17,6 +21,7 @@ use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
+use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
@@ -91,7 +96,7 @@ class ShopItemsController extends AbstractController
             $categoryModel = ShopCategoriesModel::getInstance();
 
             View::createAdminView('Shop', 'Items/add')
-                ->addVariableList(["categoryModel" => $categoryModel])
+                ->addVariableList(["categoryModel" => $categoryModel, "virtualMethods" => $this->getVirtualItemsMethods()])
                 ->addScriptBefore("Admin/Resources/Vendors/Tinymce/tinymce.min.js",
                     "Admin/Resources/Vendors/Tinymce/Config/full.js"
                 )
@@ -146,6 +151,33 @@ class ShopItemsController extends AbstractController
             $width = is_string($width) ? 0 : $length;
             $height = is_string($height) ? 0 : $length;
             ShopItemsPhysicalRequirementModel::getInstance()->createPhysicalRequirement($itemId,$weight,$length,$width,$height);
+        }
+
+        if ($type == "1") {
+            //TODO prendre en compte l'article lié :
+            $virtualMethods = $this->getVirtualItemsMethods();
+            foreach ($virtualMethods as $virtualMethod) {
+                $virtualPrefix = $_POST[$virtualMethod->varName()] ?? '';
+            }
+
+            // Prépare un tableau pour collecter les données du widget
+            $widgetData = [];
+            foreach ($_POST as $key => $value) {
+                // Vérifier si la clé commence par le préfixe dynamique
+                if (strpos($key, $virtualPrefix) === 0) {
+                    // Ajouter la paire clé-valeur au tableau si elle correspond au préfixe
+                    $widgetData[$key] = $value;
+                }
+            }
+            foreach ($widgetData as $widgetKey => $widgetValue) {
+                $widgetKey = FilterManager::filterData($widgetKey, 50);
+                $widgetValue = FilterManager::filterData($widgetValue, 255);
+                if (!ShopItemsVirtualRequirementModel::getInstance()->updateOrInsertSetting($widgetKey, $widgetValue)){
+                    Flash::send(Alert::ERROR,'Erreur',
+                        "Impossible de mettre à jour le paramètre $widgetKey.");
+                    Redirect::redirect("cmw-admin/shop/items");
+                }
+            }
         }
 
         Flash::send(Alert::SUCCESS,"Success","Article ajouté !");
@@ -210,5 +242,13 @@ class ShopItemsController extends AbstractController
         Flash::send(Alert::SUCCESS, "Boutique", "L'article est à nouveau disponible");
 
         Redirect::redirect("cmw-admin/shop/items");
+    }
+
+    /**
+     * @return \CMW\Interface\Shop\IVirtualItems[]
+     */
+    public function getVirtualItemsMethods(): array
+    {
+        return Loader::loadImplementations(IVirtualItems::class);
     }
 }

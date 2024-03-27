@@ -432,6 +432,18 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_method_settings
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+//TODO prendre en compte l'article lié :
+CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_requirement
+(
+    shops_items_virtual_requirement_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shops_items_virtual_requirement_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
+    shops_items_virtual_requirement_value      VARCHAR(255) NOT NULL,
+    shops_items_virtual_requirement_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
 ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)

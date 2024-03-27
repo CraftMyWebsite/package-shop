@@ -9,10 +9,11 @@ $title = "Boutique";
 $description = "";
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
+/* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-envelope"></i> <span
+    <h3><i class="fa-solid fa-cart-plus"></i> <span
                 class="m-lg-auto">Nouvel article</span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
@@ -44,6 +45,81 @@ $description = "";
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="typePhysique" style="display:none;">
+                        <h6>Caractéristique physique du produit :</h6>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <h6>Poids<span style='color: red'>*</span> : <small>(en gramme)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_weight" required>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <h6>Largeur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_length">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <h6>Longueur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_width">
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <h6>Hauteur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_height">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="typeVirtuel" style="display:none;">
+                        <div class="row">
+                            <div class="col-12 col-sm-12 col-md-2">
+                                <div class="list-group" role="tablist">
+                                    <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
+                                        <a class="list-group-item list-group-item-action <?= $i === 1 ? 'active' : '' ?>" id="list-settings-list"
+                                           data-bs-toggle="list" href="#method-<?= $virtualMethod->varName() ?>"
+                                           role="tab" aria-selected="<?= $i === 1 ? 'true' : 'false' ?>">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <?= $virtualMethod->name() ?>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <?php ++$i; endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-10">
+                                <div class="tab-content text-justify" id="nav-tabContent">
+                                    <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
+                                        <div class="tab-pane <?= $i === 1 ? 'active show' : '' ?>"
+                                             id="method-<?= $virtualMethod->varName() ?>" role="tabpanel"
+                                             aria-labelledby="list-settings-list">
+                                            <section>
+                                                <div class="card-in-card">
+                                                    <div class="card-body">
+                                                        <div class="mb-4">
+                                                            <h4><?= $virtualMethod->name() ?></h4>
+                                                            <p><?= $virtualMethod->description() ?></p>
+                                                            <?php if ($virtualMethod->documentationURL()) : ?>
+                                                                <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a>
+                                                            <?php endif;?>
+                                                        </div>
+                                                        <input name="<?= $virtualMethod->varName() ?>" value="<?= $virtualMethod->varName() ?>">
+                                                        <?php $virtualMethod->includeConfigWidgets() ?>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                        <?php ++$i; endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <div id="typeNeeds" class="row">
@@ -88,8 +164,8 @@ $description = "";
                         <div class="col-12 mt-2">
                             <h6>Type<span style="color: red">*</span> :</h6>
                             <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                                <option value="1">Virtuel</option>
-                                <option selected value="0">Physique</option>
+                                <option selected value="1">Virtuel</option>
+                                <option value="0">Physique</option>
                             </select>
                         </div>
                     </div>
@@ -250,82 +326,39 @@ $description = "";
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
-        // Appeler la fonction au chargement de la page
-        afficherChamps();
+        afficherChamps(); // Appeler au chargement de la page
     });
 
     function afficherChamps() {
         let choix = document.getElementById("type").value;
-        let champsDynamiquesDiv = document.getElementById("typeNeeds");
+        let typePhysique = document.getElementById("typePhysique");
+        let typeVirtuel = document.getElementById("typeVirtuel");
 
-        // Effacer les champs précédents
-        champsDynamiquesDiv.innerHTML = "";
+        // Cacher et désactiver les champs de typePhysique et typeVirtuel
+        cacherEtDesactiver(typePhysique);
+        cacherEtDesactiver(typeVirtuel);
 
         if (choix === "0") {
-            let weightDiv = document.createElement("div");
-            weightDiv.className = "col-12 col-lg-6";
-            let lengthDiv = document.createElement("div");
-            lengthDiv.className = "col-12 col-lg-6";
-            let widthDiv = document.createElement("div");
-            widthDiv.className = "col-12 col-lg-6";
-            let heightDiv = document.createElement("div");
-            heightDiv.className = "col-12 col-lg-6";
-
-            let weightTitle = document.createElement("h6");
-            weightTitle.innerHTML = "Poids<span style='color: red'>*</span> : <small>(en gramme)</small>";
-            let weightInput = document.createElement("input");
-            weightInput.type = "text";
-            weightInput.required = true;
-            weightInput.className = "form-control";
-            weightInput.placeholder = "150.00";
-            weightInput.name = "shop_item_weight";
-
-            let lengthTitle = document.createElement("h6");
-            lengthTitle.innerHTML = "Largeur : <small>(en cm)</small>";
-            let lengthInput = document.createElement("input");
-            lengthInput.type = "text";
-            lengthInput.className = "form-control";
-            lengthInput.placeholder = "150.00";
-            lengthInput.name = "shop_item_length";
-
-            let widthTitle = document.createElement("h6");
-            widthTitle.innerHTML = "Longueur : <small>(en cm)</small>";
-            let widthInput = document.createElement("input");
-            widthInput.type = "text";
-            widthInput.className = "form-control";
-            widthInput.placeholder = "150.00";
-            widthInput.name = "shop_item_width";
-
-            let heightTitle = document.createElement("h6");
-            heightTitle.innerHTML = "Hauteur : <small>(en cm)</small>";
-            let heightInput = document.createElement("input");
-            heightInput.type = "text";
-            heightInput.className = "form-control";
-            heightInput.placeholder = "150.00";
-            heightInput.name = "shop_item_height";
-
-
-            champsDynamiquesDiv.appendChild(weightDiv);
-            weightDiv.appendChild(weightTitle);
-            weightDiv.appendChild(weightInput);
-            champsDynamiquesDiv.appendChild(lengthDiv);
-            lengthDiv.appendChild(lengthTitle);
-            lengthDiv.appendChild(lengthInput);
-            champsDynamiquesDiv.appendChild(widthDiv);
-            widthDiv.appendChild(widthTitle);
-            widthDiv.appendChild(widthInput);
-            champsDynamiquesDiv.appendChild(heightDiv);
-            heightDiv.appendChild(heightTitle);
-            heightDiv.appendChild(heightInput);
+            montrerEtActiver(typePhysique);
         } else if (choix === "1") {
-            let label = document.createElement("label");
-            label.innerHTML = "Champ Virtuel 1 : ";
-            let input = document.createElement("input");
-            input.type = "text";
-            input.name = "virtuel1";
-            champsDynamiquesDiv.appendChild(label);
-            champsDynamiquesDiv.appendChild(input);
+            montrerEtActiver(typeVirtuel);
         }
+    }
+
+    function cacherEtDesactiver(element) {
+        element.style.display = "none";
+        let champs = element.querySelectorAll("input, select, textarea");
+        champs.forEach(champ => {
+            champ.disabled = true; // Désactive les champs
+        });
+    }
+
+    function montrerEtActiver(element) {
+        element.style.display = "block";
+        let champs = element.querySelectorAll("input, select, textarea");
+        champs.forEach(champ => {
+            champ.disabled = false; // Active les champs
+        });
     }
 </script>
 

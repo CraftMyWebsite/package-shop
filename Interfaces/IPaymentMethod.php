@@ -65,7 +65,7 @@ interface IPaymentMethod
     /**
      * @return void
      * @desc Include the config widgets of the payment method, like ClientId, ClientSecret, etc...
-     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/paypal.config.inc.view.php";
+     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/paypal.config.inc.view.php";
      */
     public function includeConfigWidgets(): void;
 
