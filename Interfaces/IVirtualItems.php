@@ -2,6 +2,7 @@
 
 namespace CMW\Interface\Shop;
 
+use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 
 interface IVirtualItems
@@ -37,13 +38,14 @@ interface IVirtualItems
      * @desc Include the config widgets for the shop add items
      * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/downloadable.config.inc.view.php";
      */
-    public function includeConfigWidgets(): void;
+    public function includeConfigWidgets(?int $itemId): void;
 
     /**
-     * @param \CMW\Entity\Users\UserEntity $user
+     * @param string $varName
+     * @param ShopItemEntity $item
+     * @param UserEntity $user
      * @return void
-     * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      * @desc Do exec on buy items
      */
-    public function execOnBuy(UserEntity $user): void;
+    public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void;
 }

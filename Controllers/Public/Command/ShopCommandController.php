@@ -1,6 +1,7 @@
 <?php
 namespace CMW\Controller\Shop\Public\Command;
 
+use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
@@ -18,6 +19,7 @@ use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
+use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;

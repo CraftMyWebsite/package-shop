@@ -1,18 +1,28 @@
 <?php
 
 use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
+use CMW\Utils\Website;
 
+/* @var ?int $itemId */
+/* @var string $varName */
 ?>
 
-    <div class="row">
-        <div class="form-group">
-            <label for="downloadable_text">texte :</label>
-            <input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting('downloadable_text') ?>"
-                   placeholder="SECRET_KEY"
-                   type="text"
-                   name="downloadable_text"
-                   id="downloadable_text"
-                   class="form-control"
-                   >
-        </div>
-    </div>
+<label for="<?=$varName?>object">Objet du mail :</label>
+<input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'object',$itemId) ?>"
+       placeholder="Boutique <?= Website::getWebsiteName() ?>"
+       type="text"
+       name="<?=$varName?>object"
+       id="<?=$varName?>object"
+       class="form-control"
+       required
+>
+
+<label for="<?=$varName?>text">Texte du mail :</label>
+<input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'text',$itemId) ?>"
+       placeholder="Merci pour votre achat"
+       type="text"
+       name="<?=$varName?>text"
+       id="<?=$varName?>text"
+       class="form-control"
+       required
+>

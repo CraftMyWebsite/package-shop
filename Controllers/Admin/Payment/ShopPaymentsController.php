@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment;
 
+use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Users\UserEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
@@ -20,6 +21,7 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
@@ -145,6 +147,10 @@ class ShopPaymentsController extends AbstractController
                 foreach ($itemsVariantes as $itemVariantes) {
                     ShopOrdersItemsVariantesModel::getInstance()->setVariantToItemInOrder($orderItem->getOrderItemId(), $itemVariantes->getVariantValue()->getId());
                 }
+            }
+            if ($cartItem->getItem()->getType() == 1) {
+                $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($cartItem->getItem()->getId())->getVirtualMethod()->varName();
+                ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(),$user);
             }
         }
 

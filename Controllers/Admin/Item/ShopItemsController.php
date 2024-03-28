@@ -21,6 +21,7 @@ use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
+use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
@@ -154,28 +155,28 @@ class ShopItemsController extends AbstractController
         }
 
         if ($type == "1") {
-            //TODO prendre en compte l'article lié :
-            $virtualMethods = $this->getVirtualItemsMethods();
-            foreach ($virtualMethods as $virtualMethod) {
-                $virtualPrefix = $_POST[$virtualMethod->varName()] ?? '';
-            }
+            [$varName] = Utils::filterInput("shop_item_virtual_method_var_name");
+            if (!empty($varName)) {
+                $validPrefixes = Utils::filterInput("shop_item_virtual_prefix");
+                $virtualMethod = ShopItemsVirtualMethodModel::getInstance()->insertMethod($varName, $itemId);
+                $virtualMethodId = $virtualMethod->getId();
 
-            // Prépare un tableau pour collecter les données du widget
-            $widgetData = [];
-            foreach ($_POST as $key => $value) {
-                // Vérifier si la clé commence par le préfixe dynamique
-                if (strpos($key, $virtualPrefix) === 0) {
-                    // Ajouter la paire clé-valeur au tableau si elle correspond au préfixe
-                    $widgetData[$key] = $value;
-                }
-            }
-            foreach ($widgetData as $widgetKey => $widgetValue) {
-                $widgetKey = FilterManager::filterData($widgetKey, 50);
-                $widgetValue = FilterManager::filterData($widgetValue, 255);
-                if (!ShopItemsVirtualRequirementModel::getInstance()->updateOrInsertSetting($widgetKey, $widgetValue)){
-                    Flash::send(Alert::ERROR,'Erreur',
-                        "Impossible de mettre à jour le paramètre $widgetKey.");
-                    Redirect::redirect("cmw-admin/shop/items");
+                foreach ($_POST as $key => $value) {
+                    foreach ($validPrefixes as $prefix) {
+                        // Vérifiez si la clé commence par un des préfixes valides
+                        if (str_starts_with($key, $prefix)) {
+                            $widgetKey = FilterManager::filterData($key, 50);
+                            $widgetValue = FilterManager::filterData($value, 255);
+                            if ($widgetKey != $widgetValue) {
+                                if (!ShopItemsVirtualRequirementModel::getInstance()->insertSetting($virtualMethodId,$key.$itemId, $value)){
+                                    Flash::send(Alert::ERROR,'Erreur',
+                                        "Impossible de mettre à jour le paramètre $widgetKey.");
+                                    Redirect::redirect("cmw-admin/shop/items");
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -250,5 +251,19 @@ class ShopItemsController extends AbstractController
     public function getVirtualItemsMethods(): array
     {
         return Loader::loadImplementations(IVirtualItems::class);
+    }
+
+    /**
+     * @param string $varName
+     * @return \CMW\Interface\Shop\IVirtualItems|null
+     */
+    public function getVirtualItemsMethodsByVarName(string $varName): ?IVirtualItems
+    {
+        foreach ($this->getVirtualItemsMethods() as $virtualMethod) {
+            if ($virtualMethod->varName() === $varName){
+                return $virtualMethod;
+            }
+        }
+        return null;
     }
 }

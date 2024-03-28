@@ -432,14 +432,29 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_method_settings
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-//TODO prendre en compte l'article lié :
+CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_method
+(
+    shops_items_virtual_method_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shops_items_virtual_method_var_name        VARCHAR(50)  NOT NULL,
+    shop_item_id                                INT          NULL,
+    shops_items_virtual_requirement_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_id_items_virtual_method FOREIGN KEY (shop_item_id)
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_requirement
 (
     shops_items_virtual_requirement_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shops_items_virtual_method_id              INT          NULL,
     shops_items_virtual_requirement_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
     shops_items_virtual_requirement_value      VARCHAR(255) NOT NULL,
     shops_items_virtual_requirement_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shop_item_id_items_virtual_requirement FOREIGN KEY (shops_items_virtual_method_id)
+        REFERENCES cmw_shops_items_virtual_method (shops_items_virtual_method_id) ON UPDATE CASCADE ON DELETE CASCADE
     ) ENGINE = InnoDB
     CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_unicode_ci;

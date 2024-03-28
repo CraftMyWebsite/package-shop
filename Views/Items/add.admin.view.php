@@ -75,48 +75,32 @@ $description = "";
 
                     <div id="typeVirtuel" style="display:none;">
                         <div class="row">
-                            <div class="col-12 col-sm-12 col-md-2">
-                                <div class="list-group" role="tablist">
-                                    <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
-                                        <a class="list-group-item list-group-item-action <?= $i === 1 ? 'active' : '' ?>" id="list-settings-list"
-                                           data-bs-toggle="list" href="#method-<?= $virtualMethod->varName() ?>"
-                                           role="tab" aria-selected="<?= $i === 1 ? 'true' : 'false' ?>">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <?= $virtualMethod->name() ?>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <?php ++$i; endforeach; ?>
-                                </div>
+                            <div class="col-12 mb-2">
+                                <h6>Contenue virtuel<span style="color: red">*</span> :</h6>
+                                <select class="form-select" name="shop_item_virtual_prefix" required>
+                                    <option selected value="0">Aucun</option>
+                                    <?php foreach ($virtualMethods as $virtualMethod): ?>
+                                        <option value="<?= $virtualMethod->varName() ?>"><?= $virtualMethod->name() ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
-                            <div class="col-12 col-sm-12 col-md-10">
+                            <div class="col-12">
                                 <div class="tab-content text-justify" id="nav-tabContent">
                                     <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
-                                        <div class="tab-pane <?= $i === 1 ? 'active show' : '' ?>"
-                                             id="method-<?= $virtualMethod->varName() ?>" role="tabpanel"
-                                             aria-labelledby="list-settings-list">
-                                            <section>
-                                                <div class="card-in-card">
-                                                    <div class="card-body">
-                                                        <div class="mb-4">
-                                                            <h4><?= $virtualMethod->name() ?></h4>
-                                                            <p><?= $virtualMethod->description() ?></p>
-                                                            <?php if ($virtualMethod->documentationURL()) : ?>
-                                                                <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a>
-                                                            <?php endif;?>
-                                                        </div>
-                                                        <input name="<?= $virtualMethod->varName() ?>" value="<?= $virtualMethod->varName() ?>">
-                                                        <?php $virtualMethod->includeConfigWidgets() ?>
-                                                    </div>
-                                                </div>
-                                            </section>
+                                        <div class="tab-pane" id="method-<?= $virtualMethod->varName() ?>">
+                                            <?php if ($virtualMethod->documentationURL()) : ?>
+                                                <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
+                                            <?php endif;?>
+                                            <p><?= $virtualMethod->description() ?></p>
+                                            <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
+                                            <?php $virtualMethod->includeConfigWidgets(null) ?>
                                         </div>
                                         <?php ++$i; endforeach; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -431,5 +415,40 @@ $description = "";
             inputValue = inputValue.substring(0, decimalIndex + 3);
         }
         this.value = inputValue;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectElement = document.querySelector('[name="shop_item_virtual_prefix"]');
+
+        function toggleTabContent(value) {
+            // Masquer tous les contenus d'onglets et désactiver les inputs
+            document.querySelectorAll('.tab-pane').forEach(function (tabContent) {
+                tabContent.style.display = 'none';
+                tabContent.querySelectorAll('input').forEach(function (input) {
+                    input.disabled = true;
+                });
+            });
+
+            // Si la valeur sélectionnée n'est pas "0", afficher le contenu correspondant et activer les inputs
+            if (value !== "0") {
+                var activeTabContent = document.getElementById('method-' + value);
+                if (activeTabContent) {
+                    activeTabContent.style.display = 'block';
+                    activeTabContent.querySelectorAll('input').forEach(function (input) {
+                        input.disabled = false;
+                    });
+                }
+            }
+        }
+
+        // Initialiser sans afficher de contenu
+        toggleTabContent(selectElement.value);
+
+        // Écouteur d'événements pour le changement de sélection
+        selectElement.addEventListener('change', function () {
+            toggleTabContent(this.value);
+        });
     });
 </script>

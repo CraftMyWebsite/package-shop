@@ -2,18 +2,17 @@
 
 use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 
+/* @var ?int $itemId */
+/* @var string $varName */
 ?>
 
-<div class="row">
-    <div class="form-group">
-        <label for="gift_code_code">texte :</label>
-        <input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting('gift_code_code') ?>"
-               placeholder="CODE"
-               type="text"
-               name="gift_code_code"
-               id="gift_code_code"
-               class="form-control"
-               >
-    </div>
-</div>
 
+<label for="<?=$varName?>code">texte :</label>
+<input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'code',$itemId) ?>"
+       placeholder="CODE"
+       type="text"
+       name="<?=$varName?>code"
+       id="<?=$varName?>code"
+       class="form-control"
+       required
+>
