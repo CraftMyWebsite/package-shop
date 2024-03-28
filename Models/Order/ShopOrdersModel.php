@@ -176,7 +176,7 @@ class ShopOrdersModel extends AbstractModel
         return $res->fetch(0)['total_quantity'];
     }
 
-    public function createOrder(int $userId, int $shippingId, int $deliveryAddress, string $paymentName): ?ShopOrdersEntity
+    public function createOrder(int $userId, ?int $shippingId, int $deliveryAddress, string $paymentName): ?ShopOrdersEntity
     {
         $var = array(
             "shop_user_id" => $userId,

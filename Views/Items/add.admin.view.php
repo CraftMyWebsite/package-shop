@@ -78,9 +78,8 @@ $description = "";
                             <div class="col-12 mb-2">
                                 <h6>Contenue virtuel<span style="color: red">*</span> :</h6>
                                 <select class="form-select" name="shop_item_virtual_prefix" required>
-                                    <option selected value="0">Aucun</option>
                                     <?php foreach ($virtualMethods as $virtualMethod): ?>
-                                        <option value="<?= $virtualMethod->varName() ?>"><?= $virtualMethod->name() ?></option>
+                                        <option value="<?= $virtualMethod->varName() ?>" <?= $virtualMethod->varName() === "nothing" ? "selected" : "" ?>><?= $virtualMethod->name() ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>

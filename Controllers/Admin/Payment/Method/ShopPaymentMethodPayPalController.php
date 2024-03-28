@@ -40,7 +40,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendPayPalPayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
+    public function sendPayPalPayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isPayPalConfigComplete()) {
             throw new ShopPaymentException(message: "PayPal config is not complete");
@@ -52,8 +52,12 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
-        $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
-        $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
+        $shippingMethod = null;
+        if (is_int($commandTunnelShippingId)) {
+            $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        }
+        $shippingPrice = $shippingMethod?->getPrice() ?? 0;
 
 
         $items = [];
@@ -75,7 +79,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
                 [
                     'amount' => [
                         'currency_code' => $currencyCode,
-                        'value' => $this->calculateTotalAmount($items, $shippingMethod->getPrice()),
+                        'value' => $this->calculateTotalAmount($items, $shippingPrice),
                         'breakdown' => [
                             'item_total' => [
                                 'currency_code' => $currencyCode,
@@ -83,7 +87,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
                             ],
                             'shipping' => [
                                 'currency_code' => $currencyCode,
-                                'value' => sprintf("%.2f", $shippingMethod->getPrice()),
+                                'value' => sprintf("%.2f", $shippingPrice),
                             ]
                         ]
                     ],
@@ -116,7 +120,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     {
         $accessToken = $this->getPayPalAccessToken();
 
-        $curl = curl_init(self::PAYPAL_API_URL . "/v2/checkout/orders");
+        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v2/checkout/orders");
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
@@ -159,7 +163,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $clientId = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id');
         $clientSecret = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret');
 
-        $curl = curl_init(self::PAYPAL_API_URL . "/v1/oauth2/token");
+        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v1/oauth2/token");
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
@@ -197,7 +201,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     {
         $accessToken = $this->getPayPalAccessToken();
 
-        $curl = curl_init(self::PAYPAL_API_URL . "/v2/checkout/orders/$orderId/capture");
+        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v2/checkout/orders/$orderId/capture");
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',

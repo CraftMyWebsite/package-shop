@@ -56,8 +56,8 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
         require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
     }
 
-    public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
+    public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
     {
-        ShopPaymentMethodCoinbaseController::getInstance()->sendCoinbasePayment($cartItems, $shipping, $address);
+        ShopPaymentMethodCoinbaseController::getInstance()->sendCoinbasePayment($cartItems, $address);
     }
 }

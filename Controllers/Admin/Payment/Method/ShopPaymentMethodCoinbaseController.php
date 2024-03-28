@@ -36,7 +36,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendCoinbasePayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
+    public function sendCoinbasePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isCryptoConfigComplete()) {
             throw new ShopPaymentException(message: "Stripe config is not complete");
@@ -48,8 +48,12 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
-        $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
-        $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
+        $shippingMethod = null;
+        if (is_int($commandTunnelShippingId)) {
+            $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        }
+        $shippingPrice = $shippingMethod?->getPrice() ?? 0;
 
         $totalAmount = 0;
 
@@ -58,8 +62,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
             $totalAmount += $itemTotal;
         }
 
-        $shippingCost = $shippingMethod->getPrice();
-        $totalAmount += $shippingCost;
+        $totalAmount += $shippingPrice;
 
         $chargeData = [
             'name' => 'Commande Boutique',

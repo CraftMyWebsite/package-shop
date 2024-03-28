@@ -230,7 +230,8 @@ class ShopCartItemEntity
     {
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()?->getId());
 
-        $shippingFees = $commandTunnel->getShipping()->getPrice();
+        $shipping = $commandTunnel->getShipping();
+        $shippingFees = $shipping !== null ? $shipping->getPrice() : 0;
         $paymentMethodFees = 0; //TODO : à rajouter dans le command tunnel
 
         $total = $this->getTotalCartPriceAfterDiscount();

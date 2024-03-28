@@ -72,12 +72,10 @@ interface IPaymentMethod
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @param \CMW\Entity\Users\UserEntity $user
-     * @param \CMW\Entity\Shop\Deliveries\ShopShippingEntity $shipping
      * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity $address
      * @return void
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      * @desc Do payment logic
      */
-    public function doPayment(array $cartItems, UserEntity $user, ShopShippingEntity $shipping,
-                              ShopDeliveryUserAddressEntity $address): void;
+    public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void;
 }

@@ -5,6 +5,7 @@ use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
+use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Exception\Shop\Payment\ShopPaymentException;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
@@ -64,6 +65,10 @@ class ShopCommandController extends AbstractController
 
         $this->handleBeforeCommandCheck($userId, $sessionId, $cartContent);
 
+        //handleTypeCartContent
+        $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
+        $cartIsFree = $this->handleCartIsFree($cartContent);
+
         //TODO: Verifier si les promotions appliquées au panier sont encore valides
 
         if (empty($userAddresses)) {
@@ -79,19 +84,28 @@ class ShopCommandController extends AbstractController
                 $view->view();
             }
             if ($currentStep === 1) {
-                $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
-                $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                $shippings = ShopShippingModel::getInstance()->getShopShipping();
-                $view = new View("Shop", "Command/delivery");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings]);
-                $view->view();
+                if ($cartOnlyVirtual) {
+                    ShopCommandTunnelModel::getInstance()->skipShipping($userId);
+                    Redirect::redirectPreviousRoute();
+                } else {
+                    $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
+                    $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
+                    $shippings = ShopShippingModel::getInstance()->getShopShipping();
+                    $view = new View("Shop", "Command/delivery");
+                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings]);
+                    $view->view();
+                }
             }
             if ($currentStep === 2) {
+                if ($cartOnlyVirtual) {
+                    $shippingMethod = null;
+                } else {
+                    $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
+                    $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+                }
                 $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
-                $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
                 $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
-                $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+                $paymentMethods = ($cartIsFree && $shippingMethod->getPrice() == 0) ? ShopPaymentsController::getInstance()->getFreePayment() : ShopPaymentsController::getInstance()->getActivePaymentsMethods();
                 $view = new View("Shop", "Command/payment");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
@@ -227,13 +241,6 @@ class ShopCommandController extends AbstractController
             Redirect::redirectToHome();
         }
 
-        $shipping = $commandTunnelModel->getShipping();
-
-        if (!$shipping){
-            //TODO Error no delivery method selected
-            Redirect::redirectToHome();
-        }
-
         if (!isset($_POST['paymentName'])){
             Flash::send(Alert::ERROR, 'Erreur', 'Merci de sélectionner une méthode de paiement !');
             Redirect::redirectPreviousRoute();
@@ -251,7 +258,7 @@ class ShopCommandController extends AbstractController
         }
 
         try {
-            $paymentMethod->doPayment($cartContent, $user, $shipping, $selectedAddress);
+            $paymentMethod->doPayment($cartContent, $user, $selectedAddress);
         }
         catch (ShopPaymentException $e) {
             Flash::send(Alert::ERROR, 'Erreur', "Erreur de paiement => $e");
@@ -262,7 +269,7 @@ class ShopCommandController extends AbstractController
     /**
      * @param int $userId
      * @param string $sessionId
-     * @param array $cartContent
+     * @param ShopCartItemEntity[] $cartContent
      */
     private function handleBeforeCommandCheck(int $userId, string $sessionId, array $cartContent): void
     {
@@ -274,5 +281,31 @@ class ShopCommandController extends AbstractController
             ShopCartController::getInstance()->handleGlobalLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
             ShopCartController::getInstance()->handleByOrderLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
         }
+    }
+
+    /**
+     * @param ShopCartItemEntity[] $cartContent
+     */
+    private function handleCartTypeContent(array $cartContent) : bool
+    {
+        foreach ($cartContent as $item) {
+            if ($item->getItem()->getType() != 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param ShopCartItemEntity[] $cartContent
+     */
+    private function handleCartIsFree(array $cartContent) : bool
+    {
+        foreach ($cartContent as $item) {
+            if ($item->getItem()->getPrice() != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

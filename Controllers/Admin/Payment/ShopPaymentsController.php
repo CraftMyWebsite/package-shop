@@ -54,7 +54,18 @@ class ShopPaymentsController extends AbstractController
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
         return array_filter($allPaymentMethods, function($paymentMethod) {
-            return $paymentMethod->isActive();
+            return $paymentMethod->isActive() && $paymentMethod->varName() !== "free";
+        });
+    }
+
+    /**
+     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     */
+    public function getFreePayment(): array
+    {
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        return array_filter($allPaymentMethods, function($paymentMethod) {
+            return $paymentMethod->varName() == "free";
         });
     }
 
@@ -136,7 +147,7 @@ class ShopPaymentsController extends AbstractController
         $sessionId = session_id();
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
 
-        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId(), $commandTunnel->getPaymentName());
+        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()?->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId(), $commandTunnel->getPaymentName());
 
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($user->getId(), $sessionId);
 

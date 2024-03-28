@@ -37,7 +37,7 @@ class ShopPaymentMethodStripeController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendStripePayment(array $cartItems, ShopShippingEntity $shipping, ShopDeliveryUserAddressEntity $address): void
+    public function sendStripePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isStripeConfigComplete()) {
             throw new ShopPaymentException(message: "Stripe config is not complete");
@@ -49,8 +49,12 @@ class ShopPaymentMethodStripeController extends AbstractController
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
-        $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
-        $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
+        $shippingMethod = null;
+        if (is_int($commandTunnelShippingId)) {
+            $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
+        }
+        $shippingPrice = $shippingMethod?->getPrice() ?? 0;
 
         $Items = [];
         foreach ($cartItems as $item) {
@@ -73,7 +77,7 @@ class ShopPaymentMethodStripeController extends AbstractController
                 'product_data' => [
                     'name' => 'Frais de livraison',
                 ],
-                'unit_amount' => $shippingMethod->getPrice() * 100,
+                'unit_amount' => $shippingPrice * 100,
             ],
             'quantity' => 1,
         ];

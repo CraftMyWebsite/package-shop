@@ -2,34 +2,32 @@
 
 namespace CMW\Implementation\Shop;
 
-use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodStripeController;
+use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
-use CMW\Manager\Env\EnvManager;
-use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 
-class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
+class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "Stripe";
+        return "Commande offerte";
     }
 
     public function varName(): string
     {
-        return str_replace(' ', '_', strtolower($this->name()));
+        return "free";
     }
 
     public function faIcon(?string $customClass = null): ?string
     {
-        return "<i class='fa-brands fa-cc-stripe $customClass'></i>";
+        return "<i class='fa-regular fa-handshake $customClass'></i>";
     }
 
     public function dashboardURL(): ?string
     {
-        return "https://dashboard.stripe.com/dashboard";
+        return "";
     }
 
     public function documentationURL(): ?string
@@ -39,7 +37,7 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 
     public function description(): string
     {
-        return "TODO DESC I18N";
+        return "";
     }
 
     public function fees(): int
@@ -49,15 +47,16 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 
     public function isActive(): bool
     {
-        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_is_active') ?? 0;
+        return 1;
     }
+
     public function includeConfigWidgets(): void
     {
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/stripe.config.inc.view.php";
+        return;
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
     {
-        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems, $address);
+        ShopPaymentMethodFreeController::getInstance()->sendFreePayment();
     }
 }
