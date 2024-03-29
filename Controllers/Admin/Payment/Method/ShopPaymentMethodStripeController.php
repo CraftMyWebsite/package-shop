@@ -68,7 +68,7 @@ class ShopPaymentMethodStripeController extends AbstractController
                     'product_data' => [
                         'name' => $item->getItem()->getName(),
                     ],
-                    'unit_amount' => $item->getItem()->getPrice() * 100,
+                    'unit_amount' => $item->getItemTotalPriceAfterDiscount() * 100,
                 ],
                 'quantity' => $item->getQuantity(),
             ];

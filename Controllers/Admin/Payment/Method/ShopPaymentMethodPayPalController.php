@@ -70,7 +70,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
                 'name' => $item->getItem()->getName(),
                 'unit_amount' => [
                     'currency_code' => $currencyCode,
-                    'value' => sprintf("%.2f", $item->getItem()->getPrice()),
+                    'value' => sprintf("%.2f", $item->getItemTotalPriceAfterDiscount()),
                 ],
                 'quantity' => $item->getQuantity(),
             ];

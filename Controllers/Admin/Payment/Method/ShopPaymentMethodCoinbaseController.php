@@ -62,7 +62,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         $totalAmount = 0;
 
         foreach ($cartItems as $item) {
-            $itemTotal = $item->getItem()->getPrice() * $item->getQuantity();
+            $itemTotal = $item->getItemTotalPriceAfterDiscount() * $item->getQuantity();
             $totalAmount += $itemTotal;
         }
 
