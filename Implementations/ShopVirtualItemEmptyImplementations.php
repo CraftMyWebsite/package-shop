@@ -23,12 +23,12 @@ class ShopVirtualItemEmptyImplementations implements IVirtualItems
 
     public function documentationURL(): ?string
     {
-        return "";
+        return null;
     }
 
-    public function description(): string
+    public function description(): ?string
     {
-        return "";
+        return null;
     }
 
     public function includeConfigWidgets(?int $itemId): void

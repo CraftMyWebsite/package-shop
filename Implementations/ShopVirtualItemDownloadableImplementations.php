@@ -23,10 +23,10 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 
     public function documentationURL(): ?string
     {
-        return "";
+        return null;
     }
 
-    public function description(): string
+    public function description(): ?string
     {
         return "Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini";
     }

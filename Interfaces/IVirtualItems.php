@@ -31,7 +31,7 @@ interface IVirtualItems
      * @return string
      * @desc Small description
      */
-    public function description(): string;
+    public function description(): ?string;
 
     /**
      * @return void

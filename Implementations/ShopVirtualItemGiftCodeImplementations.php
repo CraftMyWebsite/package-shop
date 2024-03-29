@@ -26,7 +26,7 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
         return "";
     }
 
-    public function description(): string
+    public function description(): ?string
     {
         return "1 - Ceci va créer un code promotionnel de la valeur de cet article<br>2 - Ce code est valable 1 an<br>3 - Le code promotionnel est généré automatique par CraftMyWebsite<br>4 - L'acheteur reçoit le code par mail, et peut le retrouver dans la liste des commandes<br>5 - Il est ensuite libre de donner ce code à qui bon lui semble";
     }
