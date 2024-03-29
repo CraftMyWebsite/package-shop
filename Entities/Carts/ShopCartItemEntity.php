@@ -214,11 +214,21 @@ class ShopCartItemEntity
     public function getTotalCartPriceAfterDiscount(): float
     {
         $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+
+        $totalCartDiscountPrice = 0;
+        foreach ($cartDiscounts as $cartDiscount) {
+            if ($cartDiscount->getDiscount()->getLinked() == 3) {
+                $totalCartDiscountPrice += $cartDiscount->getDiscount()->getPrice();
+            }
+        }
 
         $total = 0;
         foreach ($cartContents as $cartContent) {
             $total += $cartContent->getItemTotalPriceAfterDiscount();
         }
+        $total -= $totalCartDiscountPrice;
+
         return $total;
     }
 

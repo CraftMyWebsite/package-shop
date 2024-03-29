@@ -101,6 +101,9 @@ class ShopDiscountEntity
         if ($this->discountLinked == 2) {
             return "Une ou Des catégorie(s)";
         }
+        if ($this->discountLinked == 3) {
+            return "Total du panier";
+        }
     }
 
     public function getStartDate(): string
