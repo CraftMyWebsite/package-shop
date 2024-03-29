@@ -45,16 +45,16 @@ interface IPaymentMethod
     public function documentationURL(): ?string;
 
     /**
-     * @return string
+     * @return ?string
      * @desc Small description of the payment method
      */
-    public function description(): string;
+    public function description(): ?string;
 
     /**
-     * @return int
+     * @return float
      * @desc Fees are optional
      */
-    public function fees(): int;
+    public function fees(): float;
 
     /**
      * @return bool

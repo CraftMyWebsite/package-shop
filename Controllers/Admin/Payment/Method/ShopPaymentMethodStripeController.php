@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
@@ -43,6 +44,9 @@ class ShopPaymentMethodStripeController extends AbstractController
             throw new ShopPaymentException(message: "Stripe config is not complete");
         }
 
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("Stripe");
+        $paymentFee = $paymentMethod->fees();
+
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/complete';
 
@@ -71,16 +75,32 @@ class ShopPaymentMethodStripeController extends AbstractController
             $Items[] = $lineItem;
         }
 
-        $Items[] = [
-            'price_data' => [
-                'currency' => $currencyCode,
-                'product_data' => [
-                    'name' => 'Frais de livraison',
+        if ($shippingPrice != 0) {
+            $Items[] = [
+                'price_data' => [
+                    'currency' => $currencyCode,
+                    'product_data' => [
+                        'name' => 'Frais de livraison',
+                    ],
+                    'unit_amount' => $shippingPrice * 100,
                 ],
-                'unit_amount' => $shippingPrice * 100,
-            ],
-            'quantity' => 1,
-        ];
+                'quantity' => 1,
+            ];
+        }
+
+        if ($paymentFee != 0) {
+            $Items[] = [
+                'price_data' => [
+                    'currency' => $currencyCode,
+                    'product_data' => [
+                        'name' => 'Frais de paiement',
+                    ],
+                    'unit_amount' => $paymentFee * 100,
+                ],
+                'quantity' => 1,
+            ];
+        }
+
 
         $sessionData = [
             'payment_method_types' => [],//if null is automatically handled by stripe and stripe payement account settings

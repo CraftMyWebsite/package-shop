@@ -105,7 +105,20 @@ class ShopCommandController extends AbstractController
                 }
                 $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
                 $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                $paymentMethods = ($cartIsFree && $shippingMethod->getPrice() == 0) ? ShopPaymentsController::getInstance()->getFreePayment() : ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+
+                if ($cartIsFree) {
+                    if (is_null($shippingMethod)) {
+                        $paymentMethods = ShopPaymentsController::getInstance()->getFreePayment();
+                    } else {
+                        if ($shippingMethod->getPrice() == 0) {
+                            $paymentMethods = ShopPaymentsController::getInstance()->getFreePayment();
+                        } else {
+                            $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+                        }
+                    }
+                } else {
+                    $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+                }
                 $view = new View("Shop", "Command/payment");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,

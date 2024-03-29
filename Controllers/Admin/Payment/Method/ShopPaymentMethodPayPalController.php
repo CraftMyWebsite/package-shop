@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
@@ -46,6 +47,9 @@ class ShopPaymentMethodPayPalController extends AbstractController
             throw new ShopPaymentException(message: "PayPal config is not complete");
         }
 
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("PayPal");
+        $paymentFee = $paymentMethod->fees();
+
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/complete';
 
@@ -71,6 +75,17 @@ class ShopPaymentMethodPayPalController extends AbstractController
                 'quantity' => $item->getQuantity(),
             ];
             $items[] = $lineItem;
+        }
+
+        if ($paymentFee != 0) {
+            $items[] = [
+                'name' => "Frais de paiement",
+                'unit_amount' => [
+                    'currency_code' => $currencyCode,
+                    'value' => sprintf("%.2f", $paymentFee),
+                ],
+                'quantity' => 1,
+            ];
         }
 
         $orderData = [
@@ -230,6 +245,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
      *
      * @param array $items Les articles de la commande.
      * @param float $shippingCost Les frais de livraison.
+     * @param float $paymentFee Les frais de paiement.
      * @return string Le montant total de la commande formaté.
      */
     private function calculateTotalAmount(array $items, float $shippingCost): string

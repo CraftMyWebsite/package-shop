@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
@@ -45,6 +46,9 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/complete';
 
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("CoinBase");
+        $paymentFee = $paymentMethod->fees();
+
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
@@ -63,6 +67,10 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         }
 
         $totalAmount += $shippingPrice;
+
+        if ($paymentFee != 0) {
+            $totalAmount += $paymentFee;
+        }
 
         $chargeData = [
             'name' => 'Commande Boutique',

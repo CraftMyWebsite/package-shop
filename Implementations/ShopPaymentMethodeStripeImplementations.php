@@ -4,7 +4,6 @@ namespace CMW\Implementation\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodStripeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Manager\Env\EnvManager;
@@ -34,17 +33,17 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 
     public function documentationURL(): ?string
     {
-        return "";
+        return null;
     }
 
-    public function description(): string
+    public function description(): ?string
     {
-        return "TODO DESC I18N";
+        return null;
     }
 
-    public function fees(): int
+    public function fees(): float
     {
-        return 0; //TODO Var ?
+        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_fee') ?? 0;
     }
 
     public function isActive(): bool
