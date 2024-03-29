@@ -65,7 +65,6 @@ class ShopCommandController extends AbstractController
 
         $this->handleBeforeCommandCheck($userId, $sessionId, $cartContent);
 
-        //handleTypeCartContent
         $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
         $cartIsFree = $this->handleCartIsFree($cartContent);
 
@@ -85,7 +84,7 @@ class ShopCommandController extends AbstractController
             }
             if ($currentStep === 1) {
                 if ($cartOnlyVirtual) {
-                    ShopCommandTunnelModel::getInstance()->skipShipping($userId);
+                    ShopCommandTunnelModel::getInstance()->skipShippingNext($userId);
                     Redirect::redirectPreviousRoute();
                 } else {
                     $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
@@ -209,7 +208,14 @@ class ShopCommandController extends AbstractController
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
-        ShopCommandTunnelModel::getInstance()->clearShipping($userId);
+        $sessionId = session_id();
+        $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+        $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
+        if ($cartOnlyVirtual) {
+            ShopCommandTunnelModel::getInstance()->skipShippingPrevious($userId);
+        } else {
+            ShopCommandTunnelModel::getInstance()->clearShipping($userId);
+        }
 
         Redirect::redirectPreviousRoute();
     }

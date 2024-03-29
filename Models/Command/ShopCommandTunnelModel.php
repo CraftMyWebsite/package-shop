@@ -152,13 +152,27 @@ class ShopCommandTunnelModel extends AbstractModel
         $req->execute($var);
     }
 
-    public function skipShipping(int $userId): void
+    public function skipShippingNext(int $userId): void
     {
         $var = array(
             "shop_user_id" => $userId,
         );
 
         $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 2 WHERE shop_user_id = :shop_user_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($var);
+    }
+
+    public function skipShippingPrevious(int $userId): void
+    {
+        $var = array(
+            "shop_user_id" => $userId,
+        );
+
+        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 0 WHERE shop_user_id = :shop_user_id";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
