@@ -161,7 +161,10 @@ class ShopPaymentsController extends AbstractController
             }
             if ($cartItem->getItem()->getType() == 1) {
                 $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($cartItem->getItem()->getId())->getVirtualMethod()->varName();
-                ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(),$user);
+                $quantity = $cartItem->getQuantity();
+                for ($i = 0; $i < $quantity; $i++) {
+                    ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(), $user);
+                }
             }
         }
 
