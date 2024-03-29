@@ -17,7 +17,7 @@ $description = "";
     </div>
 </div>
 <section class="row">
-    <div class="col-12 col-lg-6">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h4>Promotions en cours</h4>
@@ -43,7 +43,7 @@ $description = "";
                             <td><?= $discount->getLinkedFormatted() ?></td>
                             <td><?= $discount->getStartDate() ?></td>
                             <td><?= $discount->getEndDate() ?></td>
-                            <td><?= $discount->getStatus() ?></td>
+                            <td>X/<?= $discount->getUsesLeft() ?? "∞" ?></td>
                             <td>
                                 <a href="discounts/manage/<?= $discount->getId() ?>">
                                     <i class="text-success fa-solid fa-edit"></i>
@@ -56,7 +56,7 @@ $description = "";
             </div>
         </div>
     </div>
-    <div class="col-12 col-lg-6">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h4>Promotions à venir</h4>

@@ -2,6 +2,7 @@
 
 namespace CMW\Model\Shop\Order;
 
+use CMW\Entity\Shop\Discounts\ShopDiscountItemsEntity;
 use CMW\Entity\Shop\Orders\ShopOrdersItemsEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
@@ -50,6 +51,7 @@ class ShopOrdersItemsModel extends AbstractModel
             $paymentDiscount,
             $res["shop_order_item_quantity"],
             $res["shop_order_item_price"],
+            $res["shop_order_item_price_after_discount"],
             $res["shop_order_item_created_at"],
             $res["shop_order_item_updated_at"]
         );
@@ -108,7 +110,7 @@ class ShopOrdersItemsModel extends AbstractModel
 
     }
 
-    public function createOrderItems(int $orderId, int $itemId, int $itemQuantity, float $price): ?ShopOrdersItemsEntity
+    public function createOrderItems(int $orderId, int $itemId, int $itemQuantity, float $price, ?float $discountPrice, ?int $discountId): ?ShopOrdersItemsEntity
     {
 
         //TODO : prise en charge des variables et promotions appliqué.
@@ -117,10 +119,12 @@ class ShopOrdersItemsModel extends AbstractModel
             "shop_order_id" => $orderId,
             "shop_item_id" => $itemId,
             "shop_order_item_quantity" => $itemQuantity,
-            "shop_order_item_price" => $price
+            "shop_discount_id" => $discountId,
+            "shop_order_item_price" => $price,
+            "shop_order_item_price_after_discount" => $discountPrice
         );
 
-        $sql = "INSERT INTO cmw_shops_orders_items (shop_item_id, shop_order_id, shop_order_item_quantity, shop_order_item_price) VALUES (:shop_item_id, :shop_order_id, :shop_order_item_quantity, :shop_order_item_price)";
+        $sql = "INSERT INTO cmw_shops_orders_items (shop_item_id, shop_order_id, shop_discount_id, shop_order_item_quantity, shop_order_item_price, shop_order_item_price_after_discount) VALUES (:shop_item_id, :shop_order_id, :shop_discount_id, :shop_order_item_quantity, :shop_order_item_price, :shop_order_item_price_after_discount)";
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

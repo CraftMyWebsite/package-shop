@@ -354,6 +354,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_orders_items
     shop_discount_id           INT          NULL,
     shop_order_item_quantity   INT          NULL,
     shop_order_item_price      FLOAT(10, 2) NULL,
+    shop_order_item_price_after_discount      FLOAT(10, 2) NULL,
     shop_order_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_order_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_item_id_orders_items FOREIGN KEY (shop_item_id)

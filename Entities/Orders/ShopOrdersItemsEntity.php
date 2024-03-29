@@ -16,6 +16,7 @@ class ShopOrdersItemsEntity {
     private ?ShopDiscountEntity $discount;
     private ?int $orderItemQuantity;
     private float $orderItemPrice;
+    private ?float $orderItemPriceAfterDiscount;
     private string $orderItemCreated;
     private string $orderItemUpdated;
 
@@ -26,10 +27,11 @@ class ShopOrdersItemsEntity {
      * @param \CMW\Entity\Shop\Discounts\ShopDiscountEntity|null $discount
      * @param int|null $orderItemQuantity
      * @param float $orderItemPrice
+     * @param ?float $orderItemPriceAfterDiscount
      * @param string $orderItemCreated
      * @param string $orderItemUpdated
      */
-    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopDiscountEntity $discount, ?int $orderItemQuantity, float $orderItemPrice, string $orderItemCreated, string $orderItemUpdated)
+    public function __construct(int $orderItemId, ?ShopItemEntity $item, ?ShopOrdersEntity $order, ?ShopDiscountEntity $discount, ?int $orderItemQuantity, float $orderItemPrice, ?float $orderItemPriceAfterDiscount, string $orderItemCreated, string $orderItemUpdated)
     {
         $this->orderItemId = $orderItemId;
         $this->item = $item;
@@ -37,6 +39,7 @@ class ShopOrdersItemsEntity {
         $this->discount = $discount;
         $this->orderItemQuantity = $orderItemQuantity;
         $this->orderItemPrice = $orderItemPrice;
+        $this->orderItemPriceAfterDiscount = $orderItemPriceAfterDiscount;
         $this->orderItemCreated = $orderItemCreated;
         $this->orderItemUpdated = $orderItemUpdated;
     }
@@ -69,6 +72,11 @@ class ShopOrdersItemsEntity {
     public function getOrderItemPrice(): float
     {
         return $this->orderItemPrice;
+    }
+
+    public function getOrderItemPriceAfterDiscount(): float
+    {
+        return $this->orderItemPriceAfterDiscount;
     }
 
     public function getOrderItemCreated(): string

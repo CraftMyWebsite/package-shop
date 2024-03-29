@@ -152,7 +152,8 @@ class ShopPaymentsController extends AbstractController
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($user->getId(), $sessionId);
 
         foreach ($cartContent as $cartItem) {
-            $orderItem = ShopOrdersItemsModel::getInstance()->createOrderItems($order->getOrderId(), $cartItem->getItem()->getId(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice());
+            $discountId = $cartItem->getDiscount()?->getId() ?? null;
+            $orderItem = ShopOrdersItemsModel::getInstance()->createOrderItems($order->getOrderId(), $cartItem->getItem()->getId(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice(), $cartItem->getItemTotalPriceAfterDiscount(), $discountId);
             $itemsVariantes = ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($cartItem->getId());
             if (!empty($itemsVariantes)) {
                 foreach ($itemsVariantes as $itemVariantes) {
