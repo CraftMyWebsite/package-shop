@@ -484,6 +484,24 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_requirement
     CHARACTER SET = utf8mb4
     COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shops_reviews
+(
+    shops_reviews_id            INT AUTO_INCREMENT PRIMARY KEY,
+    shop_user_id                INT          NOT NULL,
+    shop_item_id                INT          NOT NULL,
+    shops_reviews_rating        INT          NOT NULL,
+    shops_reviews_title         varchar(50)  NOT NULL,
+    shops_reviews_text          TEXT         NOT NULL,
+    shops_reviews_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_reviews_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_id_shops_reviews FOREIGN KEY (shop_user_id)
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_shop_item_id_shops_reviews FOREIGN KEY (shop_item_id)
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)

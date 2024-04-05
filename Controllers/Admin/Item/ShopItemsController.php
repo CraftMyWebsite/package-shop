@@ -26,6 +26,7 @@ use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
+use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
@@ -47,9 +48,10 @@ class ShopItemsController extends AbstractController
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $review = ShopReviewsModel::getInstance();
 
         View::createAdminView('Shop', 'Items/manage')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
@@ -63,12 +65,39 @@ class ShopItemsController extends AbstractController
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $review = ShopReviewsModel::getInstance();
 
         View::createAdminView('Shop', 'Items/archived')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
+    }
+
+    #[Link("/items/review/:id", Link::GET, [], "/cmw-admin/shop")]
+    public function shopItemsReviews(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        $categoryModel = ShopCategoriesModel::getInstance();
+        $item = ShopItemsModel::getInstance()->getShopItemsById($id);
+        $imagesItem = ShopImagesModel::getInstance()->getShopImagesByItem($id);
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $review = ShopReviewsModel::getInstance();
+
+        View::createAdminView('Shop', 'Items/review')
+            ->addVariableList(["categoryModel" => $categoryModel, "item" => $item, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review])
+            ->view();
+    }
+
+    #[Link("/items/review/:id/delete/:reviewId", Link::GET, [], "/cmw-admin/shop")]
+    public function shopItemsDeleteReviews(Request $request, int $id, int $reviewId): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
+
+        ShopReviewsModel::getInstance()->deleteReview($reviewId);
+        Flash::send(Alert::SUCCESS, "Boutique", "Avis supprimé !");
+        Redirect::redirectPreviousRoute();
     }
 
     #[Link("/items/cat/:catId", Link::GET, ['.*?'], "/cmw-admin/shop")]
