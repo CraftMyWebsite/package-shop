@@ -31,15 +31,25 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
         return "Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini";
     }
 
-    public function includeConfigWidgets(?int $itemId): void
+    public function includeItemConfigWidgets(?int $itemId): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/downloadable.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php";
+    }
+
+    public function includeGlobalConfigWidgets(): void
+    {
+        return;
     }
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         ShopVirtualItemsDownloadableController::getInstance()->sedMailWithDownloadLink($varName, $item, $user);
+    }
+
+    public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void
+    {
+        return;
     }
 
 }

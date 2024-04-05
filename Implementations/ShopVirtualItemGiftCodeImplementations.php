@@ -31,14 +31,25 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
         return "1 - Ceci va créer un code promotionnel de la valeur de cet article<br>2 - Ce code est valable 1 an<br>3 - Le code promotionnel est généré automatique par CraftMyWebsite<br>4 - L'acheteur reçoit le code par mail, et peut le retrouver dans la liste des commandes<br>5 - Il est ensuite libre de donner ce code à qui bon lui semble";
     }
 
-    public function includeConfigWidgets(?int $itemId): void
+    public function includeItemConfigWidgets(?int $itemId): void
     {
         return;
+    }
+
+    public function includeGlobalConfigWidgets(): void
+    {
+        $varName = $this->varName();
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Global/giftCode.config.inc.view.php";
     }
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         ShopVirtualItemsGiftCodeController::getInstance()->sedMailWithGiftCode($varName, $item, $user);
+    }
+
+    public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void
+    {
+        return;
     }
 
 }

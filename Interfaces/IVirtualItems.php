@@ -36,9 +36,16 @@ interface IVirtualItems
     /**
      * @return void
      * @desc Include the config widgets for the shop add items
-     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/downloadable.config.inc.view.php";
+     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php";
      */
-    public function includeConfigWidgets(?int $itemId): void;
+    public function includeItemConfigWidgets(?int $itemId): void;
+
+    /**
+     * @return void
+     * @desc Include the config widgets for set global variable
+     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Global/downloadable.config.inc.view.php";
+     */
+    public function includeGlobalConfigWidgets(): void;
 
     /**
      * @param string $varName
@@ -48,4 +55,13 @@ interface IVirtualItems
      * @desc Do exec on buy items
      */
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void;
+
+    /**
+     * @param string $varName
+     * @param ShopItemEntity $item
+     * @param UserEntity $user
+     * @return void
+     * @desc Do exec on subscription canceled
+     */
+    public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void;
 }

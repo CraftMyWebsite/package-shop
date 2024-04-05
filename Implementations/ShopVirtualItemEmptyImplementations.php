@@ -31,12 +31,22 @@ class ShopVirtualItemEmptyImplementations implements IVirtualItems
         return null;
     }
 
-    public function includeConfigWidgets(?int $itemId): void
+    public function includeItemConfigWidgets(?int $itemId): void
+    {
+        return;
+    }
+
+    public function includeGlobalConfigWidgets(): void
     {
         return;
     }
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
+    {
+        return;
+    }
+
+    public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         return;
     }
