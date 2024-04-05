@@ -16,6 +16,7 @@ use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
@@ -81,17 +82,28 @@ class ShopCartItemEntity
      */
     public function getDiscountFormatted(): ?string
     {
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+
         if (!is_null($this->discount)) {
             if ($this->discount->getDiscountQuantityImpacted() == 1) {
                 if ($this->discount->getPrice()) {
-                    return "- " . $this->discount->getPrice() . "€";
+                    if ($symbolIsAfter) {
+                        return "- " . $this->discount->getPrice() . $symbol;
+                    } else {
+                        return "- " . $symbol . $this->discount->getPrice();
+                    }
                 }
                 if ($this->discount->getPercentage()) {
                     return "- " . $this->discount->getPercentage() . "%";
                 }
             } else {
                 if ($this->discount->getPrice()) {
-                    return "- " . $this->discount->getPrice() . "€ sur le 1er article";
+                    if ($symbolIsAfter) {
+                        return "- " . $this->discount->getPrice() . $symbol . " sur le 1er article";
+                    } else {
+                        return "- " . $symbol . $this->discount->getPrice() . " sur le 1er article";
+                    }
                 }
                 if ($this->discount->getPercentage()) {
                     return "- " . $this->discount->getPercentage() . "% sur le 1er article";
@@ -164,6 +176,31 @@ class ShopCartItemEntity
     }
 
     /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getItemTotalPriceFormatted(): string
+    {
+        $formattedPrice = number_format($this->getItemTotalPrice(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice .  $symbol;
+        } else {
+            return $symbol .  $formattedPrice;
+        }
+    }
+
+    /**
+     * @return float
+     * @desc Use for count the total price of one item in the cart
+     */
+    public function getItemTotalPriceBeforeDiscount(): float
+    {
+        return $this->cartQuantity * $this->item->getPrice();
+    }
+
+    /**
      * @return float
      * @desc Use for count the total price of one item in the cart
      */
@@ -193,6 +230,22 @@ class ShopCartItemEntity
     }
 
     /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getItemTotalPriceAfterDiscountFormatted(): string
+    {
+        $formattedPrice = number_format($this->getItemTotalPriceAfterDiscount(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice .  $symbol;
+        } else {
+            return $symbol .  $formattedPrice;
+        }
+    }
+
+    /**
      * @return float
      * @desc use for count the total price of all items in the cart (Is never the final price)
      */
@@ -205,6 +258,22 @@ class ShopCartItemEntity
             $total += $cartContent->getItemTotalPrice();
         }
         return $total;
+    }
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getTotalCartPriceBeforeDiscountFormatted(): string
+    {
+        $formattedPrice = number_format($this->getTotalCartPriceBeforeDiscount(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
     }
 
     /**
@@ -233,6 +302,22 @@ class ShopCartItemEntity
     }
 
     /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getTotalCartPriceAfterDiscountFormatted(): string
+    {
+        $formattedPrice = number_format($this->getTotalCartPriceAfterDiscount(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice .  $symbol;
+        } else {
+            return $symbol .  $formattedPrice;
+        }
+    }
+
+    /**
      * @return float
      * @desc Use for count the total final price including all discounts, payment fees, shipping fees and more... (Is always the final price used in payment interface)
      */
@@ -242,15 +327,28 @@ class ShopCartItemEntity
 
         $shipping = $commandTunnel->getShipping();
         $shippingFees = $shipping !== null ? $shipping->getPrice() : 0;
-        $paymentMethodFees = 0; //TODO : à rajouter dans le command tunnel
 
         $total = $this->getTotalCartPriceAfterDiscount();
-
-        $total += $paymentMethodFees;
 
         $total += $shippingFees;
 
         return number_format($total, 2, '.', '');
+    }
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getTotalPriceCompleteFormatted(): string
+    {
+        $formattedPrice = number_format($this->getTotalPriceComplete(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
     }
 
     /**

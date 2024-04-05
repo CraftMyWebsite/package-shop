@@ -2,9 +2,8 @@
 
 namespace CMW\Controller\Shop\Admin\Payment;
 
-use CMW\Controller\Shop\Admin\Item\ShopItemsController;
+use CMW\Controller\Shop\Admin\HistoryOrder\ShopHistoryOrdersController;
 use CMW\Controller\Users\UsersController;
-use CMW\Entity\Users\UserEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Interface\Shop\IPaymentMethod;
@@ -17,14 +16,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\Cart\ShopCartModel;
-use CMW\Model\Shop\Cart\ShopCartItemModel;
-use CMW\Model\Shop\Cart\ShopCartVariantesModel;
-use CMW\Model\Shop\Command\ShopCommandTunnelModel;
-use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
-use CMW\Model\Shop\Order\ShopOrdersItemsModel;
-use CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel;
-use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
@@ -140,47 +131,12 @@ class ShopPaymentsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    public function handleCreateOrder(UserEntity $user): void
-    {
-        //TODO : Gestion physique / virtuel
-        //TODO : Baisser les stock
-        $sessionId = session_id();
-        $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
-
-        $order = ShopOrdersModel::getInstance()->createOrder($user->getId(), $commandTunnel->getShipping()?->getId(), $commandTunnel->getShopDeliveryUserAddress()->getId(), $commandTunnel->getPaymentName());
-
-        $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($user->getId(), $sessionId);
-
-        foreach ($cartContent as $cartItem) {
-            $discountId = $cartItem->getDiscount()?->getId() ?? null;
-            $orderItem = ShopOrdersItemsModel::getInstance()->createOrderItems($order->getOrderId(), $cartItem->getItem()->getId(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice(), $cartItem->getItemTotalPriceAfterDiscount(), $discountId);
-            $itemsVariantes = ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($cartItem->getId());
-            if (!empty($itemsVariantes)) {
-                foreach ($itemsVariantes as $itemVariantes) {
-                    ShopOrdersItemsVariantesModel::getInstance()->setVariantToItemInOrder($orderItem->getOrderItemId(), $itemVariantes->getVariantValue()->getId());
-                }
-            }
-            if ($cartItem->getItem()->getType() == 1) {
-                $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($cartItem->getItem()->getId())->getVirtualMethod()->varName();
-                $quantity = $cartItem->getQuantity();
-                for ($i = 0; $i < $quantity; $i++) {
-                    ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(), $user);
-                }
-            }
-        }
-
-        //handleNotification
-
-        ShopCartModel::getInstance()->clearUserCart($user->getId());
-        ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
-    }
-
     #[NoReturn] #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
     private function onPaymentComplete(): void
     {
         $user = UsersModel::getCurrentUser();
 
-        $this->handleCreateOrder($user);
+        ShopHistoryOrdersController::getInstance()->handleCreateOrder($user);
 
         Flash::send(Alert::SUCCESS, "Achat effectué", "Merci pour votre achat " . $user->getPseudo());
 

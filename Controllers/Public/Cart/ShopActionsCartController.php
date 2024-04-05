@@ -14,6 +14,7 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
@@ -374,7 +375,7 @@ class ShopActionsCartController extends AbstractController
             if (is_null($userId)) {
                 return LimitPerUserStatus::USER_NOT_CONNECTED;
             }
-            $numberBoughtByUser = ShopOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
+            $numberBoughtByUser = ShopHistoryOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
             if ($numberBoughtByUser) {
                 if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
                     if ($numberBoughtByUser >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
@@ -388,7 +389,7 @@ class ShopActionsCartController extends AbstractController
                 }
             } else {
                 if (ShopCartItemModel::getInstance()->itemIsInCart($itemId, $userId, $sessionId)) {
-                    if ($quantity >= ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
+                    if ($quantity > ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                         return LimitPerUserStatus::NOT_IN_CART_ITEM_LIMIT_REACHED;
                     }
                 } else {

@@ -15,6 +15,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
@@ -55,37 +56,14 @@ class ShopPaymentMethodPayPalController extends AbstractController
 
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
-        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
-        $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
-        $shippingMethod = null;
-        if (is_int($commandTunnelShippingId)) {
-            $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
-        }
-        $shippingPrice = $shippingMethod?->getPrice() ?? 0;
+        $totalAmount = 0;
 
-
-        $items = [];
         foreach ($cartItems as $item) {
-            $lineItem = [
-                'name' => $item->getItem()->getName(),
-                'unit_amount' => [
-                    'currency_code' => $currencyCode,
-                    'value' => sprintf("%.2f", $item->getItemTotalPriceAfterDiscount()),
-                ],
-                'quantity' => $item->getQuantity(),
-            ];
-            $items[] = $lineItem;
+            $totalAmount = $item->getTotalPriceComplete();
         }
 
         if ($paymentFee != 0) {
-            $items[] = [
-                'name' => "Frais de paiement",
-                'unit_amount' => [
-                    'currency_code' => $currencyCode,
-                    'value' => sprintf("%.2f", $paymentFee),
-                ],
-                'quantity' => 1,
-            ];
+            $totalAmount += $paymentFee;
         }
 
         $orderData = [
@@ -94,19 +72,15 @@ class ShopPaymentMethodPayPalController extends AbstractController
                 [
                     'amount' => [
                         'currency_code' => $currencyCode,
-                        'value' => $this->calculateTotalAmount($items, $shippingPrice),
+                        'value' => number_format($totalAmount, 2, '.', ''),
                         'breakdown' => [
                             'item_total' => [
                                 'currency_code' => $currencyCode,
-                                'value' => $this->calculateItemsTotal($items),
-                            ],
-                            'shipping' => [
-                                'currency_code' => $currencyCode,
-                                'value' => sprintf("%.2f", $shippingPrice),
+                                'value' => number_format(0.0, 2, '.', ''),
                             ]
                         ]
                     ],
-                    'items' => $items,
+                    'items' => [],
                 ]
             ],
             'application_context' => [
@@ -238,44 +212,6 @@ class ShopPaymentMethodPayPalController extends AbstractController
         } catch (JsonException $e) {
             throw new ShopPaymentException("Error decoding PayPal capture response: " . $e->getMessage());
         }
-    }
-
-    /**
-     * Calcule le montant total de la commande, y compris les frais de livraison.
-     *
-     * @param array $items Les articles de la commande.
-     * @param float $shippingCost Les frais de livraison.
-     * @param float $paymentFee Les frais de paiement.
-     * @return string Le montant total de la commande formaté.
-     */
-    private function calculateTotalAmount(array $items, float $shippingCost): string
-    {
-        $totalAmount = 0.0;
-
-        foreach ($items as $item) {
-            $totalAmount += (float) $item['unit_amount']['value'] * (int) $item['quantity'];
-        }
-
-        $totalAmount += $shippingCost;
-
-        return number_format($totalAmount, 2, '.', '');
-    }
-
-    /**
-     * Calcule le sous-total des articles de la commande, sans inclure les frais de livraison.
-     *
-     * @param array $items Les articles de la commande.
-     * @return string Le sous-total des articles formaté.
-     */
-    private function calculateItemsTotal(array $items): string
-    {
-        $itemsTotal = 0.0;
-
-        foreach ($items as $item) {
-            $itemsTotal += (float) $item['unit_amount']['value'] * (int) $item['quantity'];
-        }
-
-        return number_format($itemsTotal, 2, '.', '');
     }
 
     /**

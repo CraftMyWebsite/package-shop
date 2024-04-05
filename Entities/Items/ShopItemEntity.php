@@ -4,6 +4,7 @@ namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
+use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -11,6 +12,7 @@ use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
@@ -162,6 +164,22 @@ class ShopItemEntity
     }
 
     /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getPriceFormatted(): string
+    {
+        $formattedPrice = number_format($this->itemPrice, 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
+    }
+
+    /**
      * @return ?float
      * @desc return the price impacted by the discount as float if discount is not applied for this item he returns nothing
      */
@@ -234,6 +252,91 @@ class ShopItemEntity
     }
 
     /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getPriceDiscountDefaultAppliedFormatted(): string
+    {
+        $formattedPrice = number_format($this->getPriceDiscountDefaultApplied(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
+    }
+
+
+    /**
+     * @return ?\CMW\Entity\Shop\Discounts\ShopDiscountEntity
+     * @desc return the ShopDiscountItemsEntity if a discount is applied for this item, otherwise return nothing
+     */
+    public function getDiscountEntityApplied(): \CMW\Entity\Shop\Discounts\ShopDiscountEntity
+    {
+        $basePrice = $this->getPrice();
+        $bestDiscountValue = 0;
+        $bestDiscountEntity = null;
+
+        // Get all discounts applicable to all items
+        $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
+        foreach ($allDiscounts as $discount) {
+            if ($discount->getLinked() == 0) { // Check if the discount is applicable to all items
+                $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
+                if ($currentDiscountValue > $bestDiscountValue) {
+                    $bestDiscountValue = $currentDiscountValue;
+                    $bestDiscountEntity = $discount; // Store the discount entity
+                }
+            }
+        }
+
+        // Get discounts applicable to categories
+        $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
+        foreach ($discountCategories as $discountCategory) {
+            $discount = $discountCategory->getDiscount();
+            if ($discount->getLinked() == 2) { // Check if the discount is applicable to categories
+                $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
+                if ($currentDiscountValue > $bestDiscountValue) {
+                    $bestDiscountValue = $currentDiscountValue;
+                    $bestDiscountEntity = $discount; // Store the discount entity
+                }
+            }
+        }
+
+        // Get discounts applicable to specific items
+        $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
+        foreach ($discountItems as $discountItem) {
+            $discount = $discountItem->getDiscount();
+            if ($discount->getLinked() == 1) { // Check if the discount is applicable to specific items
+                $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
+                if ($currentDiscountValue > $bestDiscountValue) {
+                    $bestDiscountValue = $currentDiscountValue;
+                    $bestDiscountEntity = $discount; // Store the discount entity
+                }
+            }
+        }
+
+        return $bestDiscountEntity;
+    }
+
+    /**
+     * Helper method to calculate the discount value.
+     * @param float $basePrice
+     * @param ShopDiscountEntity $discount
+     * @return float The discount value.
+     */
+    private function calculateDiscount(float $basePrice, ShopDiscountEntity $discount): float
+    {
+        $discountValue = 0;
+        if ($discount->getPrice()) {
+            $discountValue = $discount->getPrice();
+        } elseif ($discount->getPercentage()) {
+            $discountValue = ($basePrice * $discount->getPercentage()) / 100;
+        }
+        return $discountValue;
+    }
+
+    /**
      * @return ?string
      * @desc return the discount applied on the item with the percentage or the amount
      */
@@ -246,13 +349,20 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+
         //all
         if (!empty($allDiscounts)) {
             foreach ($allDiscounts as $allDiscount) {
                 if ($allDiscount->getDiscountQuantityImpacted() == 1) {
                     if ($allDiscount->getPrice()) {
                         $discount = $allDiscount->getPrice();
-                        $discountFormatted = "-" . $allDiscount->getPrice() . " €";
+                        if ($symbolIsAfter) {
+                            $discountFormatted = "- " . $allDiscount->getPrice() . $symbol;
+                        } else {
+                            $discountFormatted = "- " . $symbol . $allDiscount->getPrice();
+                        }
                     }
                     if ($allDiscount->getPercentage()) {
                         $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
@@ -261,7 +371,11 @@ class ShopItemEntity
                 } else {
                     if ($allDiscount->getPrice()) {
                         $discount = $allDiscount->getPrice();
-                        $discountFormatted = "-" . $allDiscount->getPrice() . " € sur le 1er";
+                        if ($symbolIsAfter) {
+                            $discountFormatted = "- " . $allDiscount->getPrice() . $symbol . " sur le 1er";
+                        } else {
+                            $discountFormatted = "- " . $symbol . $allDiscount->getPrice() . " sur le 1er";
+                        }
                     }
                     if ($allDiscount->getPercentage()) {
                         $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
@@ -283,7 +397,7 @@ class ShopItemEntity
                     if ($discountCategory->getDiscount()->getLinked() == 2) {
                         if ($discountCategory->getDiscount()->getPrice()) {
                             $discount = $discountCategory->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() . " €";
+                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted();
                         }
                         if ($discountCategory->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
@@ -293,7 +407,7 @@ class ShopItemEntity
                 } else {
                     if ($discountCategory->getDiscount()->getPrice()) {
                         $discount = $discountCategory->getDiscount()->getPrice();
-                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPrice() . " € sur le 1er";
+                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted() . " sur le 1er";
                     }
                     if ($discountCategory->getDiscount()->getPercentage()) {
                         $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
@@ -315,7 +429,7 @@ class ShopItemEntity
                     if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
                         if ($discountItem->getDiscount()->getPrice()) {
                             $discount = $discountItem->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() . " €";
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted();
                         }
                         if ($discountItem->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
@@ -324,7 +438,7 @@ class ShopItemEntity
                     } else {
                         if ($discountItem->getDiscount()->getPrice()) {
                             $discount = $discountItem->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPrice() . " € sur le 1er";
+                            $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted() . " sur le 1er";
                         }
                         if ($discountItem->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;

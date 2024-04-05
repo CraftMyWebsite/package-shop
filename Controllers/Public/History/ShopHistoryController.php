@@ -8,6 +8,13 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsVariantesModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersPaymentModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersShippingModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersUserAddressModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel;
@@ -32,13 +39,12 @@ class ShopHistoryController extends AbstractController
             Redirect::redirect(EnvManager::getInstance()->getValue("PATH_SUBFOLDER")."login");
         }
 
-        $historyOrders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
-        $OrderItemsModel = ShopOrdersItemsModel::getInstance();
-        $variantItemsModel = ShopOrdersItemsVariantesModel::getInstance();
+        $historyOrders = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersByUserId($userId);
+
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $view = new View("Shop", "Users/history");
-        $view->addVariableList(["historyOrders" => $historyOrders, "OrderItemsModel" => $OrderItemsModel,"defaultImage" => $defaultImage, "variantItemsModel" => $variantItemsModel]);
+        $view->addVariableList(["historyOrders" => $historyOrders,"defaultImage" => $defaultImage]);
         $view->view();
     }
 }

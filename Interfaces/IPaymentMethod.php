@@ -7,6 +7,7 @@ use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 interface IPaymentMethod
 {
@@ -55,6 +56,12 @@ interface IPaymentMethod
      * @desc Fees are optional
      */
     public function fees(): float;
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getFeesFormatted(): string;
 
     /**
      * @return bool

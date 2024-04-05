@@ -109,7 +109,7 @@ $description = "";
                                 <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="text-primary"><?= $item->getCategory()->getName() ?></h6></a>
                             </td>
                             <td class="text-center">
-                                <?= $item->getPrice() ?> <?= ShopSettingsModel::getSettingValue('currency') ?>
+                                <?= $item->getPriceFormatted() ?>
                             </td>
                             <td class="text-center">
                                 <?= $item->getFormatedStock() ?>

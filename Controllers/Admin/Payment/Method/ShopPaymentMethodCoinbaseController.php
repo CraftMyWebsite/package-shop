@@ -51,22 +51,11 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
 
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
 
-        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
-        $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
-        $shippingMethod = null;
-        if (is_int($commandTunnelShippingId)) {
-            $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
-        }
-        $shippingPrice = $shippingMethod?->getPrice() ?? 0;
-
         $totalAmount = 0;
 
         foreach ($cartItems as $item) {
-            $itemTotal = $item->getItemTotalPriceAfterDiscount() * $item->getQuantity();
-            $totalAmount += $itemTotal;
+            $totalAmount = $item->getTotalPriceComplete();
         }
-
-        $totalAmount += $shippingPrice;
 
         if ($paymentFee != 0) {
             $totalAmount += $paymentFee;

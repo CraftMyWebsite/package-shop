@@ -92,7 +92,7 @@ $description = "";
                                             <?php endif;?>
                                             <p><?= $virtualMethod->description() ?></p>
                                             <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
-                                            <?php $virtualMethod->includeConfigWidgets(null) ?>
+                                            <?php $virtualMethod->includeItemConfigWidgets(null) ?>
                                         </div>
                                         <?php ++$i; endforeach; ?>
                                 </div>

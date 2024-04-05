@@ -2,12 +2,17 @@
 
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
+use CMW\Controller\Core\CoreController;
 use CMW\Controller\Core\MailController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
-use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
+use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
+use DateTime;
 
 
 /**
@@ -21,22 +26,39 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
     /**
      * @param ShopItemEntity $item
      * @param UserEntity $user
+     * @throws \Exception
      */
     public function sedMailWithGiftCode(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         $giftCodePrefix = "GC_"; // TODO : var ?
-        $titre = "Félicitations !"; // TODO : var ?
-        $message = "Vous avez reçu une carte cadeau d'une valeur de"; // TODO : var ?
-        $use = "Utilisez ce code lors de votre prochain achat sur"; // TODO : var ?
-        $url = "https://voyza.fr/shop"; // TODO : var ?
-        $amount = $item->getPrice();
+        $code = $this->createCode($giftCodePrefix);
         $websiteName = Website::getWebsiteName();
 
-        $code = $this->createCode($giftCodePrefix);
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            $amount = $item->getPrice() . $symbol;
+        } else {
+            $amount = $symbol . $item->getPrice();
+        }
 
-        /*TODO : Create discount like :
-        INSERT INTO `cmw_shops_discount` (`shop_discount_id`, `shop_discount_name`, `shop_discount_description`, `shop_discount_linked`, `shop_discount_start_date`, `shop_discount_end_date`, `shop_discount_default_uses`, `shop_discount_uses_left`, `shop_discount_percent`, `shop_discount_price`, `shop_discount_use_multiple_per_users`, `shop_discount_status`, `shop_discount_test`, `shop_discount_code`, `shop_discount_default_active`, `shop_discount_users_need_purchase_before_use`, `shop_discount_quantity_impacted`, `shop_discount_created_at`, `shop_discount_updated_at`) VALUES (NULL, 'Carte cadeau 50€', '', '0', NOW(), '2024-06-14 13:40:13', NULL, '1', NULL, '50', NULL, '1', NULL, 'gc_3292454', '0', NULL, '0', current_timestamp(), current_timestamp());
-        */
+        $timestamp = time();
+        $dateTime = date('Y-m-d H:i:s', $timestamp);
+        $date = new DateTime($dateTime);
+        $date->modify('+1 year');
+        $endDateTime = $date->format('Y-m-d H:i:s');
+
+        if (!ShopDiscountModel::getInstance()->createDiscount("Carte cadeau ".$amount,"",3,$dateTime,$endDateTime,1,0,null,$item->getPrice(),null,1,0,$code,0,0,0)){
+            Flash::send(Alert::ERROR,'Erreur', "Impossible de créer la carte cadeau de ".$amount."!");
+            MailController::getInstance()->sendMail($user->getMail(), $websiteName." - Carte cadeau de ". $amount, "Nous n'avons pas réussi à créer votre bon cadeau de".$amount.". Veuillez contacter l'administrateur du site web pour le prévenir !");
+        }
+
+        $formattedEndDate = CoreController::formatDate($endDateTime);
+        $titre = "Félicitations !"; // TODO : var ?
+        $message = "Vous avez reçu une carte cadeau d'une valeur de"; // TODO : var ?
+        $use = "Utilisez ou partager ce code lors de votre prochain achat sur"; // TODO : var ?
+        $timeLeft = "Ce code est valable jusqu'au ". $formattedEndDate; // TODO : var ?
+        $url = "https://voyza.fr/shop"; // TODO : var ?
 
         $htmlTemplate = <<<HTML
         <html>
@@ -76,18 +98,18 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         
         <div class="gift-card">
           <h1>%TITRE%</h1>
-          <p>%MESSAGE% <strong>%AMOUNT%€</strong></p>
-          <div class="code">%CODE%</div>
-          <p>%USE% <a target="_blank" href="%URL%">%WEBSITENAME%</a>.</p>
+          <p>%MESSAGE% <strong>%AMOUNT%</strong>
+          <div class="code">%CODE%</div><br>
+          %USE% <a href="%URL%">%WEBSITENAME%</a>.<br>
+          %TIME_LEFT%</p>
         </div>
-        
         </body>
         </html>
         HTML;
 
-        $body = str_replace(["%TITRE%", "%MESSAGE%", "%AMOUNT%", "%CODE%", "%URL%", "%WEBSITENAME%", "%USE%"],
-            [$titre, $message, $amount, $code, $url, $websiteName, $use], $htmlTemplate);
-        $object = $websiteName." - Carte cadeau de ". $amount."€";
+        $body = str_replace(["%TITRE%", "%MESSAGE%", "%AMOUNT%", "%CODE%", "%URL%", "%WEBSITENAME%", "%USE%", "%TIME_LEFT%"],
+            [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft], $htmlTemplate);
+        $object = $websiteName." - Carte cadeau de ". $amount;
         MailController::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 
@@ -108,5 +130,6 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             $dateComponents['hours'],
             $yearLastTwoDigits,
         );
+        return $code;
     }
 }

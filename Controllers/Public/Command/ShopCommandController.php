@@ -13,6 +13,7 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
@@ -50,6 +51,16 @@ class ShopCommandController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
+        $giftCodes = [];
+        $cartDiscountModel = ShopCartDiscountModel::getInstance();
+        $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId($userId, $sessionId);
+        foreach ($cartDiscounts as $cartDiscount) {
+            $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
+            if ($discountGiftCode->getDiscount()->getLinked() == 3) {
+                $giftCodes[] = $discountGiftCode->getDiscount();
+            }
+        }
+
         $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
 
         if (empty($cartContent)) {
@@ -72,14 +83,14 @@ class ShopCommandController extends AbstractController
 
         if (empty($userAddresses)) {
             $view = new View("Shop", "Command/newAddress");
-            $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses]);
+            $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
                 $view = new View("Shop", "Command/address");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses]);
+                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
                 $view->view();
             }
             if ($currentStep === 1) {
@@ -91,7 +102,7 @@ class ShopCommandController extends AbstractController
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
                     $shippings = ShopShippingModel::getInstance()->getShopShipping();
                     $view = new View("Shop", "Command/delivery");
-                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings]);
+                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings, "giftCodes" => $giftCodes]);
                     $view->view();
                 }
             }
@@ -121,7 +132,7 @@ class ShopCommandController extends AbstractController
                 $view = new View("Shop", "Command/payment");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
-                    "paymentMethods" => $paymentMethods]);
+                    "paymentMethods" => $paymentMethods, "giftCodes" => $giftCodes]);
                 $view->view();
             }
         }

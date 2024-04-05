@@ -3,6 +3,9 @@
 namespace CMW\Entity\Shop\Discounts;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
+use DateInterval;
+use DateTime;
 
 class ShopDiscountEntity
 {
@@ -12,8 +15,8 @@ class ShopDiscountEntity
     private int $discountLinked;
     private string $discountStartDate;
     private ?string $discountEndDate;
-    private ?int $discountDefaultUses;
-    private ?int $discountUsesLeft;
+    private ?int $discountMaxUses;
+    private ?int $discountCurrentUses;
     private ?int $discountPercentage;
     private ?float $discountPrice;
     private ?int $discountUsesMultipleByUser;
@@ -33,8 +36,8 @@ class ShopDiscountEntity
      * @param int $discountLinked
      * @param string $discountStartDate
      * @param string|null $discountEndDate
-     * @param int|null $discountDefaultUses
-     * @param int|null $discountUsesLeft
+     * @param int|null $discountMaxUses
+     * @param int|null $discountCurrentUses
      * @param int|null $discountPercentage
      * @param float|null $discountPrice
      * @param int|null $discountUsesMultipleByUser
@@ -47,7 +50,7 @@ class ShopDiscountEntity
      * @param string $discountCreated
      * @param string $discountUpdated
      */
-    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountDefaultUses, ?int $discountUsesLeft, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountStatus, ?int $discountTest, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
+    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountMaxUses, ?int $discountCurrentUses, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountStatus, ?int $discountTest, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
     {
         $this->id = $id;
         $this->discountName = $discountName;
@@ -55,8 +58,8 @@ class ShopDiscountEntity
         $this->discountLinked = $discountLinked;
         $this->discountStartDate = $discountStartDate;
         $this->discountEndDate = $discountEndDate;
-        $this->discountDefaultUses = $discountDefaultUses;
-        $this->discountUsesLeft = $discountUsesLeft;
+        $this->discountMaxUses = $discountMaxUses;
+        $this->discountCurrentUses = $discountCurrentUses;
         $this->discountPercentage = $discountPercentage;
         $this->discountPrice = $discountPrice;
         $this->discountUsesMultipleByUser = $discountUsesMultipleByUser;
@@ -116,14 +119,65 @@ class ShopDiscountEntity
         return $this->discountEndDate;
     }
 
-    public function getDefaultUses(): ?int
+    public function getStartDateFormatted(): string
     {
-        return $this->discountDefaultUses;
+        return CoreController::formatDate($this->discountStartDate);
     }
 
-    public function getUsesLeft(): ?int
+    public function getEndDateFormatted(): ?string
     {
-        return $this->discountUsesLeft;
+        return CoreController::formatDate($this->discountEndDate);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getDuration(): string {
+        $now = new DateTime();
+        $startDate = new DateTime($this->discountStartDate);
+        $endDate = $this->discountEndDate ? new DateTime($this->discountEndDate) : null;
+        $status = $this->discountStatus; // Supposons que cette propriété existe et indique le statut de la promotion
+
+        // Vérifie si la promotion est explicitement marquée comme terminée
+        if ($status == 0) {
+            return "Promotion terminée";
+        }
+
+        if ($now < $startDate) {
+            // La promotion n'a pas encore commencé
+            $interval = $now->diff($startDate);
+            return "Commence dans " . $this->formatInterval($interval);
+        } elseif ($endDate && $now < $endDate) {
+            // La promotion est en cours
+            $interval = $now->diff($endDate);
+            return "Termine dans " . $this->formatInterval($interval);
+        } elseif ($endDate && $now >= $endDate) {
+            // La promotion est terminée
+            return "Promotion terminée";
+        } else {
+            // Pas de date de fin ou statut à 0, considérée comme terminée ou indéfiniment active selon le statut
+            return $status == 0 ? "Promotion terminée" : "En cours, sans date de fin spécifiée";
+        }
+    }
+
+    private function formatInterval(DateInterval $interval): string {
+        if ($interval->days >= 1) {
+            return $interval->format('%a jour(s)');
+        } else if ($interval->h > 0) {
+            return $interval->format('%h heure(s)');
+        } else {
+            return $interval->format('%i minute(s)');
+        }
+    }
+
+    public function getMaxUses(): ?int
+    {
+        return $this->discountMaxUses;
+    }
+
+    public function getCurrentUses(): ?int
+    {
+        return $this->discountCurrentUses;
     }
 
     public function getPercentage(): ?int
@@ -134,6 +188,22 @@ class ShopDiscountEntity
     public function getPrice(): ?float
     {
         return $this->discountPrice;
+    }
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getPriceFormatted(): string
+    {
+        $formattedPrice = number_format($this->getPrice(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice .  $symbol;
+        } else {
+            return $symbol .  $formattedPrice;
+        }
     }
 
     public function getUsesMultipleByUser(): ?int

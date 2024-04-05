@@ -2,6 +2,7 @@
 
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 ?>
 
@@ -13,7 +14,7 @@ use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
                 <label for="paypal_fee">Frais :</label>
                 <div class="input-group">
                     <input oninput="validateNumberInput(this)" required id="paypal_fee" name="paypal_fee" type="text" class="form-control" placeholder="5.00" aria-describedby="basic-addon2" value="<?= ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_fee') ?? 0 ?>">
-                    <span class="input-group-text" id="basic-addon2">€</span>
+                    <span class="input-group-text" id="basic-addon2"><?= ShopSettingsModel::getInstance()->getSettingValue("symbol") ?></span>
                 </div>
             </div>
         </div>

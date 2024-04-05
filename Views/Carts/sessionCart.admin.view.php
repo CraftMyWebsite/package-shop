@@ -33,10 +33,10 @@ $description = "";
                         <?= $cart->getQuantity() ?>
                     </td>
                     <td>
-                        <?= $cart->getItem()->getPrice() ?> €
+                        <?= $cart->getItem()->getPriceFormatted() ?>
                     </td>
                     <td>
-                        <?= $cart->getItemTotalPrice() ?> €
+                        <?= $cart->getItemTotalPriceFormatted() ?>
                     </td>
                     <td>
                         <?= $cart->getCreated() ?>

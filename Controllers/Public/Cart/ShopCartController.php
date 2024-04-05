@@ -13,6 +13,7 @@ use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
@@ -119,7 +120,7 @@ class ShopCartController extends AbstractController
                 Flash::send(Alert::WARNING, "Boutique", $itemCart->getItem()->getName() . " à besoin d'une vérification supplémentaire.");
                 Redirect::redirect("login");
             }
-            $numberBoughtByUser = ShopOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
+            $numberBoughtByUser = ShopHistoryOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
             if ($numberBoughtByUser) {
                 if ($quantity + $numberBoughtByUser > ShopItemsModel::getInstance()->getItemUserLimit($itemId)) {
                     $quantity = ShopItemsModel::getInstance()->getItemUserLimit($itemId) - $numberBoughtByUser;

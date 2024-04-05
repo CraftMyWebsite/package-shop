@@ -15,6 +15,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
@@ -60,45 +61,86 @@ class ShopPaymentMethodStripeController extends AbstractController
         }
         $shippingPrice = $shippingMethod?->getPrice() ?? 0;
 
+        $giftCode = null;
+        $cartDiscountModel = ShopCartDiscountModel::getInstance();
+        $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId(UsersModel::getCurrentUser()->getId(), session_id());
+        foreach ($cartDiscounts as $cartDiscount) {
+            $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
+            if ($discountGiftCode->getDiscount()->getLinked() == 3) {
+                $giftCode = $discountGiftCode->getDiscount();
+                break;
+            }
+        }
+
         $Items = [];
-        foreach ($cartItems as $item) {
-            $lineItem = [
-                'price_data' => [
-                    'currency' => $currencyCode,
-                    'product_data' => [
-                        'name' => $item->getItem()->getName(),
-                    ],
-                    'unit_amount' => $item->getItemTotalPriceAfterDiscount() * 100,
-                ],
-                'quantity' => $item->getQuantity(),
-            ];
-            $Items[] = $lineItem;
-        }
-
-        if ($shippingPrice != 0) {
+        if (!is_null($giftCode)) {
+            $totalCart = 0;
+            foreach ($cartItems as $item) {
+                $totalCart = $item->getTotalPriceComplete();
+            }
             $Items[] = [
                 'price_data' => [
                     'currency' => $currencyCode,
                     'product_data' => [
-                        'name' => 'Frais de livraison',
+                        'name' => "Total du panier",
                     ],
-                    'unit_amount' => $shippingPrice * 100,
+                    'unit_amount' => $totalCart * 100,
                 ],
                 'quantity' => 1,
             ];
-        }
+            if ($paymentFee != 0) {
+                $Items[] = [
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => 'Frais de paiement',
+                        ],
+                        'unit_amount' => $paymentFee * 100,
+                    ],
+                    'quantity' => 1,
+                ];
+            }
+        } else {
+            foreach ($cartItems as $item) {
+                $lineItem = [
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => $item->getQuantity()." ".$item->getItem()->getName(),
+                        ],
+                        'unit_amount' => $item->getItemTotalPriceAfterDiscount() * 100,
+                    ],
+                    'quantity' => 1,
+                ];
+                $Items[] = $lineItem;
+            }
 
-        if ($paymentFee != 0) {
-            $Items[] = [
-                'price_data' => [
-                    'currency' => $currencyCode,
-                    'product_data' => [
-                        'name' => 'Frais de paiement',
+            if ($shippingPrice != 0) {
+                $Items[] = [
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => 'Frais de livraison',
+                        ],
+                        'unit_amount' => $shippingPrice * 100,
                     ],
-                    'unit_amount' => $paymentFee * 100,
-                ],
-                'quantity' => 1,
-            ];
+                    'quantity' => 1,
+                ];
+            }
+
+            if ($paymentFee != 0) {
+                $Items[] = [
+                    'price_data' => [
+                        'currency' => $currencyCode,
+                        'product_data' => [
+                            'name' => 'Frais de paiement',
+                        ],
+                        'unit_amount' => $paymentFee * 100,
+                    ],
+                    'quantity' => 1,
+                ];
+            }
+
         }
 
 

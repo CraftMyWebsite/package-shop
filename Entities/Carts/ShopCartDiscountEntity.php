@@ -5,6 +5,7 @@ namespace CMW\Entity\Shop\Carts;
 
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 class ShopCartDiscountEntity
@@ -49,7 +50,13 @@ class ShopCartDiscountEntity
     public function getDiscountFormatted(): ?string
     {
         if ($this->discountId->getPrice()) {
-            return "- " . $this->discountId->getPrice() . "€";
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+            if ($symbolIsAfter) {
+                return "- " . $this->discountId->getPrice() . $symbol;
+            } else {
+                return "- " . $symbol . $this->discountId->getPrice();
+            }
         }
         if ($this->discountId->getPercentage()) {
             return "- " . $this->discountId->getPercentage() . "%";

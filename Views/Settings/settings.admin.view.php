@@ -8,36 +8,70 @@ $title = "";
 $description = "";
 
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentCurrency */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentSymbol */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentAfter */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-gears"></i> <span class="m-lg-auto">Configuration</span></h3>
-    <div class="buttons">
-        <button form="Configuration" type="submit"
-                class="btn btn-primary"><?= LangManager::translate("core.btn.save") ?>
-        </button>
-    </div>
 </div>
 <section class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-2">
+                            <div class="list-group" role="tablist">
+                                <?php $i = 1; foreach ($virtualMethods as $method): ?>
+                                    <a class="list-group-item list-group-item-action <?= $i === 1 ? 'active' : '' ?>" id="list-settings-list"
+                                       data-bs-toggle="list" href="#method-<?= $method->varName() ?>"
+                                       role="tab" aria-selected="<?= $i === 1 ? 'true' : 'false' ?>">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <?= $method->name() ?>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <?php ++$i; endforeach; ?>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-10">
+                            <div class="tab-content text-justify" id="nav-tabContent">
+                                <?php $i = 1; foreach ($virtualMethods as $method): ?>
+                                    <div class="tab-pane <?= $i === 1 ? 'active show' : '' ?>"
+                                         id="method-<?= $method->varName() ?>" role="tabpanel"
+                                         aria-labelledby="list-settings-list">
+                                        <section>
+                                            <div class="card-in-card">
+                                                    <div class="card-body">
+                                                        <div class="">
+                                                            <h4><?= $method->name() ?></h4>
+                                                        </div>
+                                                        <?php $method->includeGlobalConfigWidgets(); ?>
+                                                    </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    <?php ++$i; endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h4>Commandes</h4>
             </div>
-            <form class="card-body row" id="Configuration" action="settings/apply_orders" method="post">
+            <form class="card-body row" action="settings/apply_orders" method="post">
                 <?php (new SecurityManager())->insertHiddenToken() ?>
-                    <div class="col-12 col-lg-3">
-                        <div class="card-in-card">
-                            <div class="card-body">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="order_settings_use_mail" name="order_settings_use_mail" >
-                                    <label class="form-check-label" for="order_settings_use_mail">Articles virtuel validation manuelle</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-12 col-lg-5">
                         <div class="card-in-card">
                             <div class="card-body">
@@ -78,58 +112,76 @@ $description = "";
         </div>
     </div>
 
-    <div class="col-12 col-lg-6">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4><?= LangManager::translate("core.config.title") ?></h4>
+                <h4>Configuration générale</h4>
             </div>
-            <div class="card-body">
-                <form id="Configuration" action="settings/apply_currency" method="post">
-                    <?php (new SecurityManager())->insertHiddenToken() ?>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Devise :</h6>
-                            <fieldset class="form-group">
-                                <select class="choices" name="code" required>
-                                    <?php foreach (ShopSettingsController::$availableCurrencies as $code => $name): ?>
-                                        <option value="<?= $code ?>" <?= $code === $currentCurrency ? 'selected' : '' ?>>
-                                            <?= "$code ($name)" ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </fieldset>
+            <div class="card-body row">
+                <div class="col-12 col-lg-7">
+                    <div class="card-in-card">
+                        <div class="card-body">
+                            <form id="Configuration" action="settings/apply_currency" method="post">
+                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Devise :</h6>
+                                        <fieldset class="form-group">
+                                            <select class="choices" name="currency" required>
+                                                <?php foreach (ShopSettingsController::$availableCurrencies as $code => $details): ?>
+                                                    <option value="<?= $code ?>" <?= $code === $currentCurrency ? 'selected' : '' ?>>
+                                                        <?= "{$details['symbol']} - $code ({$details['name']})" ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Affichage du symbole :</h6>
+                                        <fieldset class="form-group">
+                                            <select class="form-select" name="showAfter" required>
+                                                <option value="1" <?= $currentAfter == 1 ? 'selected' : '' ?>>Après le prix</option>
+                                                <option value="0" <?= $currentAfter == 0 ? 'selected' : '' ?>>Avant le prix</option>
+                                            </select>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="d-flex justify-content-center mt-4">
+                                <button form="Configuration" type="submit" class="btn btn-primary">
+                                    <?= LangManager::translate("core.btn.save") ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                </div>
 
-    <div class="col-12 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Image d'article par default</h4>
-            </div>
-            <div class="card-body">
-                <form id="apply_default_image" action="settings/apply_default_image" method="post" enctype="multipart/form-data">
-                    <?php (new SecurityManager())->insertHiddenToken() ?>
-                    <div class="text-center">
-                        <img src="<?= $defaultImage ?>" alt="Default image">
+                <div class="col-12 col-lg-5">
+                    <div class="card-in-card ">
+                        <div class="card-body">
+                            <h6>Image par défaut des articles :</h6>
+                            <form id="apply_default_image" action="settings/apply_default_image" method="post" enctype="multipart/form-data">
+                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                <div class="text-center">
+                                    <img width="50%" src="<?= $defaultImage ?>" alt="Default image">
+                                </div>
+                                <input class="mt-2 form-control form-control-sm" type="file"
+                                       accept=".png, .jpg, .jpeg, .webp, .gif"
+                                       name="defaultPicture">
+                            </form>
+                            <div class="d-flex justify-content-between mt-4">
+                                <form action="settings/reset_default_image" method="post">
+                                    <?php (new SecurityManager())->insertHiddenToken() ?>
+                                    <button type="submit" class="btn btn-warning">
+                                        Reset
+                                    </button>
+                                </form>
+                                <button form="apply_default_image" type="submit" class="btn btn-primary">
+                                    <?= LangManager::translate("core.btn.save") ?>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <input class="mt-2 form-control form-control-lg" type="file"
-                           accept=".png, .jpg, .jpeg, .webp, .gif"
-                           name="defaultPicture">
-                </form>
-                <div class="d-flex justify-content-between mt-4">
-                    <form action="settings/reset_default_image" method="post">
-                        <?php (new SecurityManager())->insertHiddenToken() ?>
-                        <button type="submit" class="btn btn-warning">
-                            Reset
-                        </button>
-                    </form>
-                    <button form="apply_default_image" type="submit" class="btn btn-primary">
-                        <?= LangManager::translate("core.btn.save") ?>
-                    </button>
                 </div>
             </div>
         </div>

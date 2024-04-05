@@ -1,19 +1,17 @@
 <?php
 
-/* @var \CMW\Entity\Shop\Orders\ShopOrdersEntity $order */
-/* @var \CMW\Entity\Shop\Orders\ShopOrdersItemsEntity [] $orderItems */
-/* @var CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel $itemsVariantes */
-/* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity $order */
+/* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 
 use CMW\Manager\Security\SecurityManager;
 
-$title = "Commandes #" . $order->getNumber();
+$title = "Commandes #" . $order->getOrderNumber();
 $description = "";
 
 ?>
 
 <div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-list-check"></i> <span class="m-lg-auto">Commandes #<?= $order->getNumber() ?></span></h3>
+    <h3><i class="fa-solid fa-list-check"></i> <span class="m-lg-auto">Commandes #<?= $order->getOrderNumber() ?></span></h3>
 </div>
 
 <section class="row">
@@ -36,21 +34,20 @@ $description = "";
                 <h4>Récap de commande</h4>
             </div>
             <div class="card-body row">
-                <?php foreach ($orderItems as $orderItem):?>
+                <?php foreach ($order->getOrderedItems() as $orderItem):?>
                     <div style="align-items: baseline" class="d-flex justify-between mb-2">
-                        <?php if ($orderItem->getFirstImageItemUrl() !== "/Public/Uploads/Shop/0"): ?>
-                            <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $orderItem->getFirstImageItemUrl() ?>" alt="Panier"></div>
+                        <?php if ($orderItem->getFirstImg() !== "/Public/Uploads/Shop/0"): ?>
+                            <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $orderItem->getFirstImg() ?>" alt="Panier"></div>
                         <?php else: ?>
                             <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $defaultImage ?>" alt="Panier"></div>
                         <?php endif; ?>
-                        <p><?= $orderItem->getItem()->getName() ?> |
-                            Quantité : <b><?= $orderItem->getOrderItemQuantity() ?></b> |
-                            <?php foreach ($itemsVariantes->getShopItemVariantValueByOrderItemId($orderItem->getOrderItemId()) as $itemVariant): ?>
-                                <?= $itemVariant->getVariantValue()->getVariant()->getName() ?> : <b><?= $itemVariant->getVariantValue()->getValue() ?></b>
+                        <p><?= $orderItem->getName() ?> |
+                            Quantité : <b><?= $orderItem->getQuantity() ?></b> |
+                            <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
+                                <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b>
                             <?php endforeach; ?>
                         </p>
                     </div>
-
                 <?php endforeach;?>
             </div>
         </div>
@@ -60,7 +57,7 @@ $description = "";
 
 <div class="text-center d-flex justify-content-between">
     <a href="../" class="btn btn-warning">Pas pour l'instant</a>
-    <form action="end/<?= $order->getOrderId() ?>" method="post">
+    <form action="end/<?= $order->getId() ?>" method="post">
         <?php (new SecurityManager())->insertHiddenToken() ?>
         <button type="submit" class="btn btn-primary">Cette commande est terminé</button>
     </form>

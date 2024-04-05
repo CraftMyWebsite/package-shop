@@ -37,8 +37,8 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_linked"],
             $res["shop_discount_start_date"] ?? null,
             $res["shop_discount_end_date"] ?? null,
-            $res["shop_discount_default_uses"] ?? null,
-            $res["shop_discount_uses_left"] ?? null,
+            $res["shop_discount_max_uses"] ?? null,
+            $res["shop_discount_current_uses"] ?? null,
             $res["shop_discount_percent"] ?? null,
             $res["shop_discount_price"] ?? null,
             $res["shop_discount_use_multiple_per_users"] ?? null,
@@ -74,8 +74,8 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_linked"],
             $res["shop_discount_start_date"] ?? null,
             $res["shop_discount_end_date"] ?? null,
-            $res["shop_discount_default_uses"] ?? null,
-            $res["shop_discount_uses_left"] ?? null,
+            $res["shop_discount_max_uses"] ?? null,
+            $res["shop_discount_current_uses"] ?? null,
             $res["shop_discount_percent"] ?? null,
             $res["shop_discount_price"] ?? null,
             $res["shop_discount_use_multiple_per_users"] ?? null,
@@ -111,8 +111,8 @@ class ShopDiscountModel extends AbstractModel
             $res["shop_discount_linked"],
             $res["shop_discount_start_date"] ?? null,
             $res["shop_discount_end_date"] ?? null,
-            $res["shop_discount_default_uses"] ?? null,
-            $res["shop_discount_uses_left"] ?? null,
+            $res["shop_discount_max_uses"] ?? null,
+            $res["shop_discount_current_uses"] ?? null,
             $res["shop_discount_percent"] ?? null,
             $res["shop_discount_price"] ?? null,
             $res["shop_discount_use_multiple_per_users"] ?? null,
@@ -127,13 +127,47 @@ class ShopDiscountModel extends AbstractModel
         );
     }
 
+    public function createDiscount(string $name, string $description, int $linked, string $startDate, ?string $endDate, ?int $maxUses, ?int $currentUses, ?int $percent, ?float $price, ?int $useMultipleByUser, ?int $status, ?int $isTest, string $code, int $defaultApplied, ?int $needPurchaseBeforeBuy, int $quantityImpacted): ?ShopDiscountEntity
+    {
+        $data = [
+            "shop_discount_name" => $name,
+            "shop_discount_description" => $description,
+            "shop_discount_linked" => $linked,
+            "shop_discount_start_date" => $startDate,
+            "shop_discount_end_date" => $endDate,
+            "shop_discount_max_uses" => $maxUses,
+            "shop_discount_current_uses" => $currentUses,
+            "shop_discount_percent" => $percent,
+            "shop_discount_price" => $price,
+            "shop_discount_use_multiple_per_users" => $useMultipleByUser,
+            "shop_discount_status" => $status,
+            "shop_discount_test" => $isTest,
+            "shop_discount_code" => $code,
+            "shop_discount_default_active" => $defaultApplied,
+            "shop_discount_users_need_purchase_before_use" => $needPurchaseBeforeBuy,
+            "shop_discount_quantity_impacted" => $quantityImpacted,
+        ];
+
+        $sql = "INSERT INTO cmw_shops_discount(shop_discount_name,shop_discount_description,shop_discount_linked,shop_discount_start_date,shop_discount_end_date,shop_discount_max_uses,shop_discount_current_uses,shop_discount_percent,shop_discount_price,shop_discount_use_multiple_per_users,shop_discount_status,shop_discount_test,shop_discount_code,shop_discount_default_active,shop_discount_users_need_purchase_before_use,shop_discount_quantity_impacted) 
+                                VALUES (:shop_discount_name,:shop_discount_description,:shop_discount_linked,:shop_discount_start_date,:shop_discount_end_date,:shop_discount_max_uses,:shop_discount_current_uses,:shop_discount_percent,:shop_discount_price,:shop_discount_use_multiple_per_users,:shop_discount_status,:shop_discount_test,:shop_discount_code,:shop_discount_default_active,:shop_discount_users_need_purchase_before_use,:shop_discount_quantity_impacted)";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            return $this->getShopDiscountById($id);
+        }
+
+        return null;
+    }
+
     /**
      * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
      */
-    public function getAllShopDiscounts(): array
+    public function getAllDiscounts(): array
     {
-
-        $sql = "SELECT shop_discount_id FROM cmw_shops_discount";
+        $sql = "SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_linked IN (0, 1, 2)";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -149,7 +183,29 @@ class ShopDiscountModel extends AbstractModel
         }
 
         return $toReturn;
+    }
 
+    /**
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
+     */
+    public function getAllGiftCard(): array
+    {
+        $sql = "SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_linked = 3";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($discount = $res->fetch()) {
+            $toReturn[] = $this->getAllShopDiscountById($discount["shop_discount_id"]);
+        }
+
+        return $toReturn;
     }
 
     public function codeExist(string $code): bool
@@ -253,16 +309,26 @@ class ShopDiscountModel extends AbstractModel
         $db->prepare($sql)->execute(['shop_discount_id' => $id, 'status' => $status]);
     }
 
-    public function autoStatusChecker():void {
-        $defaultAppliedDiscounts = $this->getShopDiscountsDefaultApplied();
-        if (!empty($defaultAppliedDiscounts)) {
-            foreach ($defaultAppliedDiscounts as $defaultAppliedDiscount) {
-                if (!$this->checkDate($defaultAppliedDiscount->getStartDate(), $defaultAppliedDiscount->getEndDate())) {
-                    ShopDiscountModel::getInstance()->updateStatus($defaultAppliedDiscount->getId(), 0);
+    public function addUses(int $id, int $uses): void
+    {
+        $sql = "UPDATE cmw_shops_discount SET shop_discount_current_uses = :uses WHERE shop_discount_id = :shop_discount_id";
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute(['shop_discount_id' => $id, 'uses' => $uses]);
+    }
+
+    public function autoStatusChecker(): void
+    {
+        $discounts = $this->getAllDiscounts();
+        if (!empty($discounts)) {
+            foreach ($discounts as $discount) {
+                if ($this->checkDate($discount->getStartDate(), $discount->getEndDate())) {
+                    ShopDiscountModel::getInstance()->updateStatus($discount->getId(), 1);
+                } else {
+                    ShopDiscountModel::getInstance()->updateStatus($discount->getId(), 0);
                 }
             }
         }
-        //TODO : changer aussi le status des non default applied
     }
 
     private function checkDate($startDate, $endDate): bool

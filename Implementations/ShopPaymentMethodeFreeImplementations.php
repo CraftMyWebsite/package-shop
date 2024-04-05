@@ -7,6 +7,7 @@ use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
 {
@@ -43,6 +44,22 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
     public function fees(): float
     {
         return 0;
+    }
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getFeesFormatted(): string
+    {
+        $formattedPrice = number_format($this->fees(), 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
     }
 
     public function isActive(): bool

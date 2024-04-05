@@ -11,6 +11,8 @@ use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Utils\Redirect;
@@ -58,7 +60,7 @@ class ShopHandlerDiscountController extends AbstractController
         $this->handleDate($discountCode);
         $this->handleTestMode($discountCode);
         $this->handleUsesLeft($discountCode);
-        $orders = ShopOrdersModel::getInstance()->getOrdersByUserId($userId);
+        $orders = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersByUserId($userId);
         $this->handleLimitByUser($discountCode, $orders, $code);
         $this->handleOrderBeforeUse($discountCode, $orders);
     }
@@ -101,7 +103,9 @@ class ShopHandlerDiscountController extends AbstractController
 
     private function handleUsesLeft($discountCode) :void
     {
-        if ($discountCode->getUsesLeft() !== null && $discountCode->getUsesLeft() <= 0) {
+        $maxUses = $discountCode->getMaxUses();
+        $currentUses = $discountCode->getCurrentUses();
+        if ($currentUses !== null && $maxUses !== null && $maxUses <= $currentUses) {
             Flash::send(Alert::ERROR, "Boutique", "Ce code n'est plus utilisable");
             Redirect::redirectPreviousRoute();
         }
@@ -111,9 +115,10 @@ class ShopHandlerDiscountController extends AbstractController
     {
         if ($discountCode->getUsesMultipleByUser() == 1) {
             foreach ($orders as $order) {
-                $orderItems = ShopOrdersItemsModel::getInstance()->getOrdersItemsByOrderId($order->getOrderId());
+                $orderItems = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($order->getId());
+                $thisDiscount = ShopDiscountModel::getInstance()->getShopDiscountsByCode($code);
                 foreach ($orderItems as $orderItem) {
-                    if ($orderItem->getDiscount() !== null && $code == $orderItem->getDiscount()->getCode()) {
+                    if ($thisDiscount->getName() == $orderItem->getDiscountName()) {
                         Flash::send(Alert::ERROR, "Boutique", "Vous avez déjà utiliser ce code");
                         Redirect::redirectPreviousRoute();
                     }
@@ -263,12 +268,27 @@ class ShopHandlerDiscountController extends AbstractController
             if ($entityFound == 1) {
                 Flash::send(Alert::WARNING, "Boutique", "Les cartes cadeau ne peuvent pas s'appliquer sur des articles en réduction.");
             } else {
-                if ($totalCart - $discountCode->getPrice() <= 0) {
-                    Flash::send(Alert::WARNING, "Boutique", "Le total de votre panier doit être supérieur à ".$discountCode->getPrice(). " €");
-                } else {
-                    ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
-                    Flash::send(Alert::SUCCESS, "Boutique", "Carte cadeau appliqué !");
+
+                $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscount();
+                $alreadyApplied = 0;
+                foreach ($cartDiscounts as $cartDiscount) {
+                    if ($cartDiscount->getDiscount()->getCode() == $discountCode->getCode()) {
+                        $alreadyApplied = 1;
+                        break;
+                    }
                 }
+
+                if ($alreadyApplied) {
+                    Flash::send(Alert::WARNING, "Boutique", "Cette carte cadeau est déja appliqué à un autre panier");
+                } else {
+                    if ($totalCart - $discountCode->getPrice() <= 0) {
+                        Flash::send(Alert::WARNING, "Boutique", "Le total de votre panier doit être supérieur à ".$discountCode->getPriceFormatted());
+                    } else {
+                        ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
+                        Flash::send(Alert::SUCCESS, "Boutique", "Carte cadeau appliqué !");
+                    }
+                }
+
             }
             Redirect::redirectPreviousRoute();
         }
