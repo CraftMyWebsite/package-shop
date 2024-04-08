@@ -27,6 +27,7 @@ use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 
@@ -49,9 +50,10 @@ class ShopItemsController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $review = ShopReviewsModel::getInstance();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
 
         View::createAdminView('Shop', 'Items/manage')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review, "allowReviews" => $allowReviews])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
@@ -66,9 +68,10 @@ class ShopItemsController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $review = ShopReviewsModel::getInstance();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
 
         View::createAdminView('Shop', 'Items/archived')
-            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review])
+            ->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "review" => $review, "allowReviews" => $allowReviews])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();

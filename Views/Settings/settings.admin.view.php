@@ -9,6 +9,7 @@ $description = "";
 
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentCurrency */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentSymbol */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentReviews */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentAfter */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
@@ -118,12 +119,46 @@ $description = "";
                 <h4>Configuration générale</h4>
             </div>
             <div class="card-body row">
+                <div class="col-12 col-lg-5">
+                    <div class="card-in-card ">
+                        <div class="card-body">
+                            <h6>Image par défaut des articles :</h6>
+                            <form id="apply_default_image" action="settings/apply_default_image" method="post" enctype="multipart/form-data">
+                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                <div class="text-center">
+                                    <img width="50%" src="<?= $defaultImage ?>" alt="Default image">
+                                </div>
+                                <input class="mt-2 form-control form-control-sm" type="file"
+                                       accept=".png, .jpg, .jpeg, .webp, .gif"
+                                       name="defaultPicture">
+                            </form>
+                            <div class="d-flex justify-content-between mt-4">
+                                <form action="settings/reset_default_image" method="post">
+                                    <?php (new SecurityManager())->insertHiddenToken() ?>
+                                    <button type="submit" class="btn btn-warning">
+                                        Reset
+                                    </button>
+                                </form>
+                                <button form="apply_default_image" type="submit" class="btn btn-primary">
+                                    <?= LangManager::translate("core.btn.save") ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-12 col-lg-7">
                     <div class="card-in-card">
                         <div class="card-body">
-                            <form id="Configuration" action="settings/apply_currency" method="post">
+                            <form id="Configuration" action="settings/apply_global" method="post">
                                 <?php (new SecurityManager())->insertHiddenToken() ?>
                                 <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="allowReviews" name="allowReviews" <?= $currentReviews ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="allowReviews">Autoriser les avis clients</label>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <h6>Devise :</h6>
                                         <fieldset class="form-group">
@@ -149,34 +184,6 @@ $description = "";
                             </form>
                             <div class="d-flex justify-content-center mt-4">
                                 <button form="Configuration" type="submit" class="btn btn-primary">
-                                    <?= LangManager::translate("core.btn.save") ?>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-5">
-                    <div class="card-in-card ">
-                        <div class="card-body">
-                            <h6>Image par défaut des articles :</h6>
-                            <form id="apply_default_image" action="settings/apply_default_image" method="post" enctype="multipart/form-data">
-                                <?php (new SecurityManager())->insertHiddenToken() ?>
-                                <div class="text-center">
-                                    <img width="50%" src="<?= $defaultImage ?>" alt="Default image">
-                                </div>
-                                <input class="mt-2 form-control form-control-sm" type="file"
-                                       accept=".png, .jpg, .jpeg, .webp, .gif"
-                                       name="defaultPicture">
-                            </form>
-                            <div class="d-flex justify-content-between mt-4">
-                                <form action="settings/reset_default_image" method="post">
-                                    <?php (new SecurityManager())->insertHiddenToken() ?>
-                                    <button type="submit" class="btn btn-warning">
-                                        Reset
-                                    </button>
-                                </form>
-                                <button form="apply_default_image" type="submit" class="btn btn-primary">
                                     <?= LangManager::translate("core.btn.save") ?>
                                 </button>
                             </div>

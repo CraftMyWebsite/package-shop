@@ -13,6 +13,7 @@ $description = "";
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -34,7 +35,9 @@ $description = "";
                     <tr>
                         <th class="text-center">Nom</th>
                         <th class="text-center">Images</th>
+                        <?php if ($allowReviews): ?>
                         <th class="text-center">Avis</th>
+                        <?php endif; ?>
                         <th class="text-center">Description</th>
                         <th class="text-center">Catégorie</th>
                         <th class="text-center">Prix</th>
@@ -104,12 +107,14 @@ $description = "";
                                          alt="..."/>
                                 <?php endif; ?>
                             </td>
+                            <?php if ($allowReviews): ?>
                             <td class="text-center">
                                 <a href="items/review/<?= $item->getId() ?>">
                                 <?= $review->countTotalRatingByItemId($item->getId()) ?> avis<br>
                                 <?= $review->getStars($item->getId()) ?>
                                 </a>
                             </td>
+                            <?php endif; ?>
                             <td style="max-width: 5rem;">
                                 <?= $item->getShortDescription() ?>
                             </td>

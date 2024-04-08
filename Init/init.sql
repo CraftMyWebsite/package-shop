@@ -513,7 +513,7 @@ ALTER TABLE `cmw_shops_cart_items`
         REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 INSERT INTO cmw_shops_settings (`shop_settings_key`, `shop_settings_value`)
-VALUES ('currency', 'EUR'),('symbol', '€'),('after', '1');
+VALUES ('currency', 'EUR'),('symbol', '€'),('after', '1'),('reviews', '1');
 
 
 INSERT INTO cmw_shops_images (`shop_image_name`,`shop_default_image`) VALUES ('default','1');

@@ -22,6 +22,7 @@ use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
@@ -44,11 +45,12 @@ class ShopPublicController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $review = ShopReviewsModel::getInstance();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
-            $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "review" => $review]);
+            $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "review" => $review, "allowReviews" => $allowReviews]);
         $view->view();
     }
 
@@ -62,10 +64,11 @@ class ShopPublicController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $review = ShopReviewsModel::getInstance();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/cat");
-        $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories, "review" => $review]);
+        $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories, "review" => $review, "allowReviews" => $allowReviews]);
         $view->view();
     }
 
@@ -78,15 +81,15 @@ class ShopPublicController extends AbstractController
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
         $physicalInfo = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($itemId);
         $review = ShopReviewsModel::getInstance();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View("Shop", "Main/item");
-        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemInCart" => $itemInCart, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel, "physicalInfo" => $physicalInfo ?? null, "review" => $review]);
+        $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel, "physicalInfo" => $physicalInfo ?? null, "review" => $review, "allowReviews" => $allowReviews]);
         $view->view();
     }
 
@@ -108,6 +111,8 @@ class ShopPublicController extends AbstractController
     public function publicPostReview(Request $request, string $catSlug, string $itemSlug): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
+
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
 
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         [$rating,$title,$content] = Utils::filterInput('rating','title','content');

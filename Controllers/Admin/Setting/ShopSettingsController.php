@@ -63,11 +63,12 @@ class ShopSettingsController extends AbstractController
         $currentCurrency = ShopSettingsModel::getInstance()->getSettingValue("currency");
         $currentSymbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
         $currentAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $currentReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $virtualMethods = ShopItemsController::getInstance()->getVirtualItemsMethods();
 
         View::createAdminView('Shop', 'Settings/settings')
-            ->addVariableList(["currentCurrency" => $currentCurrency,"currentAfter" => $currentAfter,"currentSymbol" => $currentSymbol,"defaultImage" => $defaultImage, "virtualMethods" => $virtualMethods])
+            ->addVariableList(["currentCurrency" => $currentCurrency,"currentAfter" => $currentAfter,"currentSymbol" => $currentSymbol,"defaultImage" => $defaultImage, "virtualMethods" => $virtualMethods, "currentReviews" => $currentReviews])
             ->view();
     }
 
@@ -98,15 +99,16 @@ class ShopSettingsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/settings/apply_currency", Link::POST, [], "/cmw-admin/shop")]
+    #[Link("/settings/apply_global", Link::POST, [], "/cmw-admin/shop")]
     public function shopApplyCurrencyPost(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
-        [$currency, $showAfter] = Utils::filterInput('currency', 'showAfter');
+        [$currency, $showAfter, $allowReviews] = Utils::filterInput('currency', 'showAfter', 'allowReviews');
         $symbol = ShopSettingsController::$availableCurrencies[$currency]['symbol'] ?? '€';
         ShopSettingsModel::getInstance()->updateSetting("currency", $currency);
         ShopSettingsModel::getInstance()->updateSetting("symbol", $symbol);
         ShopSettingsModel::getInstance()->updateSetting("after", $showAfter);
+        ShopSettingsModel::getInstance()->updateSetting("reviews", $allowReviews ?? 0);
         Flash::send(Alert::SUCCESS, "Boutique", "La monnaie utilisée est maintenant " . $currency . " (" . $symbol . ")");
         Redirect::redirectPreviousRoute();
     }
