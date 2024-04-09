@@ -298,4 +298,15 @@ class ShopItemsController extends AbstractController
         }
         return null;
     }
+
+    /**
+     * @return \CMW\Interface\Shop\IVirtualItems[]
+     */
+    public function getGlobalVarVirtualItemsMethods(): array
+    {
+        $allVirtualItemMethods = Loader::loadImplementations(IVirtualItems::class);
+        return array_filter($allVirtualItemMethods, function($virtualItemMethods) {
+            return $virtualItemMethods->useGlobalConfigWidgetsInShopConfig();
+        });
+    }
 }
