@@ -42,6 +42,11 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
         require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Global/giftCode.config.inc.view.php";
     }
 
+    public function useGlobalConfigWidgetsInShopConfig(): bool
+    {
+        return true;
+    }
+
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         ShopVirtualItemsGiftCodeController::getInstance()->sedMailWithGiftCode($varName, $item, $user);

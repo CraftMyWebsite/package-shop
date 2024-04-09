@@ -90,6 +90,11 @@ $description = "";
                                             <?php if ($virtualMethod->documentationURL()) : ?>
                                                 <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
                                             <?php endif;?>
+                                            <?php if ($virtualMethod->useGlobalConfigWidgetsInShopConfig()): ?>
+                                                <p></p>
+                                                <div class="alert alert-light-warning color-warning"><i class="fa-solid fa-exclamation-triangle"></i>
+                                                    Attention, cet objet virtuel à besoin d'un configuration global !<br>Si vous ne l'avez pas encore fait merci de vous rendre dans la <a href="../settings">configuration</a> avant de créer l'article !</div>
+                                            <?php endif; ?>
                                             <p><?= $virtualMethod->description() ?></p>
                                             <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
                                             <?php $virtualMethod->includeItemConfigWidgets(null) ?>

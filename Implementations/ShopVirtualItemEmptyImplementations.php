@@ -36,9 +36,11 @@ class ShopVirtualItemEmptyImplementations implements IVirtualItems
         return;
     }
 
-    public function includeGlobalConfigWidgets(): void
+    public function includeGlobalConfigWidgets(): void {}
+
+    public function useGlobalConfigWidgetsInShopConfig(): bool
     {
-        return;
+        return false;
     }
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void

@@ -48,6 +48,12 @@ interface IVirtualItems
     public function includeGlobalConfigWidgets(): void;
 
     /**
+     * @return bool
+     * @desc Include the config widgets for set global variable into shop config page
+     */
+    public function useGlobalConfigWidgetsInShopConfig(): bool;
+
+    /**
      * @param string $varName
      * @param ShopItemEntity $item
      * @param UserEntity $user
