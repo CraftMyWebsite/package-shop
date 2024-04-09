@@ -2,12 +2,17 @@
 
 namespace CMW\Controller\Shop\Admin\Discount;
 
+use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsGiftCodeController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Utils\Redirect;
+use CMW\Utils\Utils;
 use DateTime;
 
 
@@ -63,6 +68,20 @@ class ShopDiscountsController extends AbstractController
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
+    }
+
+    #[Link("/giftCard/generate", Link::POST, [], "/cmw-admin/shop")]
+    public function shopGenerateGiftCard(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        [$amount] = Utils::filterInput("amount");
+
+        ShopVirtualItemsGiftCodeController::getInstance()->adminGenerateCode($amount);
+
+        Flash::send(Alert::SUCCESS, "Boutique", "Code généré !");
+
+        Redirect::redirectPreviousRoute();
     }
 
     /**

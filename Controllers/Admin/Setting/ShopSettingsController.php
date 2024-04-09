@@ -4,12 +4,14 @@ namespace CMW\Controller\Shop\Admin\Setting;
 
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Users\UsersController;
+use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Image\ShopImagesModel;
+use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
@@ -65,29 +67,60 @@ class ShopSettingsController extends AbstractController
         $currentAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         $currentReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $virtualMethods = ShopItemsController::getInstance()->getVirtualItemsMethods();
+        $virtualMethods = ShopItemsController::getInstance()->getGlobalVarVirtualItemsMethods();
 
         View::createAdminView('Shop', 'Settings/settings')
             ->addVariableList(["currentCurrency" => $currentCurrency,"currentAfter" => $currentAfter,"currentSymbol" => $currentSymbol,"defaultImage" => $defaultImage, "virtualMethods" => $virtualMethods, "currentReviews" => $currentReviews])
             ->view();
     }
 
-    #[Link("/settings/apply_default_image", Link::POST, [], "/cmw-admin/shop")]
-    public function shopApplyDefaultImagePost(): void
+    #[Link("/settings", Link::POST, [], "/cmw-admin/shop")]
+    public function shopApplyGlobalPost(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
-        if (isset($_FILES['defaultPicture']) && $_FILES['defaultPicture']['error'] === UPLOAD_ERR_OK) {
-            $image = $_FILES['defaultPicture'];
-            ShopImagesModel::getInstance()->setDefaultImage($image);
-            Flash::send(Alert::SUCCESS, "Boutique", "Nouvelle image ajouté");
-        } else {
-            Flash::send(Alert::ERROR, "Boutique", "Une erreur est survenue lors de l'ajout de l'image");
+        if (isset($_FILES['defaultPicture'])) {
+            if ($_FILES['defaultPicture']['error'] === UPLOAD_ERR_OK) {
+                $image = $_FILES['defaultPicture'];
+                ShopImagesModel::getInstance()->setDefaultImage($image);
+            }
         }
+
+        [$currency, $showAfter, $allowReviews] = Utils::filterInput('currency', 'showAfter', 'allowReviews');
+        $symbol = ShopSettingsController::$availableCurrencies[$currency]['symbol'] ?? '€';
+        ShopSettingsModel::getInstance()->updateSetting("currency", $currency);
+        ShopSettingsModel::getInstance()->updateSetting("symbol", $symbol);
+        ShopSettingsModel::getInstance()->updateSetting("after", $showAfter);
+        ShopSettingsModel::getInstance()->updateSetting("reviews", $allowReviews ?? 0);
+
+        Flash::send(Alert::SUCCESS, "Boutique", "Configuration appliqué !");
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/settings/reset_default_image", Link::POST, [], "/cmw-admin/shop")]
+    #[Link("/settings/virtual", Link::POST, [], "/cmw-admin/shop")]
+    private function shopVirtualItemGlobalSettingsPost(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
+
+        $settings = $_POST;
+
+        foreach ($settings as $key => $value) {
+            if ($key === 'security-csrf-token' || $key === 'honeyInput') {
+                continue;
+            }
+            $key = FilterManager::filterData($key, 50);
+            $value = FilterManager::filterData($value, 255);
+
+            if (!ShopItemsVirtualRequirementModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
+                Flash::send(Alert::ERROR,'Erreur', "Impossible de mettre à jour le paramètre $key");
+            }
+        }
+
+        Flash::send(Alert::SUCCESS,'Succès', "Les paramètres ont été mis à jour");
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/settings/reset_default_image", Link::GET, [], "/cmw-admin/shop")]
     public function shopResetDefaultImagePost(): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
@@ -98,19 +131,4 @@ class ShopSettingsController extends AbstractController
 
         Redirect::redirectPreviousRoute();
     }
-
-    #[Link("/settings/apply_global", Link::POST, [], "/cmw-admin/shop")]
-    public function shopApplyCurrencyPost(): void
-    {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
-        [$currency, $showAfter, $allowReviews] = Utils::filterInput('currency', 'showAfter', 'allowReviews');
-        $symbol = ShopSettingsController::$availableCurrencies[$currency]['symbol'] ?? '€';
-        ShopSettingsModel::getInstance()->updateSetting("currency", $currency);
-        ShopSettingsModel::getInstance()->updateSetting("symbol", $symbol);
-        ShopSettingsModel::getInstance()->updateSetting("after", $showAfter);
-        ShopSettingsModel::getInstance()->updateSetting("reviews", $allowReviews ?? 0);
-        Flash::send(Alert::SUCCESS, "Boutique", "La monnaie utilisée est maintenant " . $currency . " (" . $symbol . ")");
-        Redirect::redirectPreviousRoute();
-    }
-
 }
