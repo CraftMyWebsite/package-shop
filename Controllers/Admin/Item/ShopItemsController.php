@@ -18,6 +18,8 @@ use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
@@ -244,7 +246,7 @@ class ShopItemsController extends AbstractController
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
         $isInACart = ShopCartItemModel::getInstance()->itemIsPresentInACart($id);
-        $isOrdered = ShopOrdersItemsModel::getInstance()->itemIsOrdered($id);
+        $isOrdered = ShopHistoryOrdersItemsModel::getInstance()->itemIsOrdered($id);
 
         if (!$isInACart || !$isOrdered) {
             Flash::send(Alert::ERROR, "Boutique", "Suppression impossible. il est donc maintenant archivé !<br> Rendez-vous dans la page des archives pour en savoir plus");
