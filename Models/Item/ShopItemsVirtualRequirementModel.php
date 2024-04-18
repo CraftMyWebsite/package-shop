@@ -45,6 +45,31 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
     }
 
     /**
+     * @return array
+     */
+    public function getAllSettingsForItem($itemId): array
+    {
+
+        $sql = "SELECT * FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_requirement_key LIKE :key";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(['key' => "%".$itemId."%"])) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $item;
+        }
+
+        return $toReturn;
+
+    }
+
+    /**
      * @param string $key
      * @param ?int $itemId
      * @return string|null
