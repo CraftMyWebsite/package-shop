@@ -183,8 +183,8 @@ class ShopHistoryOrdersController extends AbstractController
         $order = ShopHistoryOrdersModel::getInstance()->createHistoryOrder($user->getId(),0);
         $discountModel = ShopDiscountModel::getInstance();
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName($commandTunnel->getPaymentName());
-        $paymentHistory = ShopHistoryOrdersPaymentModel::getInstance()->addHistoryPaymentOrder($order->getId(), $paymentMethod->name(), $paymentMethod->fees());
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName($commandTunnel->getPaymentName());
+        $paymentHistory = ShopHistoryOrdersPaymentModel::getInstance()->addHistoryPaymentOrder($order->getId(), $paymentMethod->name(), $paymentMethod->varName(), $paymentMethod->fees());
 
         if (!is_null($commandTunnel->getShipping())) {
             $shippingHistory = ShopHistoryOrdersShippingModel::getInstance()->addHistoryShippingOrder($order->getId(), $commandTunnel->getShipping()->getName(), $commandTunnel->getShipping()->getPrice());
@@ -293,17 +293,10 @@ class ShopHistoryOrdersController extends AbstractController
         $paymentMethod = $paymentHistory->getName();
         $historyLink = Website::getUrl()."/shop/history";
 
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
-        if ($symbolIsAfter) {
-            $total = $order->getOrderTotal() . $symbol;
-        } else {
-            $total = $symbol . $order->getOrderTotal();
-        }
-
-
+        $priceType = "";
         $itemsHtml = '';
         foreach ($cartContent as $cartItem) {
+            $priceType = $cartItem->getItem()->getPriceType();
             $itemName = $cartItem->getItem()->getName();
             $itemQuantity = $cartItem->getQuantity();
             $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
@@ -316,6 +309,18 @@ class ShopHistoryOrdersController extends AbstractController
                 <span class="summary-title">Prix :</span> $itemPrice
             </div>
         HTML;
+        }
+
+        if ($priceType == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name()." ";
+        }
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($symbolIsAfter) {
+            $total = $order->getOrderTotal() . $symbol;
+        } else {
+            $total = $symbol . $order->getOrderTotal();
         }
 
         $htmlTemplate = <<<HTML

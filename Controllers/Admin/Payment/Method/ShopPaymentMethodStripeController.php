@@ -45,7 +45,7 @@ class ShopPaymentMethodStripeController extends AbstractController
             throw new ShopPaymentException(message: "Stripe config is not complete");
         }
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("Stripe");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("stripe");
         $paymentFee = $paymentMethod->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
@@ -237,6 +237,6 @@ class ShopPaymentMethodStripeController extends AbstractController
     #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/stripe")]
     private function paypalCommandCancel(): void
     {
-        Emitter::send(ShopPaymentCancelEvent::class, ['user' => UsersModel::getCurrentUser()]);
+        Emitter::send(ShopPaymentCancelEvent::class, null);
     }
 }

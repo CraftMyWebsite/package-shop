@@ -46,7 +46,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/complete';
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("CoinBase");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("coinbase");
         $paymentFee = $paymentMethod->fees();
 
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
@@ -161,6 +161,6 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
     #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/coinbase")]
     private function cryptoCommandCancel(): void
     {
-        Emitter::send(ShopPaymentCancelEvent::class, ['user' => UsersModel::getCurrentUser()]);
+        Emitter::send(ShopPaymentCancelEvent::class, null);
     }
 }

@@ -70,6 +70,12 @@ interface IPaymentMethod
     public function isActive(): bool;
 
     /**
+     * @return bool
+     * @desc Return if the payment method is real or not, like paypal is real / token is virtual
+     */
+    public function isVirtualCurrency(): bool;
+
+    /**
      * @return void
      * @desc Include the config widgets of the payment method, like ClientId, ClientSecret, etc...
      * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/paypal.config.inc.view.php";

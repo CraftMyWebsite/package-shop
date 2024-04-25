@@ -47,6 +47,8 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleSessionHealth($sessionId);
 
+        $this->handlePriceType($userId, $sessionId, $itemId);
+
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
         $this->handleAddToCart($itemId, $userId, $sessionId, $quantity, null);
@@ -69,6 +71,8 @@ class ShopActionsCartController extends AbstractController
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         [$quantity] = Utils::filterInput('quantity');
 
+        $this->handlePriceType($userId, $sessionId, $itemId);
+
         $selectedVariants = $_POST['selected_variantes'];
 
         $this->handleSessionHealth($sessionId);
@@ -90,6 +94,14 @@ class ShopActionsCartController extends AbstractController
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
         [$code] = Utils::filterInput('code');
+
+        $itemsInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+        foreach ($itemsInCart as $itemInCart) {
+            if ($itemInCart->getItem()->getPriceType() !== "money") {
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas appliqué de réduction sur ce type de monnaie");
+                Redirect::redirectPreviousRoute();
+            }
+        }
 
         ShopHandlerDiscountController::getInstance()->discountMasterHandler($userId, $sessionId, $code);
     }
@@ -300,6 +312,18 @@ class ShopActionsCartController extends AbstractController
                 Redirect::redirectPreviousRoute();
             case ByOrderLimitStatus::PASS:
                 break;
+        }
+    }
+
+    private function handlePriceType(int $userId, string $sessionId, int $itemId): void
+    {
+        $itemsInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+        $thisItem = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+        foreach ($itemsInCart as $itemInCart) {
+            if ($thisItem->getPriceType() !== $itemInCart->getItem()->getPriceType()) {
+                Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas acheter des articles avec des monnaies différentes.");
+                Redirect::redirectPreviousRoute();
+            }
         }
     }
 

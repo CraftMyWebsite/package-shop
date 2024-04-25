@@ -3,6 +3,8 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Controller\Shop\Admin\Item\ShopItemsController;
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
@@ -30,6 +32,7 @@ class ShopItemEntity
     private ?int $itemDefaultStock;
     private ?int $itemCurrentStock;
     private ?float $itemPrice;
+    private string $itemPriceType;
     private ?int $itemByOrderLimit;
     private ?int $itemGlobalLimit;
     private ?int $itemUserLimit;
@@ -39,7 +42,7 @@ class ShopItemEntity
     private int $itemArchivedReason;
 
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated,int $itemArchived,int $itemArchivedReason)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, string $itemPriceType, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated,int $itemArchived,int $itemArchivedReason)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -52,6 +55,7 @@ class ShopItemEntity
         $this->itemDefaultStock = $itemDefaultStock;
         $this->itemCurrentStock = $itemCurrentStock;
         $this->itemPrice = $itemPrice;
+        $this->itemPriceType = $itemPriceType;
         $this->itemByOrderLimit = $itemByOrderLimit;
         $this->itemGlobalLimit = $itemGlobalLimit;
         $this->itemUserLimit = $itemUserLimit;
@@ -145,7 +149,7 @@ class ShopItemEntity
     /**
      * @return ?string
      */
-    public function getFormatedStock(): ?string
+    public function getFormattedStock(): ?string
     {
         if (is_null($this->getDefaultStock())) {
             return "<b style='color: #0ab312'>Illimité</b>";
@@ -163,6 +167,11 @@ class ShopItemEntity
         return $this->itemPrice;
     }
 
+    public function getPriceType(): string
+    {
+        return $this->itemPriceType;
+    }
+
     /**
      * @return string
      * @desc return the price for views
@@ -170,7 +179,11 @@ class ShopItemEntity
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->itemPrice, 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPriceType())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
@@ -191,60 +204,62 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        //all
-        if (!empty($allDiscounts)) {
-            foreach ($allDiscounts as $allDiscount) {
-                if ($allDiscount->getLinked() == 0) {
-                    if ($allDiscount->getPrice()) {
-                        $discount = $allDiscount->getPrice();
+        if ($this->getPriceType() == "money") {
+            //all
+            if (!empty($allDiscounts)) {
+                foreach ($allDiscounts as $allDiscount) {
+                    if ($allDiscount->getLinked() == 0) {
+                        if ($allDiscount->getPrice()) {
+                            $discount = $allDiscount->getPrice();
+                        }
+                        if ($allDiscount->getPercentage()) {
+                            $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
+                        }
                     }
-                    if ($allDiscount->getPercentage()) {
-                        $discount = ($basePrice*$allDiscount->getPercentage())/100;
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
+                    } else {
+                        return number_format($basePrice - $discount, 2, '.', '');
                     }
-                }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return number_format($basePrice - $discount, 2, '.', '');
                 }
             }
-        }
-        //cats
-        if (!empty($discountCategories)) {
-            foreach ($discountCategories as $discountCategory) {
-                if ($discountCategory->getDiscount()->getLinked() == 2) {
-                    if ($discountCategory->getDiscount()->getPrice()) {
-                        $discount = $discountCategory->getDiscount()->getPrice();
+            //cats
+            if (!empty($discountCategories)) {
+                foreach ($discountCategories as $discountCategory) {
+                    if ($discountCategory->getDiscount()->getLinked() == 2) {
+                        if ($discountCategory->getDiscount()->getPrice()) {
+                            $discount = $discountCategory->getDiscount()->getPrice();
+                        }
+                        if ($discountCategory->getDiscount()->getPercentage()) {
+                            $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
+                        }
                     }
-                    if ($discountCategory->getDiscount()->getPercentage()) {
-                        $discount = ($basePrice*$discountCategory->getDiscount()->getPercentage())/100;
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
+                    } else {
+                        return number_format($basePrice - $discount, 2, '.', '');
                     }
-                }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return number_format($basePrice - $discount, 2, '.', '');
                 }
             }
-        }
-        //items
-        if (!empty($discountItems)) {
-            foreach ($discountItems as $discountItem) {
-                if ($discountItem->getDiscount()->getLinked() == 1) {
-                    if ($discountItem->getDiscount()->getPrice()) {
-                        $discount = $discountItem->getDiscount()->getPrice();
+            //items
+            if (!empty($discountItems)) {
+                foreach ($discountItems as $discountItem) {
+                    if ($discountItem->getDiscount()->getLinked() == 1) {
+                        if ($discountItem->getDiscount()->getPrice()) {
+                            $discount = $discountItem->getDiscount()->getPrice();
+                        }
+                        if ($discountItem->getDiscount()->getPercentage()) {
+                            $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
+                        }
                     }
-                    if ($discountItem->getDiscount()->getPercentage()) {
-                        $discount = ($basePrice*$discountItem->getDiscount()->getPercentage())/100;
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
+                    } else {
+                        return number_format($basePrice - $discount, 2, '.', '');
                     }
-                }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return number_format($basePrice - $discount, 2, '.', '');
                 }
             }
         }
@@ -349,112 +364,115 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        if ($this->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
 
-        //all
-        if (!empty($allDiscounts)) {
-            foreach ($allDiscounts as $allDiscount) {
-                if ($allDiscount->getDiscountQuantityImpacted() == 1) {
-                    if ($allDiscount->getPrice()) {
-                        $discount = $allDiscount->getPrice();
-                        if ($symbolIsAfter) {
-                            $discountFormatted = "- " . $allDiscount->getPrice() . $symbol;
-                        } else {
-                            $discountFormatted = "- " . $symbol . $allDiscount->getPrice();
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+
+            //all
+            if (!empty($allDiscounts)) {
+                foreach ($allDiscounts as $allDiscount) {
+                    if ($allDiscount->getDiscountQuantityImpacted() == 1) {
+                        if ($allDiscount->getPrice()) {
+                            $discount = $allDiscount->getPrice();
+                            if ($symbolIsAfter) {
+                                $discountFormatted = "- " . $allDiscount->getPrice() . $symbol;
+                            } else {
+                                $discountFormatted = "- " . $symbol . $allDiscount->getPrice();
+                            }
+                        }
+                        if ($allDiscount->getPercentage()) {
+                            $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
+                            $discountFormatted = "-" . $allDiscount->getPercentage() . " %";
+                        }
+                    } else {
+                        if ($allDiscount->getPrice()) {
+                            $discount = $allDiscount->getPrice();
+                            if ($symbolIsAfter) {
+                                $discountFormatted = "- " . $allDiscount->getPrice() . $symbol . " sur le 1er";
+                            } else {
+                                $discountFormatted = "- " . $symbol . $allDiscount->getPrice() . " sur le 1er";
+                            }
+                        }
+                        if ($allDiscount->getPercentage()) {
+                            $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
+                            $discountFormatted = "-" . $allDiscount->getPercentage() . " % sur le 1er";
                         }
                     }
-                    if ($allDiscount->getPercentage()) {
-                        $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
-                        $discountFormatted = "-" . $allDiscount->getPercentage() . " %";
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
+                    } else {
+                        return $discountFormatted;
                     }
-                } else {
-                    if ($allDiscount->getPrice()) {
-                        $discount = $allDiscount->getPrice();
-                        if ($symbolIsAfter) {
-                            $discountFormatted = "- " . $allDiscount->getPrice() . $symbol . " sur le 1er";
-                        } else {
-                            $discountFormatted = "- " . $symbol . $allDiscount->getPrice() . " sur le 1er";
-                        }
-                    }
-                    if ($allDiscount->getPercentage()) {
-                        $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
-                        $discountFormatted = "-" . $allDiscount->getPercentage() . " % sur le 1er";
-                    }
-                }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return $discountFormatted;
                 }
             }
-        }
-        //cats
-        if (!empty($discountCategories)) {
-            foreach ($discountCategories as $discountCategory) {
-                if ($discountCategory->getDiscount()->getDiscountQuantityImpacted() == 1) {
-                    if ($discountCategory->getDiscount()->getLinked() == 2) {
+            //cats
+            if (!empty($discountCategories)) {
+                foreach ($discountCategories as $discountCategory) {
+                    if ($discountCategory->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                        if ($discountCategory->getDiscount()->getLinked() == 2) {
+                            if ($discountCategory->getDiscount()->getPrice()) {
+                                $discount = $discountCategory->getDiscount()->getPrice();
+                                $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted();
+                            }
+                            if ($discountCategory->getDiscount()->getPercentage()) {
+                                $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
+                                $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " %";
+                            }
+                        }
+                    } else {
                         if ($discountCategory->getDiscount()->getPrice()) {
                             $discount = $discountCategory->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted();
+                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted() . " sur le 1er";
                         }
                         if ($discountCategory->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
-                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " %";
+                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " % sur le 1er";
                         }
                     }
-                } else {
-                    if ($discountCategory->getDiscount()->getPrice()) {
-                        $discount = $discountCategory->getDiscount()->getPrice();
-                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted() . " sur le 1er";
-                    }
-                    if ($discountCategory->getDiscount()->getPercentage()) {
-                        $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
-                        $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " % sur le 1er";
-                    }
-                }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return $discountFormatted;
-                }
-            }
-        }
-        //items
-        if (!empty($discountItems)) {
-            foreach ($discountItems as $discountItem) {
-                if ($discountItem->getDiscount()->getLinked() == 1) {
-                    if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
-                        if ($discountItem->getDiscount()->getPrice()) {
-                            $discount = $discountItem->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted();
-                        }
-                        if ($discountItem->getDiscount()->getPercentage()) {
-                            $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " %";
-                        }
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
                     } else {
-                        if ($discountItem->getDiscount()->getPrice()) {
-                            $discount = $discountItem->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted() . " sur le 1er";
-                        }
-                        if ($discountItem->getDiscount()->getPercentage()) {
-                            $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
-                            $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " % sur le 1er";
-                        }
+                        return $discountFormatted;
                     }
                 }
-                //prevent negative price
-                if ($basePrice - $discount <= 0) {
-                    return null;
-                } else {
-                    return $discountFormatted;
+            }
+            //items
+            if (!empty($discountItems)) {
+                foreach ($discountItems as $discountItem) {
+                    if ($discountItem->getDiscount()->getLinked() == 1) {
+                        if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
+                            if ($discountItem->getDiscount()->getPrice()) {
+                                $discount = $discountItem->getDiscount()->getPrice();
+                                $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted();
+                            }
+                            if ($discountItem->getDiscount()->getPercentage()) {
+                                $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
+                                $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " %";
+                            }
+                        } else {
+                            if ($discountItem->getDiscount()->getPrice()) {
+                                $discount = $discountItem->getDiscount()->getPrice();
+                                $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted() . " sur le 1er";
+                            }
+                            if ($discountItem->getDiscount()->getPercentage()) {
+                                $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
+                                $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " % sur le 1er";
+                            }
+                        }
+                    }
+                    //prevent negative price
+                    if ($basePrice - $discount <= 0) {
+                        return null;
+                    } else {
+                        return $discountFormatted;
+                    }
                 }
             }
         }
-
         return null;
     }
 

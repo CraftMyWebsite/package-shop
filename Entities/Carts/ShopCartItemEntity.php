@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Carts;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
@@ -182,7 +183,12 @@ class ShopCartItemEntity
     public function getItemTotalPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPrice(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+        }
+
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice .  $symbol;
@@ -236,7 +242,11 @@ class ShopCartItemEntity
     public function getItemTotalPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPriceAfterDiscount(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice .  $symbol;
@@ -267,7 +277,11 @@ class ShopCartItemEntity
     public function getTotalCartPriceBeforeDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceBeforeDiscount(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
@@ -308,7 +322,11 @@ class ShopCartItemEntity
     public function getTotalCartPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceAfterDiscount(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice .  $symbol;
@@ -342,7 +360,11 @@ class ShopCartItemEntity
     public function getTotalPriceCompleteFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceComplete(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;

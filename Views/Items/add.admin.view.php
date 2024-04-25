@@ -3,6 +3,7 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 $title = "Boutique";
@@ -10,6 +11,7 @@ $description = "";
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
+/* @var CMW\Interface\Shop\IPriceTypeMethod[] $priceTypeMethods */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -142,7 +144,19 @@ $description = "";
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Prix :</h6>
-                            <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+                                <span>
+                                    <!--TODO : Uniquement les articles virtuel pour le moment-->
+                                <select id="payment" class="form-select" name="shop_item_price_type" required>
+                                    <?php foreach ($priceTypeMethods as $priceTypeMethod): ?>
+                                        <option value="<?= $priceTypeMethod->varName() ?>"><?= $priceTypeMethod->name() ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </span>
+                            </div>
+
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Type<span style="color: red">*</span> :</h6>
@@ -355,7 +369,6 @@ $description = "";
         let btn_div = document.createElement('div');
         let img = document.createElement('img');
         let btnDelete = document.createElement('button');
-        let label = document.createElement('label');
 
         input.type = "file";
         input.accept = "image/png, image/jpg, image/jpeg, image/webp, image/gif"
@@ -368,30 +381,29 @@ $description = "";
             const [file] = input.files
             if (file) {
                 img.src = URL.createObjectURL(file)
-                div.className = "col-12 col-lg-6";
+                div.className = "col-12 col-lg-3";
                 div.id = 'delete-' + i;
                 btn_div.className = "d-flex flex-wrap justify-content-between";
                 div_in_div.className = "card-in-card p-2";
                 img.className = "w-50 mx-auto";
                 btnDelete.type = "button";
-                btnDelete.innerText = "<?= LangManager::translate("core.btn.delete") ?>";
+                btnDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
                 btnDelete.className = "btn btn-danger mt-2";
-                label.htmlFor = 'image-' + i;
-                label.innerText = "<?= LangManager::translate("core.btn.edit") ?>"
-                label.className = "btn btn-primary mt-2";
 
                 let firstDiv = document.getElementById('img_div').appendChild(div);
                 firstDiv.appendChild(div_in_div);
                 div_in_div.appendChild(img);
                 div_in_div.appendChild(input);
                 div_in_div.appendChild(btn_div);
-                btn_div.appendChild(label);
+                //btn_div.appendChild(label);
                 btn_div.appendChild(btnDelete);
                 btnDelete.onclick = evt => {
+                    let parent = div.parentNode;
                     input.remove()
                     div.remove()
                     img.remove()
                     btnDelete.remove()
+                    updateOrderLabels(parent);
                 }
                 i++;
             }
@@ -399,6 +411,58 @@ $description = "";
 
         let number_Image_post = document.getElementById('numberOfImage')
         number_Image_post.value = i + 1;
+
+        let orderLabel = document.createElement('span');
+        orderLabel.innerText = i + 1; // Affiche le numéro de l'image
+        orderLabel.className = 'image-order-label';
+
+        let btnUp = document.createElement('button');
+        btnUp.innerHTML = '<i class="fa-solid fa-circle-arrow-left"></i>';
+        btnUp.className = 'btn btn-sm btn-primary mt-2';
+        btnUp.onclick = () => moveImage(div, 'up');
+        btnUp.type = "button";
+
+        let btnDown = document.createElement('button');
+        btnDown.innerHTML = '<i class="fa-solid fa-circle-arrow-right"></i>';
+        btnDown.className = 'btn btn-sm btn-primary mt-2';
+        btnDown.onclick = () => moveImage(div, 'down');
+        btnDown.type = "button";
+
+        let inputOrder = document.createElement('input');
+        inputOrder.type = 'hidden';
+        inputOrder.name = 'order-' + i;
+        inputOrder.value = i;  // Définir l'ordre initial à l'index
+
+        btn_div.appendChild(btnUp);
+        btn_div.appendChild(btnDelete);
+        btn_div.appendChild(btnDown);
+        div_in_div.appendChild(orderLabel);
+        div_in_div.appendChild(inputOrder);
+    }
+
+    function moveImage(imageDiv, direction) {
+        let parent = imageDiv.parentNode;
+        if (direction === 'up' && imageDiv.previousElementSibling) {
+            parent.insertBefore(imageDiv, imageDiv.previousElementSibling);
+        } else if (direction === 'down' && imageDiv.nextElementSibling) {
+            parent.insertBefore(imageDiv.nextElementSibling, imageDiv);
+        }
+        updateOrderLabels(parent);
+    }
+
+    function updateOrderLabels(parentDiv) {
+        let children = parentDiv.children;
+        i = children.length;  // Recalculer i basé sur le nombre d'images actuel
+        for (let j = 0; j < children.length; j++) {
+            let orderLabel = children[j].querySelector('.image-order-label');
+            let inputOrder = children[j].querySelector('input[type="hidden"]');
+            if (orderLabel) {
+                orderLabel.innerText = j + 1;
+            }
+            if (inputOrder) {
+                inputOrder.value = j;
+            }
+        }
     }
 </script>
 

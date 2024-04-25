@@ -21,7 +21,7 @@ class ShopImagesModel extends AbstractModel
 {
     public function getShopImagesById(int $id): ?ShopImageEntity
     {
-        $sql = "SELECT * FROM cmw_shops_images WHERE shop_image_id = :shop_image_id";
+        $sql = "SELECT * FROM cmw_shops_images WHERE shop_image_id = :shop_image_id ORDER BY shop_image_order ASC";
 
         $db = DatabaseManager::getInstance();
 
@@ -38,6 +38,7 @@ class ShopImagesModel extends AbstractModel
             $res["shop_image_name"],
             $res["shop_category_id"] ?? null,
             $res["shop_item_id"] ?? null,
+            $res["shop_image_order"],
             $res["shop_image_created_at"],
             $res["shop_image_updated_at"],
         );
@@ -71,7 +72,7 @@ class ShopImagesModel extends AbstractModel
      */
     public function getShopImagesByItem(int $id): array
     {
-        $sql = "SELECT shop_image_id FROM cmw_shops_images WHERE shop_item_id = :shop_item_id";
+        $sql = "SELECT shop_image_id FROM cmw_shops_images WHERE shop_item_id = :shop_item_id ORDER BY shop_image_order ASC";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -89,7 +90,7 @@ class ShopImagesModel extends AbstractModel
         return $toReturn;
     }
 
-    public function addShopItemImage(array $image, int $itemId): void
+    public function addShopItemImage(array $image, int $itemId, int $order): void
     {
         $imageName = ImagesManager::upload($image, "Shop");
 
@@ -97,10 +98,11 @@ class ShopImagesModel extends AbstractModel
             $data = array(
                 "shop_image_name" => $imageName,
                 "shop_item_id" => $itemId,
+                "shop_image_order" => $order
             );
 
-            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id)
-                VALUES (:shop_image_name, :shop_item_id)";
+            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
+                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)";
 
             $db = DatabaseManager::getInstance();
             $req = $db->prepare($sql);

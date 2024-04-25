@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_item_default_stock     INT          NULL,
     shop_item_current_stock     INT          NULL,
     shop_item_price             FLOAT(10, 2) NULL,
+    shop_item_price_type        VARCHAR(50)  NOT NULL,
     shop_item_by_order_limit    INT          NULL,
     shop_item_global_limit      INT          NULL,
     shop_item_user_limit        INT          NULL,
@@ -69,12 +70,13 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
     shop_category_id      INT         NULL,
     shop_item_id          INT         NULL,
     shop_default_image    INT         NOT NULL DEFAULT 0,
+    shop_image_order      INT         NOT NULL DEFAULT 0,
     shop_image_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_image_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_category_id_images FOREIGN KEY (shop_category_id)
-        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL,
+        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE ,
     CONSTRAINT fk_shop_item_id_images FOREIGN KEY (shop_item_id)
-        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE SET NULL
+        REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -389,6 +391,7 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_payment
     shop_history_order_payment_id        INT AUTO_INCREMENT PRIMARY KEY,
     shop_history_order_id                INT          NOT NULL,
     shop_history_order_payment_name      VARCHAR(255) NULL,
+    shop_history_order_payment_var_name  VARCHAR(50)  NULL,
     shop_history_order_payment_fee       FLOAT(10, 2) NULL,
     CONSTRAINT fk_cmw_shop_history_order_payment_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE

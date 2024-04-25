@@ -3,12 +3,14 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 
+use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopHistoryOrdersPaymentEntity {
     private int $historyOrderPaymentId;
     private ShopHistoryOrdersEntity $historyOrder;
     private ?string $historyOrderPaymentName;
+    private ?string $historyOrderPaymentVarName;
     private ?float $historyOrderPaymentFee;
 
     /**
@@ -17,11 +19,12 @@ class ShopHistoryOrdersPaymentEntity {
      * @param string|null $historyOrderPaymentName
      * @param float|null $historyOrderPaymentFee
      */
-    public function __construct(int $historyOrderPaymentId, ShopHistoryOrdersEntity $historyOrder, ?string $historyOrderPaymentName, ?float $historyOrderPaymentFee)
+    public function __construct(int $historyOrderPaymentId, ShopHistoryOrdersEntity $historyOrder, ?string $historyOrderPaymentName, ?string $historyOrderPaymentVarName, ?float $historyOrderPaymentFee)
     {
         $this->historyOrderPaymentId = $historyOrderPaymentId;
         $this->historyOrder = $historyOrder;
         $this->historyOrderPaymentName = $historyOrderPaymentName;
+        $this->historyOrderPaymentVarName = $historyOrderPaymentVarName;
         $this->historyOrderPaymentFee = $historyOrderPaymentFee;
     }
 
@@ -40,6 +43,11 @@ class ShopHistoryOrdersPaymentEntity {
         return $this->historyOrderPaymentName;
     }
 
+    public function getVarName(): ?string
+    {
+        return $this->historyOrderPaymentVarName;
+    }
+
     public function getFee(): ?float
     {
         return $this->historyOrderPaymentFee;
@@ -52,7 +60,18 @@ class ShopHistoryOrdersPaymentEntity {
     public function getFeeFormatted(): string
     {
         $formattedPrice = number_format($this->getFee(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+
+        $priceType = "";
+        foreach ($this->getHistoryOrder()->getOrderedItems() as $orderedItem) {
+            $priceType = $orderedItem->getItem()->getPriceType();
+            break;
+        }
+
+        if ($priceType == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($priceType)->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice .  $symbol;

@@ -12,16 +12,18 @@ class ShopImageEntity
     private string $imageName;
     private ?int $imageCategoryId;
     private ?int $imageItemId;
+    private int $imageOrder;
     private string $imageCreated;
     private string $imageUpdated;
 
 
-    public function __construct(int $imageId, string $imageName, ?int $imageCategoryId, ?int $imageItemId, string $imageCreated, string $imageUpdated)
+    public function __construct(int $imageId, string $imageName, ?int $imageCategoryId, ?int $imageItemId, int $imageOrder, string $imageCreated, string $imageUpdated)
     {
         $this->imageId = $imageId;
         $this->imageName = $imageName;
         $this->imageCategoryId = $imageCategoryId;
         $this->imageItemId = $imageItemId;
+        $this->imageOrder = $imageOrder;
         $this->imageCreated = $imageCreated;
         $this->imageUpdated = $imageUpdated;
     }
@@ -64,6 +66,14 @@ class ShopImageEntity
     public function getImageItemId(): ?int
     {
         return $this->imageItemId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getImageOrder(): int
+    {
+        return $this->imageOrder;
     }
 
     /**

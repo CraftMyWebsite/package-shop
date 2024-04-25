@@ -3,12 +3,15 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Controller\Core\CoreController;
+use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Shop\Payments\ShopPaymentMethodSettingsEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Model\Shop\Discount\ShopGiftCardModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
@@ -162,7 +165,18 @@ class ShopHistoryOrdersEntity {
     public function getOrderTotalFormatted(): string
     {
         $formattedPrice = number_format($this->getOrderTotal(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+
+        $priceType = "";
+        foreach ($this->getOrderedItems() as $orderedItem) {
+            $priceType = $orderedItem->getItem()->getPriceType();
+            break;
+        }
+
+        if ($priceType == "money") {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        } else {
+            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPaymentMethod()->getVarName())->faIcon()." ";
+        }
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
         if ($symbolIsAfter) {
             return $formattedPrice .  $symbol;

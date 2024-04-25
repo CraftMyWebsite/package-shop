@@ -67,6 +67,11 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
         return 1;
     }
 
+    public function isVirtualCurrency(): bool
+    {
+        return 0;
+    }
+
     public function includeConfigWidgets(): void
     {
         return;

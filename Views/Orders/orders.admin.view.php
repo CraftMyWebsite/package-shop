@@ -45,7 +45,7 @@ $description = "";
                                 <?= "<b style='color: #6f6fad'>" . $inProgressOrder->getOrderTotalFormatted() ."</b>" ?><br>
                             </td>
                             <td><?= $inProgressOrder->getAdminStatus() ?></td>
-                            <?php $payment = ShopPaymentsController::getInstance()->getPaymentByName($inProgressOrder->getPaymentMethod()->getName()) ?>
+                            <?php $payment = ShopPaymentsController::getInstance()->getPaymentByVarName($inProgressOrder->getPaymentMethod()->getName()) ?>
                             <td><?php if ($payment->dashboardURL()) : ?><a target="_blank" href="<?=$payment->dashboardURL()?>"><?=$inProgressOrder->getPaymentMethod()->getName()?></a><?php else: ?> <?=$inProgressOrder->getPaymentMethod()->getName()?> <?php endif; ?>
                                 <?="(". $inProgressOrder->getPaymentMethod()->getFeeFormatted().")" ?></td>
                             <td><?= $inProgressOrder->getCreated() ?></td>

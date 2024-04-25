@@ -78,6 +78,7 @@ class ShopCommandController extends AbstractController
 
         $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
         $cartIsFree = $this->handleCartIsFree($cartContent);
+        $priceType = $this->handleCartPriceType($cartContent);
 
         //TODO: Verifier si les promotions appliquées au panier sont encore valides
 
@@ -123,11 +124,13 @@ class ShopCommandController extends AbstractController
                         if ($shippingMethod->getPrice() == 0) {
                             $paymentMethods = ShopPaymentsController::getInstance()->getFreePayment();
                         } else {
-                            $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+                            $paymentMethods = ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
                         }
                     }
+                } elseif ($priceType == "money") {
+                    $paymentMethods = ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
                 } else {
-                    $paymentMethods = ShopPaymentsController::getInstance()->getActivePaymentsMethods();
+                    $paymentMethods = ShopPaymentsController::getInstance()->getVirtualPaymentByVarNameAsArray($priceType);
                 }
                 $view = new View("Shop", "Command/payment");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
@@ -280,7 +283,7 @@ class ShopCommandController extends AbstractController
 
         ShopCommandTunnelModel::getInstance()->setPaymentName($user->getId(), $paymentName);
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName($paymentName);
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName($paymentName);
 
         if (!$paymentMethod){
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver ce mode de paiement !');
@@ -337,5 +340,19 @@ class ShopCommandController extends AbstractController
             }
         }
         return true;
+    }
+
+    /**
+     * @param ShopCartItemEntity[] $cartContent
+     * @return string // return the money var name
+     */
+    private function handleCartPriceType(array $cartContent) : string
+    {
+        $priceType = "";
+        foreach ($cartContent as $item) {
+            $priceType = $item->getItem()->getPriceType();
+            break;
+        }
+        return $priceType;
     }
 }

@@ -116,7 +116,7 @@ $description = "";
                                 <?= $item->getPriceFormatted() ?>
                             </td>
                             <td class="text-center">
-                                <?= $item->getFormatedStock() ?>
+                                <?= $item->getFormattedStock() ?>
                             </td>
                             <td class="text-center">
                                 <a type="button" data-bs-toggle="modal"  data-bs-target="#active-<?= $item->getId() ?>">

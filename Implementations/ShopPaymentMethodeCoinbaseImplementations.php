@@ -19,7 +19,7 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 
     public function varName(): string
     {
-        return str_replace(' ', '_', strtolower($this->name()));
+        return "coinbase";
     }
 
     public function faIcon(?string $customClass = null): ?string
@@ -67,8 +67,15 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
     {
         return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_is_active') ?? 0;
     }
+
+    public function isVirtualCurrency(): bool
+    {
+        return 0;
+    }
+
     public function includeConfigWidgets(): void
     {
+        $varName = $this->varName();
         require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
     }
 

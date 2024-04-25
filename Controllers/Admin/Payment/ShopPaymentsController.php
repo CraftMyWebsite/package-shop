@@ -17,6 +17,7 @@ use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
+use CMW\Model\Shopextendedtoken\ShopExtendedTokenInventoryModels;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
@@ -41,11 +42,11 @@ class ShopPaymentsController extends AbstractController
     /**
      * @return \CMW\Interface\Shop\IPaymentMethod[]
      */
-    public function getActivePaymentsMethods(): array
+    public function getRealActivePaymentsMethods(): array
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
         return array_filter($allPaymentMethods, function($paymentMethod) {
-            return $paymentMethod->isActive() && $paymentMethod->varName() !== "free";
+            return $paymentMethod->isVirtualCurrency() == 0 && $paymentMethod->isActive() && $paymentMethod->varName() !== "free";
         });
     }
 
@@ -61,17 +62,29 @@ class ShopPaymentsController extends AbstractController
     }
 
     /**
-     * @param string $name
+     * @param string $varName
      * @return \CMW\Interface\Shop\IPaymentMethod|null
      */
-    public function getPaymentByName(string $name): ?IPaymentMethod
+    public function getPaymentByVarName(string $varName): ?IPaymentMethod
     {
         foreach ($this->getPaymentsMethods() as $paymentsMethod) {
-            if ($paymentsMethod->name() === $name){
+            if ($paymentsMethod->varName() === $varName){
                 return $paymentsMethod;
             }
         }
         return null;
+    }
+
+    /**
+     * @param string $varName
+     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     */
+    public function getVirtualPaymentByVarNameAsArray(string $varName): array
+    {
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        return array_filter($allPaymentMethods, function($paymentMethod) use ($varName) {
+            return $paymentMethod->isVirtualCurrency() == 1 && $paymentMethod->isActive() && $paymentMethod->varName() == $varName;
+        });
     }
 
     #[Link("/payments", Link::GET, [], "/cmw-admin/shop")]
@@ -144,9 +157,9 @@ class ShopPaymentsController extends AbstractController
     }
 
     #[NoReturn] #[Listener(eventName: ShopPaymentCancelEvent::class, times: 0, weight: 1)]
-    private function onPaymentCancel(): void
+    private function onPaymentCancel(mixed $message): void
     {
-        Flash::send(Alert::WARNING, "Paiement annulé", "");
+        Flash::send(Alert::WARNING, "Paiement annulé", $message ?? "");
         Redirect::redirect("shop/command");
     }
 

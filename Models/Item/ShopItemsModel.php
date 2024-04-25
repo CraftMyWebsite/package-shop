@@ -57,6 +57,7 @@ class ShopItemsModel extends AbstractModel
             $res["shop_item_default_stock"] ?? null,
             $res["shop_item_current_stock"] ?? null,
             $res["shop_item_price"] ?? null,
+            $res["shop_item_price_type"],
             $res["shop_item_by_order_limit"] ?? null,
             $res["shop_item_global_limit"] ?? null,
             $res["shop_item_user_limit"] ?? null,
@@ -183,7 +184,35 @@ class ShopItemsModel extends AbstractModel
         return $res['shop_item_id'] ?? 0;
     }
 
-    public function createShopItem(?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit): int
+    /**
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
+     */
+    public function getShopItemByVirtualMethodVarName(string $varName): array
+    {
+        $sql = "SELECT csi.shop_item_id
+FROM cmw_shops_items csi
+INNER JOIN cmw_shops_items_virtual_method csivm
+ON csi.shop_item_id = csivm.shop_item_id
+WHERE csivm.shops_items_virtual_method_var_name = :varName AND csi.shop_item_archived = 0
+ORDER BY csi.shop_item_price ASC;";
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("varName" => $varName))) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($items = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($items["shop_item_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    public function createShopItem(?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit): int
     {
         $data = array(
             "shop_item_name" => $name,
@@ -195,13 +224,14 @@ class ShopItemsModel extends AbstractModel
             "shop_item_default_stock" => $stock,
             "shop_item_current_stock" => $stock,
             "shop_item_price" => $price,
+            "shop_item_price_type" => $priceType,
             "shop_item_by_order_limit" => $byOrderLimit,
             "shop_item_global_limit" => $globalLimit,
             "shop_item_user_limit" => $userLimit,
         );
 
-        $sql = "INSERT INTO cmw_shops_items(shop_item_name, shop_item_short_description, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_by_order_limit, shop_item_global_limit, shop_item_user_limit )
-                VALUES (:shop_item_name, :shop_item_short_description, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_by_order_limit, :shop_item_global_limit, :shop_item_user_limit )";
+        $sql = "INSERT INTO cmw_shops_items(shop_item_name, shop_item_short_description, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_price_type, shop_item_by_order_limit, shop_item_global_limit, shop_item_user_limit )
+                VALUES (:shop_item_name, :shop_item_short_description, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_price_type, :shop_item_by_order_limit, :shop_item_global_limit, :shop_item_user_limit )";
 
 
         $db = DatabaseManager::getInstance();

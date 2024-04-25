@@ -48,7 +48,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
             throw new ShopPaymentException(message: "PayPal config is not complete");
         }
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByName("PayPal");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("paypal");
         $paymentFee = $paymentMethod->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
@@ -251,6 +251,6 @@ class ShopPaymentMethodPayPalController extends AbstractController
     #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/paypal")]
     private function paypalCommandCancel(): void
     {
-        Emitter::send(ShopPaymentCancelEvent::class, ['user' => UsersModel::getCurrentUser()]);
+        Emitter::send(ShopPaymentCancelEvent::class, null);
     }
 }
