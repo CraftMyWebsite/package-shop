@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Shop;
 
 
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsDownloadableController;
@@ -9,16 +9,16 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
 
-class ShopVirtualItemDownloadableImplementations implements IVirtualItems
+class ShopVirtualItemEmptyImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return "Téléchargeable";
+        return "Aucun";
     }
 
     public function varName(): string
     {
-        return "downloadable";
+        return "nothing";
     }
 
     public function documentationURL(): ?string
@@ -28,13 +28,12 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 
     public function description(): ?string
     {
-        return "Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini";
+        return null;
     }
 
     public function includeItemConfigWidgets(?int $itemId): void
     {
-        $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php";
+        return;
     }
 
     public function includeGlobalConfigWidgets(): void {}
@@ -46,7 +45,7 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
-        ShopVirtualItemsDownloadableController::getInstance()->sedMailWithDownloadLink($varName, $item, $user);
+        return;
     }
 
     public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void

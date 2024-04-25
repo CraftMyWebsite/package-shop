@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;

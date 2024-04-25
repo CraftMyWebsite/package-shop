@@ -1,8 +1,8 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Shop;
 
-use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodCoinbaseController;
+use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodStripeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
@@ -10,31 +10,31 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
+class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "CoinBase";
+        return "Stripe";
     }
 
     public function varName(): string
     {
-        return "coinbase";
+        return "stripe";
     }
 
     public function faIcon(?string $customClass = null): ?string
     {
-        return "<i class='fa-brands fa-bitcoin $customClass'></i>";
+        return "<i class='fa-brands fa-cc-stripe $customClass'></i>";
     }
 
     public function dashboardURL(): ?string
     {
-        return "https://beta.commerce.coinbase.com/payments";
+        return "https://dashboard.stripe.com/dashboard";
     }
 
     public function documentationURL(): ?string
     {
-        return "https://docs.cloud.coinbase.com/commerce-onchain/docs/creating-api-key";
+        return null;
     }
 
     public function description(): ?string
@@ -76,11 +76,11 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
     public function includeConfigWidgets(): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/stripe.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
     {
-        ShopPaymentMethodCoinbaseController::getInstance()->sendCoinbasePayment($cartItems, $address);
+        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems, $address);
     }
 }

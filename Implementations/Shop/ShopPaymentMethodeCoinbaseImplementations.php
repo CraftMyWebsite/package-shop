@@ -1,8 +1,8 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Shop;
 
-use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodPayPalController;
+use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodCoinbaseController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
@@ -10,31 +10,31 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
+class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "PayPal";
+        return "CoinBase";
     }
 
     public function varName(): string
     {
-        return "paypal";
+        return "coinbase";
     }
 
     public function faIcon(?string $customClass = null): ?string
     {
-        return "<i class='fa-brands fa-cc-paypal $customClass'></i>";
+        return "<i class='fa-brands fa-bitcoin $customClass'></i>";
     }
 
     public function dashboardURL(): ?string
     {
-        return "https://developer.paypal.com/dashboard";
+        return "https://beta.commerce.coinbase.com/payments";
     }
 
     public function documentationURL(): ?string
     {
-        return null;
+        return "https://docs.cloud.coinbase.com/commerce-onchain/docs/creating-api-key";
     }
 
     public function description(): ?string
@@ -76,11 +76,11 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
     public function includeConfigWidgets(): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/paypal.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
     {
-        ShopPaymentMethodPayPalController::getInstance()->sendPayPalPayment($cartItems, $address);
+        ShopPaymentMethodCoinbaseController::getInstance()->sendCoinbasePayment($cartItems, $address);
     }
 }

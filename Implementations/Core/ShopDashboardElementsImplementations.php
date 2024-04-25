@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Core;
 
 use CMW\Interface\Core\IDashboardElements;
 use CMW\Manager\Env\EnvManager;

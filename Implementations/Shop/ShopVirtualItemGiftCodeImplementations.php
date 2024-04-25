@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Shop;
 
 
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsGiftCodeController;

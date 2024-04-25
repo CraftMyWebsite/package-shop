@@ -1,6 +1,6 @@
 <?php
 
-namespace CMW\Implementation\Shop;
+namespace CMW\Implementation\Shop\Core;
 
 use CMW\Interface\Core\IMenus;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
