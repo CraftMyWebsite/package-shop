@@ -20,7 +20,7 @@ interface IPaymentMethod
 
     /**
      * @return string
-     * @desc The variable name defined automatically
+     * @desc The variable name
      */
     public function varName(): string;
 
