@@ -45,6 +45,7 @@ class ShopHistoryController extends AbstractController
 
         $view = new View("Shop", "Users/history");
         $view->addVariableList(["historyOrders" => $historyOrders,"defaultImage" => $defaultImage]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 }

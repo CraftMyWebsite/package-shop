@@ -85,6 +85,7 @@ class ShopCommandController extends AbstractController
         if (empty($userAddresses)) {
             $view = new View("Shop", "Command/newAddress");
             $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
+            $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
@@ -92,6 +93,7 @@ class ShopCommandController extends AbstractController
             if ($currentStep === 0) {
                 $view = new View("Shop", "Command/address");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
+                $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
                 $view->view();
             }
             if ($currentStep === 1) {
@@ -103,6 +105,7 @@ class ShopCommandController extends AbstractController
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
                     $shippings = ShopShippingModel::getInstance()->getShopShipping();
                     $view = new View("Shop", "Command/delivery");
+                    $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
                     $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings, "giftCodes" => $giftCodes]);
                     $view->view();
                 }
@@ -133,6 +136,7 @@ class ShopCommandController extends AbstractController
                     $paymentMethods = ShopPaymentsController::getInstance()->getVirtualPaymentByVarNameAsArray($priceType);
                 }
                 $view = new View("Shop", "Command/payment");
+                $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
                 $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
                     "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
                     "paymentMethods" => $paymentMethods, "giftCodes" => $giftCodes]);

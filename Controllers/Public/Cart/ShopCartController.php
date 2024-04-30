@@ -67,6 +67,7 @@ class ShopCartController extends AbstractController
 
         $view = new View("Shop", "Cart/cart");
         $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes, "appliedDiscounts" => $appliedDiscounts]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 

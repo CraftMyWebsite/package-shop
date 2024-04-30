@@ -51,6 +51,7 @@ class ShopPublicController extends AbstractController
         $view = new View("Shop", "Main/main");
         $view->addVariableList(["categories" => $categories, "items" => $items, "imagesItem" =>
             $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "review" => $review, "allowReviews" => $allowReviews]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 
@@ -69,6 +70,7 @@ class ShopPublicController extends AbstractController
 
         $view = new View("Shop", "Main/cat");
         $view->addVariableList(["items" => $items, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "itemInCart" => $itemInCart, "thisCat" => $thisCat, "categories" => $categories, "review" => $review, "allowReviews" => $allowReviews]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 
@@ -90,6 +92,7 @@ class ShopPublicController extends AbstractController
 
         $view = new View("Shop", "Main/item");
         $view->addVariableList(["otherItemsInThisCat" => $otherItemsInThisCat, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "parentCat" => $parentCat, "item" => $item, "itemVariants" => $itemVariants, "variantValuesModel" => $variantValuesModel, "physicalInfo" => $physicalInfo ?? null, "review" => $review, "allowReviews" => $allowReviews]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 
@@ -104,6 +107,7 @@ class ShopPublicController extends AbstractController
 
         $view = new View("Shop", "Users/settings");
         $view->addVariableList(["itemInCart" => $itemInCart]);
+        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
         $view->view();
     }
 
