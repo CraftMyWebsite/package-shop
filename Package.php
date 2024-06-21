@@ -151,4 +151,12 @@ class Package implements IPackageConfig
     {
         return [];
     }
+
+
+    public function uninstall(): bool
+    {
+        //Return true, we don't need other operations for uninstall.
+        //TODO uninstal.sql
+        return false;
+    }
 }
