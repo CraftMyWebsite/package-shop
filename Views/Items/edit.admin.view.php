@@ -8,9 +8,9 @@ use CMW\Utils\Website;
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
-/* @var CMW\Entity\Shop\ShopItemEntity $item */
-/* @var CMW\Entity\Shop\ShopImageEntity[] $imagesItem */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
+/* @var CMW\Entity\Shop\Items\ShopItemEntity $item */
+/* @var CMW\Entity\Shop\Images\ShopImageEntity[] $imagesItem */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">

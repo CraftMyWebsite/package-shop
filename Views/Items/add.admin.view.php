@@ -3,16 +3,19 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Model\Shop\ShopCategoriesModel $categoryModel */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
+/* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
+/* @var CMW\Interface\Shop\IPriceTypeMethod[] $priceTypeMethods */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-envelope"></i> <span
+    <h3><i class="fa-solid fa-cart-plus"></i> <span
                 class="m-lg-auto">Nouvel article</span></h3>
     <div class="buttons">
         <button form="addItem" type="submit"
@@ -44,6 +47,64 @@ $description = "";
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="typePhysique" style="display:none;">
+                        <h6>Caractéristique physique du produit :</h6>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <h6>Poids<span style='color: red'>*</span> : <small>(en gramme)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_weight" required>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <h6>Largeur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_length">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <h6>Longueur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_width">
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <h6>Hauteur : <small>(en cm)</small></h6>
+                                <input type="text" class="form-control" placeholder="150.00" name="shop_item_height">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="typeVirtuel" style="display:none;">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <h6>Contenue virtuel<span style="color: red">*</span> :</h6>
+                                <select class="form-select" name="shop_item_virtual_prefix" required>
+                                    <?php foreach ($virtualMethods as $virtualMethod): ?>
+                                        <option value="<?= $virtualMethod->varName() ?>" <?= $virtualMethod->varName() === "nothing" ? "selected" : "" ?>><?= $virtualMethod->name() ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="tab-content text-justify" id="nav-tabContent">
+                                    <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
+                                        <div class="tab-pane" id="method-<?= $virtualMethod->varName() ?>">
+                                            <?php if ($virtualMethod->documentationURL()) : ?>
+                                                <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
+                                            <?php endif;?>
+                                            <p><?= $virtualMethod->description() ?></p>
+                                            <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
+                                            <?php $virtualMethod->includeItemConfigWidgets(null) ?>
+                                        </div>
+                                        <?php ++$i; endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <div id="typeNeeds" class="row">
@@ -83,13 +144,25 @@ $description = "";
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Prix :</h6>
-                            <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="shop_item_price" placeholder="19.99">
+                                <span>
+                                    <!--TODO : Uniquement les articles virtuel pour le moment-->
+                                <select id="payment" class="form-select" name="shop_item_price_type" required>
+                                    <?php foreach ($priceTypeMethods as $priceTypeMethod): ?>
+                                        <option value="<?= $priceTypeMethod->varName() ?>"><?= $priceTypeMethod->name() ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </span>
+                            </div>
+
                         </div>
                         <div class="col-12 mt-2">
                             <h6>Type<span style="color: red">*</span> :</h6>
                             <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                                <option value="1">Virtuel</option>
-                                <option selected value="0">Physique</option>
+                                <option selected value="1">Virtuel</option>
+                                <option value="0">Physique</option>
                             </select>
                         </div>
                     </div>
@@ -250,81 +323,39 @@ $description = "";
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
-        // Appeler la fonction au chargement de la page
-        afficherChamps();
+        afficherChamps(); // Appeler au chargement de la page
     });
 
     function afficherChamps() {
         let choix = document.getElementById("type").value;
-        let champsDynamiquesDiv = document.getElementById("typeNeeds");
+        let typePhysique = document.getElementById("typePhysique");
+        let typeVirtuel = document.getElementById("typeVirtuel");
 
-        // Effacer les champs précédents
-        champsDynamiquesDiv.innerHTML = "";
+        // Cacher et désactiver les champs de typePhysique et typeVirtuel
+        cacherEtDesactiver(typePhysique);
+        cacherEtDesactiver(typeVirtuel);
 
         if (choix === "0") {
-            let weightDiv = document.createElement("div");
-            weightDiv.className = "col-12 col-lg-6";
-            let lengthDiv = document.createElement("div");
-            lengthDiv.className = "col-12 col-lg-6";
-            let widthDiv = document.createElement("div");
-            widthDiv.className = "col-12 col-lg-6";
-            let heightDiv = document.createElement("div");
-            heightDiv.className = "col-12 col-lg-6";
-
-            let weightTitle = document.createElement("h6");
-            weightTitle.innerHTML = "Poids<span style='color: red'>*</span> : <small>(en gramme)</small>";
-            let weightInput = document.createElement("input");
-            weightInput.type = "text";
-            weightInput.className = "form-control";
-            weightInput.placeholder = "150";
-            weightInput.name = "shop_item_weight";
-
-            let lengthTitle = document.createElement("h6");
-            lengthTitle.innerHTML = "Largeur<span style='color: red'>*</span> : <small>(en cm)</small>";
-            let lengthInput = document.createElement("input");
-            lengthInput.type = "text";
-            lengthInput.className = "form-control";
-            lengthInput.placeholder = "150";
-            lengthInput.name = "shop_item_length";
-
-            let widthTitle = document.createElement("h6");
-            widthTitle.innerHTML = "Longueur<span style='color: red'>*</span> : <small>(en cm)</small>";
-            let widthInput = document.createElement("input");
-            widthInput.type = "text";
-            widthInput.className = "form-control";
-            widthInput.placeholder = "150";
-            widthInput.name = "shop_item_width";
-
-            let heightTitle = document.createElement("h6");
-            heightTitle.innerHTML = "Hauteur<span style='color: red'>*</span> : <small>(en cm)</small>";
-            let heightInput = document.createElement("input");
-            heightInput.type = "text";
-            heightInput.className = "form-control";
-            heightInput.placeholder = "150";
-            heightInput.name = "shop_item_height";
-
-
-            champsDynamiquesDiv.appendChild(weightDiv);
-            weightDiv.appendChild(weightTitle);
-            weightDiv.appendChild(weightInput);
-            champsDynamiquesDiv.appendChild(lengthDiv);
-            lengthDiv.appendChild(lengthTitle);
-            lengthDiv.appendChild(lengthInput);
-            champsDynamiquesDiv.appendChild(widthDiv);
-            widthDiv.appendChild(widthTitle);
-            widthDiv.appendChild(widthInput);
-            champsDynamiquesDiv.appendChild(heightDiv);
-            heightDiv.appendChild(heightTitle);
-            heightDiv.appendChild(heightInput);
+            montrerEtActiver(typePhysique);
         } else if (choix === "1") {
-            let label = document.createElement("label");
-            label.innerHTML = "Champ Virtuel 1 : ";
-            let input = document.createElement("input");
-            input.type = "text";
-            input.name = "virtuel1";
-            champsDynamiquesDiv.appendChild(label);
-            champsDynamiquesDiv.appendChild(input);
+            montrerEtActiver(typeVirtuel);
         }
+    }
+
+    function cacherEtDesactiver(element) {
+        element.style.display = "none";
+        let champs = element.querySelectorAll("input, select, textarea");
+        champs.forEach(champ => {
+            champ.disabled = true; // Désactive les champs
+        });
+    }
+
+    function montrerEtActiver(element) {
+        element.style.display = "block";
+        let champs = element.querySelectorAll("input, select, textarea");
+        champs.forEach(champ => {
+            champ.disabled = false; // Active les champs
+        });
     }
 </script>
 
@@ -338,7 +369,6 @@ $description = "";
         let btn_div = document.createElement('div');
         let img = document.createElement('img');
         let btnDelete = document.createElement('button');
-        let label = document.createElement('label');
 
         input.type = "file";
         input.accept = "image/png, image/jpg, image/jpeg, image/webp, image/gif"
@@ -351,30 +381,29 @@ $description = "";
             const [file] = input.files
             if (file) {
                 img.src = URL.createObjectURL(file)
-                div.className = "col-12 col-lg-6";
+                div.className = "col-12 col-lg-3";
                 div.id = 'delete-' + i;
                 btn_div.className = "d-flex flex-wrap justify-content-between";
                 div_in_div.className = "card-in-card p-2";
                 img.className = "w-50 mx-auto";
                 btnDelete.type = "button";
-                btnDelete.innerText = "<?= LangManager::translate("core.btn.delete") ?>";
+                btnDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
                 btnDelete.className = "btn btn-danger mt-2";
-                label.htmlFor = 'image-' + i;
-                label.innerText = "<?= LangManager::translate("core.btn.edit") ?>"
-                label.className = "btn btn-primary mt-2";
 
                 let firstDiv = document.getElementById('img_div').appendChild(div);
                 firstDiv.appendChild(div_in_div);
                 div_in_div.appendChild(img);
                 div_in_div.appendChild(input);
                 div_in_div.appendChild(btn_div);
-                btn_div.appendChild(label);
+                //btn_div.appendChild(label);
                 btn_div.appendChild(btnDelete);
                 btnDelete.onclick = evt => {
+                    let parent = div.parentNode;
                     input.remove()
                     div.remove()
                     img.remove()
                     btnDelete.remove()
+                    updateOrderLabels(parent);
                 }
                 i++;
             }
@@ -382,6 +411,107 @@ $description = "";
 
         let number_Image_post = document.getElementById('numberOfImage')
         number_Image_post.value = i + 1;
+
+        let orderLabel = document.createElement('span');
+        orderLabel.innerText = i + 1; // Affiche le numéro de l'image
+        orderLabel.className = 'image-order-label';
+
+        let btnUp = document.createElement('button');
+        btnUp.innerHTML = '<i class="fa-solid fa-circle-arrow-left"></i>';
+        btnUp.className = 'btn btn-sm btn-primary mt-2';
+        btnUp.onclick = () => moveImage(div, 'up');
+        btnUp.type = "button";
+
+        let btnDown = document.createElement('button');
+        btnDown.innerHTML = '<i class="fa-solid fa-circle-arrow-right"></i>';
+        btnDown.className = 'btn btn-sm btn-primary mt-2';
+        btnDown.onclick = () => moveImage(div, 'down');
+        btnDown.type = "button";
+
+        let inputOrder = document.createElement('input');
+        inputOrder.type = 'hidden';
+        inputOrder.name = 'order-' + i;
+        inputOrder.value = i;  // Définir l'ordre initial à l'index
+
+        btn_div.appendChild(btnUp);
+        btn_div.appendChild(btnDelete);
+        btn_div.appendChild(btnDown);
+        div_in_div.appendChild(orderLabel);
+        div_in_div.appendChild(inputOrder);
+    }
+
+    function moveImage(imageDiv, direction) {
+        let parent = imageDiv.parentNode;
+        if (direction === 'up' && imageDiv.previousElementSibling) {
+            parent.insertBefore(imageDiv, imageDiv.previousElementSibling);
+        } else if (direction === 'down' && imageDiv.nextElementSibling) {
+            parent.insertBefore(imageDiv.nextElementSibling, imageDiv);
+        }
+        updateOrderLabels(parent);
+    }
+
+    function updateOrderLabels(parentDiv) {
+        let children = parentDiv.children;
+        i = children.length;  // Recalculer i basé sur le nombre d'images actuel
+        for (let j = 0; j < children.length; j++) {
+            let orderLabel = children[j].querySelector('.image-order-label');
+            let inputOrder = children[j].querySelector('input[type="hidden"]');
+            if (orderLabel) {
+                orderLabel.innerText = j + 1;
+            }
+            if (inputOrder) {
+                inputOrder.value = j;
+            }
+        }
     }
 </script>
 
+<script>
+    let inputElement = document.querySelector('input[name="shop_item_price"]');
+
+    inputElement.addEventListener('input', function() {
+        let inputValue = this.value;
+        inputValue = inputValue.replace(/,/g, '.');
+        inputValue = inputValue.replace(/[^\d.]/g, '');
+        if (/\.\d{3,}/.test(inputValue)) {
+            let decimalIndex = inputValue.indexOf('.');
+            inputValue = inputValue.substring(0, decimalIndex + 3);
+        }
+        this.value = inputValue;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectElement = document.querySelector('[name="shop_item_virtual_prefix"]');
+
+        function toggleTabContent(value) {
+            // Masquer tous les contenus d'onglets et désactiver les inputs
+            document.querySelectorAll('.tab-pane').forEach(function (tabContent) {
+                tabContent.style.display = 'none';
+                tabContent.querySelectorAll('input').forEach(function (input) {
+                    input.disabled = true;
+                });
+            });
+
+            // Si la valeur sélectionnée n'est pas "0", afficher le contenu correspondant et activer les inputs
+            if (value !== "0") {
+                var activeTabContent = document.getElementById('method-' + value);
+                if (activeTabContent) {
+                    activeTabContent.style.display = 'block';
+                    activeTabContent.querySelectorAll('input').forEach(function (input) {
+                        input.disabled = false;
+                    });
+                }
+            }
+        }
+
+        // Initialiser sans afficher de contenu
+        toggleTabContent(selectElement.value);
+
+        // Écouteur d'événements pour le changement de sélection
+        selectElement.addEventListener('change', function () {
+            toggleTabContent(this.value);
+        });
+    });
+</script>

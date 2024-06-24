@@ -1,6 +1,6 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopCartEntity[] $carts */
+/* @var \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $carts */
 /* @var \CMW\Entity\Users\UserEntity $user */
 
 $title = "Paniers de ". $user->getPseudo();
@@ -34,10 +34,10 @@ $description = "";
                         <?= $cart->getQuantity() ?>
                     </td>
                     <td>
-                        <?= $cart->getItem()->getPrice() ?> €
+                        <?= $cart->getItem()->getPriceFormatted() ?>
                     </td>
                     <td>
-                        <?= $cart->getTotalPrice() ?> €
+                        <?= $cart->getItemTotalPriceFormatted() ?>
                     </td>
                     <td>
                         <?= $cart->getCreated() ?>

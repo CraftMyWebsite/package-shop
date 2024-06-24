@@ -1,6 +1,6 @@
 <?php
 
-/* @var \CMW\Entity\Shop\ShopCategoryEntity $category */
+/* @var \CMW\Entity\Shop\Categories\ShopCategoryEntity $category */
 
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;

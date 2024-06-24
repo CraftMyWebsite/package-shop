@@ -3,14 +3,17 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Shop\ShopSettingsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Model\Shop\ShopItemsModel $items */
-/* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
+/* @var CMW\Model\Shop\Item\ShopItemsModel $items */
+/* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
+/* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">
@@ -32,6 +35,9 @@ $description = "";
                     <tr>
                         <th class="text-center">Nom</th>
                         <th class="text-center">Images</th>
+                        <?php if ($allowReviews): ?>
+                        <th class="text-center">Avis</th>
+                        <?php endif; ?>
                         <th class="text-center">Description</th>
                         <th class="text-center">Catégorie</th>
                         <th class="text-center">Prix</th>
@@ -95,20 +101,31 @@ $description = "";
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     <?php else: ?>
-                                <p>Pas d'images pour cet article</p>
+
+                                    <img style="width: 12rem; max-height: 9rem; object-fit: contain"
+                                         src="<?= $defaultImage ?>" class="p-2 d-block"
+                                         alt="..."/>
                                 <?php endif; ?>
                             </td>
+                            <?php if ($allowReviews): ?>
+                            <td class="text-center">
+                                <a href="items/review/<?= $item->getId() ?>">
+                                <?= $review->countTotalRatingByItemId($item->getId()) ?> avis<br>
+                                <?= $review->getStars($item->getId()) ?>
+                                </a>
+                            </td>
+                            <?php endif; ?>
                             <td style="max-width: 5rem;">
-                                <?= $item->getDescription() ?>
+                                <?= $item->getShortDescription() ?>
                             </td>
                             <td class="text-center" style="width: fit-content;">
                                 <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="text-primary"><?= $item->getCategory()->getName() ?></h6></a>
                             </td>
                             <td class="text-center">
-                                <?= $item->getPrice() ?> <?= ShopSettingsModel::getSettingValue('currency') ?>
+                                <?= $item->getPriceFormatted() ?>
                             </td>
                             <td class="text-center">
-                                <?= $item->getFormatedStock() ?>
+                                <?= $item->getFormattedStock() ?>
                             </td>
                             <td class="text-center">
                                 <?= $item->getQuantityInCart() ?>

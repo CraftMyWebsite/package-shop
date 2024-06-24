@@ -13,10 +13,22 @@ $description = "";
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4>N.A</h4>
+                <h4>Ajouter une méthode d'envoie</h4>
             </div>
             <div class="card-body">
-                <p>Cette page n'est pas encore prête !</p>
+                Titre : MondialRelay<br><br>
+
+                Prix de base : X€<br><br>
+
+                Pays autoriser<br><br>
+
+                Utiliser les variantes de poids : oui/non<br>
+                Si oui > Poids au dessus de Xgrammes = Xgrammes = X€<br>
+                Tant que ...<br><br>
+
+                Gratuit si la commande dépasse X€ : oui / non ?<br>
+                Si oui > quel montant ? <br>
+                Tant que ...<br>
             </div>
         </div>
     </div>

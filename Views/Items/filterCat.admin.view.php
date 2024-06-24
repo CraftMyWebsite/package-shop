@@ -3,16 +3,16 @@
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Shop\ShopSettingsModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 $title = "Boutique";
 $description = "";
 
-/* @var CMW\Entity\Shop\ShopCategoryEntity $thisCat */
-/* @var CMW\Model\Shop\ShopItemsModel $items */
-/* @var CMW\Model\Shop\ShopImagesModel $imagesItem */
-
+/* @var CMW\Entity\Shop\Categories\ShopCategoryEntity $thisCat */
+/* @var CMW\Model\Shop\Item\ShopItemsModel $items */
+/* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
+/* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-cubes-stacked"></i> <span class="m-lg-auto">Articles dans la catégorie <?= $thisCat->getName() ?></span></h3>
@@ -96,7 +96,9 @@ $description = "";
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 <?php else: ?>
-                                    <p>Pas d'images pour cet article</p>
+                                    <img style="width: 12rem; max-height: 9rem; object-fit: contain"
+                                         src="<?= $defaultImage ?>" class="p-2 d-block"
+                                         alt="..."/>
                                 <?php endif; ?>
                             </td>
                             <td style="max-width: 5rem;">
