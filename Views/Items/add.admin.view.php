@@ -79,16 +79,15 @@ $description = "";
                         <div class="row">
                             <div class="col-12 mb-2">
                                 <h6>Contenue virtuel<span style="color: red">*</span> :</h6>
-                                <select class="form-select" name="shop_item_virtual_prefix" required>
+                                <select class="form-select" name="shop_item_virtual_prefix" id="virtual_type_selected" required>
                                     <?php foreach ($virtualMethods as $virtualMethod): ?>
                                         <option value="<?= $virtualMethod->varName() ?>" <?= $virtualMethod->varName() === "nothing" ? "selected" : "" ?>><?= $virtualMethod->name() ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-12">
-                                <div class="tab-content text-justify" id="nav-tabContent">
                                     <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
-                                        <div class="tab-pane" id="method-<?= $virtualMethod->varName() ?>">
+                                        <div class="virtual-method" id="method-<?= $virtualMethod->varName() ?>">
                                             <?php if ($virtualMethod->documentationURL()) : ?>
                                                 <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
                                             <?php endif;?>
@@ -97,7 +96,6 @@ $description = "";
                                             <?php $virtualMethod->includeItemConfigWidgets(null) ?>
                                         </div>
                                         <?php ++$i; endforeach; ?>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -513,5 +511,51 @@ $description = "";
         selectElement.addEventListener('change', function () {
             toggleTabContent(this.value);
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('virtual_type_selected');
+        const rewardMethods = document.querySelectorAll('.virtual-method');
+
+        function updateRewardMethods() {
+            rewardMethods.forEach(method => {
+                method.style.display = 'none';
+                disableFormElements(method, true);
+            });
+
+            const selectedValue = selectElement.value;
+            const selectedMethod = document.getElementById('method-' + selectedValue);
+            if (selectedMethod) {
+                selectedMethod.style.display = 'block';
+                disableFormElements(selectedMethod, false);
+            }
+        }
+
+        function disableFormElements(container, disable) {
+            const elements = container.querySelectorAll('input, select, textarea, button, fieldset, optgroup, option, datalist, output');
+            elements.forEach(element => {
+                if (disable) {
+                    element.disabled = true;
+                    if (element.hasAttribute('required')) {
+                        element.setAttribute('data-required', 'true');
+                        element.required = false;
+                    }
+                } else {
+                    element.disabled = false;
+                    if (element.getAttribute('data-required') === 'true') {
+                        element.setAttribute('required', 'true');
+                        element.removeAttribute('data-required');
+                        element.required = true;
+                    }
+                }
+            });
+        }
+
+        selectElement.addEventListener('change', updateRewardMethods);
+
+        // Initialize the display based on the current selection
+        updateRewardMethods();
     });
 </script>
