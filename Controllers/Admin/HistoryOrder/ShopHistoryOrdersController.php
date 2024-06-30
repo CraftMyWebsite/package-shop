@@ -59,7 +59,7 @@ class ShopHistoryOrdersController extends AbstractController
 
         View::createAdminView('Shop', 'Orders/orders')
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js",
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
                 "Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->addVariableList(["inProgressOrders" => $inProgressOrders,"errorOrders" => $errorOrders,"finishedOrders" => $finishedOrders, "orderItemsModel" => $orderItemsModel])
             ->view();

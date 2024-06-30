@@ -7,6 +7,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
@@ -62,6 +63,7 @@ class ShopSettingsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.settings");
 
+        NotificationManager::notify("Nouvelle commande !", "Z0mblard viens de passer une commande !", "pages/add");
         $currentCurrency = ShopSettingsModel::getInstance()->getSettingValue("currency");
         $currentSymbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
         $currentAfter = ShopSettingsModel::getInstance()->getSettingValue("after");

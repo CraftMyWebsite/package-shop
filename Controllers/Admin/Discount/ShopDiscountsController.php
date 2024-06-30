@@ -43,7 +43,7 @@ class ShopDiscountsController extends AbstractController
                 "upcomingDiscounts" => $sortedDiscounts['upcoming'],
                 "pastDiscounts" => $sortedDiscounts['past']])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
     }
 
@@ -66,7 +66,7 @@ class ShopDiscountsController extends AbstractController
                 "upcomingDiscounts" => $sortedDiscounts['upcoming'],
                 "pastDiscounts" => $sortedDiscounts['past']])
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/Umd/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
             ->view();
     }
 
