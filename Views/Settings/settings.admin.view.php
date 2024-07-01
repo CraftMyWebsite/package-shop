@@ -22,9 +22,19 @@ $description = "";
 
 <form id="applyConfig" method="post" enctype="multipart/form-data">
     <?php (new SecurityManager())->insertHiddenToken() ?>
-<div class="grid-2">
+<div class="grid-3">
+    <div class="card">
+        <div class="flex justify-between">
+            <h6>Image par défaut</h6>
+            <a type="button" class="btn-warning" href="settings/reset_default_image">Réinitialiser</a>
+        </div>
+        <img width="60%" class="mx-auto" src="<?= $defaultImage ?>" alt="Default image">
+        <div class="drop-img-area" data-input-name="defaultPicture"></div>
+    </div>
+
     <div>
         <div class="card">
+            <h6>Monnaie</h6>
             <label for="currency">Devise :</label>
             <select class="choices" id="currency" name="currency" required>
                 <?php foreach (ShopSettingsController::$availableCurrencies as $code => $details): ?>
@@ -38,73 +48,41 @@ $description = "";
                 <option value="1" <?= $currentAfter == 1 ? 'selected' : '' ?>>Après le prix</option>
                 <option value="0" <?= $currentAfter == 0 ? 'selected' : '' ?>>Avant le prix</option>
             </select>
+        </div>
+        <div class="card mt-6">
+            TODO
             <label class="toggle">
-                <p class="toggle-label">Autoriser les avis clients</p>
-                <input type="checkbox" class="toggle-input" id="allowReviews" name="allowReviews" <?= $currentReviews ? 'checked' : '' ?>>
+                <h6 class="toggle-label">Maintenance</h6>
+                <input type="checkbox" class="toggle-input" id="" name="">
                 <div class="toggle-slider"></div>
             </label>
-        </div>
-
-
-        <div class="card mt-6">
-            <h6>Commandes</h6>
-            ---------------TODO---------------
-            <div class="card-body row">
-                <div class="col-12 col-lg-6">
-                    <div class="card-in-card">
-                        <div class="card-body">
-                            <div class="col-12 mt-2">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="sendMail" name="" <?= $currentReviews ? 'checked' : '' ?>>
-                                    <label class="form-check-label" for="sendMail"><h6>Email alerte</h6></label>
-                                </div>
-                                <div class="form-group">
-                                    <label for="adminNotif">Mail administrateur(s) :</label>
-                                    <input class="form-control" type="url" id="adminNotif" placeholder="my@mail.com,second@mail.com" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <div class="card-in-card">
-                        <div class="card-body">
-                            <h6>Discord Webhook alerte :</h6>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="support_settings_use_webhook_new_support" name="support_settings_use_webhook_new_support" >
-                                <label class="form-check-label" for="support_settings_use_webhook_new_support">Nouvelle commande :</label>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="url" name="support_settings_webhook_new_support" placeholder="https://discord.com/api/webhooks/" value="">
-                            </div>
-
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="support_settings_use_webhook_new_response" name="support_settings_use_webhook_new_response" >
-                                <label class="form-check-label" for="support_settings_use_webhook_new_response">Changement d'état :</label>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="url" name="support_settings_webhook_new_response" placeholder="https://discord.com/api/webhooks/" value="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <label>Message d'alerte :</label>
+            <input class="input" placeholder="Boutique en cours de maintenance">
+            <div class="alert-info">
+                <p>Ceci désactive l'accès à toutes les URL publiques du shop (y compris les paramètres, l'historique des commandes, le panier, etc.), sauf pour les rôles ayant la permission "Bypass maintenance".</p>
             </div>
         </div>
     </div>
+    <div>
+        <div class="card">
+            <h6>Général</h6>
+            <label class="toggle">
+                <input type="checkbox" class="toggle-input" id="allowReviews" name="allowReviews" <?= $currentReviews ? 'checked' : '' ?>>
+                <div class="toggle-slider"></div>
+                <p class="toggle-label">Avis clients</p>
+            </label>
 
-    <div class="card">
-        <div class="flex justify-between">
-            <h6>Image par défaut :</h6>
-            <a type="button" class="btn-warning-sm" href="settings/reset_default_image">Réinitialiser</a>
+            <p>Todo :</p>
+            <label for="itemPerPage">Articles par page :</label>
+            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="" required>
+            <label for="itemPerPage">Reviews par page :</label>
+            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="" required>
         </div>
-        <img width="60%" class="mx-auto" src="<?= $defaultImage ?>" alt="Default image">
-        <div class="drop-img-area" data-input-name="defaultPicture"></div>
     </div>
 </div>
 </form>
 
-<div class="tab-vertical-container">
+<div class="tab-vertical-container mt-6">
     <div class="tab-vertical" data-tabs-toggle="#tab-content-2">
         <?php foreach ($virtualMethods as $method): ?>
             <button class="tab-button" data-tabs-target="#tab<?= $method->varName() ?>" role="tab"><?= $method->name() ?></button>

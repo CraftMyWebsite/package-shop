@@ -8,51 +8,32 @@ use CMW\Manager\Security\SecurityManager;
 $title = "Catégorie";
 $description = "Ajouter une sous-catégorie";
 ?>
-
-<div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-book"></i> <span
-            class="m-lg-auto">Ajout d'une sous catégorie dans <?= $category->getName() ?></span></h3>
+<div class="page-title">
+    <h3><i class="fa-solid fa-book"></i> Ajout d'une sous catégorie dans <?= $category->getName() ?></h3>
 </div>
 
-<section class="row">
-    <div class="col-12 col-lg-6 mx-auto">
+<div class="center-flex">
+    <div class="flex-content">
         <form class="card" method="post">
             <?php (new SecurityManager())->insertHiddenToken() ?>
-            <div class="card-body">
-                <h6>Nom<span style="color: red">*</span> :</h6>
-                <div class="form-group position-relative has-icon-left">
-                    <input type="text" class="form-control" name="name" required
-                           placeholder="Vêtement">
-                    <div class="form-control-icon">
-                        <i class="fas fa-heading"></i>
-                    </div>
-                </div>
-                <h6>Icon :</h6>
-                <div class="form-group position-relative has-icon-left">
-                    <input type="text" class="form-control" name="icon"
-                           placeholder="fa-solid fa-shirt">
-                    <div class="form-control-icon">
-                        <i class="fas fa-icons"></i>
-                    </div>
-                    <small class="form-text">Retrouvez la liste des icones sur le
-                        site de <a href="https://fontawesome.com/search?o=r&m=free"
-                                   target="_blank">FontAwesome.com</a></small>
-                </div>
-                <h6>Déscription :</h6>
-                <div class="form-group position-relative has-icon-left">
-                    <input type="text" class="form-control" name="description"
-                           placeholder="Des vêtements">
-                    <div class="form-control-icon">
-                        <i class="fas fa-paragraph"></i>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bx bx-check"></i>
-                        <span class=""><?= LangManager::translate("core.btn.add") ?></span>
-                    </button>
-                </div>
+            <label for="name">Nom<span style="color: red">*</span> :</label>
+            <div class="input-group">
+                <i class="fa-solid fa-heading"></i>
+                <input type="text" id="name" name="name" placeholder="Pantalon">
             </div>
+            <label>Icon : <small>(Optionnel)</small></label>
+            <div class="icon-picker" data-id="icon" data-name="icon" data-label="" data-placeholder="Sélectionner un icon" data-value=""></div>
+            <label for="description">Description : <small>(Optionnel)</small></label>
+            <div class="input-group">
+                <i class="fa-solid fa-paragraph"></i>
+                <input type="text" id="description" name="description" placeholder="Des vêtements">
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="btn-center btn-primary">
+                    <?= LangManager::translate("core.btn.add") ?>
+                </button>
+            </div>
+
         </form>
     </div>
-</section>
+</div>

@@ -10,216 +10,151 @@ $title = "";
 $description = "";
 
 ?>
-<div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-layer-group"></i> <span class="m-lg-auto">Catégories</span></h3>
+<div class="page-title">
+    <h3><i class="fa-solid fa-layer-group"></i> Catégories</h3>
+    <button data-modal-toggle="modal-add-cat" class="btn-primary" type="button">Créer une catégorie</button>
 </div>
-<section class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <?php if ($categoryModel->getShopCategories()): ?>
-                    <?php foreach ($categoryModel->getShopCategories() as $category): ?>
-                        <div class="card-in-card table-responsive mb-4">
-                            <table class="table-borderless table table-hover mt-1">
-                                <thead>
-                                <tr>
-                                    <th id="categorie-<?= $category->getId() ?>">
-                                        <small><i class="text-secondary fa-solid fa-circle-dot"></i></small>
-                                        <?= $category->getFontAwesomeIcon() ?> <?= $category->getName() ?> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> articles)
-                                    </th>
-                                    <th class="text-end">
-                                        <a href="items/cat/<?= $category->getId() ?>"><i data-bs-toggle="tooltip"
-                                                                                          title="Voir les articles lié"
-                                                                                          class="me-3 fa-solid fa-eye"></i></a>
-                                        <a target="_blank"
-                                           href="<?= $category->getCatLink() ?>"><i data-bs-toggle="tooltip"
-                                                                                    title="Voir le rendue"
-                                                                                    class="me-3 fa-solid fa-up-right-from-square"></i></a>
-                                        <a href="cat/addSubCat/<?= $category->getId() ?>">
-                                            <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
-                                               class="text-success me-3 fa-solid fa-circle-plus"></i>
-                                        </a>
-                                        <a href="cat/edit/<?= $category->getId() ?>">
-                                            <i data-bs-toggle="tooltip" title="Modifier la catégorie"
-                                               class="text-primary me-3 fas fa-edit"></i>
-                                        </a>
-                                        <a type="button" data-bs-toggle="modal"
-                                           data-bs-target="#delete-<?= $category->getId() ?>">
-                                            <i data-bs-toggle="tooltip" title="Supprimé"
-                                               class="text-danger fas fa-trash-alt"></i>
-                                        </a>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($categoryModel->getSubsCat($category->getId()) as $subCategory): ?>
-                                    <tr id="cat-<?= $subCategory->getSubCategory()->getId() ?>">
-                                        <td style="padding-left: <?= 1 + $subCategory->getDepth() * 2 ?>rem"
-                                            class="text-bold-500">
-                                            <small><i
-                                                    class="text-secondary fa-solid fa-turn-up fa-rotate-90"></i></small>
-                                            <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <?= $subCategory->getSubCategory()->getName() ?> <?= $subCategory->getSubCategory()->getDescription() ?> (<?= $subCategory->getSubCategory()->countItemsInCat() ?> articles)
-                                        </td>
-                                        <td class="text-end">
-                                            <a href="items/cat/<?= $subCategory->getSubCategory()->getId() ?>"><i
-                                                    data-bs-toggle="tooltip" title="Voir les articles lié"
-                                                    class="me-3 fa-solid fa-eye"></i></a>
-                                            <a target="_blank"
-                                               href="<?= $subCategory->getSubCategory()->getCatLink() ?>"><i
-                                                    data-bs-toggle="tooltip" title="Voir le rendue"
-                                                    class="me-3 fa-solid fa-up-right-from-square"></i></a>
-                                            <a href="cat/addSubCat/<?= $subCategory->getSubCategory()->getId() ?>">
-                                                <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
-                                                   class="text-success me-3 fas fa-circle-plus"></i>
-                                            </a>
-                                            <a href="cat/edit/<?= $subCategory->getSubCategory()->getId() ?>">
-                                                <i data-bs-toggle="tooltip" title="Modifier la catégorie"
-                                                   class="text-primary me-3 fas fa-edit"></i>
-                                            </a>
-                                            <a type="button" data-bs-toggle="modal"
-                                               data-bs-target="#deletee-<?= $subCategory->getSubCategory()->getId() ?>">
-                                                <i data-bs-toggle="tooltip" title="Supprimé"
-                                                   class="text-danger fas fa-trash-alt"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
 
-                                    <!--
-                                    --MODAL SUPPRESSION SOUS CAT--
-                                    -->
-                                    <div class="modal fade text-left" id="deletee-<?= $subCategory->getSubCategory()->getId() ?>" tabindex="-1"
-                                         role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                                             role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger">
-                                                    <h5 class="modal-title white" id="myModalLabel160">Supression de
-                                                        : <?= $subCategory->getSubCategory()->getName() ?></h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Cette suppression est définitive.</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-light-secondary"
-                                                            data-bs-dismiss="modal">
-                                                        <i class="bx bx-x"></i>
-                                                        <span
-                                                            class=""><?= LangManager::translate("core.btn.close") ?></span>
-                                                    </button>
-                                                    <a href="cat/delete/<?= $subCategory->getSubCategory()->getId() ?>"
-                                                       class="btn btn-danger ml-1">
-                                                        <i class="bx bx-check"></i>
-                                                        <span
-                                                            class=""><?= LangManager::translate("core.btn.delete") ?></span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!--
-                       --MODAL SUPPRESSION CAT--
-                         -->
-                        <div class="modal fade text-left" id="delete-<?= $category->getId() ?>" tabindex="-1"
-                             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                                 role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-danger">
-                                        <h5 class="modal-title white" id="myModalLabel160">Supression de
-                                            : <?= $category->getName() ?></h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Cette suppression est définitive.</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-light-secondary"
-                                                data-bs-dismiss="modal">
-                                            <i class="bx bx-x"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
-                                        </button>
-                                        <a href="cat/delete/<?= $category->getId() ?>"
-                                           class="btn btn-danger ml-1">
-                                            <i class="bx bx-check"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.delete") ?></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="alert alert-info">Merci de créer une catégorie pour commencer à utiliser la Boutique
-                    </div>
-                <?php endif ?>
-                <div class="divider">
-                    <a type="button" data-bs-toggle="modal" data-bs-target="#add-cat">
-                        <div class="divider-text"><i class="fa-solid fa-circle-plus"></i> Ajouter une catégorie</div>
+<?php if ($categoryModel->getShopCategories()): ?>
+<?php foreach ($categoryModel->getShopCategories() as $category): ?>
+<div class="card mb-6">
+    <div class="flex justify-between">
+        <p>
+            <small><i class="text-secondary fa-solid fa-circle-dot"></i></small>
+            <?= $category->getFontAwesomeIcon() ?> <b><?= $category->getName() ?></b> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> articles)
+        </p>
+        <div class="space-x-2">
+            <a href="items/cat/<?= $category->getId() ?>"><i data-bs-toggle="tooltip"
+                                                             title="Voir les articles lié"
+                                                             class="me-3 fa-solid fa-eye"></i></a>
+            <a target="_blank"
+               href="<?= $category->getCatLink() ?>"><i data-bs-toggle="tooltip"
+                                                        title="Voir le rendue"
+                                                        class="me-3 fa-solid fa-up-right-from-square"></i></a>
+            <a href="cat/addSubCat/<?= $category->getId() ?>">
+                <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
+                   class="text-success me-3 fa-solid fa-circle-plus"></i>
+            </a>
+            <a href="cat/edit/<?= $category->getId() ?>">
+                <i data-bs-toggle="tooltip" title="Modifier la catégorie"
+                   class="text-info me-3 fas fa-edit"></i>
+            </a>
+            <button type="button" data-modal-toggle="modal-delete-<?= $category->getId() ?>">
+                <i data-bs-toggle="tooltip" title="Supprimé"
+                   class="text-danger fas fa-trash-alt"></i>
+            </button>
+
+        </div>
+    </div>
+    <?php foreach ($categoryModel->getSubsCat($category->getId()) as $subCategory): ?>
+        <div class="flex justify-between">
+            <p style="padding-left: <?= 1 + $subCategory->getDepth() * 1 ?>rem"
+                class="text-bold-500">
+                <small><i
+                        class="text-secondary fa-solid fa-turn-up fa-rotate-90"></i></small>
+                <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <b><?= $subCategory->getSubCategory()->getName() ?></b> <?= $subCategory->getSubCategory()->getDescription() ?> (<?= $subCategory->getSubCategory()->countItemsInCat() ?> articles)
+            </p>
+            <div class="space-x-2">
+                <a href="items/cat/<?= $subCategory->getSubCategory()->getId() ?>"><i
+                        data-bs-toggle="tooltip" title="Voir les articles lié"
+                        class="me-3 fa-solid fa-eye"></i></a>
+                <a target="_blank"
+                   href="<?= $subCategory->getSubCategory()->getCatLink() ?>"><i
+                        data-bs-toggle="tooltip" title="Voir le rendue"
+                        class="me-3 fa-solid fa-up-right-from-square"></i></a>
+                <a href="cat/addSubCat/<?= $subCategory->getSubCategory()->getId() ?>">
+                    <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
+                       class="text-success me-3 fas fa-circle-plus"></i>
+                </a>
+                <a href="cat/edit/<?= $subCategory->getSubCategory()->getId() ?>">
+                    <i data-bs-toggle="tooltip" title="Modifier la catégorie"
+                       class="text-info me-3 fas fa-edit"></i>
+                </a>
+                <button type="button" data-modal-toggle="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>">
+                    <i data-bs-toggle="tooltip" title="Supprimé"
+                       class="text-danger fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+        <!--
+        --MODAL SUPPRESSION SOUS CAT--
+        -->
+        <div id="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>" class="modal-container">
+            <div class="modal">
+                <div class="modal-header-danger">
+                    <h6>Suppression de : <?= $subCategory->getSubCategory()->getName() ?></h6>
+                    <button type="button" data-modal-hide="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p>Cette suppression est définitive.</p>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" href="cat/delete/<?= $subCategory->getSubCategory()->getId() ?>"
+                       class="btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
                     </a>
                 </div>
             </div>
         </div>
+    <?php endforeach; ?>
+</div>
+        <!--
+        --MODAL SUPPRESSION CAT--
+        -->
+        <div id="modal-delete-<?= $category->getId() ?>" class="modal-container">
+            <div class="modal">
+                <div class="modal-header-danger">
+                    <h6>Suppression de : <?= $category->getName() ?></h6>
+                    <button type="button" data-modal-hide="modal-delete-<?= $category->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p>Cette suppression est définitive.</p>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" href="cat/delete/<?= $category->getId() ?>"
+                       class="btn btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+<?php endforeach; ?>
+<?php else: ?>
+<div class="card p-4">
+    <div class="alert alert-info">Merci de créer une catégorie pour commencer à utiliser la Boutique
     </div>
-</section>
-
+</div>
+<?php endif ?>
 
 <!--
     --MODAL AJOUT CATEGORIE--
 -->
-<div class="modal fade " id="add-cat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title white"
-                    id="myModalLabel160">Nouvelle catégorie</h5>
-            </div>
-            <form method="post" action="cat/add">
-                <?php (new SecurityManager())->insertHiddenToken() ?>
-                <div class="modal-body">
-
-                    <h6>Nom<span style="color: red">*</span> :</h6>
-                    <div class="form-group position-relative has-icon-left">
-                        <input type="text" class="form-control" name="name" required placeholder="Vêtement">
-                        <div class="form-control-icon">
-                            <i class="fas fa-heading"></i>
-                        </div>
-                    </div>
-                    <h6>Icon :</h6>
-                    <div class="form-group position-relative has-icon-left">
-                        <input type="text" class="form-control" name="icon" placeholder="fa-solid fa-shirt">
-                        <div class="form-control-icon">
-                            <i class="fas fa-icons"></i>
-                        </div>
-                        <small class="form-text">Retrouvez la liste des icones sur le site de <a
-                                href="https://fontawesome.com/search?o=r&m=free"
-                                target="_blank">FontAwesome.com</a></small>
-                    </div>
-                    <h6>Description :</h6>
-                    <div class="form-group position-relative has-icon-left">
-                        <input type="text" class="form-control" name="description"
-                               placeholder="Des vêtements">
-                        <div class="form-control-icon">
-                            <i class="fas fa-paragraph"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
-                        <i class="bx bx-x"></i>
-                        <span class=""><?= LangManager::translate("core.btn.close") ?></span>
-                    </button>
-                    <button type="submit" class="btn btn-primary ml-1">
-                        <i class="bx bx-check"></i>
-                        <span class=""><?= LangManager::translate("core.btn.add") ?></span>
-                    </button>
-                </div>
-            </form>
+<div id="modal-add-cat" class="modal-container">
+    <div class="modal">
+        <div class="modal-header">
+            <h6>Nouvelle catégorie</h6>
+            <button type="button" data-modal-hide="modal-add-cat"><i class="fa-solid fa-xmark"></i></button>
         </div>
+        <form method="post" action="cat/add">
+            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <div class="modal-body">
+                <label for="name">Nom<span style="color: red">*</span> :</label>
+                <div class="input-group">
+                    <i class="fa-solid fa-heading"></i>
+                    <input type="text" id="name" name="name" placeholder="Pantalon">
+                </div>
+                <label>Icon : <small>(Optionnel)</small></label>
+                <div class="icon-picker" data-id="icon" data-name="icon" data-label="" data-placeholder="Sélectionner un icon" data-value=""></div>
+                <label for="description">Description : <small>(Optionnel)</small></label>
+                <div class="input-group">
+                    <i class="fa-solid fa-paragraph"></i>
+                    <input type="text" id="description" name="description" placeholder="Des vêtements">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary">
+                    <?= LangManager::translate("core.btn.add") ?>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
