@@ -10,6 +10,8 @@ use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Notification\NotificationManager;
+use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
@@ -56,12 +58,13 @@ class ShopHistoryOrdersController extends AbstractController
         $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
         $finishedOrders = ShopHistoryOrdersModel::getInstance()->getFinishedOrders();
         $orderItemsModel = ShopHistoryOrdersModel::getInstance();
+        $notificationIsRefused = in_array("Shop", NotificationModel::getInstance()->getRefusedPackages());
 
         View::createAdminView('Shop', 'Orders/orders')
             ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
                 "Admin/Resources/Assets/Js/Pages/simple-datatables.js")
-            ->addVariableList(["inProgressOrders" => $inProgressOrders,"errorOrders" => $errorOrders,"finishedOrders" => $finishedOrders, "orderItemsModel" => $orderItemsModel])
+            ->addVariableList(["inProgressOrders" => $inProgressOrders,"errorOrders" => $errorOrders,"finishedOrders" => $finishedOrders, "orderItemsModel" => $orderItemsModel, "notificationIsRefused" => $notificationIsRefused])
             ->view();
     }
 
@@ -221,8 +224,7 @@ class ShopHistoryOrdersController extends AbstractController
             }
         }
 
-        //TODO : Send webhook alert
-        $this->notifyUser($cartContent, $user, $order, $paymentHistory);
+        NotificationManager::notify("Nouvelle commande", $user->getPseudo(). " viens de passer une commande.", "shop/orders");
 
         ShopCartModel::getInstance()->clearUserCart($user->getId());
         ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
