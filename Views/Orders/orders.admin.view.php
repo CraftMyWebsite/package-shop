@@ -3,6 +3,7 @@
 /* @var \CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity [] $inProgressOrders */
 /* @var \CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity [] $errorOrders */
 /* @var \CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity [] $finishedOrders */
+/* @var bool $notificationIsRefused */
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 
@@ -20,9 +21,11 @@ $description = "";
                 <h4>En cours</h4>
             </div>
             <div class="card-body">
+                <?php if ($notificationIsRefused): ?>
                 <div class="alert alert-warning">
-                    <p><i class="fa-solid fa-triangle-exclamation"></i> Attention vous avez désactiver les notifications du pakcage Shop ! vous ne serz pas alerter en cas de nouvelle commande, il est aussi recommander d'activer les alertes mail / disocrd</p>
+                    <p><i class="fa-solid fa-triangle-exclamation"></i> Attention, vous avez désactivé les notifications du package Shop ! Vous ne serez pas alerté en cas de nouvelle commande. <br>Il est également recommandé d'activer les alertes mail / Discord dans les paramètres de notification. <a class="link" href="/cmw-admin/notifications">Modifier les réglages des notifications</a></p>
                 </div>
+                <?php endif;?>
 
                 <table class="table" id="table1">
                     <thead>
