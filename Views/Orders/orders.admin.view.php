@@ -21,7 +21,7 @@ $description = "";
             </div>
             <div class="card-body">
                 <div class="alert alert-warning">
-                    <p><i class="fa-solid fa-triangle-exclamation"></i> Vous n'avez pas encoré terminé la configuration des alertes pour les nouvelles commandes, rendez-vous dans <a href="settings">configuration</a> pour ne louper aucune commande !</p>
+                    <p><i class="fa-solid fa-triangle-exclamation"></i> Attention vous avez désactiver les notifications du pakcage Shop ! vous ne serz pas alerter en cas de nouvelle commande, il est aussi recommander d'activer les alertes mail / disocrd</p>
                 </div>
 
                 <table class="table" id="table1">
