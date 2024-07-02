@@ -16,174 +16,122 @@ $description = "";
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 
 ?>
-<div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-cubes-stacked"></i> <span class="m-lg-auto">Articles</span></h3>
-    <div class="buttons">
-        <a href="items/add" type="submit"
-                class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></a>
+<div class="page-title">
+    <h3><i class="fa-solid fa-cubes-stacked"></i> Articles</h3>
+    <div>
+        <a href="items/archived" type="submit" class="btn-warning">Voir les archives</a>
+        <a href="items/add" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.add") ?></a>
     </div>
 </div>
 
-
-<section>
-    <div>
-        <div class="card">
-            <div class="card-body">
-                <a href="items/archived"><small>Voir les articles archivés</small></a>
-                <table class="table table-bordered" id="table1">
-                    <thead>
-                    <tr>
-                        <th class="text-center">Nom</th>
-                        <th class="text-center">Images</th>
-                        <?php if ($allowReviews): ?>
-                        <th class="text-center">Avis</th>
-                        <?php endif; ?>
-                        <th class="text-center">Description</th>
-                        <th class="text-center">Catégorie</th>
-                        <th class="text-center">Prix</th>
-                        <th class="text-center">Stock</th>
-                        <th class="text-center">En panier</th>
-                        <th class="text-center"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($items->getShopItems() as $item): ?>
-                        <tr>
-                            <td class="text-center" style="width: fit-content;">
-                                <h5><?= $item->getName() ?></h5>
-                            </td>
-                            <td class="text-center" style="width: 12rem; height: 9rem;">
-                                <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
-                                $v = 0;
-                                foreach ($getImagesItem as $countImage) {
-                                    $v++;
-                                } ?>
-                                <?php if ($getImagesItem) : ?>
-                                    <?php if ($v !== 1) : ?>
-                                        <div id="carousel_<?= $item->getId() ?>" class="carousel slide"
-                                             data-bs-ride="carousel">
-                                            <ol class="carousel-indicators">
-                                                <?php $i = 0;
-                                                foreach ($getImagesItem as $imageId): ?>
-                                                    <li data-bs-target="#carousel_<?= $item->getId() ?>"
-                                                        data-bs-slide-to="<?= $i ?>"
-                                                        <?php if ($i === 0): ?>class="active"><?php endif; ?></li>
-                                                    <?php $i++; endforeach; ?>
-                                            </ol>
-                                            <div class="carousel-inner">
-                                                <?php $x = 0;
-                                                foreach ($getImagesItem as $imagesUrl): ?>
-                                                    <div class="carousel-item <?php if ($x === 0): ?>active<?php endif; ?>">
-                                                        <img style="width: 12rem; max-height: 9rem; object-fit: contain"
-                                                             src="<?= $imagesUrl->getImageUrl() ?>"
-                                                             class="p-2 d-block" alt="..."/>
-                                                    </div>
-                                                    <?php $x++; endforeach; ?>
-                                            </div>
-                                            <div class="mt-1">
-                                                <a class="carousel-control-prev" href="#carousel_<?= $item->getId() ?>"
-                                                   role="button" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Previous</span>
-                                                </a>
-                                                <a class="carousel-control-next" href="#carousel_<?= $item->getId() ?>"
-                                                   role="button" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Next</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    <?php else: ?>
-                                        <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
-                                            <img style="width: 12rem; max-height: 9rem; object-fit: contain"
-                                                 src="<?= $imageUrl->getImageUrl() ?>" class="p-2 d-block"
-                                                 alt="..."/>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                    <?php else: ?>
-
-                                    <img style="width: 12rem; max-height: 9rem; object-fit: contain"
-                                         src="<?= $defaultImage ?>" class="p-2 d-block"
-                                         alt="..."/>
-                                <?php endif; ?>
-                            </td>
-                            <?php if ($allowReviews): ?>
-                            <td class="text-center">
-                                <a href="items/review/<?= $item->getId() ?>">
-                                <?= $review->countTotalRatingByItemId($item->getId()) ?> avis<br>
-                                <?= $review->getStars($item->getId()) ?>
-                                </a>
-                            </td>
-                            <?php endif; ?>
-                            <td style="max-width: 5rem;">
-                                <?= $item->getShortDescription() ?>
-                            </td>
-                            <td class="text-center" style="width: fit-content;">
-                                <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="text-primary"><?= $item->getCategory()->getName() ?></h6></a>
-                            </td>
-                            <td class="text-center">
-                                <?= $item->getPriceFormatted() ?>
-                            </td>
-                            <td class="text-center">
-                                <?= $item->getFormattedStock() ?>
-                            </td>
-                            <td class="text-center">
-                                <?= $item->getQuantityInCart() ?>
-                            </td>
-                            <td class="text-center">
-                                <a href="<?= $item->getItemLink() ?>" target="_blank">
-                                    <i data-bs-toggle="tooltip" title="Voir le rendue" class="text-success me-3 fa-solid fa-up-right-from-square"></i>
-                                </a>
-                                <a href="items/edit/<?= $item->getId() ?>">
-                                    <i data-bs-toggle="tooltip" title="Éditer" class="me-3 fa-solid fa-edit"></i>
-                                </a>
-                                <a type="button" data-bs-toggle="modal"  data-bs-target="#delete-<?= $item->getId() ?>">
-                                    <i data-bs-toggle="tooltip" title="Supprimé" class="text-danger fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-
-                        <!--
-                         --MODAL SUPPRESSION ARTICLE--
-                         -->
-                        <div class="modal fade text-left" id="delete-<?= $item->getId() ?>" tabindex="-1"
-                             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                                 role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-danger">
-                                        <h5 class="modal-title white" id="myModalLabel160">Supression de
-                                            : <?= $item->getName() ?></h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Cette supression est définitive<br><br>
-                                            NB : <br>
-                                            - Si cet article est utilisé dans un panier, il sera archivé<br>
-                                            - Si cet article a déjà fait l'objet d'une commande, il sera archivé
-                                        </p>
-                                        </p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-light-secondary"
-                                                data-bs-dismiss="modal">
-                                            <i class="bx bx-x"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
-                                        </button>
-                                        <a href="items/delete/<?= $item->getId() ?>"
-                                           class="btn btn-danger ml-1">
-                                            <i class="bx bx-check"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.delete") ?></span>
-                                        </a>
-                                    </div>
-                                </div>
+<div class="table-container">
+    <table id="table1" data-load-per-page="10">
+        <thead>
+        <tr>
+            <th>Images</th>
+            <th>Nom</th>
+            <?php if ($allowReviews): ?>
+                <th class="text-center">Avis</th>
+            <?php endif; ?>
+            <th>Description</th>
+            <th>Catégorie</th>
+            <th>Prix</th>
+            <th>Stock</th>
+            <th class="text-center">En panier</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($items->getShopItems() as $item): ?>
+            <tr>
+                <td class="text-center" style="width: 6rem; height: 6rem;">
+                    <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
+                    $v = 0;
+                    foreach ($getImagesItem as $countImage) {
+                        $v++;
+                    } ?>
+                    <?php if ($getImagesItem) : ?>
+                        <?php if ($v !== 1) : ?>
+                            <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="80px">
+                            <?php foreach ($getImagesItem as $imagesUrl): ?>
+                                <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">
+                            <?php endforeach; ?>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        <?php else: ?>
+                            <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
+                                <img style="width: 6rem; max-height: 6rem; object-fit: contain"
+                                     src="<?= $imageUrl->getImageUrl() ?>" class="p-2 d-block"
+                                     alt="..."/>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <img style="width: 6rem; max-height: 6rem; object-fit: contain"
+                             src="<?= $defaultImage ?>" class="p-2 d-block"
+                             alt="..."/>
+                    <?php endif; ?>
+                </td>
+                <td style="width: fit-content;">
+                    <h6><?= mb_strimwidth($item->getName(), 0, 30, '...') ?></h6>
+                </td>
+                <?php if ($allowReviews): ?>
+                    <td class="text-center">
+                        <a href="items/review/<?= $item->getId() ?>">
+                            <?= $review->countTotalRatingByItemId($item->getId()) ?> avis<br>
+                            <?= $review->getStars($item->getId()) ?>
+                        </a>
+                    </td>
+                <?php endif; ?>
+                <td style="max-width: 5rem;">
+                    <?= mb_strimwidth($item->getShortDescription(), 0, 60, '...') ?>
+                </td>
+                <td style="width: fit-content;">
+                    <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="link"><?= $item->getCategory()->getName() ?></h6></a>
+                </td>
+                <td>
+                    <?= $item->getPriceFormatted() ?>
+                </td>
+                <td>
+                    <?= $item->getFormattedStock() ?>
+                </td>
+                <td class="text-center">
+                    <?= $item->getQuantityInCart() ?>
+                </td>
+                <td class="text-center space-x-2">
+                    <a href="<?= $item->getItemLink() ?>" target="_blank">
+                        <i data-bs-toggle="tooltip" title="Voir le rendue" class="text-success me-3 fa-solid fa-up-right-from-square"></i>
+                    </a>
+                    <a href="items/edit/<?= $item->getId() ?>">
+                        <i data-bs-toggle="tooltip" title="Éditer" class="me-3 fa-solid fa-edit"></i>
+                    </a>
+                    <button data-modal-toggle="modal-delete-<?= $item->getId() ?>" type="button">
+                        <i data-bs-toggle="tooltip" title="Supprimé" class="text-danger fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            <!--
+             --MODAL SUPPRESSION ARTICLE--
+             -->
+            <div id="modal-delete-<?= $item->getId() ?>" class="modal-container">
+                <div class="modal">
+                    <div class="modal-header-danger">
+                        <h6>Suppression de : <?= $item->getName() ?></h6>
+                        <button type="button" data-modal-hide="modal-delete-<?= $item->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette supression est définitive<br><br>
+                            NB : <br>
+                            - Si cet article est utilisé dans un panier, il sera archivé<br>
+                            - Si cet article a déjà fait l'objet d'une commande, il sera archivé
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="items/delete/<?= $item->getId() ?>"
+                           class="btn-danger"><?= LangManager::translate("core.btn.delete") ?>
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

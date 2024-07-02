@@ -42,8 +42,9 @@ class ShopDiscountsController extends AbstractController
             ->addVariableList(["ongoingDiscounts" => $sortedDiscounts['ongoing'],
                 "upcomingDiscounts" => $sortedDiscounts['upcoming'],
                 "pastDiscounts" => $sortedDiscounts['past']])
-            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
+                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->view();
     }
 
@@ -65,8 +66,9 @@ class ShopDiscountsController extends AbstractController
             ->addVariableList(["ongoingDiscounts" => $sortedDiscounts['ongoing'],
                 "upcomingDiscounts" => $sortedDiscounts['upcoming'],
                 "pastDiscounts" => $sortedDiscounts['past']])
-            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
+                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->view();
     }
 

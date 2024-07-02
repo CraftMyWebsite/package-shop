@@ -7,6 +7,7 @@ namespace CMW\Controller\Shop\Public;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
@@ -132,6 +133,7 @@ class ShopPublicController extends AbstractController
         if (!is_null($userId)) {
             ShopReviewsModel::getInstance()->createReview($itemId,$userId,$rating,$title,$content);
             Flash::send(Alert::SUCCESS, "Boutique", "Merci pour votre avis, il nous aide à nous améliorer !");
+            NotificationManager::notify("Avis produit", UsersModel::getCurrentUser()->getPseudo()." viens de laisser un avis sur " . ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() ." (" .$rating." étoiles)", "shop/items");
         }
 
         Redirect::redirectPreviousRoute();
