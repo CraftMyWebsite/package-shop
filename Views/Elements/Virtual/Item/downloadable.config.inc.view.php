@@ -7,13 +7,15 @@ use CMW\Utils\Website;
 /* @var string $varName */
 ?>
 
+<!---TODO Rework--->
+
 <label for="<?=$varName?>object">Objet du mail :</label>
 <input value="<?= ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'object',$itemId) ?>"
        placeholder="Boutique <?= Website::getWebsiteName() ?>"
        type="text"
        name="<?=$varName?>object"
        id="<?=$varName?>object"
-       class="form-control"
+       class="input"
        required
 >
 
@@ -23,6 +25,6 @@ use CMW\Utils\Website;
        type="text"
        name="<?=$varName?>text"
        id="<?=$varName?>text"
-       class="form-control"
+       class="input"
        required
 >
