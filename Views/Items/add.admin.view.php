@@ -55,11 +55,11 @@ $description = "";
                             <input type="text" class="input" placeholder="150.00" name="shop_item_weight" required>
                         </div>
                         <div>
-                            <label>Largeur : <small>(en cm)</small></label>
+                            <label>Longueur : <small>(en cm)</small></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_length">
                         </div>
                         <div>
-                            <label>Longueur : <small>(en cm)</small></label>
+                            <label>Largeur : <small>(en cm)</small></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_width">
                         </div>
                         <div>
@@ -134,7 +134,7 @@ $description = "";
                                     <!--TODO : Uniquement les articles virtuel pour le moment-->
                                 <select id="payment" class="form-select" name="shop_item_price_type" required>
                                     <?php foreach ($priceTypeMethods as $priceTypeMethod): ?>
-                                        <option value="<?= $priceTypeMethod->varName() ?>"><?= $priceTypeMethod->name() ?></option>
+                                        <option value="<?= $priceTypeMethod->varName() ?>" <?= $priceTypeMethod->varName() === 'money' ? 'data-is-money="true"' : '' ?>><?= $priceTypeMethod->name() ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </span>
@@ -183,7 +183,7 @@ $description = "";
         <div class="card-body">
 
             <div onclick="addImg();" class="card-in-card mb-4" style="cursor: pointer">
-                <div class="text-center" style="padding-top: 1rem">
+                <div class="text-center border-dashed border-4 rounded-lg dark:border-gray-700" style="padding-top: 1rem">
                     <h2><i class="text-success fa-solid fa-circle-plus fa-xl"></i></h2>
                     <p class="mt-2">Ajouter une image</p>
                 </div>
@@ -246,6 +246,7 @@ $description = "";
         // Créer un conteneur pour les champs de variante
         let varianteContainer = document.createElement("div");
         varianteContainer.setAttribute("data-index", index);
+        varianteContainer.className = "card-in-card p-3 mt-2 mb-4";
         let row = document.createElement("div");
         row.className = "grid-4 border-2 rounded-lg p-4 dark:border-gray-700";
         let nameContainer = document.createElement("div");
@@ -332,6 +333,50 @@ $description = "";
             champ.disabled = false; // Active les champs
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('virtual_type_selected');
+        const rewardMethods = document.querySelectorAll('.virtual-method');
+
+        function updateRewardMethods() {
+            rewardMethods.forEach(method => {
+                method.style.display = 'none';
+                disableFormElements(method, true);
+            });
+
+            const selectedValue = selectElement.value;
+            const selectedMethod = document.getElementById('method-' + selectedValue);
+            if (selectedMethod) {
+                selectedMethod.style.display = 'block';
+                disableFormElements(selectedMethod, false);
+            }
+        }
+
+        function disableFormElements(container, disable) {
+            const elements = container.querySelectorAll('input, select, textarea, button, fieldset, optgroup, option, datalist, output');
+            elements.forEach(element => {
+                if (disable) {
+                    element.disabled = true;
+                    if (element.hasAttribute('required')) {
+                        element.setAttribute('data-required', 'true');
+                        element.required = false;
+                    }
+                } else {
+                    element.disabled = false;
+                    if (element.getAttribute('data-required') === 'true') {
+                        element.setAttribute('required', 'true');
+                        element.removeAttribute('data-required');
+                        element.required = true;
+                    }
+                }
+            });
+        }
+
+        selectElement.addEventListener('change', updateRewardMethods);
+
+        // Initialize the display based on the current selection
+        updateRewardMethods();
+    });
 </script>
 
 <script type="text/javascript">
@@ -356,14 +401,13 @@ $description = "";
             const [file] = input.files
             if (file) {
                 img.src = URL.createObjectURL(file)
-                div.className = "col-12 col-lg-3";
+                div.className = "col-12 col-lg-3 border-4 border-dashed rounded-lg dark:border-gray-700 relative h-fit";
                 div.id = 'delete-' + i;
-                btn_div.className = "d-flex flex-wrap justify-content-between";
                 div_in_div.className = "card-in-card p-2";
                 img.className = "w-50 mx-auto";
                 btnDelete.type = "button";
                 btnDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
-                btnDelete.className = "btn btn-danger mt-2";
+                btnDelete.className = "absolute top-0 right-0 bg-danger text-white font-bold text-xl border-2 rounded-full justify-center items-center w-10 h-10 inline-flex";
 
                 let firstDiv = document.getElementById('img_div').appendChild(div);
                 firstDiv.appendChild(div_in_div);
@@ -389,17 +433,17 @@ $description = "";
 
         let orderLabel = document.createElement('span');
         orderLabel.innerText = i + 1; // Affiche le numéro de l'image
-        orderLabel.className = 'image-order-label';
+        orderLabel.className = 'image-order-label absolute top-0 left-0 bg-blue-500 text-white font-bold text-xl border-2 rounded-full justify-center items-center w-10 h-10 inline-flex';
 
         let btnUp = document.createElement('button');
-        btnUp.innerHTML = '<i class="fa-solid fa-circle-arrow-left"></i>';
-        btnUp.className = 'btn btn-sm btn-primary mt-2';
+        btnUp.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+        btnUp.className = 'absolute bottom-0 left-0 bg-success text-white font-bold text-xl border-2 rounded-full justify-center items-center w-10 h-10 inline-flex';
         btnUp.onclick = () => moveImage(div, 'up');
         btnUp.type = "button";
 
         let btnDown = document.createElement('button');
-        btnDown.innerHTML = '<i class="fa-solid fa-circle-arrow-right"></i>';
-        btnDown.className = 'btn btn-sm btn-primary mt-2';
+        btnDown.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+        btnDown.className = 'absolute bottom-0 right-0 bg-success text-white font-bold text-xl border-2 rounded-full justify-center items-center w-10 h-10 inline-flex';
         btnDown.onclick = () => moveImage(div, 'down');
         btnDown.type = "button";
 
@@ -492,47 +536,33 @@ $description = "";
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectElement = document.getElementById('virtual_type_selected');
-        const rewardMethods = document.querySelectorAll('.virtual-method');
+    document.addEventListener("DOMContentLoaded", function() {
+        const typeSelect = document.getElementById("type");
+        const paymentSelect = document.getElementById("payment");
+        const moneyOption = paymentSelect.querySelector('option[data-is-money="true"]');
 
-        function updateRewardMethods() {
-            rewardMethods.forEach(method => {
-                method.style.display = 'none';
-                disableFormElements(method, true);
-            });
+        function updatePaymentOptions() {
+            const selectedType = typeSelect.value;
 
-            const selectedValue = selectElement.value;
-            const selectedMethod = document.getElementById('method-' + selectedValue);
-            if (selectedMethod) {
-                selectedMethod.style.display = 'block';
-                disableFormElements(selectedMethod, false);
+            // Désactiver toutes les options
+            for (let option of paymentSelect.options) {
+                option.disabled = false;
+                option.hidden = false;
+            }
+
+            if (selectedType === "0") { // Si le type est physique
+                // Activer uniquement l'option "money"
+                for (let option of paymentSelect.options) {
+                    if (option !== moneyOption) {
+                        option.disabled = true;
+                        option.hidden = true;
+                    }
+                }
+                paymentSelect.value = moneyOption.value; // Sélectionner l'option "money"
             }
         }
 
-        function disableFormElements(container, disable) {
-            const elements = container.querySelectorAll('input, select, textarea, button, fieldset, optgroup, option, datalist, output');
-            elements.forEach(element => {
-                if (disable) {
-                    element.disabled = true;
-                    if (element.hasAttribute('required')) {
-                        element.setAttribute('data-required', 'true');
-                        element.required = false;
-                    }
-                } else {
-                    element.disabled = false;
-                    if (element.getAttribute('data-required') === 'true') {
-                        element.setAttribute('required', 'true');
-                        element.removeAttribute('data-required');
-                        element.required = true;
-                    }
-                }
-            });
-        }
-
-        selectElement.addEventListener('change', updateRewardMethods);
-
-        // Initialize the display based on the current selection
-        updateRewardMethods();
+        typeSelect.addEventListener("change", updatePaymentOptions);
+        updatePaymentOptions(); // Appeler la fonction au chargement de la page
     });
 </script>

@@ -245,6 +245,50 @@ ORDER BY csi.shop_item_price ASC;";
 
     }
 
+    public function editShopItem(int $itemId, ?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit): int
+    {
+        $data = array(
+            "shop_item_id" => $itemId,
+            "shop_item_name" => $name,
+            "shop_category_id" => $category,
+            "shop_item_short_description" => $shortDesc,
+            "shop_item_description" => $description,
+            "shop_category_slug" => "NOT_DEFINED",
+            "shop_item_type" => $type,
+            "shop_item_default_stock" => $stock,
+            "shop_item_current_stock" => $stock,
+            "shop_item_price" => $price,
+            "shop_item_price_type" => $priceType,
+            "shop_item_by_order_limit" => $byOrderLimit,
+            "shop_item_global_limit" => $globalLimit,
+            "shop_item_user_limit" => $userLimit,
+        );
+
+        $sql = "UPDATE cmw_shops_items SET shop_item_name = :shop_item_name,
+        shop_category_id = :shop_category_id,
+        shop_item_short_description = :shop_item_short_description,
+        shop_item_description = :shop_item_description,
+        shop_item_slug = :shop_category_slug,
+        shop_item_type = :shop_item_type,
+        shop_item_default_stock = :shop_item_default_stock,
+        shop_item_current_stock = :shop_item_current_stock,
+        shop_item_price =:shop_item_price,
+        shop_item_price_type =:shop_item_price_type,
+        shop_item_by_order_limit = :shop_item_by_order_limit,
+        shop_item_global_limit = :shop_item_global_limit,
+        shop_item_user_limit = :shop_item_user_limit
+        WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $this->setShopItemSlug($itemId, $name);
+            return $itemId;
+        }
+
+    }
+
     private function setShopItemSlug(int $id, string $name): void
     {
         $slug = $this->generateShopSlug($id, $name);

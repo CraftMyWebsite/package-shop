@@ -109,9 +109,43 @@ class ShopItemsPhysicalRequirementModel extends AbstractModel
         $req = $db->prepare($sql);
 
         if ($req->execute($data)) {
-            $id = $db->lastInsertId();
-            $this->getShopItemPhysicalRequirementById($id);
-            return $id;
+            return $itemId;
         }
+    }
+
+    public function updatePhysicalRequirement(int $itemId, ?float $weight, ?float $length, ?float $width, ?float $height): int
+    {
+        $data = array(
+            "shop_item_id" => $itemId,
+            "shop_physical_requirement_weight" => $weight,
+            "shop_physical_requirement_length" => $length,
+            "shop_physical_requirement_width" => $width,
+            "shop_physical_requirement_height" => $height
+        );
+
+        $sql = "UPDATE cmw_shops_items_physical_requirement SET 
+        shop_physical_requirement_weight = :shop_physical_requirement_weight,
+        shop_physical_requirement_length = :shop_physical_requirement_length,
+        shop_physical_requirement_width = :shop_physical_requirement_width,
+        shop_physical_requirement_height = :shop_physical_requirement_height
+        WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            return $itemId;
+        }
+    }
+
+    public function clearPhysicalRequirement(int $itemId): bool
+    {
+        $data = ['shop_item_id' => $itemId];
+
+        $sql = "DELETE FROM cmw_shops_items_physical_requirement WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
     }
 }

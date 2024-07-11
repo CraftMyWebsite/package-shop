@@ -78,6 +78,17 @@ class ShopItemVariantModel extends AbstractModel
         return $toReturn;
     }
 
+    public function clearVariants(int $id): bool
+    {
+        $data = ['shop_item_id' => $id];
+
+        $sql = "DELETE FROM cmw_shops_items_variants WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
     public function createVariant(string $name, int $itemId): ?ShopItemVariantEntity
     {
         $data = array(

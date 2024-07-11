@@ -109,6 +109,17 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
         return $db->prepare($sql)->execute(['virtualMethod' => $virtualMethodId, 'key' => $key, 'value' => $value]);
     }
 
+    public function clearSetting(int $virtualMethodId): bool
+    {
+        $data = ['shops_items_virtual_method_id' => $virtualMethodId];
+
+        $sql = "DELETE FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_method_id = :shops_items_virtual_method_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
     /**
      * @param string $key
      * @param string $value

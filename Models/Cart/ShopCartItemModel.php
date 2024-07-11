@@ -222,6 +222,18 @@ class ShopCartItemModel extends AbstractModel
         return $db->prepare($sql)->execute($data);
     }
 
+    public function removeItemForAllCart(int $itemId): bool
+    {
+
+        $data = ['shop_item_id' => $itemId];
+
+        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
     /**
      * @param ?int $userId
      * @param string $sessionId

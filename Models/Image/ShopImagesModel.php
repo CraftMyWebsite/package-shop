@@ -9,6 +9,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Manager\Uploads\ImagesManager;
+use JetBrains\PhpStorm\NoReturn;
 
 
 /**
@@ -47,14 +48,14 @@ class ShopImagesModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Images\ShopImageEntity []
      */
-    public function getShopImagesByCat(int $id): array
+    public function getShopImages(): array
     {
-        $sql = "SELECT shop_image_id FROM cmw_shops_images WHERE shop_category_id = :shop_category_id";
+        $sql = "SELECT shop_image_id FROM cmw_shops_images";
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_category_id" => $id))) {
+        if (!$res->execute()) {
             return array();
         }
 
@@ -111,6 +112,23 @@ class ShopImagesModel extends AbstractModel
         } else {
             Flash::send(Alert::ERROR, "Boutique", "Impossible d'envoyer une image pour la raison :" . $imageName);
         }
+    }
+
+    public function addReuseShopItemImage(string $image, int $itemId, int $order): void
+    {
+            $data = array(
+                "shop_image_name" => $image,
+                "shop_item_id" => $itemId,
+                "shop_image_order" => $order
+            );
+
+            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
+                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)";
+
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
+
+            $req->execute($data);
     }
 
     /**
@@ -186,5 +204,34 @@ class ShopImagesModel extends AbstractModel
         $req = $db->prepare($sql);
 
         $req->execute();
+    }
+
+    public function clearImages(int $itemId): bool
+    {
+        $data = ['shop_item_id' => $itemId];
+
+        $sql = "DELETE FROM cmw_shops_images WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
+    public function clearLocalNonUsedImages() : bool
+    {
+        $localImages = array_diff(scandir("Public/Uploads/Shop/"), array('.', '..'));
+        $dbImages = $this->getShopImages();
+
+        $dbImageNames = array_map(function($imageEntity) {
+            return $imageEntity->getName();
+        }, $dbImages);
+
+        foreach ($localImages as $image) {
+            if (!in_array($image, $dbImageNames)) {
+                ImagesManager::deleteImage($image, "Shop");
+            }
+        }
+
+        return true;
     }
 }

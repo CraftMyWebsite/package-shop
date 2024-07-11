@@ -34,6 +34,10 @@ class ShopItemsVirtualMethodModel extends AbstractModel
 
         $res = $res->fetch();
 
+        if (!$res) {
+            return null;
+        }
+
         $virtualMethod = ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($res["shops_items_virtual_method_var_name"]);
         $item = ShopItemsModel::getInstance()->getShopItemsById($res["shop_item_id"]);
 
@@ -63,6 +67,10 @@ class ShopItemsVirtualMethodModel extends AbstractModel
         }
 
         $res = $res->fetch();
+
+        if (!$res) {
+            return null;
+        }
 
         $virtualMethod = ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($res["shops_items_virtual_method_var_name"]);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
@@ -101,5 +109,40 @@ class ShopItemsVirtualMethodModel extends AbstractModel
         }
 
         return null;
+    }
+
+    /**
+     * @param string $varName
+     * @param int $itemId
+     * @return ?\CMW\Entity\Shop\Items\ShopItemVirtualMethodEntity|null
+     */
+    public function updateMethod(string $varName, int $itemId): ?ShopItemVirtualMethodEntity
+    {
+        $data = array(
+            "varName" => $varName,
+            "itemId" => $itemId
+        );
+
+        $sql = "UPDATE cmw_shops_items_virtual_method SET shops_items_virtual_method_var_name = :varName WHERE shop_item_id = :itemId";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            return $this->getVirtualItemMethodByItemId($itemId);
+        }
+
+        return null;
+    }
+
+    public function clearMethod(int $itemId): bool
+    {
+        $data = ['shop_item_id' => $itemId];
+
+        $sql = "DELETE FROM cmw_shops_items_virtual_method WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
     }
 }
