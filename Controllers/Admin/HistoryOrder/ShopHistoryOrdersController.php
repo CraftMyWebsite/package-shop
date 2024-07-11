@@ -61,9 +61,9 @@ class ShopHistoryOrdersController extends AbstractController
         $notificationIsRefused = in_array("Shop", NotificationModel::getInstance()->getRefusedPackages());
 
         View::createAdminView('Shop', 'Orders/orders')
-            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
+            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
-                "Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->addVariableList(["inProgressOrders" => $inProgressOrders,"errorOrders" => $errorOrders,"finishedOrders" => $finishedOrders, "orderItemsModel" => $orderItemsModel, "notificationIsRefused" => $notificationIsRefused])
             ->view();
     }

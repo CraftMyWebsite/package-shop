@@ -315,7 +315,7 @@ class ShopActionsCartController extends AbstractController
         }
     }
 
-    private function handlePriceType(int $userId, string $sessionId, int $itemId): void
+    private function handlePriceType(?int $userId, string $sessionId, int $itemId): void
     {
         $itemsInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
         $thisItem = ShopItemsModel::getInstance()->getShopItemsById($itemId);
@@ -345,7 +345,7 @@ class ShopActionsCartController extends AbstractController
     private function handleItemHealth(int $itemId) : void
     {
         if (ShopItemsModel::getInstance()->itemStillExist($itemId) || ShopItemsModel::getInstance()->isArchivedItem($itemId)) {
-            Flash::send(Alert::WARNING, "Boutique", "Nous somme désolé mais l'article que vous essayez d'ajouter au panier n'existe plus.");
+            Flash::send(Alert::WARNING, "Boutique", "Nous somme désolé mais l'article que vous essayez d'ajouter au panier n'est plus en vente.");
             Redirect::redirectPreviousRoute();
         }
     }

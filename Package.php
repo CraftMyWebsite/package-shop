@@ -88,6 +88,11 @@ class Package implements IPackageConfig
                         permission: 'todo', //TODO PERM
                         url: 'shop/payments',
                     ),
+                    new PackageSubMenuType(
+                        title: 'Statistiques',
+                        permission: 'todo', //TODO PERM
+                        url: 'shop/statistics',
+                    ),
                 ]
             ),
             new PackageMenuType(
@@ -141,6 +146,11 @@ class Package implements IPackageConfig
                         title: 'Payments',
                         permission: 'todo', //TODO PERM
                         url: 'shop/payments',
+                    ),
+                    new PackageSubMenuType(
+                        title: 'Statistics',
+                        permission: 'todo', //TODO PERM
+                        url: 'shop/statistics',
                     ),
                 ]
             ),

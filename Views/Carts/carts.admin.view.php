@@ -12,128 +12,87 @@ $description = "";
 /* @var \CMW\Model\Shop\Cart\ShopCartItemModel $cartItemsModel */
 
 ?>
-<div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-cart-shopping"></i> <span class="m-lg-auto">Paniers</span></h3>
+<h3><i class="fa-solid fa-cart-shopping"></i> Paniers</h3>
+
+<div>
+
 </div>
-<section class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Paniers des utilisateurs</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <?php foreach ($cartModel->getShopCartsForConnectedUsers() as $connectedCart):
-                        $user = UsersModel::getInstance()->getUserById($connectedCart->getUser()->getId());
-                        ?>
-                        <div class="col-12 col-lg-2">
-                            <div href="ss" class="card-in-card p-2">
-                                <div class="text-center">
-                                    <img style="width: 80px; height: 80px" src="<?= $user->getUserPicture()->getImage() ?>"
-                                         alt="...">
-                                </div>
-                                <h6 class="text-center"><?= $user->getPseudo() ?></h6>
-                                <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId($user->getId(), "") ?></b> articles</p>
-                                <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/user/<?= $user->getId() ?>" class="btn btn-primary">Voir le panier</a>
-                            </div>
+<h6>Paniers des utilisateurs</h6>
+<div class="grid-7">
+
+
+                <?php foreach ($cartModel->getShopCartsForConnectedUsers() as $connectedCart):
+                    $user = UsersModel::getInstance()->getUserById($connectedCart->getUser()->getId());
+                    ?>
+
+                        <div class="card">
+
+                                <img style="width: 80px; height: 80px" class="mx-auto" src="<?= $user->getUserPicture()->getImage() ?>"
+                                     alt="...">
+                            <h6 class="text-center"><?= $user->getPseudo() ?></h6>
+                            <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId($user->getId(), "") ?></b> articles</p>
+                            <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/user/<?= $user->getId() ?>" class="btn-center btn-primary-sm text-center">Voir le panier</a>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+
+                <?php endforeach; ?>
+
+</div>
+<hr>
+<div class="flex justify-between mt-6">
+    <h6>Paniers des sessions</h6>
+    <button type="button" data-modal-toggle="modal-delete-all" class="btn-danger">Supprimer tout</button>
+</div>
+<!--
+--MODAL SUPPRESSION SESSION--
+-->
+<div id="modal-delete-all"" class="modal-container">
+    <div class="modal">
+        <div class="modal-header-danger">
+            <h6>Suppression de toutes les sessions ?</h6>
+            <button type="button" data-modal-hide="modal-delete-all""><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            Cette suppression est définitive.
+        </div>
+        <div class="modal-footer">
+            <a type="button" href="carts/session/delete/all/sessions"
+               class="btn btn-danger"><?= LangManager::translate("core.btn.delete") ?>
+            </a>
         </div>
     </div>
+</div>
+<div class="alert alert-info mt-2">Les sessions sont des paniers temporaire.<br>Elle permet à vos utilisateurs non connecté de créer un panier.<br>Une fois connecté le panier sera automatique transmis vers un panier utilisateur, évitez de supprimez des sessions qui on moins de 24 heures.</div>
+<div class="grid-7 mt-3.5">
 
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between">
-                    <h4>Paniers des sessions</h4>
-                    <a type="button" data-bs-toggle="modal" data-bs-target="#delete-all" class="btn btn-danger">Supprimer tout</a>
+        <?php foreach ($cartModel->getShopCartsForSessions() as $sessionCart):
+            $session = $sessionCart->getSession();
+            ?>
+                <div class="card">
+                    <small class="text-center"><?= $session ?></small>
+                    <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId(null, $session) ?></b> articles</p>
+                    <small class="text-center mb-2"> Créer le <?= $sessionCart->getCartCreated() ?></small>
+                    <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/session/<?= $session ?>" class="btn-center text-center btn-primary-sm">Voir le panier</a>
+                    <a data-modal-toggle="modal-<?= $session ?>" class="cursor-pointer btn-center text-center btn-danger-sm">Supprimer</a>
                 </div>
-                <!--
-                        --MODAL SUPPRESSION SESSION--
-                        -->
-                <div class="modal fade text-left" id="delete-all" tabindex="-1"
-                     role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                         role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger">
-                                <h5 class="modal-title white" id="myModalLabel160">Suppression de toutes les sessions ?</h5>
-                            </div>
-                            <div class="modal-body">
-                                <p>Cette suppression est définitive.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-light-secondary"
-                                        data-bs-dismiss="modal">
-                                    <i class="bx bx-x"></i>
-                                    <span
-                                        class=""><?= LangManager::translate("core.btn.close") ?></span>
-                                </button>
-                                <a href="carts/session/delete/all/sessions"
-                                   class="btn btn-danger ml-1">
-                                    <i class="bx bx-check"></i>
-                                    <span
-                                        class=""><?= LangManager::translate("core.btn.delete") ?></span>
-                                </a>
-                            </div>
-                        </div>
+            <!--
+            --MODAL SUPPRESSION SESSION--
+            -->
+            <div id="modal-<?= $session ?>" class="modal-container">
+                <div class="modal">
+                    <div class="modal-header-danger">
+                        <h6>Suppression de
+                            : <?= $session ?></h6>
+                        <button type="button" data-modal-hide="modal-<?= $session ?>"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cette suppression est définitive.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a type="button" href="carts/session/delete/<?= $session ?>"
+                           class="btn btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="alert alert-info">Les sessions sont des paniers temporaire.<br>Elle permet à vos utilisateurs non connecté de créer un panier.<br>Une fois connecté le panier sera automatique transmis vers un panier utilisateur, évitez de supprimez des sessions qui on moins de 24 heures.</div>
-                <div class="row">
-                    <?php foreach ($cartModel->getShopCartsForSessions() as $sessionCart):
-                        $session = $sessionCart->getSession();
-                        ?>
-                        <div class="col-12 col-lg-2">
-                            <div href="ss" class="card-in-card p-2">
-                                <small class="text-center"><?= $session ?></small>
-                                <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId(null, $session) ?></b> articles</p>
-                                <small class="text-center mb-2"> Créer le <?= $sessionCart->getCartCreated() ?></small>
-                                <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/session/<?= $session ?>" class="btn btn-primary mb-2">Voir le panier</a>
-                                <a type="button" data-bs-toggle="modal"
-                                   data-bs-target="#delete-<?= $session ?>" class="btn btn-danger">Supprimer</a>
-                            </div>
-                        </div>
-                        <!--
-                        --MODAL SUPPRESSION SESSION--
-                        -->
-                        <div class="modal fade text-left" id="delete-<?= $session ?>" tabindex="-1"
-                             role="dialog" aria-labelledby="myModalLabel160" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                                 role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-danger">
-                                        <h5 class="modal-title white" id="myModalLabel160">Suppression de
-                                            : <?= $session ?></h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Cette suppression est définitive.</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-light-secondary"
-                                                data-bs-dismiss="modal">
-                                            <i class="bx bx-x"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
-                                        </button>
-                                        <a href="carts/session/delete/<?= $session ?>"
-                                           class="btn btn-danger ml-1">
-                                            <i class="bx bx-check"></i>
-                                            <span
-                                                class=""><?= LangManager::translate("core.btn.delete") ?></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        <?php endforeach; ?>
+</div>

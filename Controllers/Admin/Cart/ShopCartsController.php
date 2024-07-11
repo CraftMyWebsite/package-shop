@@ -46,8 +46,9 @@ class ShopCartsController extends AbstractController
         $user = UsersModel::getInstance()->getUserById($userId);
 
         View::createAdminView('Shop', 'Carts/userCart')
-            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
+                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->addVariableList(["carts" => $carts, "user" => $user])
             ->view();
     }
@@ -60,8 +61,9 @@ class ShopCartsController extends AbstractController
         $carts = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(null, $sessionId);
 
         View::createAdminView('Shop', 'Carts/sessionCart')
-            ->addStyle("Admin/Resources/Vendors/Simple-datatables/style.css","Admin/Resources/Assets/Css/Pages/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js","Admin/Resources/Assets/Js/Pages/simple-datatables.js")
+            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
+            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
+                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->addVariableList(["carts" => $carts, "sessionId" => $sessionId])
             ->view();
     }

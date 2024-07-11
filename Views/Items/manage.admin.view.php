@@ -85,10 +85,10 @@ $description = "";
                     <?= mb_strimwidth($item->getShortDescription(), 0, 60, '...') ?>
                 </td>
                 <td style="width: fit-content;">
-                    <a data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><h6 class="link"><?= $item->getCategory()->getName() ?></h6></a>
+                    <a class="link" data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><?= $item->getCategory()->getName() ?></a>
                 </td>
                 <td>
-                    <?= $item->getPriceFormatted() ?>
+                    <b><?= $item->getPriceFormatted() ?></b>
                 </td>
                 <td>
                     <?= $item->getFormattedStock() ?>
@@ -101,7 +101,7 @@ $description = "";
                         <i data-bs-toggle="tooltip" title="Voir le rendue" class="text-success me-3 fa-solid fa-up-right-from-square"></i>
                     </a>
                     <a href="items/edit/<?= $item->getId() ?>">
-                        <i data-bs-toggle="tooltip" title="Éditer" class="me-3 fa-solid fa-edit"></i>
+                        <i data-bs-toggle="tooltip" title="Éditer" class="text-info me-3 fa-solid fa-edit"></i>
                     </a>
                     <button data-modal-toggle="modal-delete-<?= $item->getId() ?>" type="button">
                         <i data-bs-toggle="tooltip" title="Supprimé" class="text-danger fas fa-trash-alt"></i>

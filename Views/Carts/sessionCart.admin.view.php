@@ -7,27 +7,25 @@ $description = "";
 
 ?>
 
+<h4>Panier de <?= $sessionId ?></h4>
 
-<div class="card">
-    <div class="card-header">
-        <h4>Panier de <?= $sessionId ?></h4>
-    </div>
-    <div class="card-body">
-        <table class="table" id="table1">
+<div class="table-container table-container-striped">
+
+        <table id="table1">
             <thead>
             <tr>
-                <th class="text-center">Article</th>
-                <th class="text-center">Quantité</th>
-                <th class="text-center">Prix unitaire</th>
-                <th class="text-center">Prix total</th>
-                <th class="text-center">Date d'ajout</th>
+                <th>Article</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Prix total</th>
+                <th>Date d'ajout</th>
             </tr>
             </thead>
             <tbody>
             <?php foreach ($carts as $cart) : ?>
-                <tr class="text-center">
+                <tr>
                     <td>
-                        <?= $cart->getItem()->getName() ?>
+                        <a class="link" target="_blank" href="/shop/cat/<?= $cart->getItem()->getCategory()->getSlug() ?>/item/<?= $cart->getItem()->getSlug() ?>"><?= $cart->getItem()->getName() ?></a>
                     </td>
                     <td>
                         <?= $cart->getQuantity() ?>
@@ -45,5 +43,4 @@ $description = "";
             <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
 </div>

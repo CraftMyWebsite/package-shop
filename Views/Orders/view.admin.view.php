@@ -9,10 +9,7 @@ $title = "Commandes #" . $order->getOrderNumber();
 $description = "";
 
 ?>
-
-<div class="d-flex flex-wrap justify-content-between">
-    <h3><i class="fa-solid fa-list-check"></i> <span class="m-lg-auto">Commandes #<?= $order->getOrderNumber() ?></span></h3>
-</div>
+<h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
 
 <div class="card">
     <div class="card-header">

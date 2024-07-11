@@ -74,9 +74,14 @@ $description = "";
 
             <p>Todo :</p>
             <label for="itemPerPage">Articles par page :</label>
-            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="" required>
+            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="">
             <label for="itemPerPage">Reviews par page :</label>
-            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="" required>
+            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="">
+            <label class="toggle">
+                <input type="checkbox" class="toggle-input" >
+                <div class="toggle-slider"></div>
+                <p class="toggle-label">Validation automatique des articles virtuel</p>
+            </label>
         </div>
     </div>
 </div>
