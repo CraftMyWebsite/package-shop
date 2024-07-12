@@ -154,7 +154,16 @@ class ShopItemEntity
         if (is_null($this->getDefaultStock())) {
             return "<b style='color: #0ab312'>Illimité</b>";
         } else {
-            return $this->itemCurrentStock ." / ". $this->itemDefaultStock;
+            $currentStock = $this->itemCurrentStock;
+            $defaultStock = $this->itemDefaultStock;
+            $percentage = ($currentStock / $defaultStock) * 100;
+            $stockAlert = ShopSettingsModel::getInstance()->getSettingValue("stockAlert");
+
+            if ($percentage <= $stockAlert) {
+                return "<b style='color: red '><i class='fa-solid fa-circle-exclamation'></i> {$currentStock} / {$defaultStock}</b>";
+            } else {
+                return "{$currentStock} / {$defaultStock}";
+            }
         }
     }
 

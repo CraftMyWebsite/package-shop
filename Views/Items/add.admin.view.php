@@ -154,22 +154,22 @@ $description = "";
                     <div class="col-12 mt-2">
                         <label>Stock :</label>
                         <input type="number" class="input" name="shop_item_default_stock"
-                               placeholder="0">
+                               placeholder="Pas de limites">
                     </div>
                     <div class="col-12 mt-2">
                         <label>Limite d'achat global :</label>
                         <input type="number" class="input" name="shop_item_global_limit"
-                               placeholder="0">
+                               placeholder="Pas de limites">
                     </div>
                     <div class="col-12 mt-2">
                         <label>Limite d'achat par utilisateur :</label>
                         <input type="number" class="input" name="shop_item_user_limit"
-                               placeholder="0">
+                               placeholder="Pas de limites">
                     </div>
                     <div class="col-12 mt-2">
                         <label>Limite d'achat par commande :</label>
                         <input type="number" class="input" name="shop_item_by_order_limit"
-                               placeholder="0">
+                               placeholder="Pas de limites">
                     </div>
                 </div>
             </div>

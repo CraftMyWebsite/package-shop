@@ -11,6 +11,7 @@ $description = "";
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentSymbol */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentReviews */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentAfter */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
 
@@ -71,6 +72,13 @@ $description = "";
                 <div class="toggle-slider"></div>
                 <p class="toggle-label">Avis clients</p>
             </label>
+
+            <label for="stockAlert">Alerte stock :</label>
+            <div class="input-group">
+                <i class="fa-solid fa-percent"></i>
+                <input type="number" id="stockAlert" name="stockAlert" value="<?= $stockAlert ?>">
+            </div>
+            <small>Recevez une alerte quand les stocks tombent en dessous de XX pourcents</small>
 
             <p>Todo :</p>
             <label for="itemPerPage">Articles par page :</label>

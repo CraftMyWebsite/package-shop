@@ -39,10 +39,29 @@ foreach ($itemVariants as $itemVariant) {
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-cart-plus"></i> Édition de <?= $item->getName() ?></h3>
-    Modal : Si t'edit les var ou le type, cela clear les baskets
+
+    <?php if ( $item->getQuantityInCart() ): ?>
+    <button data-modal-toggle="modal-danger" class="btn-warning"><?= LangManager::translate("core.btn.edit") ?></button>
+    <?php else: ?>
     <button form="editItem" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.edit") ?></button>
+    <?php endif; ?>
 </div>
-fix problème de select virtual content
+
+<div id="modal-danger" class="modal-container">
+    <div class="modal">
+        <div class="modal-header-warning">
+            <h6>Modifications</h6>
+            <button type="button" data-modal-hide="modal-danger"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <p>Attention, si vous avez modifié les variantes ou si le type d'article a changé (Physique -> Virtuel ou Virtuel -> Physique), cela supprimera automatiquement cet article des paniers qui le contiennent !</p>
+        </div>
+        <div class="modal-footer">
+            <button form="editItem" type="submit" class="btn-warning"><?= LangManager::translate("core.btn.edit") ?></button>
+        </div>
+    </div>
+</div>
+
 <form id="editItem" method="post" enctype="multipart/form-data">
     <?php (new SecurityManager())->insertHiddenToken() ?>
     <div class="grid-4">
@@ -191,22 +210,22 @@ fix problème de select virtual content
                         <div class="col-12 mt-2">
                             <label>Stock : <small>(<?= $item->getFormattedStock() ?>)</small></label>
                             <input value="<?= $item->getCurrentStock() ?>" type="number" class="input" name="shop_item_default_stock"
-                                   placeholder="0">
+                                   placeholder="Pas de limites">
                         </div>
                         <div class="col-12 mt-2">
                             <label>Limite d'achat global :</label>
                             <input value="<?= $item->getGlobalLimit() ?>" type="number" class="input" name="shop_item_global_limit"
-                                   placeholder="0">
+                                   placeholder="Pas de limites">
                         </div>
                         <div class="col-12 mt-2">
                             <label>Limite d'achat par utilisateur :</label>
                             <input value="<?= $item->getUserLimit() ?>" type="number" class="input" name="shop_item_user_limit"
-                                   placeholder="0">
+                                   placeholder="Pas de limites">
                         </div>
                         <div class="col-12 mt-2">
                             <label>Limite d'achat par commande :</label>
                             <input value="<?= $item->getByOrderLimit() ?>" type="number" class="input" name="shop_item_by_order_limit"
-                                   placeholder="0">
+                                   placeholder="Pas de limites">
                         </div>
                     </div>
                 </div>

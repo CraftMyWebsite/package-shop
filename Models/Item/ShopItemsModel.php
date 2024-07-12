@@ -541,4 +541,19 @@ ORDER BY csi.shop_item_price ASC;";
         return $res['shop_item_user_limit']?? 0;
     }
 
+    public function decreaseStock(int $itemId, int $stock): void
+    {
+        $data = array(
+            "shop_item_current_stock" => $stock,
+            "shop_item_id" => $itemId
+        );
+
+        $sql = "UPDATE cmw_shops_items SET shop_item_current_stock = :shop_item_current_stock WHERE shop_item_id = :shop_item_id";
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        $req->execute($data);
+    }
+
 }

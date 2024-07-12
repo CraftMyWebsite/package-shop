@@ -222,6 +222,17 @@ class ShopHistoryOrdersController extends AbstractController
                     ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(), $user);
                 }
             }
+            if ($cartItem->getItem()->getCurrentStock()) {
+                $nextStock = $cartItem->getItem()->getCurrentStock() - $cartItem->getQuantity();
+                ShopItemsModel::getInstance()->decreaseStock($cartItem->getItem()->getId(), $nextStock);
+
+                $percentage = ($nextStock / $cartItem->getItem()->getDefaultStock()) * 100;
+                $stockAlert = ShopSettingsModel::getInstance()->getSettingValue("stockAlert");
+
+                if ($percentage <= $stockAlert) {
+                    NotificationManager::notify("Stock faible", "Les stock pour " .$cartItem->getItem()->getName(). " sont faible ! (" . $nextStock ."/". $cartItem->getItem()->getDefaultStock(). ")");
+                }
+            }
         }
 
         NotificationManager::notify("Nouvelle commande", $user->getPseudo(). " viens de passer une commande.", "shop/orders");
