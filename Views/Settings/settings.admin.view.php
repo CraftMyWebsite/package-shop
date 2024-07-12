@@ -11,7 +11,8 @@ $description = "";
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentSymbol */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentReviews */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentAfter */
-/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $maintenance */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $maintenanceMessage */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
 
@@ -51,14 +52,13 @@ $description = "";
             </select>
         </div>
         <div class="card mt-6">
-            TODO
             <label class="toggle">
                 <h6 class="toggle-label">Maintenance</h6>
-                <input type="checkbox" class="toggle-input" id="" name="">
+                <input type="checkbox" class="toggle-input" name="maintenance" <?= $maintenance ? 'checked' : '' ?>>
                 <div class="toggle-slider"></div>
             </label>
             <label>Message d'alerte :</label>
-            <input class="input" placeholder="Boutique en cours de maintenance">
+            <input class="input" name="maintenanceMessage" id="maintenanceMessage" value="<?= $maintenanceMessage ?>" placeholder="Boutique en cours de maintenance">
             <div class="alert-info">
                 <p>Ceci désactive l'accès à toutes les URL publiques du shop (y compris les paramètres, l'historique des commandes, le panier, etc.), sauf pour les rôles ayant la permission "Bypass maintenance".</p>
             </div>

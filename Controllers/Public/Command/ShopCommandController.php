@@ -22,6 +22,7 @@ use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
@@ -39,6 +40,13 @@ class ShopCommandController extends AbstractController
     #[Link("/command", Link::GET, [], "/shop")]
     public function publicCommandView(): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
+
         if (!UsersController::isUserLogged()) {
             Redirect::redirect('login');
         }

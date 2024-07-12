@@ -40,6 +40,13 @@ class ShopPublicController extends AbstractController
     #[Link("/", Link::GET, [], "/shop")]
     public function publicBaseView(): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
+
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
@@ -59,6 +66,12 @@ class ShopPublicController extends AbstractController
     #[Link("/cat/:catSlug", Link::GET, ['.*?'], "/shop")]
     public function publicCatView(Request $request, string $catSlug): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
@@ -78,6 +91,12 @@ class ShopPublicController extends AbstractController
     #[Link("/cat/:catSlug/item/:itemSlug", Link::GET, ['.*?'], "/shop")]
     public function publicItemView(Request $request, string $catSlug, string $itemSlug): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
         $otherItemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $parentCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
@@ -100,6 +119,12 @@ class ShopPublicController extends AbstractController
     #[Link("/settings", Link::GET, [], "/shop")]
     public function publicSettingsView(): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
         $userId = UsersModel::getCurrentUser()?->getId();
         if (!$userId) {
             Redirect::redirect(EnvManager::getInstance()->getValue("PATH_SUBFOLDER")."login");
@@ -115,6 +140,12 @@ class ShopPublicController extends AbstractController
     #[NoReturn] #[Link("/cat/:catSlug/item/:itemSlug/addReview", Link::POST, ['.*?'], "/shop")]
     public function publicPostReview(Request $request, string $catSlug, string $itemSlug): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
         $userId = UsersModel::getCurrentUser()?->getId();
 
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue("reviews");

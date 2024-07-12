@@ -17,6 +17,7 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
@@ -31,6 +32,12 @@ class ShopCartController extends AbstractController
     #[Link("/cart", Link::GET, [], "/shop")]
     public function publicCartView(): void
     {
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        if ($maintenance) {
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
+            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            Redirect::redirectToHome();
+        }
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
