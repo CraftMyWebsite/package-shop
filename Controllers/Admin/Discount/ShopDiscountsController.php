@@ -8,9 +8,15 @@ use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
+use CMW\Manager\Requests\Request;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
+use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
+use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Utils\Log;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use DateTime;
@@ -46,6 +52,322 @@ class ShopDiscountsController extends AbstractController
             ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
                 "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
             ->view();
+    }
+
+    #[Link("/discounts/add", Link::GET, [], "/cmw-admin/shop")]
+    public function shopDiscountsAdd(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        $categories = ShopCategoriesModel::getInstance()->getShopCategories();
+        $items = ShopItemsModel::getInstance()->getShopItems();
+
+        View::createAdminView('Shop', 'Discount/add')
+            ->addVariableList(["categories" => $categories, "items" => $items])
+            ->view();
+    }
+
+    #[Link("/discounts/add", Link::POST, [], "/cmw-admin/shop")]
+    public function shopDiscountsAddPost(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts.add");
+        $discountModel = ShopDiscountModel::getInstance();
+
+        [$name,$startDate,$endDate,$multiplePerUsers,$maxUses,$impact,$price,$percent,$defaultActive,$code,$test,$needPurchase,$applyQuantity,$link] = Utils::filterInput("name","startDate","endDate","multiplePerUsers","maxUses","impact","price","percent","defaultActive","code","test","needPurchase","applyQuantity","link");
+
+        $maxUses = ($maxUses === "") ? null : $maxUses;
+        $currentUses = is_null($maxUses) ? null : 0;
+        $multiplePerUsers = $multiplePerUsers ?? 0;
+        $defaultActive = $defaultActive ?? 0;
+        $test = $test ?? 0;
+        $needPurchase = $needPurchase ?? 0;
+        $applyQuantity = $applyQuantity ?? 0;
+        $price = ($price === "") ? null : $price;
+        $percent = ($percent === "") ? null : $percent;
+        $startDate = empty($startDate) ? null : date('Y-m-d H:i:s', strtotime($startDate));
+        $endDate = empty($endDate) ? null : date('Y-m-d H:i:s', strtotime($endDate));
+        $code = $defaultActive ? null : $code;
+
+        $currentDateTime = date('Y-m-d H:i:s');
+
+        if (!is_null($endDate)) {
+            if ($endDate <= $currentDateTime) {
+                Flash::send(Alert::ERROR, "Discount", "La date de fin ne peut pas être inférieure à la date actuelle.");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if ($impact === "1") {
+            $price = null;
+            if ($percent > 99) {
+                Flash::send(Alert::ERROR, "Discount", "Vous ne pouvez pas appliquer une réduction de plus de 99% !");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if ($impact === "2") {
+            $percent = null;
+        }
+
+        if ($code) {
+            $codeFound = false;
+            foreach ($discountModel->getAllDiscounts() as $discount) {
+                if ($discount->getCode() === $code) {
+                    $codeFound = true;
+                    break;
+                }
+            }
+            if ($codeFound) {
+                Flash::send(Alert::WARNING, "Discount", "Ce code est déja utiliser pas une promotion (active ou non).");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        //Evite les double promotion active par defaut sur tout les articles
+        if ($defaultActive && empty($_POST['linkedItems']) && empty($_POST['linkedCats'])) {
+            $discountFound = false;
+            foreach ($discountModel->getAllDiscounts() as $discount) {
+                if ($discount->getLinked() === 0 && $discount->getDefaultActive() === 1 && $this->isDiscountActive($currentDateTime, $discount->getStartDate(), $discount->getEndDate())) {
+                    $discountFound = true;
+                    break;
+                }
+            }
+            if ($discountFound) {
+                Flash::send(Alert::WARNING, "Discount", "Impossible d'ajouter cette promotion car il y en à déjà une qui applique une reduction à tout les articles de manière automatique.");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        $thisDiscount = ShopDiscountModel::getInstance()->createDiscount($name, $link, $startDate, $endDate,$maxUses,$currentUses,$percent, $price, $multiplePerUsers,0,$test, $code,$defaultActive,$needPurchase,$applyQuantity);
+
+        if ($link === '1') {
+            if (!empty($_POST['linkedItems'])) {
+                foreach ($_POST['linkedItems'] as $itemId) {
+                    $itemFound = false;
+                    foreach ($discountModel->getAllDiscounts() as $discount) {
+                        if ($defaultActive) {
+                            if ($this->isDiscountActive($currentDateTime, $discount->getStartDate(), $discount->getEndDate()) && $discount->getDefaultActive() === 1) {
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à tout"
+                                if ($discount->getLinked() === 0) {
+                                    Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur tout les articles ! (".$discount->getName().")");
+                                    $itemFound = true;
+                                    break;
+                                }
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à un article"
+                                if ($discount->getLinked() === 1) {
+                                    if (!empty(ShopDiscountItemsModel::getInstance()->getShopDiscountItemsByItemId($itemId))) {
+                                        Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur un de vos article (".$discount->getName().")");
+                                        $itemFound = true;
+                                        break;
+                                    }
+                                }
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à une catégorie"
+                                if ($discount->getLinked() === 2) {
+                                    $itemCatId = ShopItemsModel::getInstance()->getShopItemsById($itemId)->getCategory()->getId();
+                                    if (!empty(ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesByCategoryId($itemCatId))) {
+                                        Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur un de vos article via une promotion sur les catégories (".$discount->getName().")");
+                                        $itemFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ($itemFound) {
+                        ShopDiscountModel::getInstance()->deleteDiscount($thisDiscount->getId());
+                        Redirect::redirectPreviousRoute();
+                    } else {
+                        ShopDiscountItemsModel::getInstance()->addDiscountItem($thisDiscount->getId(), $itemId);
+                    }
+                }
+            } else {
+                ShopDiscountModel::getInstance()->deleteDiscount($thisDiscount->getId());
+                Flash::send(Alert::ERROR, "Discount", "Veuillez définir au moins un article !");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if ($link === '2') {
+            if (!empty($_POST['linkedCats'])) {
+                foreach ($_POST['linkedCats'] as $categoryId) {
+                    $itemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCat($categoryId);
+                    $itemCatFound = false;
+                    foreach ($discountModel->getAllDiscounts() as $discount) {
+                        if ($defaultActive) {
+                            if ($this->isDiscountActive($currentDateTime, $discount->getStartDate(), $discount->getEndDate()) && $discount->getDefaultActive() === 1) {
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à tout"
+                                if ($discount->getLinked() === 0) {
+                                    Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur tout les articles ! (".$discount->getName().")");
+                                    $itemCatFound = true;
+                                    break;
+                                }
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à un article"
+                                if ($discount->getLinked() === 1) {
+                                    foreach ($itemsInThisCat as $item) {
+                                        if (!empty(ShopDiscountItemsModel::getInstance()->getShopDiscountItemsByItemId($item->getId()))) {
+                                            Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur un de vos article (".$discount->getName().")");
+                                            $itemCatFound = true;
+                                            break;
+                                        }
+                                    }
+
+                                }
+                                //Verification que l'article n'est pas déja lié à une promotion de type "lié à une catégorie"
+                                if ($discount->getLinked() === 2) {
+                                    if (!empty(ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesByCategoryId($categoryId))) {
+                                        Flash::send(Alert::WARNING, "Discount", "Une promotion est déjà appliquer par défaut sur un de vos article via une promotion sur les catégories (".$discount->getName().")");
+                                        $itemCatFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ($itemCatFound) {
+                        ShopDiscountModel::getInstance()->deleteDiscount($thisDiscount->getId());
+                        Redirect::redirectPreviousRoute();
+                    } else {
+                        ShopDiscountCategoriesModel::getInstance()->addDiscountCategory($thisDiscount->getId(), $categoryId);
+                    }
+                }
+            }
+            else {
+                ShopDiscountModel::getInstance()->deleteDiscount($thisDiscount->getId());
+                Flash::send(Alert::ERROR, "Discount", "Veuillez définir au moins une catégorie !");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        Flash::send(Alert::SUCCESS, "Discount", "Promotion ajouté !");
+        Redirect::redirect("cmw-admin/shop/discounts");
+    }
+
+    #[Link("/discounts/edit/:id", Link::GET, [], "/cmw-admin/shop")]
+    public function shopDiscountsEdit(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        $discount = ShopDiscountModel::getInstance()->getAllShopDiscountById($id);
+
+        View::createAdminView('Shop', 'Discount/edit')
+            ->addVariableList(["discount" => $discount])
+            ->view();
+    }
+
+    #[Link("/discounts/edit/:id", Link::POST, [], "/cmw-admin/shop")]
+    public function shopDiscountsEditPost(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts.add");
+        $discountModel = ShopDiscountModel::getInstance();
+
+        [$name,$startDate,$endDate,$multiplePerUsers,$maxUses,$impact,$price,$percent,$defaultActive,$code,$test,$needPurchase,$applyQuantity,$link] = Utils::filterInput("name","startDate","endDate","multiplePerUsers","maxUses","impact","price","percent","defaultActive","code","test","needPurchase","applyQuantity","link");
+
+        $maxUses = ($maxUses === "") ? null : $maxUses;
+        $currentUses = is_null($maxUses) ? null : 0;
+        $multiplePerUsers = $multiplePerUsers ?? 0;
+        $defaultActive = $defaultActive ?? 0;
+        $test = $test ?? 0;
+        $needPurchase = $needPurchase ?? 0;
+        $applyQuantity = $applyQuantity ?? 0;
+        $price = ($price === "") ? null : $price;
+        $percent = ($percent === "") ? null : $percent;
+        $startDate = empty($startDate) ? null : date('Y-m-d H:i:s', strtotime($startDate));
+        $endDate = empty($endDate) ? null : date('Y-m-d H:i:s', strtotime($endDate));
+        $code = $defaultActive ? null : $code;
+
+        $currentDateTime = date('Y-m-d H:i:s');
+
+        if (!is_null($endDate)) {
+            if ($endDate <= $currentDateTime) {
+                Flash::send(Alert::ERROR, "Discount", "La date de fin ne peut pas être inférieure à la date actuelle.");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if ($impact === "1") {
+            $price = null;
+            if ($percent > 99) {
+                Flash::send(Alert::ERROR, "Discount", "Vous ne pouvez pas appliquer une réduction de plus de 99% !");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        if ($impact === "2") {
+            $percent = null;
+        }
+
+        if ($code) {
+            $codeFound = false;
+            foreach ($discountModel->getAllDiscounts() as $discount) {
+                if ($discount->getCode() === $code) {
+                    if (!$discount->getId() === $id) {
+                        $codeFound = true;
+                        break;
+                    }
+                }
+            }
+            if ($codeFound) {
+                Flash::send(Alert::WARNING, "Discount", "Ce code est déja utiliser pas une promotion (active ou non).");
+                Redirect::redirectPreviousRoute();
+            }
+        }
+
+        ShopDiscountModel::getInstance()->editDiscount($id, $name, $endDate, $maxUses, $currentUses, $percent, $price, $multiplePerUsers, 0, $test, $code, $needPurchase, $applyQuantity);
+
+        Flash::send(Alert::SUCCESS, "Discount", "Promotion modifié !");
+        Redirect::redirect("cmw-admin/shop/discounts");
+    }
+
+    #[Link("/discounts/delete/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    public function adminDeleteShopDiscount(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        ShopDiscountModel::getInstance()->deleteDiscount($id);
+
+        Flash::send(Alert::SUCCESS, "Promotions", "Promotion supprimé !");
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/discounts/stop/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    public function adminStopShopDiscount(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        ShopDiscountModel::getInstance()->stopDiscount($id);
+
+        Flash::send(Alert::SUCCESS, "Promotions", "Promotion supprimé !");
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/discounts/start/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
+    public function adminStartShopDiscount(Request $request, int $id): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        ShopDiscountModel::getInstance()->startDiscount($id);
+
+        Flash::send(Alert::SUCCESS, "Promotions", "Promotion activé !");
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[Link("/discounts/report", Link::POST, [], "/cmw-admin/shop")]
+    public function shopReportDiscountPost(): void
+    {
+        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
+
+        [$id, $startDate] = Utils::filterInput("id", "startDate");
+
+        $startDate = date('Y-m-d H:i:s', strtotime($startDate));
+
+        ShopDiscountModel::getInstance()->reportDiscount($id, $startDate);
+
+        Flash::send(Alert::SUCCESS, "Discount", "Report appliqué !");
+
+        Redirect::redirectPreviousRoute();
     }
 
     /**
@@ -123,6 +445,17 @@ class ShopDiscountsController extends AbstractController
             'past' => $pastDiscounts,
         ];
     }
-}
 
-//TODO Note : Lors de la suppression d'une promotion, on doit verifier que la promotion n'as pas encore été utilisée dans un order.
+    function isDiscountActive($currentDateTime, $startDate, $endDate = null): bool
+    {
+        if ($startDate <= $currentDateTime && ($endDate === null || $currentDateTime <= $endDate)) {
+            return true;
+        }
+
+        if ($startDate > $currentDateTime) {
+            return true;
+        }
+
+        return false;
+    }
+}

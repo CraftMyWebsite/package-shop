@@ -233,7 +233,6 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
 (
     shop_discount_id                             INT AUTO_INCREMENT PRIMARY KEY,
     shop_discount_name                           VARCHAR(50)  NOT NULL,
-    shop_discount_description                    VARCHAR(50)  NOT NULL,
     shop_discount_linked                         TINYINT      NOT NULL DEFAULT 0,
     shop_discount_start_date                     TIMESTAMP    NOT NULL,
     shop_discount_end_date                       TIMESTAMP    NULL,

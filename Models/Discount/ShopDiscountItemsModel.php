@@ -30,7 +30,7 @@ class ShopDiscountItemsModel extends AbstractModel
 
         $res = $res->fetch();
 
-        $discount = ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
+        $discount = ShopDiscountModel::getInstance()->getAllShopDiscountById($res["shop_discount_id"]);
         $item = ShopItemsModel::getInstance()->getShopItemsById($res["shop_item_id"]);
 
         return new ShopDiscountItemsEntity(
@@ -94,6 +94,31 @@ class ShopDiscountItemsModel extends AbstractModel
     }
 
     /**
+     * @param int $discountId
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountItemsEntity []
+     */
+    public function getShopDiscountItemsByDiscountId(int $discountId): array
+    {
+        $sql = "SELECT * FROM cmw_shops_discount_items WHERE shop_discount_id = :shop_discount_id";
+
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array("shop_discount_id" => $discountId))) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($values = $res->fetch()) {
+            $toReturn[] = $this->getShopDiscountItemsById($values["shop_discount_items_id"]);
+        }
+
+        return $toReturn;
+    }
+
+    /**
      * @param int $itemId
      * @return \CMW\Entity\Shop\Discounts\ShopDiscountItemsEntity []
      */
@@ -103,7 +128,7 @@ class ShopDiscountItemsModel extends AbstractModel
                 FROM cmw_shops_discount_items
                 INNER JOIN cmw_shops_discount ON cmw_shops_discount_items.shop_discount_id = cmw_shops_discount.shop_discount_id
                 WHERE cmw_shops_discount_items.shop_item_id = :shop_item_id
-                AND cmw_shops_discount.shop_discount_status = 1;";
+                AND cmw_shops_discount.shop_discount_status = 1 AND cmw_shops_discount.shop_discount_default_active = 1;";
 
         $db = DatabaseManager::getInstance();
 

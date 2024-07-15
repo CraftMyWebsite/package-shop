@@ -11,7 +11,6 @@ class ShopDiscountEntity
 {
     private int $id;
     private string $discountName;
-    private string $discountDescription;
     private int $discountLinked;
     private string $discountStartDate;
     private ?string $discountEndDate;
@@ -32,7 +31,6 @@ class ShopDiscountEntity
     /**
      * @param int $id
      * @param string $discountName
-     * @param string $discountDescription
      * @param int $discountLinked
      * @param string $discountStartDate
      * @param string|null $discountEndDate
@@ -50,11 +48,10 @@ class ShopDiscountEntity
      * @param string $discountCreated
      * @param string $discountUpdated
      */
-    public function __construct(int $id, string $discountName, string $discountDescription, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountMaxUses, ?int $discountCurrentUses, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountStatus, ?int $discountTest, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
+    public function __construct(int $id, string $discountName, int $discountLinked, string $discountStartDate, ?string $discountEndDate, ?int $discountMaxUses, ?int $discountCurrentUses, ?int $discountPercentage, ?float $discountPrice, ?int $discountUsesMultipleByUser, ?int $discountStatus, ?int $discountTest, ?string $discountCode, int $discountDefaultActive, ?int $discountUserHaveOrderBeforeUse, ?int $discountQuantityImpacted, string $discountCreated, string $discountUpdated)
     {
         $this->id = $id;
         $this->discountName = $discountName;
-        $this->discountDescription = $discountDescription;
         $this->discountLinked = $discountLinked;
         $this->discountStartDate = $discountStartDate;
         $this->discountEndDate = $discountEndDate;
@@ -81,11 +78,6 @@ class ShopDiscountEntity
     public function getName(): string
     {
         return $this->discountName;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->discountDescription;
     }
 
     public function getLinked(): int
@@ -136,17 +128,12 @@ class ShopDiscountEntity
         $now = new DateTime();
         $startDate = new DateTime($this->discountStartDate);
         $endDate = $this->discountEndDate ? new DateTime($this->discountEndDate) : null;
-        $status = $this->discountStatus; // Supposons que cette propriété existe et indique le statut de la promotion
-
-        // Vérifie si la promotion est explicitement marquée comme terminée
-        if ($status == 0) {
-            return "Promotion terminée";
-        }
+        $status = $this->discountStatus;
 
         if ($now < $startDate) {
             // La promotion n'a pas encore commencé
             $interval = $now->diff($startDate);
-            return "Commence dans " . $this->formatInterval($interval);
+            return $this->formatInterval($interval);
         } elseif ($endDate && $now < $endDate) {
             // La promotion est en cours
             $interval = $now->diff($endDate);
