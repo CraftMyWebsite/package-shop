@@ -14,6 +14,10 @@ $description = "Stats stats stats";
 <p>Commande ce mois : <?= $numberOrderThisMonth ?></p>
 <p>Commande remboursée ce mois : <?= $refundedOrderThisMonth ?></p>
 
-Nombre d'articles en vente :
-Nombre d'articles archivé :
-Nombre d'article dans des paniers
+Nombre d'articles en vente :<br>
+Nombre d'articles archivé :<br>
+Nombre d'article dans des paniers :<br>
+Argent créer depuis le debut :<br>
+Argent ce mois-ci :<br>
+Argent perdu commande remboursé :<br>
+Argent en attente : <br>

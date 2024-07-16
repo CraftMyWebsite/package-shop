@@ -51,7 +51,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $date->modify('+1 year');
         $endDateTime = $date->format('Y-m-d H:i:s');
 
-        if (!ShopDiscountModel::getInstance()->createDiscount($globalName." ".$amount,"",3,$dateTime,$endDateTime,1,0,null,$item->getPrice(),null,1,0,$code,0,0,0)){
+        if (!ShopDiscountModel::getInstance()->createDiscount($globalName." ".$amount,3,$dateTime,$endDateTime,1,0,null,$item->getPrice(),null,1,0,$code,0,0,0)){
             Flash::send(Alert::ERROR,'Erreur', "Impossible de créer la carte cadeau de ".$amount."!");
             MailController::getInstance()->sendMail($user->getMail(), $websiteName." - $globalName ". $amount, "Nous n'avons pas réussi à créer votre bon cadeau de".$amount.". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }
@@ -148,7 +148,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $date->modify('+1 year');
         $endDateTime = $date->format('Y-m-d H:i:s');
 
-        if (!ShopDiscountModel::getInstance()->createDiscount($globalName." ".$amount,"",3,$dateTime,$endDateTime,1,0,null,$amountGiven,null,1,0,$code,0,0,0)){
+        if (!ShopDiscountModel::getInstance()->createDiscount($globalName." ".$amount,3,$dateTime,$endDateTime,1,0,null,$amountGiven,null,1,0,$code,0,0,0)){
             Flash::send(Alert::ERROR,'Erreur', "Impossible de créer la carte cadeau de ".$amount."!");
             MailController::getInstance()->sendMail($user->getMail(), $websiteName." - $globalName ". $amount, "Nous n'avons pas réussi à créer votre bon cadeau de".$amount.". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }

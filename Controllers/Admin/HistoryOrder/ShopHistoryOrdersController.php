@@ -10,6 +10,8 @@ use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
@@ -84,9 +86,32 @@ class ShopHistoryOrdersController extends AbstractController
                 ->view();
         }
         if ($orderStatus == 1) {
-            View::createAdminView('Shop', 'Orders/Manage/send')
-                ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
-                ->view();
+            $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+            $sessionId = session_id();
+            $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($order->getUser()->getId(), $sessionId);
+            $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
+            if ($cartOnlyVirtual && !ShopSettingsModel::getInstance()->getSettingValue("autoValidateVirtual")) {
+                ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
+                Flash::send(Alert::SUCCESS, "Boutique", "Félicitations commande terminé !");
+                //ExecVirtualNeeds :
+                $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
+                foreach ($items as $item) {
+                    if ($item->getItem()->getType() == 1) {
+                        $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($item->getItem()->getId())->getVirtualMethod()->varName();
+                        $quantity = $item->getQuantity();
+                        for ($i = 0; $i < $quantity; $i++) {
+                            ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $item->getItem(), $order->getUser());
+                        }
+                    }
+                }
+                //TODO Emitter endedOrder
+                //TODO Notify
+                Redirect::redirect("cmw-admin/shop/orders");
+            } else {
+                View::createAdminView('Shop', 'Orders/Manage/send')
+                    ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+                    ->view();
+            }
         }
         if ($orderStatus == 2) {
             View::createAdminView('Shop', 'Orders/Manage/finish')
@@ -119,6 +144,8 @@ class ShopHistoryOrdersController extends AbstractController
         ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
         //TODO : Notifier l'utilisateur
 
+        //TODO Emitter sendOrder
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -129,6 +156,8 @@ class ShopHistoryOrdersController extends AbstractController
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === "" ? null : $shippingLink) );
 
         //TODO : Notifier l'utilisateur
+
+        //TODO Emitter finishedOrder
 
         Redirect::redirect("cmw-admin/shop/orders");
     }
@@ -153,6 +182,8 @@ class ShopHistoryOrdersController extends AbstractController
             }
         }
 
+        //TODO Emitter endedOrder
+
         Redirect::redirect("cmw-admin/shop/orders");
     }
 
@@ -163,6 +194,8 @@ class ShopHistoryOrdersController extends AbstractController
 
         //TODO : Notifier l'utilisateur
 
+        //Eitter canceled
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -172,6 +205,8 @@ class ShopHistoryOrdersController extends AbstractController
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
 
         //TODO : Notifier l'utilisateur
+
+        //Eitter refunded
 
         Redirect::redirect("cmw-admin/shop/orders");
     }
@@ -214,7 +249,7 @@ class ShopHistoryOrdersController extends AbstractController
                     ShopHistoryOrdersItemsVariantesModel::getInstance()->setVariantToItemInOrder($orderItem->getId(), $itemVariantes->getVariantValue()->getValue(), $itemVariantes->getVariantValue()->getVariant()->getName());
                 }
             }
-            if ($cartOnlyVirtual) {
+            if ($cartOnlyVirtual && ShopSettingsModel::getInstance()->getSettingValue("autoValidateVirtual")) {
                 ShopHistoryOrdersModel::getInstance()->endOrder($order->getId());
                 $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($cartItem->getItem()->getId())->getVirtualMethod()->varName();
                 $quantity = $cartItem->getQuantity();
@@ -236,6 +271,8 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         NotificationManager::notify("Nouvelle commande", $user->getPseudo(). " viens de passer une commande.", "shop/orders");
+
+        //Eitter newOrder
 
         ShopCartModel::getInstance()->clearUserCart($user->getId());
         ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
