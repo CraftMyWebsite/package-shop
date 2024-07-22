@@ -24,16 +24,16 @@ $description = "";
         <table class="table" id="table1">
             <thead>
             <tr>
-                <th class="text-center">Utilisateur</th>
-                <th class="text-center">N° de commande</th>
-                <th class="text-center">Montant</th>
-                <th class="text-center">Status</th>
-                <th class="text-center">Paiement</th>
-                <th class="text-center">Date</th>
+                <th >Utilisateur</th>
+                <th >N° de commande</th>
+                <th >Montant</th>
+                <th >Status</th>
+                <th >Paiement</th>
+                <th >Date</th>
                 <th class="text-center">Gérer</th>
             </tr>
             </thead>
-            <tbody class="text-center">
+            <tbody >
             <?php foreach ($inProgressOrders as $inProgressOrder) : ?>
                 <tr>
                     <td><?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . " " . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?></td>
@@ -51,7 +51,7 @@ $description = "";
                         <?php endif; ?>
                         <?="(". $inProgressOrder->getPaymentMethod()->getFeeFormatted().")" ?></td>
                     <td><?= $inProgressOrder->getCreated() ?></td>
-                    <td>
+                    <td class="text-center">
                         <a href="orders/manage/<?= $inProgressOrder->getId() ?>">
                             <i class="text-success fa-solid fa-wand-magic-sparkles"></i>
                         </a>
@@ -70,14 +70,15 @@ $description = "";
             <table id="table2">
                 <thead>
                 <tr>
-                    <th class="text-center">Utilisateur</th>
-                    <th class="text-center">N° de commande</th>
-                    <th class="text-center">Montant</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Consulter</th>
+                    <th >Utilisateur</th>
+                    <th >N° de commande</th>
+                    <th >Montant</th>
+                    <th >Status</th>
+                    <th >Date</th>
+                    <th class="text-center"></th>
                 </tr>
                 </thead>
-                <tbody class="text-center">
+                <tbody >
                 <?php foreach ($finishedOrders as $finishedOrder) : ?>
                     <tr>
                         <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . " " . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
@@ -86,7 +87,8 @@ $description = "";
                             <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() ."</b>" ?><br>
                         </td>
                         <td><?= $finishedOrder->getAdminStatus() ?></td>
-                        <td>
+                        <td><?= $finishedOrder->getCreated() ?></td>
+                        <td class="text-center">
                             <a href="orders/view/<?= $finishedOrder->getId() ?>">
                                 <i class="text-primary fa-solid fa-eye"></i>
                             </a>
@@ -103,14 +105,15 @@ $description = "";
             <table id="table3">
                 <thead>
                 <tr>
-                    <th class="text-center">Utilisateur</th>
-                    <th class="text-center">N° de commande</th>
-                    <th class="text-center">Montant</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Consulter</th>
+                    <th >Utilisateur</th>
+                    <th >N° de commande</th>
+                    <th >Montant</th>
+                    <th >Status</th>
+                    <th >Date</th>
+                    <th class="text-center"></th>
                 </tr>
                 </thead>
-                <tbody class="text-center">
+                <tbody >
                 <?php foreach ($errorOrders as $errorOrder) : ?>
                     <tr>
                         <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . " " . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
@@ -119,7 +122,8 @@ $description = "";
                             <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() ."</b>" ?><br>
                         </td>
                         <td><?= $errorOrder->getAdminStatus() ?></td>
-                        <td>
+                        <td><?= $errorOrder->getCreated() ?></td>
+                        <td class="text-center">
                             <a href="orders/view/<?= $errorOrder->getId() ?>">
                                 <i class="text-primary fa-solid fa-eye"></i>
                             </a>

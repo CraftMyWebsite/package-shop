@@ -272,6 +272,8 @@ class ShopHistoryOrdersController extends AbstractController
 
         NotificationManager::notify("Nouvelle commande", $user->getPseudo(). " viens de passer une commande.", "shop/orders");
 
+        $this->notifyUser($cartContent, $user, $order, $paymentHistory);
+
         //Eitter newOrder
 
         ShopCartModel::getInstance()->clearUserCart($user->getId());

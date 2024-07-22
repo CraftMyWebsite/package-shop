@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
     shop_image_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_image_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_category_id_images FOREIGN KEY (shop_category_id)
-        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE ,
+        REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_item_id_images FOREIGN KEY (shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -83,11 +83,11 @@ CREATE TABLE IF NOT EXISTS cmw_shops_images
 
 CREATE TABLE IF NOT EXISTS cmw_shops_cart
 (
-    shop_cart_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shop_user_id              INT          NULL,
-    shop_client_session_id    VARCHAR(255) NULL,
-    shop_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_cart_id           INT AUTO_INCREMENT PRIMARY KEY,
+    shop_user_id           INT          NULL,
+    shop_client_session_id VARCHAR(255) NULL,
+    shop_created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_cart FOREIGN KEY (shop_user_id)
         REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -97,13 +97,13 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart
 CREATE TABLE IF NOT EXISTS cmw_shops_cart_items
 (
     shop_cart_item_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shop_cart_id              INT          NOT NULL,
-    shop_item_id              INT          NULL,
-    shop_discount_id          INT          NULL,
-    shop_cart_item_quantity   INT          NOT NULL DEFAULT 1,
-    shop_cart_item_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_cart_item_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    shop_cart_item_aside      TINYINT      NOT NULL DEFAULT 0,
+    shop_cart_id              INT       NOT NULL,
+    shop_item_id              INT       NULL,
+    shop_discount_id          INT       NULL,
+    shop_cart_item_quantity   INT       NOT NULL DEFAULT 1,
+    shop_cart_item_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_cart_item_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_cart_item_aside      TINYINT   NOT NULL DEFAULT 0,
     CONSTRAINT fk_cart_id_cart_items FOREIGN KEY (shop_cart_id)
         REFERENCES cmw_shops_cart (shop_cart_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_item_id_cart_items FOREIGN KEY (shop_item_id)
@@ -255,9 +255,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
 
 CREATE TABLE IF NOT EXISTS cmw_shops_discount_items
 (
-    shop_discount_items_id      INT AUTO_INCREMENT PRIMARY KEY,
-    shop_discount_id            INT NULL,
-    shop_item_id                INT NULL,
+    shop_discount_items_id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_id       INT NULL,
+    shop_item_id           INT NULL,
     CONSTRAINT fk_shop_item_id_discount_items FOREIGN KEY (shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_discount_id_discount_items FOREIGN KEY (shop_discount_id)
@@ -268,9 +268,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount_items
 
 CREATE TABLE IF NOT EXISTS cmw_shops_discount_categories
 (
-    shop_discount_categories_id     INT AUTO_INCREMENT PRIMARY KEY,
-    shop_discount_id                INT NULL,
-    shop_category_id                INT NULL,
+    shop_discount_categories_id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_discount_id            INT NULL,
+    shop_category_id            INT NULL,
     CONSTRAINT fk_shop_item_id_discount_categories FOREIGN KEY (shop_category_id)
         REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_discount_id_discount_categories FOREIGN KEY (shop_discount_id)
@@ -281,9 +281,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount_categories
 
 CREATE TABLE IF NOT EXISTS cmw_shops_cart_discounts
 (
-    shop_cart_discount_id           INT AUTO_INCREMENT PRIMARY KEY,
-    shop_cart_id                    INT NULL,
-    shop_discount_id                INT NULL,
+    shop_cart_discount_id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_cart_id          INT NULL,
+    shop_discount_id      INT NULL,
     CONSTRAINT fk_shop_discount_id_cart_discounts FOREIGN KEY (shop_discount_id)
         REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_cart_id_cart_discounts FOREIGN KEY (shop_cart_id)
@@ -328,13 +328,13 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order
 (
-    shop_history_order_id                 INT AUTO_INCREMENT PRIMARY KEY,
-    user_id                               INT NOT NULL,
-    shop_history_order_status             INT         NOT NULL DEFAULT 0,
-    shop_history_order_shipping_link      VARCHAR(255)NULL,
-    shop_history_order_number             VARCHAR(50) NULL,
-    shop_history_order_created_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_history_order_updated_at         TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    shop_history_order_id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_id                          INT          NOT NULL,
+    shop_history_order_status        INT          NOT NULL DEFAULT 0,
+    shop_history_order_shipping_link VARCHAR(255) NULL,
+    shop_history_order_number        VARCHAR(50)  NULL,
+    shop_history_order_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_history_order_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -342,11 +342,11 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_discount
 (
-    shop_history_order_discount_id          INT AUTO_INCREMENT PRIMARY KEY,
-    shop_history_order_id                   INT         NOT NULL,
-    shop_history_order_discount_name        VARCHAR(255) NULL,
-    shop_history_order_discount_price       FLOAT(10, 2) NULL,
-    shop_history_order_discount_percent     INT         NULL,
+    shop_history_order_discount_id      INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_id               INT          NOT NULL,
+    shop_history_order_discount_name    VARCHAR(255) NULL,
+    shop_history_order_discount_price   FLOAT(10, 2) NULL,
+    shop_history_order_discount_percent INT          NULL,
     CONSTRAINT fk_cmw_shop_history_order_discount_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -355,10 +355,10 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_discount
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_shipping
 (
-    shop_history_order_shipping_id        INT AUTO_INCREMENT PRIMARY KEY,
-    shop_history_order_id                 INT         NOT NULL,
-    shop_history_order_shipping_name      VARCHAR(255) NULL,
-    shop_history_order_shipping_price     FLOAT(10, 2) NULL,
+    shop_history_order_shipping_id    INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_id             INT          NOT NULL,
+    shop_history_order_shipping_name  VARCHAR(255) NULL,
+    shop_history_order_shipping_price FLOAT(10, 2) NULL,
     CONSTRAINT fk_cmw_shop_history_order_shipping_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -367,18 +367,18 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_shipping
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_user_address
 (
-    shop_history_order_user_address_id                INT AUTO_INCREMENT PRIMARY KEY,
-    shop_history_order_id                             INT         NOT NULL,
-    shop_history_order_user_address_name              VARCHAR(50) NULL,
-    shop_history_order_user_address_user_mail         VARCHAR(50) NULL,
-    shop_history_order_user_address_user_last_name    VARCHAR(50) NULL,
-    shop_history_order_user_address_user_first_name   VARCHAR(50) NULL,
-    shop_history_order_user_address_user_line_1       VARCHAR(50) NULL,
-    shop_history_order_user_address_user_line_2       VARCHAR(50) NULL,
-    shop_history_order_user_address_user_city         VARCHAR(50) NULL,
-    shop_history_order_user_address_user_postal_code  VARCHAR(50) NULL,
-    shop_history_order_user_address_user_country      VARCHAR(50) NULL,
-    shop_history_order_user_address_user_phone        VARCHAR(50) NULL,
+    shop_history_order_user_address_id               INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_id                            INT         NOT NULL,
+    shop_history_order_user_address_name             VARCHAR(50) NULL,
+    shop_history_order_user_address_user_mail        VARCHAR(50) NULL,
+    shop_history_order_user_address_user_last_name   VARCHAR(50) NULL,
+    shop_history_order_user_address_user_first_name  VARCHAR(50) NULL,
+    shop_history_order_user_address_user_line_1      VARCHAR(50) NULL,
+    shop_history_order_user_address_user_line_2      VARCHAR(50) NULL,
+    shop_history_order_user_address_user_city        VARCHAR(50) NULL,
+    shop_history_order_user_address_user_postal_code VARCHAR(50) NULL,
+    shop_history_order_user_address_user_country     VARCHAR(50) NULL,
+    shop_history_order_user_address_user_phone       VARCHAR(50) NULL,
     CONSTRAINT fk_cmw_shop_history_order_user_address_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -387,11 +387,11 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_user_address
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_payment
 (
-    shop_history_order_payment_id        INT AUTO_INCREMENT PRIMARY KEY,
-    shop_history_order_id                INT          NOT NULL,
-    shop_history_order_payment_name      VARCHAR(255) NULL,
-    shop_history_order_payment_var_name  VARCHAR(50)  NULL,
-    shop_history_order_payment_fee       FLOAT(10, 2) NULL,
+    shop_history_order_payment_id       INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_id               INT          NOT NULL,
+    shop_history_order_payment_name     VARCHAR(255) NULL,
+    shop_history_order_payment_var_name VARCHAR(50)  NULL,
+    shop_history_order_payment_fee      FLOAT(10, 2) NULL,
     CONSTRAINT fk_cmw_shop_history_order_payment_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -400,16 +400,16 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_payment
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_items
 (
-    shop_history_order_items_id                            INT AUTO_INCREMENT PRIMARY KEY,
-    item_id                                                INT NOT NULL,
-    shop_history_order_id                                  INT          NOT NULL,
-    shop_history_order_items_name                          VARCHAR(255) NULL,
-    shop_history_order_items_img                           VARCHAR(255) NULL,
-    shop_history_order_items_quantity                      INT          NULL,
-    shop_history_order_items_price                         FLOAT(10, 2) NULL,
-    shop_history_order_items_discount_name                 VARCHAR(255) NULL,
-    shop_history_order_items_total_price_before_discount   FLOAT(10, 2) NULL,
-    shop_history_order_items_total_price_after_discount    FLOAT(10, 2) NULL,
+    shop_history_order_items_id                          INT AUTO_INCREMENT PRIMARY KEY,
+    item_id                                              INT          NOT NULL,
+    shop_history_order_id                                INT          NOT NULL,
+    shop_history_order_items_name                        VARCHAR(255) NULL,
+    shop_history_order_items_img                         VARCHAR(255) NULL,
+    shop_history_order_items_quantity                    INT          NULL,
+    shop_history_order_items_price                       FLOAT(10, 2) NULL,
+    shop_history_order_items_discount_name               VARCHAR(255) NULL,
+    shop_history_order_items_total_price_before_discount FLOAT(10, 2) NULL,
+    shop_history_order_items_total_price_after_discount  FLOAT(10, 2) NULL,
     CONSTRAINT fk_cmw_shop_history_order_items_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -418,12 +418,45 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_items
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order_items_variantes
 (
-    shop_history_order_items_variantes_id        INT AUTO_INCREMENT PRIMARY KEY,
-    shop_history_order_items_id                  INT          NOT NULL,
-    shop_history_order_items_variantes_name      VARCHAR(255) NULL,
-    shop_history_order_items_variantes_value     VARCHAR(255) NULL,
+    shop_history_order_items_variantes_id    INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_items_id              INT          NOT NULL,
+    shop_history_order_items_variantes_name  VARCHAR(255) NULL,
+    shop_history_order_items_variantes_value VARCHAR(255) NULL,
     CONSTRAINT fk_cmw_shop_history_order_items_variantes_history_order_items_id FOREIGN KEY (shop_history_order_items_id)
         REFERENCES cmw_shop_history_order_items (shop_history_order_items_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shop_history_order_afterSales
+(
+    shop_history_order_afterSales_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_afterSales_author     INT       NOT NULL,
+    shop_history_order_afterSales_reason     INT       NOT NULL DEFAULT 0,
+    shop_history_order_afterSales_status     INT       NOT NULL DEFAULT 0,
+    shop_history_order_id                    INT       NOT NULL,
+    shop_history_order_afterSales_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_history_order_afterSales_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cmw_shop_history_order_afterSales_history_order_id FOREIGN KEY (shop_history_order_id)
+        REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_user_id_history_order_afterSales_user FOREIGN KEY (shop_history_order_afterSales_author)
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shop_history_order_afterSales_message
+(
+    shop_history_order_afterSales_message_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_afterSales_id                 INT       NOT NULL,
+    shop_history_order_afterSales_message            TEXT      NOT NULL,
+    shop_history_order_afterSales_message_author     INT       NOT NULL,
+    shop_history_order_afterSales_message_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_history_order_afterSales_message_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cmw_shop_history_order_afterSales_message_history_order_id FOREIGN KEY (shop_history_order_afterSales_id)
+        REFERENCES cmw_shop_history_order_afterSales (shop_history_order_afterSales_id) ON UPDATE CASCADE ON DELETE CASCADE,
+        CONSTRAINT fk_user_id_history_order_afterSales_message_user FOREIGN KEY (shop_history_order_afterSales_message_author)
+        REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -431,13 +464,13 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_items_variantes
 CREATE TABLE IF NOT EXISTS cmw_shops_command_tunnel
 (
     shop_command_tunnel_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shop_command_tunnel_step       INT       NOT NULL DEFAULT 0,
-    shop_user_id                   INT       NULL UNIQUE,
-    shops_shipping_id              INT       NULL,
-    shop_delivery_user_address_id  INT       NULL,
-    shop_payment_method_name       VARCHAR(50)       NULL,
-    shop_command_tunnel_created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_command_tunnel_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_command_tunnel_step       INT         NOT NULL DEFAULT 0,
+    shop_user_id                   INT         NULL UNIQUE,
+    shops_shipping_id              INT         NULL,
+    shop_delivery_user_address_id  INT         NULL,
+    shop_payment_method_name       VARCHAR(50) NULL,
+    shop_command_tunnel_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_command_tunnel_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_command_tunnel FOREIGN KEY (shop_user_id)
         REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT fk_shop_command_tunnel_id_delivery_user_address FOREIGN KEY (shop_delivery_user_address_id)
@@ -461,11 +494,11 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_method_settings
 
 CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_method
 (
-    shops_items_virtual_method_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shops_items_virtual_method_var_name        VARCHAR(50)  NOT NULL,
-    shop_item_id                                INT          NULL,
-    shops_items_virtual_requirement_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shops_items_virtual_method_id              INT AUTO_INCREMENT PRIMARY KEY,
+    shops_items_virtual_method_var_name        VARCHAR(50) NOT NULL,
+    shop_item_id                               INT         NULL,
+    shops_items_virtual_requirement_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_items_virtual_requirement_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_item_id_items_virtual_method FOREIGN KEY (shop_item_id)
         REFERENCES cmw_shops_items (shop_item_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -482,20 +515,20 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_requirement
     shops_items_virtual_requirement_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_item_id_items_virtual_requirement FOREIGN KEY (shops_items_virtual_method_id)
         REFERENCES cmw_shops_items_virtual_method (shops_items_virtual_method_id) ON UPDATE CASCADE ON DELETE CASCADE
-    ) ENGINE = InnoDB
-    CHARACTER SET = utf8mb4
-    COLLATE = utf8mb4_unicode_ci;
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS cmw_shops_reviews
 (
-    shops_reviews_id            INT AUTO_INCREMENT PRIMARY KEY,
-    shop_user_id                INT          NOT NULL,
-    shop_item_id                INT          NOT NULL,
-    shops_reviews_rating        INT          NOT NULL,
-    shops_reviews_title         varchar(50)  NOT NULL,
-    shops_reviews_text          TEXT         NOT NULL,
-    shops_reviews_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shops_reviews_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shops_reviews_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_user_id             INT         NOT NULL,
+    shop_item_id             INT         NOT NULL,
+    shops_reviews_rating     INT         NOT NULL,
+    shops_reviews_title      varchar(50) NOT NULL,
+    shops_reviews_text       TEXT        NOT NULL,
+    shops_reviews_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shops_reviews_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_shops_reviews FOREIGN KEY (shop_user_id)
         REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_shop_item_id_shops_reviews FOREIGN KEY (shop_item_id)
@@ -512,10 +545,18 @@ ALTER TABLE `cmw_shops_items`
 ALTER TABLE `cmw_shops_cart_items`
     ADD
         CONSTRAINT fk_shop_discount_id_cmw_shops_cart_items FOREIGN KEY (shop_discount_id)
-        REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL;
+            REFERENCES cmw_shops_discount (shop_discount_id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 INSERT INTO cmw_shops_settings (`shop_settings_key`, `shop_settings_value`)
-VALUES ('currency', 'EUR'),('symbol', '€'),('after', '1'),('reviews', '1'),('stockAlert', '20'),('maintenance', '0'),('maintenanceMessage', 'La boutique est en cours de maintenance.'),('autoValidateVirtual', '0');
+VALUES ('currency', 'EUR'),
+       ('symbol', '€'),
+       ('after', '1'),
+       ('reviews', '1'),
+       ('stockAlert', '20'),
+       ('maintenance', '0'),
+       ('maintenanceMessage', 'La boutique est en cours de maintenance.'),
+       ('autoValidateVirtual', '0');
 
 
-INSERT INTO cmw_shops_images (`shop_image_name`,`shop_default_image`) VALUES ('default','1');
+INSERT INTO cmw_shops_images (`shop_image_name`, `shop_default_image`)
+VALUES ('default', '1');
