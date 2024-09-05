@@ -8,7 +8,7 @@ use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
@@ -243,7 +243,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link("/discounts/edit/:id", Link::GET, [], "/cmw-admin/shop")]
-    public function shopDiscountsEdit(Request $request, int $id): void
+    public function shopDiscountsEdit(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
 
@@ -255,7 +255,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link("/discounts/edit/:id", Link::POST, [], "/cmw-admin/shop")]
-    public function shopDiscountsEditPost(Request $request, int $id): void
+    public function shopDiscountsEditPost(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts.add");
         $discountModel = ShopDiscountModel::getInstance();
@@ -319,7 +319,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link("/discounts/delete/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminDeleteShopDiscount(Request $request, int $id): void
+    public function adminDeleteShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
 
@@ -331,7 +331,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link("/discounts/stop/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminStopShopDiscount(Request $request, int $id): void
+    public function adminStopShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
 
@@ -343,7 +343,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link("/discounts/start/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminStartShopDiscount(Request $request, int $id): void
+    public function adminStartShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.discounts");
 

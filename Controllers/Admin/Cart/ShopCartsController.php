@@ -6,7 +6,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartModel;
@@ -38,7 +38,7 @@ class ShopCartsController extends AbstractController
     }
 
     #[Link("/carts/user/:userId", Link::GET, [], "/cmw-admin/shop")]
-    public function shopCartUser(Request $request, int $userId): void
+    public function shopCartUser(int $userId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
 
@@ -54,7 +54,7 @@ class ShopCartsController extends AbstractController
     }
 
     #[Link("/carts/session/:sessionId", Link::GET, [], "/cmw-admin/shop")]
-    public function shopCartSession(Request $request, string $sessionId): void
+    public function shopCartSession(string $sessionId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
 
@@ -69,7 +69,7 @@ class ShopCartsController extends AbstractController
     }
 
     #[NoReturn] #[Link("/carts/session/delete/:sessionId", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminDeleteShopSessionCart(Request $request, string $sessionId): void
+    public function adminDeleteShopSessionCart(string $sessionId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 

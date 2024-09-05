@@ -15,7 +15,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
@@ -84,7 +84,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/review/:id", Link::GET, [], "/cmw-admin/shop")]
-    public function shopItemsReviews(Request $request, int $id): void
+    public function shopItemsReviews(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -100,7 +100,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/review/:id/delete/:reviewId", Link::GET, [], "/cmw-admin/shop")]
-    public function shopItemsDeleteReviews(Request $request, int $id, int $reviewId): void
+    public function shopItemsDeleteReviews(int $id, int $reviewId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -110,7 +110,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/cat/:catId", Link::GET, ['.*?'], "/cmw-admin/shop")]
-    public function shopItemsByCat(Request $request, string $catId): void
+    public function shopItemsByCat(string $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -230,7 +230,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/edit/:id", Link::GET, [], "/cmw-admin/shop")]
-    public function adminEditShopItem(Request $request, int $id): void
+    public function adminEditShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -251,7 +251,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/edit/:id", Link::POST, [], "/cmw-admin/shop")]
-    public function adminEditShopItemPost(Request $request, int $id): void
+    public function adminEditShopItemPost(int $id): void
     {
         $backupItemInfo = ShopItemsModel::getInstance()->getShopItemsById($id);
 
@@ -385,7 +385,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/delete/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminDeleteShopItem(Request $request, int $id): void
+    public function adminDeleteShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -412,7 +412,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link("/items/activate/:id", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminActivateShopItem(Request $request, int $id): void
+    public function adminActivateShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 

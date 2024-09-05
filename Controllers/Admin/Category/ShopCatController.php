@@ -10,7 +10,7 @@ use CMW\Manager\Events\Emitter;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
@@ -56,7 +56,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link("/cat/addSubCat/:catId", Link::GET, [], "/cmw-admin/shop")]
-    public function adminAddSubCat(Request $request, int $catId): void
+    public function adminAddSubCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -68,7 +68,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link("/cat/addSubCat/:catId", Link::POST, [], "/cmw-admin/shop")]
-    public function adminAddSubCatPost(Request $request, int $catId): void
+    public function adminAddSubCatPost(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -82,7 +82,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link("/cat/edit/:catId", Link::GET, [], "/cmw-admin/shop")]
-    public function adminEditCat(Request $request, int $catId): void
+    public function adminEditCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -95,7 +95,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link("/cat/edit/:catId", Link::POST, [], "/cmw-admin/shop")]
-    public function adminEditCatPost(Request $request, string $catId): void
+    public function adminEditCatPost(string $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 
@@ -111,7 +111,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link("/cat/delete/:catId", Link::GET, ['[0-9]+'], "/cmw-admin/shop")]
-    public function adminDeleteShopCat(Request $request, int $catId): void
+    public function adminDeleteShopCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.items");
 

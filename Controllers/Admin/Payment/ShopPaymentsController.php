@@ -13,7 +13,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
@@ -97,7 +97,7 @@ class ShopPaymentsController extends AbstractController
     }
 
     #[NoReturn] #[Link("/payments/enable/:name", Link::GET, [], "/cmw-admin/shop")]
-    private function shopEnablePayments(Request $request, string $name): void
+    private function shopEnablePayments(string $name): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
         $nameWithStatus = $name . '_is_active';
@@ -109,7 +109,7 @@ class ShopPaymentsController extends AbstractController
     }
 
     #[NoReturn] #[Link("/payments/disable/:name", Link::GET, [], "/cmw-admin/shop")]
-    private function shopDisablePayments(Request $request, string $name): void
+    private function shopDisablePayments(string $name): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.payments.settings");
         $nameWithStatus = $name . '_is_active';

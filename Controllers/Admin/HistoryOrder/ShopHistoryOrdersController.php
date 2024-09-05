@@ -15,7 +15,7 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
@@ -71,7 +71,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[Link("/orders/manage/:orderId", Link::GET, [], "/cmw-admin/shop")]
-    public function shopManageOrders(Request $request, int $orderId): void
+    public function shopManageOrders(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.orders.manage");
 
@@ -126,7 +126,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[Link("/orders/view/:orderId", Link::GET, [], "/cmw-admin/shop")]
-    public function shopViewOrders(Request $request, int $orderId): void
+    public function shopViewOrders(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.orders.manage");
 
@@ -139,7 +139,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn] #[Link("/orders/manage/send/:orderId", Link::POST, [], "/cmw-admin/shop")]
-    public function shopManageSendStep(Request $request, int $orderId): void
+    public function shopManageSendStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
         //TODO : Notifier l'utilisateur
@@ -150,7 +150,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn] #[Link("/orders/manage/finish/:orderId", Link::POST, [], "/cmw-admin/shop")]
-    public function shopManageFinalStep(Request $request, int $orderId): void
+    public function shopManageFinalStep(int $orderId): void
     {
         [$shippingLink] = Utils::filterInput("shipping_link");
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === "" ? null : $shippingLink) );
@@ -163,7 +163,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn] #[Link("/orders/manage/end/:orderId", Link::POST, [], "/cmw-admin/shop")]
-    public function shopManageEndStep(Request $request, int $orderId): void
+    public function shopManageEndStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
 
@@ -188,7 +188,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn] #[Link("/orders/manage/cancel/:orderId", Link::POST, [], "/cmw-admin/shop")]
-    public function shopManageCancelStep(Request $request, int $orderId): void
+    public function shopManageCancelStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
 
@@ -200,7 +200,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn] #[Link("/orders/manage/refunded/:orderId", Link::POST, [], "/cmw-admin/shop")]
-    public function shopManageRefundStep(Request $request, int $orderId): void
+    public function shopManageRefundStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
 

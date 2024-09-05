@@ -9,7 +9,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Package\AbstractController;
-use CMW\Manager\Requests\Request;
+
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartModel;
@@ -64,7 +64,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[Link("/cat/:catSlug", Link::GET, ['.*?'], "/shop")]
-    public function publicCatView(Request $request, string $catSlug): void
+    public function publicCatView(string $catSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
         if ($maintenance) {
@@ -89,7 +89,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[Link("/cat/:catSlug/item/:itemSlug", Link::GET, ['.*?'], "/shop")]
-    public function publicItemView(Request $request, string $catSlug, string $itemSlug): void
+    public function publicItemView(string $catSlug, string $itemSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
         if ($maintenance) {
@@ -138,7 +138,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[NoReturn] #[Link("/cat/:catSlug/item/:itemSlug/addReview", Link::POST, ['.*?'], "/shop")]
-    public function publicPostReview(Request $request, string $catSlug, string $itemSlug): void
+    public function publicPostReview(string $catSlug, string $itemSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
         if ($maintenance) {
