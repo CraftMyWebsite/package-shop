@@ -26,7 +26,6 @@ use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
 
-
 /**
  * Class: @ShopCommandController
  * @package shop
@@ -35,13 +34,13 @@ use JetBrains\PhpStorm\NoReturn;
  */
 class ShopCommandController extends AbstractController
 {
-    #[Link("/command", Link::GET, [], "/shop")]
+    #[Link('/command', Link::GET, [], '/shop')]
     public function publicCommandView(): void
     {
-        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
-            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
             Redirect::redirectToHome();
         }
 
@@ -70,8 +69,8 @@ class ShopCommandController extends AbstractController
         $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
 
         if (empty($cartContent)) {
-            Flash::send(Alert::ERROR, "Boutique", "Votre panier est vide.");
-            //TODO : Fix redirect after item change in cart like Physical To virtual
+            Flash::send(Alert::ERROR, 'Boutique', 'Votre panier est vide.');
+            // TODO : Fix redirect after item change in cart like Physical To virtual
             Redirect::redirectPreviousRoute();
         }
 
@@ -87,22 +86,22 @@ class ShopCommandController extends AbstractController
         $cartIsFree = $this->handleCartIsFree($cartContent);
         $priceType = $this->handleCartPriceType($cartContent);
 
-        //TODO: Verifier si les promotions appliquées au panier sont encore valides
+        // TODO: Verifier si les promotions appliquées au panier sont encore valides
 
         if (empty($userAddresses)) {
             $country = ShopCountryModel::getInstance()->getCountry();
-            $view = new View("Shop", "Command/newAddress");
-            $view->addVariableList(["country" => $country, "cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
-            $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
+            $view = new View('Shop', 'Command/newAddress');
+            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'giftCodes' => $giftCodes]);
+            $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
                 $country = ShopCountryModel::getInstance()->getCountry();
-                $view = new View("Shop", "Command/address");
-                $view->addVariableList(["country" => $country, "cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
-                $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
+                $view = new View('Shop', 'Command/address');
+                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'giftCodes' => $giftCodes]);
+                $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
                 $view->view();
             }
             if ($currentStep === 1) {
@@ -112,16 +111,16 @@ class ShopCommandController extends AbstractController
                 } else {
                     $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                    //TODO getCompatibleShipping:
+                    // TODO getCompatibleShipping:
                     $shippings = ShopShippingModel::getInstance()->getAvailableShipping($selectedAddress, $cartContent);
                     $withdrawPoints = ShopShippingModel::getInstance()->getAvailableWithdrawPoint($selectedAddress, $cartContent);
                     if (empty($shippings) && empty($withdrawPoints)) {
-                        Flash::send(Alert::WARNING, "Boutique","Nous sommes désolé mais aucune méthode de livraison n'est disponible pour cette adresse.");
-                        //TODO : Notify admin adresse cant throw shipping
+                        Flash::send(Alert::WARNING, 'Boutique', "Nous sommes désolé mais aucune méthode de livraison n'est disponible pour cette adresse.");
+                        // TODO : Notify admin adresse cant throw shipping
                     }
-                    $view = new View("Shop", "Command/delivery");
-                    $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
-                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings, "withdrawPoints" => $withdrawPoints , "giftCodes" => $giftCodes]);
+                    $view = new View('Shop', 'Command/delivery');
+                    $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
+                    $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'giftCodes' => $giftCodes]);
                     $view->view();
                 }
             }
@@ -146,36 +145,35 @@ class ShopCommandController extends AbstractController
                             $paymentMethods = ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
                         }
                     }
-                } elseif ($priceType == "money") {
+                } elseif ($priceType == 'money') {
                     $paymentMethods = ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
                 } else {
                     $paymentMethods = ShopPaymentsController::getInstance()->getVirtualPaymentByVarNameAsArray($priceType);
                 }
-                $view = new View("Shop", "Command/payment");
-                $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage,
-                    "selectedAddress" => $selectedAddress, "shippingMethod" => $shippingMethod,
-                    "paymentMethods" => $paymentMethods, "giftCodes" => $giftCodes]);
+                $view = new View('Shop', 'Command/payment');
+                $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
+                $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
+                    'selectedAddress' => $selectedAddress, 'shippingMethod' => $shippingMethod,
+                    'paymentMethods' => $paymentMethods, 'giftCodes' => $giftCodes]);
                 $view->view();
             }
         }
-
     }
 
-    #[Link("/command/createAddress", Link::POST, ['.*?'], "/shop")]
+    #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
     public function publicCreateAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
         [$label, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label,1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
 
-        //TODO : Bien mais pour éviter la perte de l'attention de l'utilisateur devra rediriger à l'étape 2 avec selection auto de l'adresse
+        // TODO : Bien mais pour éviter la perte de l'attention de l'utilisateur devra rediriger à l'étape 2 avec selection auto de l'adresse
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link("/command/addAddress", Link::POST, ['.*?'], "/shop")]
+    #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
     public function publicAddAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
@@ -188,12 +186,13 @@ class ShopCommandController extends AbstractController
             ShopDeliveryUserAddressModel::getInstance()->removeOtherFav($userId);
         }
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label,$fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/command/toDelivery", Link::POST, ['.*?'], "/shop")]
+    #[NoReturn]
+    #[Link('/command/toDelivery', Link::POST, ['.*?'], '/shop')]
     public function publicToDeliveryPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
@@ -201,7 +200,7 @@ class ShopCommandController extends AbstractController
         [$addressId] = Utils::filterInput('addressId');
 
         if (is_null($addressId)) {
-            Flash::send(Alert::ERROR, "Boutique", "Veuillez sélectionner une adresse.");
+            Flash::send(Alert::ERROR, 'Boutique', 'Veuillez sélectionner une adresse.');
             Redirect::redirectPreviousRoute();
         }
 
@@ -210,7 +209,8 @@ class ShopCommandController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/command/toAddress", Link::POST, ['.*?'], "/shop")]
+    #[NoReturn]
+    #[Link('/command/toAddress', Link::POST, ['.*?'], '/shop')]
     public function publicToAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
@@ -220,7 +220,8 @@ class ShopCommandController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/command/toPayment", Link::POST, ['.*?'], "/shop")]
+    #[NoReturn]
+    #[Link('/command/toPayment', Link::POST, ['.*?'], '/shop')]
     public function publicToPaymentPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
@@ -228,7 +229,7 @@ class ShopCommandController extends AbstractController
         [$shippingId] = Utils::filterInput('shippingId');
 
         if (is_null($shippingId)) {
-            Flash::send(Alert::ERROR, "Boutique", "Veuillez sélectionner un mode de livraison.");
+            Flash::send(Alert::ERROR, 'Boutique', 'Veuillez sélectionner un mode de livraison.');
             Redirect::redirectPreviousRoute();
         }
 
@@ -237,7 +238,8 @@ class ShopCommandController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/command/toShipping", Link::POST, ['.*?'], "/shop")]
+    #[NoReturn]
+    #[Link('/command/toShipping', Link::POST, ['.*?'], '/shop')]
     public function publicToShippingPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
@@ -254,19 +256,20 @@ class ShopCommandController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/command/finalize", Link::POST, [], "/shop")]
+    #[NoReturn]
+    #[Link('/command/finalize', Link::POST, [], '/shop')]
     public function publicFinalizeCommand(): void
     {
         $user = UsersModel::getCurrentUser();
 
-        if (!$user){
-            //TODO Internal error.
+        if (!$user) {
+            // TODO Internal error.
             Redirect::redirectToHome();
         }
 
         $sessionId = session_id();
 
-        if (!$sessionId){
+        if (!$sessionId) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de récupérer votre session !');
             Redirect::redirectToHome();
         }
@@ -275,26 +278,26 @@ class ShopCommandController extends AbstractController
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
 
-        if (!$commandTunnelModel){
-            //TODO Internal error.
+        if (!$commandTunnelModel) {
+            // TODO Internal error.
             Redirect::redirectToHome();
         }
 
         $addressId = $commandTunnelModel->getShopDeliveryUserAddress()?->getId();
 
-        if (!$addressId){
-            //TODO Error unable to reach delivery ID
+        if (!$addressId) {
+            // TODO Error unable to reach delivery ID
             Redirect::redirectToHome();
         }
 
         $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
 
-        if (!$selectedAddress){
-            //TODO Error no address selected / valid
+        if (!$selectedAddress) {
+            // TODO Error no address selected / valid
             Redirect::redirectToHome();
         }
 
-        if (!isset($_POST['paymentName'])){
+        if (!isset($_POST['paymentName'])) {
             Flash::send(Alert::ERROR, 'Erreur', 'Merci de sélectionner une méthode de paiement !');
             Redirect::redirectPreviousRoute();
         }
@@ -305,15 +308,14 @@ class ShopCommandController extends AbstractController
 
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName($paymentName);
 
-        if (!$paymentMethod){
+        if (!$paymentMethod) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver ce mode de paiement !');
             Redirect::redirectPreviousRoute();
         }
 
         try {
             $paymentMethod->doPayment($cartContent, $user, $selectedAddress);
-        }
-        catch (ShopPaymentException $e) {
+        } catch (ShopPaymentException $e) {
             Flash::send(Alert::ERROR, 'Erreur', "Erreur de paiement => $e");
             Redirect::redirectPreviousRoute();
         }
@@ -329,17 +331,17 @@ class ShopCommandController extends AbstractController
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();
             $quantity = $itemCart->getQuantity();
-            ShopCartController::getInstance()->handleStock($itemCart,$itemId,$quantity,$userId,$sessionId);
-            ShopCartController::getInstance()->handleLimitePerUser($itemCart,$itemId,$quantity,$userId,$sessionId);
-            ShopCartController::getInstance()->handleGlobalLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
-            ShopCartController::getInstance()->handleByOrderLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
+            ShopCartController::getInstance()->handleStock($itemCart, $itemId, $quantity, $userId, $sessionId);
+            ShopCartController::getInstance()->handleLimitePerUser($itemCart, $itemId, $quantity, $userId, $sessionId);
+            ShopCartController::getInstance()->handleGlobalLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
+            ShopCartController::getInstance()->handleByOrderLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
         }
     }
 
     /**
      * @param ShopCartItemEntity[] $cartContent
      */
-    private function handleCartTypeContent(array $cartContent) : bool
+    private function handleCartTypeContent(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
             if ($item->getItem()->getType() != 1) {
@@ -352,7 +354,7 @@ class ShopCommandController extends AbstractController
     /**
      * @param ShopCartItemEntity[] $cartContent
      */
-    private function handleCartIsFree(array $cartContent) : bool
+    private function handleCartIsFree(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
             if ($item->getItem()->getPrice() != 0) {
@@ -366,9 +368,9 @@ class ShopCommandController extends AbstractController
      * @param ShopCartItemEntity[] $cartContent
      * @return string // return the money var name
      */
-    private function handleCartPriceType(array $cartContent) : string
+    private function handleCartPriceType(array $cartContent): string
     {
-        $priceType = "";
+        $priceType = '';
         foreach ($cartContent as $item) {
             $priceType = $item->getItem()->getPriceType();
             break;

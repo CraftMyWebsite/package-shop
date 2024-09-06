@@ -5,7 +5,6 @@ namespace CMW\Exception\Shop\Payment;
 use Exception;
 use Throwable;
 
-
 /**
  * Class: @ShopPaymentExceptionType
  * @package Shop

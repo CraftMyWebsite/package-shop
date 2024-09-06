@@ -6,8 +6,8 @@
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 
-$title = "Commandes #" . $order->getOrderNumber();
-$description = "";
+$title = 'Commandes #' . $order->getOrderNumber();
+$description = '';
 
 ?>
 
@@ -23,9 +23,9 @@ $description = "";
 <h6>Articles à préparer</h6>
 
 <div class="grid-4">
-    <?php foreach ($order->getOrderedItems() as $orderItem):?>
+    <?php foreach ($order->getOrderedItems() as $orderItem): ?>
         <div class="card">
-            <?php if ($orderItem->getFirstImg() !== "/Public/Uploads/Shop/0"): ?>
+            <?php if ($orderItem->getFirstImg() !== '/Public/Uploads/Shop/0'): ?>
                 <img style="width: 10rem; height: 10rem; object-fit: cover" class="mx-auto" src="<?= $orderItem->getFirstImg() ?>" alt="Panier">
             <?php else: ?>
                 <img style="width: 10rem; height: 10rem; object-fit: cover" class="mx-auto"  src="<?= $defaultImage ?>" alt="..."/>
@@ -45,7 +45,7 @@ $description = "";
                 <?php endforeach; ?>
             </p>
         </div>
-    <?php endforeach;?>
+    <?php endforeach; ?>
 </div>
 
 <form id="cancel" action="cancel/<?= $order->getId() ?>" method="post">

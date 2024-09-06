@@ -6,8 +6,8 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Entity\Shop\Categories\ShopCategoryEntity[] $categories */
 /* @var CMW\Model\Shop\Item\ShopItemsModel $items */
@@ -48,8 +48,8 @@ $description = "";
                     foreach ($getImagesItem as $countImage) {
                         $v++;
                     } ?>
-                    <?php if ($getImagesItem) : ?>
-                        <?php if ($v !== 1) : ?>
+                    <?php if ($getImagesItem): ?>
+                        <?php if ($v !== 1): ?>
                             <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="80px">
                                 <?php foreach ($getImagesItem as $imagesUrl): ?>
                                     <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">

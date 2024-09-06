@@ -6,9 +6,9 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 /* @var \CMW\Entity\Shop\Categories\ShopCategoryEntity [] $categories */
 /* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
-$symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-$title = "";
-$description = "";
+$symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+$title = '';
+$description = '';
 
 ?>
 
@@ -181,7 +181,7 @@ $description = "";
                     <label for="linkedItems">Article(s) lié(s)<span class="text-danger">*</span> :</label>
                     <select id="linkedItems" name="linkedItems[]" class="choices" multiple>
                         <?php foreach ($items as $item): ?>
-                        <?php if ($item->getPriceType() == "money" && $item->getPrice() > 0): ?>
+                        <?php if ($item->getPriceType() == 'money' && $item->getPrice() > 0): ?>
                             <option value="<?= $item->getId() ?>"><?= $item->getName() ?> (<?= $item->getPrice() ?><?= $symbol ?>)</option>
                         <?php endif; ?>
                         <?php endforeach; ?>
@@ -194,7 +194,7 @@ $description = "";
                             <?php
                             $catHaveItemCompatible = false;
                             foreach (ShopItemsModel::getInstance()->getShopItemByCat($category->getId()) as $item):
-                                if ($item->getPriceType() == "money" && $item->getPrice() > 0) {
+                                if ($item->getPriceType() == 'money' && $item->getPrice() > 0) {
                                     $catHaveItemCompatible = true;
                                     break;
                                 }

@@ -8,7 +8,6 @@ use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Statistics\ShopStatisticsModel;
 
-
 /**
  * Class: @ShopStatisticsController
  * @package shop
@@ -17,10 +16,10 @@ use CMW\Model\Shop\Statistics\ShopStatisticsModel;
  */
 class ShopStatisticsController extends AbstractController
 {
-    #[Link("/statistics", Link::GET, [], "/cmw-admin/shop")]
+    #[Link('/statistics', Link::GET, [], '/cmw-admin/shop')]
     public function shopStatistics(): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.statistics");
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.statistics');
 
         $numberOrderThisMonth = ShopStatisticsModel::getInstance()->countTotalOrdersThisMonth();
         $refundedOrderThisMonth = ShopStatisticsModel::getInstance()->countOrdersStatusThisMonth(-2);
@@ -30,10 +29,10 @@ class ShopStatisticsController extends AbstractController
         $shippingOrderThisMonth = ShopStatisticsModel::getInstance()->countOrdersStatusThisMonth(2);
         $finishedOrderThisMonth = ShopStatisticsModel::getInstance()->countOrdersStatusThisMonth(3);
 
-        //todo: total canceled refunded ....
+        // todo: total canceled refunded ....
 
         View::createAdminView('Shop', 'Statistics/main')
-            ->addVariableList(["numberOrderThisMonth" => $numberOrderThisMonth,"refundedOrderThisMonth" => $refundedOrderThisMonth])
+            ->addVariableList(['numberOrderThisMonth' => $numberOrderThisMonth, 'refundedOrderThisMonth' => $refundedOrderThisMonth])
             ->view();
     }
 }

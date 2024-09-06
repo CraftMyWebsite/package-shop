@@ -6,8 +6,8 @@ use CMW\Utils\Website;
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 
-$title = "";
-$description = "";
+$title = '';
+$description = '';
 
 ?>
 <div class="page-title">
@@ -91,7 +91,7 @@ $description = "";
                 </div>
                 <div class="modal-footer">
                     <a type="button" href="cat/delete/<?= $subCategory->getSubCategory()->getId() ?>"
-                       class="btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
+                       class="btn-danger ml-1"><?= LangManager::translate('core.btn.delete') ?>
                     </a>
                 </div>
             </div>
@@ -112,7 +112,7 @@ $description = "";
                 </div>
                 <div class="modal-footer">
                     <a type="button" href="cat/delete/<?= $category->getId() ?>"
-                       class="btn btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
+                       class="btn btn-danger ml-1"><?= LangManager::translate('core.btn.delete') ?>
                     </a>
                 </div>
             </div>
@@ -152,7 +152,7 @@ $description = "";
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn-primary">
-                    <?= LangManager::translate("core.btn.add") ?>
+                    <?= LangManager::translate('core.btn.add') ?>
                 </button>
             </div>
         </form>

@@ -25,31 +25,31 @@ class ShopCartItemModel extends AbstractModel
 
     public function getShopCartsItemsById(int $id): ?ShopCartItemEntity
     {
-        $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_cart_item_id = :shop_cart_item_id";
+        $sql = 'SELECT * FROM cmw_shops_cart_items WHERE shop_cart_item_id = :shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_cart_item_id" => $id])) {
+        if (!$res->execute(['shop_cart_item_id' => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $cart = ShopCartModel::getInstance()->getShopCartsById($res["shop_cart_id"]);
-        $item = $this->shopItemsModel->getShopItemsById($res["shop_item_id"]);
-        $discount = is_null($res["shop_discount_id"]) ? null : ShopDiscountModel::getInstance()->getShopDiscountById($res["shop_discount_id"]);
+        $cart = ShopCartModel::getInstance()->getShopCartsById($res['shop_cart_id']);
+        $item = $this->shopItemsModel->getShopItemsById($res['shop_item_id']);
+        $discount = is_null($res['shop_discount_id']) ? null : ShopDiscountModel::getInstance()->getShopDiscountById($res['shop_discount_id']);
 
         return new ShopCartItemEntity(
-            $res["shop_cart_item_id"],
+            $res['shop_cart_item_id'],
             $cart,
             $item ?? null,
             $discount ?? null,
-            $res["shop_cart_item_quantity"],
-            $res["shop_cart_item_created_at"],
-            $res["shop_cart_item_updated_at"],
-            $res["shop_cart_item_aside"]
+            $res['shop_cart_item_quantity'],
+            $res['shop_cart_item_created_at'],
+            $res['shop_cart_item_updated_at'],
+            $res['shop_cart_item_aside']
         );
     }
 
@@ -59,21 +59,21 @@ class ShopCartItemModel extends AbstractModel
     public function getShopCartsItemsByUserId(?int $userId, string $sessionId): array
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+        $sql = 'SELECT csci.shop_cart_item_id, csci.shop_item_id
                 FROM cmw_shops_cart_items csci
                 JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
                 WHERE csi.shop_item_archived = 0
                 AND csci.shop_cart_item_aside = 0
-                AND csci.shop_cart_id = :shop_cart_id";
+                AND csci.shop_cart_id = :shop_cart_id';
 
         $data = ['shop_cart_id' => $cartId];
 
-        $sql .= " ORDER BY shop_cart_item_id";
+        $sql .= ' ORDER BY shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -86,10 +86,10 @@ class ShopCartItemModel extends AbstractModel
         $toReturn = [];
 
         while ($cart = $res->fetch()) {
-            $toReturn[] = $this->getShopCartsItemsById($cart["shop_cart_item_id"]);
+            $toReturn[] = $this->getShopCartsItemsById($cart['shop_cart_item_id']);
         }
 
-        $this->clearArchivedItemsFromCart($userId,$sessionId);
+        $this->clearArchivedItemsFromCart($userId, $sessionId);
 
         return $toReturn;
     }
@@ -100,21 +100,21 @@ class ShopCartItemModel extends AbstractModel
     public function getShopCartsItemsAsideByUserId(?int $userId, string $sessionId): array
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+        $sql = 'SELECT csci.shop_cart_item_id, csci.shop_item_id
                 FROM cmw_shops_cart_items csci
                 JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
                 WHERE csi.shop_item_archived = 0
                 AND csci.shop_cart_item_aside = 1
-                AND csci.shop_cart_id = :shop_cart_id";
+                AND csci.shop_cart_id = :shop_cart_id';
 
         $data = ['shop_cart_id' => $cartId];
 
-        $sql .= " ORDER BY shop_cart_item_id";
+        $sql .= ' ORDER BY shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -127,10 +127,10 @@ class ShopCartItemModel extends AbstractModel
         $toReturn = [];
 
         while ($cart = $res->fetch()) {
-            $toReturn[] = $this->getShopCartsItemsById($cart["shop_cart_item_id"]);
+            $toReturn[] = $this->getShopCartsItemsById($cart['shop_cart_item_id']);
         }
 
-        $this->clearArchivedItemsFromCart($userId,$sessionId);
+        $this->clearArchivedItemsFromCart($userId, $sessionId);
 
         return $toReturn;
     }
@@ -138,14 +138,14 @@ class ShopCartItemModel extends AbstractModel
     public function getShopCartsByItemIdAndUserId(int $itemId, ?int $userId, $sessionId): ?ShopCartItemEntity
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $data = ["shop_item_id" => $itemId, "shop_cart_id" => $cartId];
+        $data = ['shop_item_id' => $itemId, 'shop_cart_id' => $cartId];
 
-        $sql = "SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'SELECT * FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -157,29 +157,29 @@ class ShopCartItemModel extends AbstractModel
 
         $res = $res->fetch();
 
-        return $this->getShopCartsItemsById($res["shop_cart_item_id"]);
+        return $this->getShopCartsItemsById($res['shop_cart_item_id']);
     }
 
     /**
      * @return \CMW\Entity\Shop\Carts\ShopCartItemEntity []
      */
-    public function getCartArchivedItems(?int $userId, string $sessionId) : array
+    public function getCartArchivedItems(?int $userId, string $sessionId): array
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $sql = "SELECT csci.shop_cart_item_id, csci.shop_item_id
+        $sql = 'SELECT csci.shop_cart_item_id, csci.shop_item_id
                 FROM cmw_shops_cart_items csci
                 JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
                 WHERE csi.shop_item_archived = 1
-                AND csci.shop_cart_id = :shop_cart_id";
+                AND csci.shop_cart_id = :shop_cart_id';
 
         $data = ['shop_cart_id' => $cartId];
 
-        $sql .= " ORDER BY shop_cart_item_id";
+        $sql .= ' ORDER BY shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -192,7 +192,7 @@ class ShopCartItemModel extends AbstractModel
         $toReturn = [];
 
         while ($cart = $res->fetch()) {
-            $toReturn[] = $this->getShopCartsItemsById($cart["shop_cart_item_id"]);
+            $toReturn[] = $this->getShopCartsItemsById($cart['shop_cart_item_id']);
         }
 
         return $toReturn;
@@ -201,21 +201,21 @@ class ShopCartItemModel extends AbstractModel
     public function clearArchivedItemsFromCart(?int $userId, string $sessionId): void
     {
         foreach ($this->getCartArchivedItems($userId, $sessionId) as $archivedItem) {
-            $this->removeItem($archivedItem->getItem()->getId(),$userId,$sessionId);
+            $this->removeItem($archivedItem->getItem()->getId(), $userId, $sessionId);
         }
     }
 
     public function removeItem(int $itemId, ?int $userId, string $sessionId): bool
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = ['shop_item_id' => $itemId, 'shop_cart_id' => $cartId];
 
-        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -224,10 +224,9 @@ class ShopCartItemModel extends AbstractModel
 
     public function removeItemForAllCart(int $itemId): bool
     {
-
         $data = ['shop_item_id' => $itemId];
 
-        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id";
+        $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -243,18 +242,17 @@ class ShopCartItemModel extends AbstractModel
     public function countItemsByUserId(?int $userId, string $sessionId): mixed
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $sql = "SELECT COUNT(shop_cart_item_id) AS count
+        $sql = 'SELECT COUNT(shop_cart_item_id) AS count
                 FROM cmw_shops_cart_items csci
                 JOIN cmw_shops_items csi ON csci.shop_item_id = csi.shop_item_id
-                WHERE csi.shop_item_archived = 0 AND csci.shop_cart_id = :shop_cart_id";
+                WHERE csi.shop_item_archived = 0 AND csci.shop_cart_id = :shop_cart_id';
 
-        $data = ["shop_cart_id" => $cartId];
-
+        $data = ['shop_cart_id' => $cartId];
 
         $db = DatabaseManager::getInstance();
 
@@ -269,21 +267,19 @@ class ShopCartItemModel extends AbstractModel
 
     public function addToCart(int $itemId, ?int $userId, string $sessionId, int $quantity): ?ShopCartItemEntity
     {
-
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_item_quantity" => $quantity,
-            "shop_cart_id" => $cartId,
+            'shop_item_id' => $itemId,
+            'shop_cart_item_quantity' => $quantity,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_cart_id, shop_cart_item_quantity) VALUES (:shop_item_id, :shop_cart_id, :shop_cart_item_quantity)";
-
+        $sql = 'INSERT INTO cmw_shops_cart_items(shop_item_id, shop_cart_id, shop_cart_item_quantity) VALUES (:shop_item_id, :shop_cart_id, :shop_cart_item_quantity)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -299,18 +295,17 @@ class ShopCartItemModel extends AbstractModel
     public function addToAsideCart(int $itemId, ?int $userId, string $sessionId): ?ShopCartItemEntity
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "INSERT INTO cmw_shops_cart_items(shop_item_id, shop_cart_id, shop_cart_item_aside) VALUES (:shop_item_id, :shop_cart_id, 1)";
-
+        $sql = 'INSERT INTO cmw_shops_cart_items(shop_item_id, shop_cart_id, shop_cart_item_aside) VALUES (:shop_item_id, :shop_cart_id, 1)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -326,17 +321,17 @@ class ShopCartItemModel extends AbstractModel
     public function switchAsideToCart(int $itemId, ?int $userId, string $sessionId): void
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 0 WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 0 WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute($data);
@@ -345,30 +340,29 @@ class ShopCartItemModel extends AbstractModel
     public function isAlreadyAside(int $itemId, ?int $userId, string $sessionId): bool
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_cart_item_aside = 1 AND shop_item_id =:shop_item_id AND shop_cart_id = :shop_cart_id";
-
+        $sql = 'SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_cart_item_aside = 1 AND shop_item_id =:shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 
@@ -385,18 +379,17 @@ class ShopCartItemModel extends AbstractModel
     public function getQuantity(int $itemId, ?int $userId, string $sessionId): int
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "SELECT shop_cart_item_quantity FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
-
+        $sql = 'SELECT shop_cart_item_quantity FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -423,25 +416,25 @@ class ShopCartItemModel extends AbstractModel
     {
         $quantity = $this->getQuantity($itemId, $userId, $sessionId);
 
-        if ($increase){
+        if ($increase) {
             ++$quantity;
         } else {
             --$quantity;
         }
 
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = [
-            "shop_cart_item_quantity" => $quantity,
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
+            'shop_cart_item_quantity' => $quantity,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -451,28 +444,28 @@ class ShopCartItemModel extends AbstractModel
     public function cartItemIdAsNullValue(?int $userId, string $sessionId): bool
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = [
-            "shop_cart_id" => $cartId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_item_id IS NULL AND shop_cart_id = :shop_cart_id";
+        $sql = 'SELECT shop_cart_item_id FROM cmw_shops_cart_items WHERE shop_item_id IS NULL AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 
@@ -482,16 +475,16 @@ class ShopCartItemModel extends AbstractModel
     public function removeUnreachableItem(?int $userId, string $sessionId): bool
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = [
-            "shop_cart_id" => $cartId,
+            'shop_cart_id' => $cartId,
         ];
 
-        $sql = "DELETE FROM cmw_shops_cart_items WHERE shop_item_id IS NULL AND shop_cart_id = :shop_cart_id";
+        $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_item_id IS NULL AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -505,14 +498,14 @@ class ShopCartItemModel extends AbstractModel
         }
 
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
-        $var = ["shop_item_id" => $itemId,"shop_cart_id" => $cartId];
+        $var = ['shop_item_id' => $itemId, 'shop_cart_id' => $cartId];
 
-        $sql = "SELECT shop_cart_item_id FROM `cmw_shops_cart_items`  WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'SELECT shop_cart_item_id FROM `cmw_shops_cart_items`  WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $res = $db->prepare($sql);
@@ -522,33 +515,33 @@ class ShopCartItemModel extends AbstractModel
         return count($res->fetchAll()) === 0;
     }
 
-    public function userHaveAlreadyItemInCart (?int $itemId ,string $userId) : bool
+    public function userHaveAlreadyItemInCart(?int $itemId, string $userId): bool
     {
         if ($itemId === null) {
             return false;
         }
 
-        if (ShopCartModel::getInstance()->cartExist($userId, "")) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,"")->getId();
+        if (ShopCartModel::getInstance()->cartExist($userId, '')) {
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, '')->getId();
         } else {
             $cartId = null;
         }
 
-        $data = ["shop_item_id" => $itemId,"shop_cart_id" => $cartId];
+        $data = ['shop_item_id' => $itemId, 'shop_cart_id' => $cartId];
 
-        $sql = "SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 
@@ -561,9 +554,9 @@ class ShopCartItemModel extends AbstractModel
             return false;
         }
 
-        $var = ["shop_item_id" => $itemId];
+        $var = ['shop_item_id' => $itemId];
 
-        $sql = "SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id";
+        $sql = 'SELECT shop_cart_item_id FROM `cmw_shops_cart_items` WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
         $res = $db->prepare($sql);
@@ -573,23 +566,22 @@ class ShopCartItemModel extends AbstractModel
         return count($res->fetchAll()) === 0;
     }
 
-    public function updateQuantity(?int $userId, string $sessionId, int $itemId, int $quantity) : void
+    public function updateQuantity(?int $userId, string $sessionId, int $itemId, int $quantity): void
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
             $cartId = null;
         }
 
         $data = [
-            "shop_cart_item_quantity" => $quantity,
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId
+            'shop_cart_item_quantity' => $quantity,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId
         ];
 
-        $sql = "UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity 
-                            WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
-
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity 
+                            WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -599,18 +591,18 @@ class ShopCartItemModel extends AbstractModel
     public function applyCodeToItem(?int $userId, string $sessionId, int $itemId, int $discountId): void
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
-            "shop_discount_id" => $discountId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
+            'shop_discount_id' => $discountId,
         ];
 
-        $sql = "UPDATE cmw_shops_cart_items SET shop_discount_id = :shop_discount_id WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id";
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_discount_id = :shop_discount_id WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute($data);
@@ -619,21 +611,20 @@ class ShopCartItemModel extends AbstractModel
     public function removeCodeToItem(?int $userId, string $sessionId, int $itemId, int $discountId): void
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
         } else {
-            $cartId = ShopCartModel::getInstance()->createCart($userId,$sessionId)->getId();
+            $cartId = ShopCartModel::getInstance()->createCart($userId, $sessionId)->getId();
         }
 
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_cart_id" => $cartId,
-            "shop_discount_id" => $discountId,
+            'shop_item_id' => $itemId,
+            'shop_cart_id' => $cartId,
+            'shop_discount_id' => $discountId,
         ];
 
-        $sql = "UPDATE cmw_shops_cart_items SET shop_discount_id = NULL WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id AND shop_discount_id = :shop_discount_id";
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_discount_id = NULL WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id AND shop_discount_id = :shop_discount_id';
 
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute($data);
     }
-
 }

@@ -9,9 +9,9 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity $discount */
-$symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-$title = "";
-$description = "";
+$symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+$title = '';
+$description = '';
 
 ?>
 
@@ -41,7 +41,7 @@ $description = "";
         <p><i class="fa-solid fa-circle-info"></i> Cette promotion s'applique à une ou plusieurs catégories.<br>Ceci n'est pas modifiable, supprimer et recréer la promotion pour changer ceci<br>Voici la liste des catégories prise en charge par cette promotion :<br>
         <ul>
             <?php foreach (ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesByDiscountId($discount->getId()) as $discountCat): ?>
-                <li>- <a target="_blank" href="<?=Website::getProtocol()?>://<?=$_SERVER["SERVER_NAME"]?><?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER")?>shop/cat/<?= $discountCat->getCategory()->getSlug() ?>"><?= $discountCat->getCategory()->getName() ?> (<?= $discountCat->getCategory()->countItemsInCat() ?> articles)</a></li>
+                <li>- <a target="_blank" href="<?= Website::getProtocol() ?>://<?= $_SERVER['SERVER_NAME'] ?><?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>shop/cat/<?= $discountCat->getCategory()->getSlug() ?>"><?= $discountCat->getCategory()->getName() ?> (<?= $discountCat->getCategory()->countItemsInCat() ?> articles)</a></li>
             <?php endforeach; ?>
         </ul>
         </p>
@@ -85,7 +85,7 @@ $description = "";
             </div>
             <div>
                 <label class="toggle">
-                    <input type="checkbox" class="toggle-input" name="multiplePerUsers" <?= $discount->getUsesMultipleByUser() ? "checked" : "" ?>>
+                    <input type="checkbox" class="toggle-input" name="multiplePerUsers" <?= $discount->getUsesMultipleByUser() ? 'checked' : '' ?>>
                     <div class="toggle-slider"></div>
                     <p class="toggle-label"
                        title="Le client peut utiliser le code sur plusieurs commandes différentes si cet option est active">
@@ -107,8 +107,8 @@ $description = "";
                 <div class="space-y-4">
                     <div>
                         <select id="impact" name="impact">
-                            <option <?= $discount->getPrice() ? "selected" : "" ?> value="0"><?= $symbol ?> - Monétaire</option>
-                            <option <?= $discount->getPercentage() ? "selected" : "" ?> value="1">% - Pourcentage</option>
+                            <option <?= $discount->getPrice() ? 'selected' : '' ?> value="0"><?= $symbol ?> - Monétaire</option>
+                            <option <?= $discount->getPercentage() ? 'selected' : '' ?> value="1">% - Pourcentage</option>
                         </select>
                     </div>
                     <div>
@@ -127,7 +127,7 @@ $description = "";
                 <h6>Réglages</h6>
                 <div>
                     <label class="toggle">
-                        <input type="checkbox" class="toggle-input" name="test" <?= $discount->getTestMode() ? "checked" : "" ?>>
+                        <input type="checkbox" class="toggle-input" name="test" <?= $discount->getTestMode() ? 'checked' : '' ?>>
                         <div class="toggle-slider"></div>
                         <p class="toggle-label"
                            title="Ceci permet de tester vos promotions avant qu'elle ne sois utilisable par vos clients si cet option est active">
@@ -136,7 +136,7 @@ $description = "";
                 </div>
                 <div>
                     <label class="toggle">
-                        <input type="checkbox" class="toggle-input" name="needPurchase" <?= $discount->getUserHaveOrderBeforeUse() ? "checked" : "" ?>>
+                        <input type="checkbox" class="toggle-input" name="needPurchase" <?= $discount->getUserHaveOrderBeforeUse() ? 'checked' : '' ?>>
                         <div class="toggle-slider"></div>
                         <p class="toggle-label"
                            title="Vos clients ont déjà passer une commande avant de pouvoir bénéficier de ce code si cet option est active">
@@ -145,7 +145,7 @@ $description = "";
                 </div>
                 <div>
                     <label class="toggle">
-                        <input type="checkbox" class="toggle-input" name="applyQuantity" <?= $discount->getDiscountQuantityImpacted() ? "checked" : "" ?>>
+                        <input type="checkbox" class="toggle-input" name="applyQuantity" <?= $discount->getDiscountQuantityImpacted() ? 'checked' : '' ?>>
                         <div class="toggle-slider"></div>
                         <p class="toggle-label"
                            title="La réduction s'applique sur la quantité dans le panier si cet option est active">Appliquer sur la

@@ -2,8 +2,8 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-
-class ShopHistoryOrdersDiscountEntity {
+class ShopHistoryOrdersDiscountEntity
+{
     private int $historyOrderDiscountId;
     private ShopHistoryOrdersEntity $historyOrder;
     private ?string $historyOrderDiscountName;
@@ -50,7 +50,4 @@ class ShopHistoryOrdersDiscountEntity {
     {
         return $this->historyOrderDiscountPercent;
     }
-
-
-
 }

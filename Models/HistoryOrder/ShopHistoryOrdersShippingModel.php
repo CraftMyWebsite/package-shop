@@ -8,7 +8,6 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersShippingEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 
-
 /**
  * Class: @ShopHistoryOrdersShippingModel
  * @package Shop
@@ -23,13 +22,13 @@ class ShopHistoryOrdersShippingModel extends AbstractModel
      */
     public function getHistoryOrdersShippingByHistoryOrderId(int $id): ?ShopHistoryOrdersShippingEntity
     {
-        $sql = "SELECT * FROM cmw_shop_history_order_shipping WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'SELECT * FROM cmw_shop_history_order_shipping WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_history_order_id" => $id))) {
+        if (!$res->execute(array('shop_history_order_id' => $id))) {
             return null;
         }
 
@@ -39,25 +38,25 @@ class ShopHistoryOrdersShippingModel extends AbstractModel
             return null;
         }
 
-        $historyOrder = is_null($res["shop_history_order_id"]) ? null : ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($res["shop_history_order_id"]) ?? null;
+        $historyOrder = is_null($res['shop_history_order_id']) ? null : ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($res['shop_history_order_id']) ?? null;
 
         return new ShopHistoryOrdersShippingEntity(
-            $res["shop_history_order_shipping_id"],
+            $res['shop_history_order_shipping_id'],
             $historyOrder,
-            $res["shop_history_order_shipping_name"] ?? null,
-            $res["shop_history_order_shipping_price"] ?? null
+            $res['shop_history_order_shipping_name'] ?? null,
+            $res['shop_history_order_shipping_price'] ?? null
         );
     }
 
     public function addHistoryShippingOrder(int $orderId, string $shippingName, float $shippingPrice): ?ShopHistoryOrdersShippingEntity
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
-            "shop_history_order_shipping_name" => $shippingName,
-            "shop_history_order_shipping_price" => $shippingPrice
+            'shop_history_order_id' => $orderId,
+            'shop_history_order_shipping_name' => $shippingName,
+            'shop_history_order_shipping_price' => $shippingPrice
         );
 
-        $sql = "INSERT INTO cmw_shop_history_order_shipping (shop_history_order_id, shop_history_order_shipping_name, shop_history_order_shipping_price) VALUES (:shop_history_order_id, :shop_history_order_shipping_name, :shop_history_order_shipping_price)";
+        $sql = 'INSERT INTO cmw_shop_history_order_shipping (shop_history_order_id, shop_history_order_shipping_name, shop_history_order_shipping_price) VALUES (:shop_history_order_id, :shop_history_order_shipping_name, :shop_history_order_shipping_price)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

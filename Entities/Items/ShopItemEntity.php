@@ -20,7 +20,6 @@ use CMW\Utils\Website;
 
 class ShopItemEntity
 {
-
     private int $itemId;
     private ?ShopCategoryEntity $category;
     private ?string $itemName;
@@ -41,8 +40,7 @@ class ShopItemEntity
     private int $itemArchived;
     private int $itemArchivedReason;
 
-
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, string $itemPriceType, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated,int $itemArchived,int $itemArchivedReason)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, string $itemPriceType, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated, int $itemArchived, int $itemArchivedReason)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -80,7 +78,6 @@ class ShopItemEntity
     {
         return $this->category;
     }
-
 
     /**
      * @return ?string
@@ -157,7 +154,7 @@ class ShopItemEntity
             $currentStock = $this->itemCurrentStock;
             $defaultStock = $this->itemDefaultStock;
             $percentage = ($currentStock / $defaultStock) * 100;
-            $stockAlert = ShopSettingsModel::getInstance()->getSettingValue("stockAlert");
+            $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
 
             if ($percentage <= $stockAlert) {
                 return "<b style='color: red '><i class='fa-solid fa-circle-exclamation'></i> {$currentStock} / {$defaultStock}</b>";
@@ -188,12 +185,12 @@ class ShopItemEntity
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->itemPrice, 2, '.', '');
-        if ($this->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPriceType())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
@@ -213,8 +210,8 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        if ($this->getPriceType() == "money") {
-            //all
+        if ($this->getPriceType() == 'money') {
+            // all
             if (!empty($allDiscounts)) {
                 foreach ($allDiscounts as $allDiscount) {
                     if ($allDiscount->getLinked() == 0) {
@@ -225,7 +222,7 @@ class ShopItemEntity
                             $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -233,7 +230,7 @@ class ShopItemEntity
                     }
                 }
             }
-            //cats
+            // cats
             if (!empty($discountCategories)) {
                 foreach ($discountCategories as $discountCategory) {
                     if ($discountCategory->getDiscount()->getLinked() == 2) {
@@ -244,7 +241,7 @@ class ShopItemEntity
                             $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -252,7 +249,7 @@ class ShopItemEntity
                     }
                 }
             }
-            //items
+            // items
             if (!empty($discountItems)) {
                 foreach ($discountItems as $discountItem) {
                     if ($discountItem->getDiscount()->getLinked() == 1) {
@@ -263,7 +260,7 @@ class ShopItemEntity
                             $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -282,15 +279,14 @@ class ShopItemEntity
     public function getPriceDiscountDefaultAppliedFormatted(): string
     {
         $formattedPrice = number_format($this->getPriceDiscountDefaultApplied(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
             return $symbol . $formattedPrice;
         }
     }
-
 
     /**
      * @return ?\CMW\Entity\Shop\Discounts\ShopDiscountEntity
@@ -305,11 +301,11 @@ class ShopItemEntity
         // Get all discounts applicable to all items
         $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
         foreach ($allDiscounts as $discount) {
-            if ($discount->getLinked() == 0) { // Check if the discount is applicable to all items
+            if ($discount->getLinked() == 0) {  // Check if the discount is applicable to all items
                 $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
                 if ($currentDiscountValue > $bestDiscountValue) {
                     $bestDiscountValue = $currentDiscountValue;
-                    $bestDiscountEntity = $discount; // Store the discount entity
+                    $bestDiscountEntity = $discount;  // Store the discount entity
                 }
             }
         }
@@ -318,11 +314,11 @@ class ShopItemEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         foreach ($discountCategories as $discountCategory) {
             $discount = $discountCategory->getDiscount();
-            if ($discount->getLinked() == 2) { // Check if the discount is applicable to categories
+            if ($discount->getLinked() == 2) {  // Check if the discount is applicable to categories
                 $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
                 if ($currentDiscountValue > $bestDiscountValue) {
                     $bestDiscountValue = $currentDiscountValue;
-                    $bestDiscountEntity = $discount; // Store the discount entity
+                    $bestDiscountEntity = $discount;  // Store the discount entity
                 }
             }
         }
@@ -331,11 +327,11 @@ class ShopItemEntity
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
         foreach ($discountItems as $discountItem) {
             $discount = $discountItem->getDiscount();
-            if ($discount->getLinked() == 1) { // Check if the discount is applicable to specific items
+            if ($discount->getLinked() == 1) {  // Check if the discount is applicable to specific items
                 $currentDiscountValue = $this->calculateDiscount($basePrice, $discount);
                 if ($currentDiscountValue > $bestDiscountValue) {
                     $bestDiscountValue = $currentDiscountValue;
-                    $bestDiscountEntity = $discount; // Store the discount entity
+                    $bestDiscountEntity = $discount;  // Store the discount entity
                 }
             }
         }
@@ -368,48 +364,48 @@ class ShopItemEntity
     {
         $basePrice = $this->getPrice();
         $discount = 0;
-        $discountFormatted = "";
+        $discountFormatted = '';
         $allDiscounts = ShopDiscountModel::getInstance()->getShopDiscountsDefaultAppliedForAll();
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        if ($this->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
 
-            //all
+            // all
             if (!empty($allDiscounts)) {
                 foreach ($allDiscounts as $allDiscount) {
                     if ($allDiscount->getDiscountQuantityImpacted() == 1) {
                         if ($allDiscount->getPrice()) {
                             $discount = $allDiscount->getPrice();
                             if ($symbolIsAfter) {
-                                $discountFormatted = "- " . $allDiscount->getPrice() . $symbol;
+                                $discountFormatted = '- ' . $allDiscount->getPrice() . $symbol;
                             } else {
-                                $discountFormatted = "- " . $symbol . $allDiscount->getPrice();
+                                $discountFormatted = '- ' . $symbol . $allDiscount->getPrice();
                             }
                         }
                         if ($allDiscount->getPercentage()) {
                             $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
-                            $discountFormatted = "-" . $allDiscount->getPercentage() . " %";
+                            $discountFormatted = '-' . $allDiscount->getPercentage() . ' %';
                         }
                     } else {
                         if ($allDiscount->getPrice()) {
                             $discount = $allDiscount->getPrice();
                             if ($symbolIsAfter) {
-                                $discountFormatted = "- " . $allDiscount->getPrice() . $symbol . " sur le 1er";
+                                $discountFormatted = '- ' . $allDiscount->getPrice() . $symbol . ' sur le 1er';
                             } else {
-                                $discountFormatted = "- " . $symbol . $allDiscount->getPrice() . " sur le 1er";
+                                $discountFormatted = '- ' . $symbol . $allDiscount->getPrice() . ' sur le 1er';
                             }
                         }
                         if ($allDiscount->getPercentage()) {
                             $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
-                            $discountFormatted = "-" . $allDiscount->getPercentage() . " % sur le 1er";
+                            $discountFormatted = '-' . $allDiscount->getPercentage() . ' % sur le 1er';
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -417,31 +413,31 @@ class ShopItemEntity
                     }
                 }
             }
-            //cats
+            // cats
             if (!empty($discountCategories)) {
                 foreach ($discountCategories as $discountCategory) {
                     if ($discountCategory->getDiscount()->getDiscountQuantityImpacted() == 1) {
                         if ($discountCategory->getDiscount()->getLinked() == 2) {
                             if ($discountCategory->getDiscount()->getPrice()) {
                                 $discount = $discountCategory->getDiscount()->getPrice();
-                                $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted();
+                                $discountFormatted = '-' . $discountCategory->getDiscount()->getPriceFormatted();
                             }
                             if ($discountCategory->getDiscount()->getPercentage()) {
                                 $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
-                                $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " %";
+                                $discountFormatted = '-' . $discountCategory->getDiscount()->getPercentage() . ' %';
                             }
                         }
                     } else {
                         if ($discountCategory->getDiscount()->getPrice()) {
                             $discount = $discountCategory->getDiscount()->getPrice();
-                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPriceFormatted() . " sur le 1er";
+                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPriceFormatted() . ' sur le 1er';
                         }
                         if ($discountCategory->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
-                            $discountFormatted = "-" . $discountCategory->getDiscount()->getPercentage() . " % sur le 1er";
+                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPercentage() . ' % sur le 1er';
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -449,31 +445,31 @@ class ShopItemEntity
                     }
                 }
             }
-            //items
+            // items
             if (!empty($discountItems)) {
                 foreach ($discountItems as $discountItem) {
                     if ($discountItem->getDiscount()->getLinked() == 1) {
                         if ($discountItem->getDiscount()->getDiscountQuantityImpacted() == 1) {
                             if ($discountItem->getDiscount()->getPrice()) {
                                 $discount = $discountItem->getDiscount()->getPrice();
-                                $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted();
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPriceFormatted();
                             }
                             if ($discountItem->getDiscount()->getPercentage()) {
                                 $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
-                                $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " %";
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPercentage() . ' %';
                             }
                         } else {
                             if ($discountItem->getDiscount()->getPrice()) {
                                 $discount = $discountItem->getDiscount()->getPrice();
-                                $discountFormatted = "-" . $discountItem->getDiscount()->getPriceFormatted() . " sur le 1er";
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPriceFormatted() . ' sur le 1er';
                             }
                             if ($discountItem->getDiscount()->getPercentage()) {
                                 $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
-                                $discountFormatted = "-" . $discountItem->getDiscount()->getPercentage() . " % sur le 1er";
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPercentage() . ' % sur le 1er';
                             }
                         }
                     }
-                    //prevent negative price
+                    // prevent negative price
                     if ($basePrice - $discount <= 0) {
                         return null;
                     } else {
@@ -542,7 +538,7 @@ class ShopItemEntity
             return "N'est pas archivé !";
         }
         if ($this->itemArchivedReason == 1) {
-            return "Est présent dans des paniers";
+            return 'Est présent dans des paniers';
         }
         if ($this->itemArchivedReason == 2) {
             return "A déjà fait l'objet d'une commande";
@@ -555,7 +551,7 @@ class ShopItemEntity
     public function getItemLink(): string
     {
         $catSlug = $this->getCategory()->getSlug();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cat/$catSlug/item/$this->itemSlug";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cat/$catSlug/item/$this->itemSlug";
     }
 
     /**
@@ -563,14 +559,12 @@ class ShopItemEntity
      */
     public function getAddToCartLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/add_to_cart/$this->itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/add_to_cart/$this->itemId";
     }
-
-
 
     /*
      * ++ Cool features
-     * */
+     */
 
     /**
      * @return float
@@ -578,7 +572,7 @@ class ShopItemEntity
      */
     public function getTotalPriceInCart(): float
     {
-        //TODO : Gérer les promo
+        // TODO : Gérer les promo
         $quantity = ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersModel::getCurrentUser()?->getId(), session_id());
         return $quantity * $this->getPrice();
     }
@@ -598,7 +592,7 @@ class ShopItemEntity
      */
     public function getIncreaseQuantityCartLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/increase_quantity/$this->itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/increase_quantity/$this->itemId";
     }
 
     /**
@@ -607,7 +601,7 @@ class ShopItemEntity
      */
     public function getDecreaseQuantityCartLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/decrease_quantity/$this->itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/decrease_quantity/$this->itemId";
     }
 
     /**
@@ -616,7 +610,6 @@ class ShopItemEntity
      */
     public function getRemoveCartLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ."shop/cart/remove/$this->itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/remove/$this->itemId";
     }
-
 }

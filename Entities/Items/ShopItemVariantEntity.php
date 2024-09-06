@@ -2,7 +2,6 @@
 
 namespace CMW\Entity\Shop\Items;
 
-
 use CMW\Controller\Core\CoreController;
 
 class ShopItemVariantEntity

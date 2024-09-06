@@ -7,7 +7,6 @@ use CMW\Manager\Env\EnvManager;
 
 class ShopImageEntity
 {
-
     private int $imageId;
     private string $imageName;
     private ?int $imageCategoryId;
@@ -15,7 +14,6 @@ class ShopImageEntity
     private int $imageOrder;
     private string $imageCreated;
     private string $imageUpdated;
-
 
     public function __construct(int $imageId, string $imageName, ?int $imageCategoryId, ?int $imageItemId, int $imageOrder, string $imageCreated, string $imageUpdated)
     {
@@ -49,7 +47,7 @@ class ShopImageEntity
      */
     public function getImageUrl(): string
     {
-        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $this->imageName;
+        return EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'Public/Uploads/Shop/' . $this->imageName;
     }
 
     /**
@@ -91,6 +89,4 @@ class ShopImageEntity
     {
         return CoreController::formatDate($this->imageUpdated);
     }
-
-
 }

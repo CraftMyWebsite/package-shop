@@ -1,8 +1,6 @@
 <?php
 
-
 namespace CMW\Controller\Shop\Public\History;
-
 
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
@@ -25,7 +23,6 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
-
 /**
  * Class: @ShopHistoryController
  * @package shop
@@ -34,28 +31,28 @@ use CMW\Utils\Redirect;
  */
 class ShopHistoryController extends AbstractController
 {
-    #[Link("/history", Link::GET, [], "/shop")]
+    #[Link('/history', Link::GET, [], '/shop')]
     public function publicHistoryView(): void
     {
-        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
-            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
             Redirect::redirectToHome();
         }
 
         $userId = UsersModel::getCurrentUser()?->getId();
         if (!$userId) {
-            Redirect::redirect(EnvManager::getInstance()->getValue("PATH_SUBFOLDER")."login");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }
 
         $historyOrders = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersByUserId($userId);
 
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
-        $view = new View("Shop", "Users/history");
-        $view->addVariableList(["historyOrders" => $historyOrders,"defaultImage" => $defaultImage]);
-        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
+        $view = new View('Shop', 'Users/history');
+        $view->addVariableList(['historyOrders' => $historyOrders, 'defaultImage' => $defaultImage]);
+        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }
 }

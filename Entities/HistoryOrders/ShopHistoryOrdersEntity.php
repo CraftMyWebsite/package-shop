@@ -15,7 +15,8 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersUserAddressModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersEntity {
+class ShopHistoryOrdersEntity
+{
     private int $historyOrderId;
     private ?UserEntity $user;
     private int $orderStatus;
@@ -65,7 +66,7 @@ class ShopHistoryOrdersEntity {
     public function getAdminStatus(): string
     {
         if ($this->orderStatus == -2) {
-            return "Remboursé";
+            return 'Remboursé';
         }
         if ($this->orderStatus == -1) {
             return "<b style='color: orangered'>Annulé !</b><br> <small>Remboursement en attente</small>";
@@ -87,22 +88,22 @@ class ShopHistoryOrdersEntity {
     public function getPublicStatus(): string
     {
         if ($this->orderStatus == -2) {
-            return "Remboursé" ;
+            return 'Remboursé';
         }
         if ($this->orderStatus == -1) {
-            return "Annulé (Remboursement en cours ...)";
+            return 'Annulé (Remboursement en cours ...)';
         }
         if ($this->orderStatus == 0) {
-            return "Commande en préparation";
+            return 'Commande en préparation';
         }
         if ($this->orderStatus == 1) {
-            return "Commande prête, votre colis sera remis dans un centre de livraison";
+            return 'Commande prête, votre colis sera remis dans un centre de livraison';
         }
         if ($this->orderStatus == 2) {
-            return "Livraison en cours";
+            return 'Livraison en cours';
         }
         if ($this->orderStatus == 3) {
-            return "Terminé";
+            return 'Terminé';
         }
     }
 
@@ -112,7 +113,7 @@ class ShopHistoryOrdersEntity {
      */
     public function getStatusCode(): int
     {
-        return $this->orderStatus ;
+        return $this->orderStatus;
     }
 
     public function getShippingLink(): ?string
@@ -130,7 +131,7 @@ class ShopHistoryOrdersEntity {
         return CoreController::formatDate($this->historyOrderUpdated);
     }
 
-    public function getOrderTotal() : float
+    public function getOrderTotal(): float
     {
         $total = 0;
         $shippingFee = ShopHistoryOrdersShippingModel::getInstance()?->getHistoryOrdersShippingByHistoryOrderId($this->getId())?->getPrice() ?? 0;
@@ -159,29 +160,29 @@ class ShopHistoryOrdersEntity {
     {
         $formattedPrice = number_format($this->getOrderTotal(), 2, '.', '');
 
-        $priceType = "";
+        $priceType = '';
         foreach ($this->getOrderedItems() as $orderedItem) {
             $priceType = $orderedItem->getItem()->getPriceType();
             break;
         }
 
-        if ($priceType == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($priceType == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPaymentMethod()->getVarName())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPaymentMethod()->getVarName())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
     /**
      * @return ?ShopHistoryOrdersItemsEntity []
      */
-    public function getOrderedItems() : ?array
+    public function getOrderedItems(): ?array
     {
         $return = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($this->getId());
         return $return ?? null;
@@ -190,7 +191,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?ShopHistoryOrdersItemsVariantesEntity []
      */
-    public function getOrderedItemsVariantes($orderedItemId) : ?array
+    public function getOrderedItemsVariantes($orderedItemId): ?array
     {
         $return = ShopHistoryOrdersItemsVariantesModel::getInstance()->getShopItemVariantValueByOrderItemId($orderedItemId);
         return $return ?? null;
@@ -199,7 +200,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?ShopHistoryOrdersShippingEntity
      */
-    public function getShippingMethod() : ?ShopHistoryOrdersShippingEntity
+    public function getShippingMethod(): ?ShopHistoryOrdersShippingEntity
     {
         $return = ShopHistoryOrdersShippingModel::getInstance()?->getHistoryOrdersShippingByHistoryOrderId($this->getId());
         return $return ?? null;
@@ -208,7 +209,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?ShopHistoryOrdersUserAddressEntity
      */
-    public function getUserAddressMethod() : ?ShopHistoryOrdersUserAddressEntity
+    public function getUserAddressMethod(): ?ShopHistoryOrdersUserAddressEntity
     {
         $return = ShopHistoryOrdersUserAddressModel::getInstance()->getHistoryOrdersUserAddressByHistoryOrderId($this->getId());
         return $return ?? null;
@@ -217,7 +218,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?ShopHistoryOrdersPaymentEntity
      */
-    public function getPaymentMethod() : ?ShopHistoryOrdersPaymentEntity
+    public function getPaymentMethod(): ?ShopHistoryOrdersPaymentEntity
     {
         $return = ShopHistoryOrdersPaymentModel::getInstance()->getHistoryOrdersPaymentByHistoryOrderId($this->getId());
         return $return ?? null;
@@ -226,7 +227,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?ShopHistoryOrdersDiscountEntity []
      */
-    public function getAppliedCartDiscount() : ?array
+    public function getAppliedCartDiscount(): ?array
     {
         $return = ShopHistoryOrdersDiscountModel::getInstance()->getHistoryOrdersDiscountByHistoryOrderId($this->getId());
         return $return ?? null;
@@ -235,7 +236,7 @@ class ShopHistoryOrdersEntity {
     /**
      * @return ?float
      */
-    public function getAppliedCartDiscountTotalPrice() : ?float
+    public function getAppliedCartDiscountTotalPrice(): ?float
     {
         $giftCards = $this->getAppliedCartDiscount();
         $total = 0;
@@ -252,12 +253,12 @@ class ShopHistoryOrdersEntity {
     public function getAppliedCartDiscountTotalPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getAppliedCartDiscountTotalPrice(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 }

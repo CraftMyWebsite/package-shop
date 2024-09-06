@@ -1,7 +1,7 @@
 <?php
 
-$title = "Paiements";
-$description = "Gérez les méthodes de paiements";
+$title = 'Paiements';
+$description = 'Gérez les méthodes de paiements';
 
 /* @var $methods \CMW\Interface\Shop\IPaymentMethod[] */
 
@@ -14,12 +14,12 @@ $description = "Gérez les méthodes de paiements";
         <?php foreach ($methods as $method): ?>
             <button class="tab-button" data-tabs-target="#tab-<?= $method->varName() ?>" role="tab">
                 <div class="flex justify-between">
-                    <span><?= $method->faIcon("fa-xl") ?> <?= $method->name() ?></span>
+                    <span><?= $method->faIcon('fa-xl') ?> <?= $method->name() ?></span>
                     <?php if ($method->isActive()): ?>
                         <span class="ml-2 text-success"><i data-bs-toggle="tooltip" data-bs-placement="top" title="Paiement atif." class="fa-solid fa-circle-check"></i></span>
                     <?php else: ?>
                         <span class="ml-2 text-warning"><i data-bs-toggle="tooltip" data-bs-placement="top" title="Paiement incatif." class="fa-solid fa-circle-xmark"></i></span>
-                    <?php endif;?>
+                    <?php endif; ?>
                 </div>
             </button>
         <?php endforeach; ?>
@@ -28,7 +28,7 @@ $description = "Gérez les méthodes de paiements";
         <?php foreach ($methods as $method): ?>
         <div class="tab-content" id="tab-<?= $method->varName() ?>">
             <div class="card">
-                <?php if ($method->varName() == "free"): ?>
+                <?php if ($method->varName() == 'free'): ?>
                     <div class="card-body">
                         <p>Vous ne pouvez pas modifier cette méthode de paiement, car elle est obligatoire pour la vente d'articles gratuits. <br>
                             Ne vous inquiétez pas, cette méthode de paiement est entièrement automatique et ne sera disponible que si la totalité du contenu du panier est à 0.</p>
@@ -36,19 +36,19 @@ $description = "Gérez les méthodes de paiements";
                 <?php else: ?>
                     <div class="card-body">
                         <div>
-                            <h4><?= $method->faIcon("fa-xl") ?> Configuration des paiements avec <?= $method->name() ?></h4>
+                            <h4><?= $method->faIcon('fa-xl') ?> Configuration des paiements avec <?= $method->name() ?></h4>
                         <div class="mt-3.5">
                             <?php if ($method->isActive()): ?>
                                 <a href="payments/disable/<?= $method->varName() ?>" class="btn btn-danger btn-sm me-2">Désactiver <?= $method->name() ?></a>
                             <?php else: ?>
                                 <a href="payments/enable/<?= $method->varName() ?>" class="btn btn-success btn-sm me-2">Activer <?= $method->name() ?></a>
-                            <?php endif;?>
-                            <?php if ($method->dashboardURL()) : ?>
+                            <?php endif; ?>
+                            <?php if ($method->dashboardURL()): ?>
                                 <a href="<?= $method->dashboardURL() ?>" target="_blank" class="btn btn-primary btn-sm me-2">Panel <?= $method->name() ?></a>
-                            <?php endif;?>
-                            <?php if ($method->documentationURL()) : ?>
+                            <?php endif; ?>
+                            <?php if ($method->documentationURL()): ?>
                                 <a href="<?= $method->documentationURL() ?>" target="_blank" class="btn btn-info btn-sm">Documentations</a>
-                            <?php endif;?>
+                            <?php endif; ?>
                         </div>
                         </div>
                         <div class="mt-3.5">

@@ -8,7 +8,6 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Package\AbstractController;
 use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 
-
 /**
  * Class: @ShopVirtualItemsDownloadableController
  * @package Shop
@@ -23,9 +22,9 @@ class ShopVirtualItemsDownloadableController extends AbstractController
      */
     public function sedMailWithDownloadLink(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
-        //TODO : Uniquement à des fin de test :
-        $object = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'object',$item->getId());
-        $body = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName.'text',$item->getId());
+        // TODO : Uniquement à des fin de test :
+        $object = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName . 'object', $item->getId());
+        $body = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName . 'text', $item->getId());
         MailController::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 }

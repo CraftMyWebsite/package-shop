@@ -3,13 +3,13 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-$title = "";
-$description = "";
+$title = '';
+$description = '';
 
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $ongoingDiscounts */
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $upcomingDiscounts */
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $pastDiscounts */
-$symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+$symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 
 ?>
 <div class="page-title">
@@ -33,7 +33,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($ongoingDiscounts as $discount):?>
+            <?php foreach ($ongoingDiscounts as $discount): ?>
                 <tr>
                     <td><?= $discount->getName() ?></td>
                     <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
@@ -47,7 +47,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
                     </td>
                     <td><?= $discount->getStartDateFormatted() ?></td>
                     <td><?= $discount->getDuration() ?></td>
-                    <td><b><?= $discount->getCurrentUses() ?? "0" ?>/<?= $discount->getMaxUses() ?? "∞" ?></b></td>
+                    <td><b><?= $discount->getCurrentUses() ?? '0' ?>/<?= $discount->getMaxUses() ?? '∞' ?></b></td>
                     <td class="space-x-2 text-center">
                         <a href="discounts/edit/<?= $discount->getId() ?>" title="Modifier">
                             <i class="text-info fa-solid fa-pen-to-square"></i>
@@ -140,7 +140,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($upcomingDiscounts as $discount):?>
+                <?php foreach ($upcomingDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
@@ -182,7 +182,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($pastDiscounts as $discount):?>
+                <?php foreach ($pastDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
@@ -194,7 +194,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
                             <?php endif; ?>
                         </td>
                         <td><?= $discount->getLinkedFormatted() ?></td>
-                        <td><b><?= $discount->getCurrentUses() ?? "0" ?>/<?= $discount->getMaxUses() ?? "∞" ?></b></td>
+                        <td><b><?= $discount->getCurrentUses() ?? '0' ?>/<?= $discount->getMaxUses() ?? '∞' ?></b></td>
                         <td>
                             <a title="Supprimé" href="discounts/delete/<?= $discount->getId() ?>">
                                 <i class="text-danger fa-solid fa-trash"></i>

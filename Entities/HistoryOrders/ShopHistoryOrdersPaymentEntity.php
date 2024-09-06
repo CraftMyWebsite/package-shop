@@ -2,11 +2,11 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersPaymentEntity {
+class ShopHistoryOrdersPaymentEntity
+{
     private int $historyOrderPaymentId;
     private ShopHistoryOrdersEntity $historyOrder;
     private ?string $historyOrderPaymentName;
@@ -61,22 +61,22 @@ class ShopHistoryOrdersPaymentEntity {
     {
         $formattedPrice = number_format($this->getFee(), 2, '.', '');
 
-        $priceType = "";
+        $priceType = '';
         foreach ($this->getHistoryOrder()->getOrderedItems() as $orderedItem) {
             $priceType = $orderedItem->getItem()->getPriceType();
             break;
         }
 
-        if ($priceType == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($priceType == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($priceType)->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($priceType)->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 }

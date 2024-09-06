@@ -45,7 +45,4 @@ class ShopHistoryOrdersItemsVariantesEntity
     {
         return $this->historyOrderItemVariantesValue;
     }
-
-
-
 }

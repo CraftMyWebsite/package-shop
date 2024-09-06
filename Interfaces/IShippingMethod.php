@@ -29,7 +29,8 @@ interface IShippingMethod
      */
     public function execAfterCommandValidatedByAdmin(string $varName, ShopItemEntity $item, UserEntity $user): void;
 
-    /*TODO ??
-    Admin command tunel widget
-    */
+    /*
+     * TODO ??
+     * Admin command tunel widget
+     */
 }

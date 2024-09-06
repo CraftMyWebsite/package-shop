@@ -9,7 +9,6 @@ use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Model\Users\UsersModel;
 
-
 /**
  * Class: @ShopCommandTunnelModel
  * @package Shop
@@ -18,7 +17,6 @@ use CMW\Model\Users\UsersModel;
  */
 class ShopCommandTunnelModel extends AbstractModel
 {
-
     private UsersModel $userModel;
     private ShopDeliveryUserAddressModel $deliveryUserAddressModel;
 
@@ -34,52 +32,52 @@ class ShopCommandTunnelModel extends AbstractModel
      */
     public function getShopCommandTunnelById(int $id): ?ShopCommandTunnelEntity
     {
-        $sql = "SELECT * FROM cmw_shops_command_tunnel WHERE shop_command_tunnel_id = :shop_command_tunnel_id";
+        $sql = 'SELECT * FROM cmw_shops_command_tunnel WHERE shop_command_tunnel_id = :shop_command_tunnel_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_command_tunnel_id" => $id))) {
+        if (!$res->execute(array('shop_command_tunnel_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
+        $user = is_null($res['shop_user_id']) ? null : $this->userModel->getUserById($res['shop_user_id']);
         // TODO Refac :
-        $shipping = is_null($res["shops_shipping_id"]) ? null : $this->shippingModel->getShopShippingById($res["shops_shipping_id"]);
-        $deliveryUserAddress = is_null($res["shop_delivery_user_address_id"]) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res["shop_delivery_user_address_id"]);
+        $shipping = is_null($res['shops_shipping_id']) ? null : $this->shippingModel->getShopShippingById($res['shops_shipping_id']);
+        $deliveryUserAddress = is_null($res['shop_delivery_user_address_id']) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res['shop_delivery_user_address_id']);
 
         return new ShopCommandTunnelEntity(
-            $res["shop_command_tunnel_id"],
-            $res["shop_command_tunnel_step"],
+            $res['shop_command_tunnel_id'],
+            $res['shop_command_tunnel_step'],
             $user,
             $shipping,
             $deliveryUserAddress,
-            $res["shop_payment_method_name"] ?? null,
-            $res["shop_command_tunnel_created_at"] ?? null,
-            $res["shop_command_tunnel_updated_at"] ?? null
+            $res['shop_payment_method_name'] ?? null,
+            $res['shop_command_tunnel_created_at'] ?? null,
+            $res['shop_command_tunnel_updated_at'] ?? null
         );
     }
 
     public function tunnelExist(int $userId): bool
     {
-        $data = ["shop_user_id" => $userId];
+        $data = ['shop_user_id' => $userId];
 
-        $sql = "SELECT shop_command_tunnel_id FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id";
+        $sql = 'SELECT shop_command_tunnel_id FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 
@@ -89,11 +87,11 @@ class ShopCommandTunnelModel extends AbstractModel
     public function createTunnel(int $userId): ?ShopCommandTunnelEntity
     {
         $var = array(
-            "shop_user_id" => $userId
+            'shop_user_id' => $userId
         );
 
-        $sql = "INSERT INTO cmw_shops_command_tunnel  (shop_user_id,shop_command_tunnel_step) 
-                VALUES (:shop_user_id,0)";
+        $sql = 'INSERT INTO cmw_shops_command_tunnel  (shop_user_id,shop_command_tunnel_step) 
+                VALUES (:shop_user_id,0)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -104,17 +102,16 @@ class ShopCommandTunnelModel extends AbstractModel
         }
 
         return null;
-
     }
 
     public function addDelivery(int $userId, int $deliveryId): void
     {
         $var = array(
-            "shop_user_id" => $userId,
-            "shop_delivery_user_address_id" => $deliveryId
+            'shop_user_id' => $userId,
+            'shop_delivery_user_address_id' => $deliveryId
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 1, shop_delivery_user_address_id = :shop_delivery_user_address_id WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 1, shop_delivery_user_address_id = :shop_delivery_user_address_id WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -125,11 +122,11 @@ class ShopCommandTunnelModel extends AbstractModel
     public function addShipping(int $userId, int $shippingId): void
     {
         $var = array(
-            "shop_user_id" => $userId,
-            "shops_shipping_id" => $shippingId
+            'shop_user_id' => $userId,
+            'shops_shipping_id' => $shippingId
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 2, shops_shipping_id = :shops_shipping_id WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 2, shops_shipping_id = :shops_shipping_id WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -140,10 +137,10 @@ class ShopCommandTunnelModel extends AbstractModel
     public function clearShipping(int $userId): void
     {
         $var = array(
-            "shop_user_id" => $userId,
+            'shop_user_id' => $userId,
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 1, shops_shipping_id = NULL WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 1, shops_shipping_id = NULL WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -154,10 +151,10 @@ class ShopCommandTunnelModel extends AbstractModel
     public function skipShippingNext(int $userId): void
     {
         $var = array(
-            "shop_user_id" => $userId,
+            'shop_user_id' => $userId,
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 2 WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 2 WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -168,10 +165,10 @@ class ShopCommandTunnelModel extends AbstractModel
     public function skipShippingPrevious(int $userId): void
     {
         $var = array(
-            "shop_user_id" => $userId,
+            'shop_user_id' => $userId,
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 0 WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_command_tunnel_step = 0 WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -182,11 +179,11 @@ class ShopCommandTunnelModel extends AbstractModel
     public function setPaymentName(int $userId, string $paymentName): void
     {
         $var = array(
-            "shop_user_id" => $userId,
-            "payment_name" => $paymentName,
+            'shop_user_id' => $userId,
+            'payment_name' => $paymentName,
         );
 
-        $sql = "UPDATE cmw_shops_command_tunnel SET shop_payment_method_name = :payment_name WHERE shop_user_id = :shop_user_id";
+        $sql = 'UPDATE cmw_shops_command_tunnel SET shop_payment_method_name = :payment_name WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -196,11 +193,11 @@ class ShopCommandTunnelModel extends AbstractModel
 
     public function clearTunnel(int $userId): bool
     {
-        $sql = "DELETE FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id";
+        $sql = 'DELETE FROM cmw_shops_command_tunnel WHERE shop_user_id = :shop_user_id';
 
         $db = DatabaseManager::getInstance();
 
-        return $db->prepare($sql)->execute(array("shop_user_id" => $userId));
+        return $db->prepare($sql)->execute(array('shop_user_id' => $userId));
     }
 
     /**
@@ -209,32 +206,31 @@ class ShopCommandTunnelModel extends AbstractModel
      */
     public function getShopCommandTunnelByUserId(int $userId): ?ShopCommandTunnelEntity
     {
-        $sql = "SELECT * FROM cmw_shops_command_tunnel WHERE shop_user_id = :userId LIMIT 1;";
+        $sql = 'SELECT * FROM cmw_shops_command_tunnel WHERE shop_user_id = :userId LIMIT 1;';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("userId" => $userId))) {
+        if (!$res->execute(array('userId' => $userId))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
-        $shipping = is_null($res["shops_shipping_id"]) ? null : ShopShippingModel::getInstance()->getShopShippingById($res["shops_shipping_id"]);
-        $deliveryUserAddress = is_null($res["shop_delivery_user_address_id"]) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res["shop_delivery_user_address_id"]);
+        $user = is_null($res['shop_user_id']) ? null : $this->userModel->getUserById($res['shop_user_id']);
+        $shipping = is_null($res['shops_shipping_id']) ? null : ShopShippingModel::getInstance()->getShopShippingById($res['shops_shipping_id']);
+        $deliveryUserAddress = is_null($res['shop_delivery_user_address_id']) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res['shop_delivery_user_address_id']);
 
         return new ShopCommandTunnelEntity(
-            $res["shop_command_tunnel_id"],
-            $res["shop_command_tunnel_step"],
+            $res['shop_command_tunnel_id'],
+            $res['shop_command_tunnel_step'],
             $user,
             $shipping,
             $deliveryUserAddress,
-            $res["shop_payment_method_name"] ?? null,
-            $res["shop_command_tunnel_created_at"] ?? null,
-            $res["shop_command_tunnel_updated_at"] ?? null
+            $res['shop_payment_method_name'] ?? null,
+            $res['shop_command_tunnel_created_at'] ?? null,
+            $res['shop_command_tunnel_updated_at'] ?? null
         );
     }
-
 }

@@ -2,8 +2,8 @@
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "";
-$description = "";
+$title = '';
+$description = '';
 
 ?>
 <div class="d-flex flex-wrap justify-content-between">

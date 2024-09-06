@@ -2,7 +2,6 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsDownloadableController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
@@ -13,12 +12,12 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return "Téléchargeable";
+        return 'Téléchargeable';
     }
 
     public function varName(): string
     {
-        return "downloadable";
+        return 'downloadable';
     }
 
     public function documentationURL(): ?string
@@ -28,13 +27,13 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 
     public function description(): ?string
     {
-        return "Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini";
+        return 'Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini';
     }
 
     public function includeItemConfigWidgets(?int $itemId): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php';
     }
 
     public function includeGlobalConfigWidgets(): void {}
@@ -53,5 +52,4 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
     {
         return;
     }
-
 }

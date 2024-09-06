@@ -7,6 +7,6 @@ class ShopDeleteCatEvent extends AbstractEvent
 {
     public function getName(): string
     {
-        return "Shop-Delete-Cat-Event-CraftMyWebsite";
+        return 'Shop-Delete-Cat-Event-CraftMyWebsite';
     }
 }

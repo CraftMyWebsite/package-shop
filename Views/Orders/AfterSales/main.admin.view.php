@@ -4,8 +4,8 @@
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 
-$title = "Services après ventes";
-$description = "SAV";
+$title = 'Services après ventes';
+$description = 'SAV';
 
 ?>
 <h3><i class="fa-solid fa-headset"></i> Services après-ventes</h3>
@@ -25,7 +25,7 @@ $description = "SAV";
                 </tr>
                 </thead>
                 <tbody >
-                <?php foreach ($afterSales as $afterSale) : ?>
+                <?php foreach ($afterSales as $afterSale): ?>
                     <?php if ($afterSale->getStatus() !== 2): ?>
                         <tr>
                             <td><?= $afterSale->getAuthor()->getPseudo() ?></td>
@@ -61,7 +61,7 @@ $description = "SAV";
                 </tr>
                 </thead>
                 <tbody >
-                <?php foreach ($afterSales as $afterSale) : ?>
+                <?php foreach ($afterSales as $afterSale): ?>
                     <?php if ($afterSale->getStatus() === 2): ?>
                         <tr>
                             <td><?= $afterSale->getAuthor()->getPseudo() ?></td>

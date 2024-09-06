@@ -36,5 +36,4 @@ class ShopDiscountItemsEntity
     {
         return $this->item;
     }
-
 }

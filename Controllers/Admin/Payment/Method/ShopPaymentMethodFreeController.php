@@ -18,5 +18,4 @@ class ShopPaymentMethodFreeController extends AbstractController
     {
         Emitter::send(ShopPaymentCompleteEvent::class, []);
     }
-
 }

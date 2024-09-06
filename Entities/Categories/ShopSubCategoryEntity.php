@@ -2,7 +2,6 @@
 
 namespace CMW\Entity\Shop\Categories;
 
-
 class ShopSubCategoryEntity
 {
     private ShopCategoryEntity $subCategory;

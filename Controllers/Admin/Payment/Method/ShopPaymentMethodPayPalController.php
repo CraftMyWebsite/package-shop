@@ -20,7 +20,6 @@ use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 use JsonException;
 
-
 /**
  * Class: @ShopPaymentMethodPayPalController
  * @package Shop
@@ -30,7 +29,7 @@ use JsonException;
 class ShopPaymentMethodPayPalController extends AbstractController
 {
     private const PAYPAL_API_URL = 'https://api.paypal.com';
-    private const PAYPAL_SANDBOX_API_URL = 'https://api.sandbox.paypal.com'; //Only for dev.
+    private const PAYPAL_SANDBOX_API_URL = 'https://api.sandbox.paypal.com';  // Only for dev.
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
@@ -39,16 +38,16 @@ class ShopPaymentMethodPayPalController extends AbstractController
     public function sendPayPalPayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isPayPalConfigComplete()) {
-            throw new ShopPaymentException(message: "PayPal config is not complete");
+            throw new ShopPaymentException(message: 'PayPal config is not complete');
         }
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("paypal");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('paypal');
         $paymentFee = $paymentMethod->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/complete';
 
-        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
+        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue('currency') ?? 'EUR';
 
         $totalAmount = 0;
 
@@ -86,7 +85,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $response = $this->createPayPalOrder($orderData);
 
         if (!isset($response['id'])) {
-            throw new ShopPaymentException("Failed to create PayPal payment session.");
+            throw new ShopPaymentException('Failed to create PayPal payment session.');
         }
 
         header('Location: ' . $response['links'][1]['href']);
@@ -103,7 +102,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     {
         $accessToken = $this->getPayPalAccessToken();
 
-        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v2/checkout/orders");
+        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . '/v2/checkout/orders');
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
@@ -117,7 +116,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $response = curl_exec($curl);
         if (!$response) {
             curl_close($curl);
-            throw new ShopPaymentException("Unable to contact PayPal API.");
+            throw new ShopPaymentException('Unable to contact PayPal API.');
         }
 
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -131,7 +130,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         try {
             return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ShopPaymentException("Unable to decode JSON response from PayPal. Error: " . $e->getMessage());
+            throw new ShopPaymentException('Unable to decode JSON response from PayPal. Error: ' . $e->getMessage());
         }
     }
 
@@ -146,14 +145,14 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $clientId = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id');
         $clientSecret = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret');
 
-        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v1/oauth2/token");
+        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . '/v1/oauth2/token');
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
                 'Accept-Language: en_US',
                 'Content-Type: application/x-www-form-urlencoded',
             ],
-            CURLOPT_USERPWD => $clientId . ":" . $clientSecret,
+            CURLOPT_USERPWD => $clientId . ':' . $clientSecret,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
@@ -162,7 +161,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $response = curl_exec($curl);
         if (!$response) {
             curl_close($curl);
-            throw new ShopPaymentException("Unable to contact PayPal API for access token.");
+            throw new ShopPaymentException('Unable to contact PayPal API for access token.');
         }
 
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -198,13 +197,13 @@ class ShopPaymentMethodPayPalController extends AbstractController
         curl_close($curl);
 
         if (!$response) {
-            throw new ShopPaymentException("Unable to capture PayPal payment.");
+            throw new ShopPaymentException('Unable to capture PayPal payment.');
         }
 
         try {
             return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ShopPaymentException("Error decoding PayPal capture response: " . $e->getMessage());
+            throw new ShopPaymentException('Error decoding PayPal capture response: ' . $e->getMessage());
         }
     }
 
@@ -214,11 +213,11 @@ class ShopPaymentMethodPayPalController extends AbstractController
      */
     private function isPayPalConfigComplete(): bool
     {
-        return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id'))
-            && !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret'));
+        return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id')) &&
+            !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret'));
     }
 
-    #[Link("/complete", Link::GET, [], "/shop/command/paypal")]
+    #[Link('/complete', Link::GET, [], '/shop/command/paypal')]
     private function paypalCommandComplete(): void
     {
         $user = UsersModel::getCurrentUser();
@@ -228,7 +227,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
             Redirect::redirectToHome();
         }
 
-        //Auto validation côté Paypal pour autoriser le prélèvement
+        // Auto validation côté Paypal pour autoriser le prélèvement
         $orderId = $_GET['token'];
         try {
             $captureResponse = $this->capturePayPalPayment($orderId);
@@ -238,11 +237,12 @@ class ShopPaymentMethodPayPalController extends AbstractController
                 Emitter::send(ShopPaymentCancelEvent::class, ['user' => $user]);
             }
         } catch (ShopPaymentException $e) {
-            Flash::send(Alert::ERROR, 'Erreur', "Échec de la capture du paiement: " . $e->getMessage());
+            Flash::send(Alert::ERROR, 'Erreur', 'Échec de la capture du paiement: ' . $e->getMessage());
         }
     }
 
-    #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/paypal")]
+    #[NoReturn]
+    #[Link('/cancel', Link::GET, [], '/shop/command/paypal')]
     private function paypalCommandCancel(): void
     {
         Emitter::send(ShopPaymentCancelEvent::class, null);

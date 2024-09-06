@@ -11,31 +11,30 @@ use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 
 class VotesRewardVotePointUniqueImplementations implements IRewardMethod
 {
-
     public function name(): string
     {
         $url = $_SERVER['REQUEST_URI'];
 
         if (str_contains($url, 'votes/rewards')) {
             if (ShopPaymentMethodSettingsModel::getInstance()->getSetting('votePoints_name')) {
-                return ShopPaymentMethodSettingsModel::getInstance()->getSetting('votePoints_name') . " (Unique)";
+                return ShopPaymentMethodSettingsModel::getInstance()->getSetting('votePoints_name') . ' (Unique)';
             } else {
-                return "Points de votes (Unique)";
+                return 'Points de votes (Unique)';
             }
         } else {
-            return ShopPaymentMethodSettingsModel::getInstance()->getSetting('votePoints_name') ?? "Points de votes";
+            return ShopPaymentMethodSettingsModel::getInstance()->getSetting('votePoints_name') ?? 'Points de votes';
         }
     }
 
     public function varName(): string
     {
-        return "votePoints";
+        return 'votePoints';
     }
 
     public function includeRewardConfigWidgets(?int $rewardId): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Votes/Views/Elements/votePointUnique.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Votes/Views/Elements/votePointUnique.config.inc.view.php';
     }
 
     public function execRewardActionLogic(): ?string

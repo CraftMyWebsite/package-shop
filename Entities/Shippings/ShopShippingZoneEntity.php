@@ -41,6 +41,4 @@ class ShopShippingZoneEntity
     {
         return ShopCountryModel::getInstance()->getCountryByCode($this->country)->getName();
     }
-
-
 }

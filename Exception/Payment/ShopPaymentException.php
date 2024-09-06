@@ -7,7 +7,6 @@ use CMW\Manager\Flash\Flash;
 use Exception;
 use Throwable;
 
-
 /**
  * Class: @ShopPaymentException
  * @package Shop

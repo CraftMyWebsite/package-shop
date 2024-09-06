@@ -79,5 +79,4 @@ class ShopCommandTunnelEntity
     {
         return CoreController::formatDate($this->tunnelUpdated);
     }
-
 }

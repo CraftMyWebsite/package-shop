@@ -7,7 +7,6 @@ use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 
-
 /**
  * Class: @ShopDiscountCategoriesModel
  * @package Shop
@@ -18,23 +17,23 @@ class ShopDiscountCategoriesModel extends AbstractModel
 {
     public function getShopDiscountCategoriesById(int $id): ?ShopDiscountCategoriesEntity
     {
-        $sql = "SELECT * FROM cmw_shops_discount_categories WHERE shop_discount_categories_id = :shop_discount_categories_id";
+        $sql = 'SELECT * FROM cmw_shops_discount_categories WHERE shop_discount_categories_id = :shop_discount_categories_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_discount_categories_id" => $id])) {
+        if (!$res->execute(['shop_discount_categories_id' => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $discount = ShopDiscountModel::getInstance()->getAllShopDiscountById($res["shop_discount_id"]);
-        $cat = ShopCategoriesModel::getInstance()->getShopCategoryById($res["shop_category_id"]);
+        $discount = ShopDiscountModel::getInstance()->getAllShopDiscountById($res['shop_discount_id']);
+        $cat = ShopCategoriesModel::getInstance()->getShopCategoryById($res['shop_category_id']);
 
         return new ShopDiscountCategoriesEntity(
-            $res["shop_discount_categories_id"],
+            $res['shop_discount_categories_id'],
             $discount,
             $cat,
         );
@@ -42,27 +41,27 @@ class ShopDiscountCategoriesModel extends AbstractModel
 
     public function getShopDiscountCategoriesDefaultAppliedById(int $id): ?ShopDiscountCategoriesEntity
     {
-        $sql = "SELECT cmw_shops_discount_categories.*
+        $sql = 'SELECT cmw_shops_discount_categories.*
                 FROM cmw_shops_discount_categories
                 INNER JOIN cmw_shops_discount ON cmw_shops_discount_categories.shop_discount_id = cmw_shops_discount.shop_discount_id
                 WHERE cmw_shops_discount_categories.shop_discount_categories_id = :shop_discount_categories_id
-                AND cmw_shops_discount.shop_discount_status = 1;";
+                AND cmw_shops_discount.shop_discount_status = 1;';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_discount_categories_id" => $id])) {
+        if (!$res->execute(['shop_discount_categories_id' => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $discount = ShopDiscountModel::getInstance()->getShopDiscountDefaultAppliedById($res["shop_discount_id"]);
-        $cat = ShopCategoriesModel::getInstance()->getShopCategoryById($res["shop_category_id"]);
+        $discount = ShopDiscountModel::getInstance()->getShopDiscountDefaultAppliedById($res['shop_discount_id']);
+        $cat = ShopCategoriesModel::getInstance()->getShopCategoryById($res['shop_category_id']);
 
         return new ShopDiscountCategoriesEntity(
-            $res["shop_discount_categories_id"],
+            $res['shop_discount_categories_id'],
             $discount,
             $cat,
         );
@@ -74,20 +73,20 @@ class ShopDiscountCategoriesModel extends AbstractModel
      */
     public function getShopDiscountCategoriesByCategoryId(int $catId): array
     {
-        $sql = "SELECT * FROM cmw_shops_discount_categories WHERE shop_category_id = :shop_category_id";
+        $sql = 'SELECT * FROM cmw_shops_discount_categories WHERE shop_category_id = :shop_category_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_category_id" => $catId))) {
+        if (!$res->execute(array('shop_category_id' => $catId))) {
             return [];
         }
 
         $toReturn = [];
 
         while ($values = $res->fetch()) {
-            $toReturn[] = $this->getShopDiscountCategoriesById($values["shop_discount_categories_id"]);
+            $toReturn[] = $this->getShopDiscountCategoriesById($values['shop_discount_categories_id']);
         }
 
         return $toReturn;
@@ -99,20 +98,20 @@ class ShopDiscountCategoriesModel extends AbstractModel
      */
     public function getShopDiscountCategoriesByDiscountId(int $discountId): array
     {
-        $sql = "SELECT * FROM cmw_shops_discount_categories WHERE shop_discount_id = :shop_discount_id";
+        $sql = 'SELECT * FROM cmw_shops_discount_categories WHERE shop_discount_id = :shop_discount_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_discount_id" => $discountId))) {
+        if (!$res->execute(array('shop_discount_id' => $discountId))) {
             return [];
         }
 
         $toReturn = [];
 
         while ($values = $res->fetch()) {
-            $toReturn[] = $this->getShopDiscountCategoriesById($values["shop_discount_categories_id"]);
+            $toReturn[] = $this->getShopDiscountCategoriesById($values['shop_discount_categories_id']);
         }
 
         return $toReturn;
@@ -124,24 +123,24 @@ class ShopDiscountCategoriesModel extends AbstractModel
      */
     public function getShopDiscountCategoriesDefaultAppliedByCategoryId(int $catId): array
     {
-        $sql = "SELECT cmw_shops_discount_categories.*
+        $sql = 'SELECT cmw_shops_discount_categories.*
                 FROM cmw_shops_discount_categories
                 INNER JOIN cmw_shops_discount ON cmw_shops_discount_categories.shop_discount_id = cmw_shops_discount.shop_discount_id
                 WHERE cmw_shops_discount_categories.shop_category_id = :shop_category_id
-                AND cmw_shops_discount.shop_discount_status = 1 AND cmw_shops_discount.shop_discount_default_active = 1;";
+                AND cmw_shops_discount.shop_discount_status = 1 AND cmw_shops_discount.shop_discount_default_active = 1;';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_category_id" => $catId))) {
+        if (!$res->execute(array('shop_category_id' => $catId))) {
             return [];
         }
 
         $toReturn = [];
 
         while ($values = $res->fetch()) {
-            $toReturn[] = $this->getShopDiscountCategoriesDefaultAppliedById($values["shop_discount_categories_id"]);
+            $toReturn[] = $this->getShopDiscountCategoriesDefaultAppliedById($values['shop_discount_categories_id']);
         }
 
         return $toReturn;
@@ -150,13 +149,12 @@ class ShopDiscountCategoriesModel extends AbstractModel
     public function addDiscountCategory(int $discountId, int $categoryId): ?ShopDiscountCategoriesEntity
     {
         $data = array(
-            "shop_discount_id" => $discountId,
-            "shop_category_id" => $categoryId,
+            'shop_discount_id' => $discountId,
+            'shop_category_id' => $categoryId,
         );
 
-        $sql = "INSERT INTO cmw_shops_discount_categories (shop_discount_id, shop_category_id)
-                VALUES (:shop_discount_id, :shop_category_id)";
-
+        $sql = 'INSERT INTO cmw_shops_discount_categories (shop_discount_id, shop_category_id)
+                VALUES (:shop_discount_id, :shop_category_id)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

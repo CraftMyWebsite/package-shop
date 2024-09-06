@@ -53,31 +53,31 @@ class ShopHistoryOrdersAfterSalesEntity
     public function getFormattedReason(): string
     {
         if ($this->reason === 0) {
-            return "Modification de commande";
+            return 'Modification de commande';
         }
         if ($this->reason === 1) {
-            return "Erreur de commande";
+            return 'Erreur de commande';
         }
         if ($this->reason === 2) {
-            return "Produit défectueux";
+            return 'Produit défectueux';
         }
         if ($this->reason === 3) {
-            return "Produit endommagé";
+            return 'Produit endommagé';
         }
         if ($this->reason === 4) {
-            return "Produit manquant";
+            return 'Produit manquant';
         }
         if ($this->reason === 5) {
-            return "Retard de livraison";
+            return 'Retard de livraison';
         }
         if ($this->reason === 6) {
-            return "Non-réception de la commande";
+            return 'Non-réception de la commande';
         }
         if ($this->reason === 7) {
-            return "Problème de taille ou de spécifications";
+            return 'Problème de taille ou de spécifications';
         }
         if ($this->reason === 8) {
-            return "Autres";
+            return 'Autres';
         }
     }
 
@@ -89,13 +89,13 @@ class ShopHistoryOrdersAfterSalesEntity
     public function getFormattedStatus(): string
     {
         if ($this->status === 0) {
-            return "<i class='fa-solid fa-spinner fa-spin' style='color: #1159d4;'></i>" . " Attend une réponse";
+            return "<i class='fa-solid fa-spinner fa-spin' style='color: #1159d4;'></i>" . ' Attend une réponse';
         }
         if ($this->status === 1) {
-            return "<i class='fa-solid fa-spinner fa-spin-pulse' style='color: #1bbba9;'></i>" . " Réponse apportée";
+            return "<i class='fa-solid fa-spinner fa-spin-pulse' style='color: #1bbba9;'></i>" . ' Réponse apportée';
         }
 
-        return "<i class='fa-regular fa-circle-check' style='color: #15d518;'></i>" . " Clos";
+        return "<i class='fa-regular fa-circle-check' style='color: #15d518;'></i>" . ' Clos';
     }
 
     public function getOrder(): ShopHistoryOrdersEntity
@@ -113,6 +113,4 @@ class ShopHistoryOrdersAfterSalesEntity
     {
         return CoreController::formatDate($this->updated);
     }
-
-
 }

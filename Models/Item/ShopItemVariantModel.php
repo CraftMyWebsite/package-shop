@@ -27,13 +27,13 @@ class ShopItemVariantModel extends AbstractModel
      */
     public function getShopItemVariantById(?int $id): ?ShopItemVariantEntity
     {
-        $sql = "SELECT * FROM cmw_shops_items_variants WHERE shop_variants_id = :shop_variants_id";
+        $sql = 'SELECT * FROM cmw_shops_items_variants WHERE shop_variants_id = :shop_variants_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_variants_id" => $id))) {
+        if (!$res->execute(array('shop_variants_id' => $id))) {
             return null;
         }
         if (is_null($id)) {
@@ -42,14 +42,14 @@ class ShopItemVariantModel extends AbstractModel
 
         $res = $res->fetch();
 
-        $item = $this->itemModel->getShopItemsById($res["shop_item_id"]);
+        $item = $this->itemModel->getShopItemsById($res['shop_item_id']);
 
         return new ShopItemVariantEntity(
-            $res["shop_variants_id"],
+            $res['shop_variants_id'],
             $item,
-            $res["shop_variants_name"] ?? null,
-            $res["shop_variants_created_at"] ?? null,
-            $res["shop_variants_updated_at"] ?? null
+            $res['shop_variants_name'] ?? null,
+            $res['shop_variants_created_at'] ?? null,
+            $res['shop_variants_updated_at'] ?? null
         );
     }
 
@@ -59,20 +59,20 @@ class ShopItemVariantModel extends AbstractModel
      */
     public function getShopItemVariantByItemId(int $id): array
     {
-        $sql = "SELECT * FROM cmw_shops_items_variants WHERE shop_item_id = :shop_item_id";
+        $sql = 'SELECT * FROM cmw_shops_items_variants WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_item_id" => $id))) {
+        if (!$res->execute(array('shop_item_id' => $id))) {
             return [];
         }
 
         $toReturn = [];
 
         while ($values = $res->fetch()) {
-            $toReturn[] = $this->getShopItemVariantById($values["shop_variants_id"]);
+            $toReturn[] = $this->getShopItemVariantById($values['shop_variants_id']);
         }
 
         return $toReturn;
@@ -82,7 +82,7 @@ class ShopItemVariantModel extends AbstractModel
     {
         $data = ['shop_item_id' => $id];
 
-        $sql = "DELETE FROM cmw_shops_items_variants WHERE shop_item_id = :shop_item_id";
+        $sql = 'DELETE FROM cmw_shops_items_variants WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -92,13 +92,12 @@ class ShopItemVariantModel extends AbstractModel
     public function createVariant(string $name, int $itemId): ?ShopItemVariantEntity
     {
         $data = array(
-            "shop_variants_name" => $name,
-            "shop_item_id" => $itemId,
+            'shop_variants_name' => $name,
+            'shop_item_id' => $itemId,
         );
 
-        $sql = "INSERT INTO cmw_shops_items_variants (shop_item_id, shop_variants_name)
-                VALUES (:shop_item_id, :shop_variants_name)";
-
+        $sql = 'INSERT INTO cmw_shops_items_variants (shop_item_id, shop_variants_name)
+                VALUES (:shop_item_id, :shop_variants_name)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -113,21 +112,21 @@ class ShopItemVariantModel extends AbstractModel
 
     public function itemHasVariant(int $itemId): bool
     {
-        $data = ["shop_item_id" => $itemId];
+        $data = ['shop_item_id' => $itemId];
 
-        $sql = "SELECT shop_variants_id FROM cmw_shops_items_variants WHERE shop_item_id =:shop_item_id";
+        $sql = 'SELECT shop_variants_id FROM cmw_shops_items_variants WHERE shop_item_id =:shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 

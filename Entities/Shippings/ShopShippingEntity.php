@@ -71,12 +71,12 @@ class ShopShippingEntity
     public function getFormattedType(): string
     {
         if ($this->type === 0) {
-            return "Livraison";
+            return 'Livraison';
         }
         if ($this->type === 1) {
-            return "A emporter";
+            return 'A emporter';
         }
-        return "";
+        return '';
     }
 
     public function getWithdrawPoint(): ?ShopShippingWithdrawPointEntity
@@ -103,5 +103,4 @@ class ShopShippingEntity
     {
         return $this->maxTotalCartPrice;
     }
-
 }

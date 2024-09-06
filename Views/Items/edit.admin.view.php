@@ -6,8 +6,8 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var CMW\Entity\Shop\Items\ShopItemEntity $item */
@@ -40,10 +40,10 @@ foreach ($itemVariants as $itemVariant) {
 <div class="page-title">
     <h3><i class="fa-solid fa-cart-plus"></i> Édition de <?= $item->getName() ?></h3>
 
-    <?php if ( $item->getQuantityInCart() ): ?>
-    <button data-modal-toggle="modal-danger" class="btn-warning"><?= LangManager::translate("core.btn.edit") ?></button>
+    <?php if ($item->getQuantityInCart()): ?>
+    <button data-modal-toggle="modal-danger" class="btn-warning"><?= LangManager::translate('core.btn.edit') ?></button>
     <?php else: ?>
-    <button form="editItem" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.edit") ?></button>
+    <button form="editItem" type="submit" class="btn-primary"><?= LangManager::translate('core.btn.edit') ?></button>
     <?php endif; ?>
 </div>
 
@@ -57,7 +57,7 @@ foreach ($itemVariants as $itemVariant) {
             <p>Attention, si vous avez modifié les variantes ou si le type d'article a changé (Physique -> Virtuel ou Virtuel -> Physique), cela supprimera automatiquement cet article des paniers qui le contiennent !</p>
         </div>
         <div class="modal-footer">
-            <button form="editItem" type="submit" class="btn-warning"><?= LangManager::translate("core.btn.edit") ?></button>
+            <button form="editItem" type="submit" class="btn-warning"><?= LangManager::translate('core.btn.edit') ?></button>
         </div>
     </div>
 </div>
@@ -126,22 +126,24 @@ foreach ($itemVariants as $itemVariant) {
                             <select class="form-select" name="shop_item_virtual_prefix" id="virtual_type_selected" required>
                                 <?php foreach ($virtualMethods as $virtualMethod): ?>
                                     <option value="<?= $virtualMethod->varName() ?>"
-                                        <?= $virtualMethodName === $virtualMethod->varName() ? "selected" : "" ?>
+                                        <?= $virtualMethodName === $virtualMethod->varName() ? 'selected' : '' ?>
                                     ><?= $virtualMethod->name() ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
-                            <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
+                            <?php $i = 1;
+                            foreach ($virtualMethods as $virtualMethod): ?>
                                 <div class="virtual-method" id="method-<?= $virtualMethod->varName() ?>">
-                                    <?php if ($virtualMethod->documentationURL()) : ?>
+                                    <?php if ($virtualMethod->documentationURL()): ?>
                                         <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
-                                    <?php endif;?>
+                                    <?php endif; ?>
                                     <p><?= $virtualMethod->description() ?></p>
                                     <input type="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
                                     <?php $virtualMethod->includeItemConfigWidgets($item->getId()) ?>
                                 </div>
-                                <?php ++$i; endforeach; ?>
+                                <?php ++$i;
+                            endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -166,11 +168,11 @@ foreach ($itemVariants as $itemVariant) {
                     <select name="shop_category_id" class="form-select">
                         <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
                             <option value="<?= $cat->getId() ?>"
-                                <?= $cat->getId() === $item->getCategory()->getId() ? "selected" : "" ?>
+                                <?= $cat->getId() === $item->getCategory()->getId() ? 'selected' : '' ?>
                             > <?= $cat->getName() ?> </option>
                             <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
                                 <option value="<?= $subCategory->getSubCategory()->getId() ?>"
-                                    <?= $subCategory->getId() === $item->getCategory()->getId() ? "selected" : "" ?>> <?php echo str_repeat("      ", $subCategory->getDepth()) . " ↪ ". $subCategory->getSubCategory()->getName() ?></option>
+                                    <?= $subCategory->getId() === $item->getCategory()->getId() ? 'selected' : '' ?>> <?php echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ ' . $subCategory->getSubCategory()->getName() ?></option>
                             <?php endforeach; ?>
                         <?php endforeach; ?>
                     </select>
@@ -199,8 +201,8 @@ foreach ($itemVariants as $itemVariant) {
                 <div>
                     <label>Type<span style="color: red">*</span> :</label>
                     <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                        <option value="1" <?= $item->getType() === 1 ? "selected" : "" ?>>Virtuel</option>
-                        <option value="0" <?= $item->getType() === 0 ? "selected" : "" ?>>Physique</option>
+                        <option value="1" <?= $item->getType() === 1 ? 'selected' : '' ?>>Virtuel</option>
+                        <option value="0" <?= $item->getType() === 0 ? 'selected' : '' ?>>Physique</option>
                     </select>
                 </div>
             </div>
@@ -246,7 +248,7 @@ foreach ($itemVariants as $itemVariant) {
             </div>
             <div id="img_div" class="grid-3 gap-16 mt-4">
                 <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId()); ?>
-                <?php if ($getImagesItem) : ?>
+                <?php if ($getImagesItem): ?>
                     <?php foreach ($getImagesItem as $index => $imageUrl): ?>
                         <div class="col-12 col-lg-3 border-4 border-dashed rounded-lg dark:border-gray-700 relative h-fit" id="delete-<?= $index ?>">
                             <div class="card-in-card p-2">

@@ -2,7 +2,6 @@
 
 namespace CMW\Entity\Shop\Items;
 
-
 use CMW\Controller\Core\CoreController;
 
 class ShopItemVariantValueEntity
@@ -53,6 +52,4 @@ class ShopItemVariantValueEntity
     {
         return CoreController::formatDate($this->variantValueUpdated);
     }
-
-
 }

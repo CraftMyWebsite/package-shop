@@ -75,11 +75,11 @@ class ShopPaymentMethodSettingsModel extends AbstractModel
      */
     public function updateOrInsertSetting(string $key, string $value): bool
     {
-        $sql = "INSERT INTO cmw_shops_payment_method_settings 
+        $sql = 'INSERT INTO cmw_shops_payment_method_settings 
                             (shop_payment_method_settings_key, shop_payment_method_settings_value, shop_payment_method_settings_updated_at) 
                             VALUES (:key, :value, NOW()) 
                             ON DUPLICATE KEY UPDATE shop_payment_method_settings_value=:value2, 
-                                                    shop_payment_method_settings_updated_at=NOW()";
+                                                    shop_payment_method_settings_updated_at=NOW()';
 
         $db = DatabaseManager::getInstance();
         return $db->prepare($sql)->execute(['key' => $key, 'value' => $value, 'value2' => $value]);

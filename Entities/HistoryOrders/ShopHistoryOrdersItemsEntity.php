@@ -11,7 +11,8 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersItemsEntity {
+class ShopHistoryOrdersItemsEntity
+{
     private int $historyOrderItemId;
     private ShopItemEntity $item;
     private ShopHistoryOrdersEntity $historyOrder;
@@ -91,12 +92,12 @@ class ShopHistoryOrdersItemsEntity {
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getPrice(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
@@ -121,16 +122,16 @@ class ShopHistoryOrdersItemsEntity {
     public function getPriceDiscountImpactFormatted(): string
     {
         $formattedPrice = number_format($this->getPriceDiscountImpact(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== "free") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== 'free') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -146,16 +147,16 @@ class ShopHistoryOrdersItemsEntity {
     public function getTotalPriceBeforeDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceBeforeDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -171,16 +172,16 @@ class ShopHistoryOrdersItemsEntity {
     public function getTotalPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceAfterDiscount(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== "free") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== 'free') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 }

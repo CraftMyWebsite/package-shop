@@ -2,8 +2,8 @@
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "";
-$description = "";
+$title = '';
+$description = '';
 
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $ongoingDiscounts */
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $upcomingDiscounts */
@@ -51,7 +51,7 @@ $description = "";
                 </tr>
                 </thead>
                 <tbody class="text-center">
-                <?php foreach ($ongoingDiscounts as $discount):?>
+                <?php foreach ($ongoingDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= $discount->getCode() ?></td>
@@ -76,11 +76,11 @@ $description = "";
                 </tr>
                 </thead>
                 <tbody class="text-center">
-                <?php foreach ($pastDiscounts as $discount):?>
+                <?php foreach ($pastDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= $discount->getCode() ?></td>
-                        <td><?= $discount->getCurrentUses() ?? "∞" ?>/<?= $discount->getMaxUses() ?? "∞" ?></td>
+                        <td><?= $discount->getCurrentUses() ?? '∞' ?>/<?= $discount->getMaxUses() ?? '∞' ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

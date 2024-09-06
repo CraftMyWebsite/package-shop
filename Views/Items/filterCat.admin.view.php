@@ -6,8 +6,8 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Entity\Shop\Categories\ShopCategoryEntity $thisCat */
 /* @var CMW\Model\Shop\Item\ShopItemsModel $items */
@@ -18,7 +18,7 @@ $description = "";
     <h3><i class="fa-solid fa-cubes-stacked"></i> <span class="m-lg-auto">Articles dans la catégorie <?= $thisCat->getName() ?></span></h3>
     <div class="buttons">
         <a href="items/add" type="submit"
-           class="btn btn-primary"><?= LangManager::translate("core.btn.add") ?></a>
+           class="btn btn-primary"><?= LangManager::translate('core.btn.add') ?></a>
     </div>
 </div>
 
@@ -53,8 +53,8 @@ $description = "";
                                 foreach ($getImagesItem as $countImage) {
                                     $v++;
                                 } ?>
-                                <?php if ($getImagesItem) : ?>
-                                    <?php if ($v !== 1) : ?>
+                                <?php if ($getImagesItem): ?>
+                                    <?php if ($v !== 1): ?>
                                         <div id="carousel_<?= $item->getId() ?>" class="carousel slide"
                                              data-bs-ride="carousel">
                                             <ol class="carousel-indicators">
@@ -63,7 +63,8 @@ $description = "";
                                                     <li data-bs-target="#carousel_<?= $item->getId() ?>"
                                                         data-bs-slide-to="<?= $i ?>"
                                                         <?php if ($i === 0): ?>class="active"><?php endif; ?></li>
-                                                    <?php $i++; endforeach; ?>
+                                                    <?php $i++;
+                                                endforeach; ?>
                                             </ol>
                                             <div class="carousel-inner">
                                                 <?php $x = 0;
@@ -73,7 +74,8 @@ $description = "";
                                                              src="<?= $imagesUrl->getImageUrl() ?>"
                                                              class="p-2 d-block" alt="..."/>
                                                     </div>
-                                                    <?php $x++; endforeach; ?>
+                                                    <?php $x++;
+                                                endforeach; ?>
                                             </div>
                                             <div class="mt-1">
                                                 <a class="carousel-control-prev" href="#carousel_<?= $item->getId() ?>"
@@ -154,13 +156,13 @@ $description = "";
                                                 data-bs-dismiss="modal">
                                             <i class="bx bx-x"></i>
                                             <span
-                                                class=""><?= LangManager::translate("core.btn.close") ?></span>
+                                                class=""><?= LangManager::translate('core.btn.close') ?></span>
                                         </button>
                                         <a href="items/delete/<?= $item->getId() ?>"
                                            class="btn btn-danger ml-1">
                                             <i class="bx bx-check"></i>
                                             <span
-                                                class=""><?= LangManager::translate("core.btn.delete") ?></span>
+                                                class=""><?= LangManager::translate('core.btn.delete') ?></span>
                                         </a>
                                     </div>
                                 </div>

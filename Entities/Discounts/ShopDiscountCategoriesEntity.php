@@ -36,6 +36,4 @@ class ShopDiscountCategoriesEntity
     {
         return $this->category;
     }
-
-
 }

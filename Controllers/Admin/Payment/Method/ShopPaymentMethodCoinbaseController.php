@@ -29,6 +29,7 @@ use JsonException;
 class ShopPaymentMethodCoinbaseController extends AbstractController
 {
     private const COINBASE_COMMERCE_API_URL = 'https://api.commerce.coinbase.com/charges';
+
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
@@ -36,16 +37,16 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
     public function sendCoinbasePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isCryptoConfigComplete()) {
-            throw new ShopPaymentException(message: "Stripe config is not complete");
+            throw new ShopPaymentException(message: 'Stripe config is not complete');
         }
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/complete';
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("coinbase");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('coinbase');
         $paymentFee = $paymentMethod->fees();
 
-        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
+        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue('currency') ?? 'EUR';
 
         $totalAmount = 0;
 
@@ -80,7 +81,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
             header('Location: ' . $response['data']['hosted_url']);
             exit;
         } else {
-            throw new ShopPaymentException("Échec de la création de la charge Coinbase.");
+            throw new ShopPaymentException('Échec de la création de la charge Coinbase.');
         }
     }
 
@@ -114,16 +115,16 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
             throw new ShopPaymentException("Impossible de contacter l'API Coinbase Commerce.");
         }
 
-        try{
+        try {
             return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ShopPaymentException("Impossible de décoder la réponse JSON de Coinbase Commerce. Erreur : " . $e->getMessage());
+            throw new ShopPaymentException('Impossible de décoder la réponse JSON de Coinbase Commerce. Erreur : ' . $e->getMessage());
         }
     }
 
     /**
-    Récupérer votre clé secrète Coinbase ici
-    @return string
+     * Récupérer votre clé secrète Coinbase ici
+     * @return string
      */
     private function getCoinbaseApiKey(): string
     {
@@ -141,7 +142,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('coinbase_api_key'));
     }
 
-    #[Link("/complete", Link::GET, [], "/shop/command/coinbase")]
+    #[Link('/complete', Link::GET, [], '/shop/command/coinbase')]
     private function cryptoCommandComplete(): void
     {
         $user = UsersModel::getCurrentUser();
@@ -154,7 +155,8 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         Emitter::send(ShopPaymentCompleteEvent::class, []);
     }
 
-    #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/coinbase")]
+    #[NoReturn]
+    #[Link('/cancel', Link::GET, [], '/shop/command/coinbase')]
     private function cryptoCommandCancel(): void
     {
         Emitter::send(ShopPaymentCancelEvent::class, null);

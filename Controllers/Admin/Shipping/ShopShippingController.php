@@ -10,7 +10,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 
-
 /**
  * Class: @ShopShippingController
  * @package shop
@@ -19,10 +18,10 @@ use CMW\Manager\Views\View;
  */
 class ShopShippingController extends AbstractController
 {
-    #[Link("/shipping", Link::GET, [], "/cmw-admin/shop")]
+    #[Link('/shipping', Link::GET, [], '/cmw-admin/shop')]
     public function shopDiscounts(): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.carts");
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
         View::createAdminView('Shop', 'Shipping/main')
             ->addVariableList([])
             ->view();
@@ -43,7 +42,7 @@ class ShopShippingController extends AbstractController
     public function getShippingMethodsByVarName(string $varName): ?IShippingMethod
     {
         foreach ($this->getShippingMethods() as $shippingMethod) {
-            if ($shippingMethod->varName() === $varName){
+            if ($shippingMethod->varName() === $varName) {
                 return $shippingMethod;
             }
         }

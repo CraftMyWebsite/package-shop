@@ -7,8 +7,8 @@
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 
-$title = "Commandes";
-$description = "";
+$title = 'Commandes';
+$description = '';
 
 ?>
 <h3><i class="fa-solid fa-list-check"></i> Commandes</h3>
@@ -19,7 +19,7 @@ $description = "";
         <div class="alert alert-warning">
             <p><i class="fa-solid fa-triangle-exclamation"></i> Attention, vous avez désactivé les notifications du package Shop ! Vous ne serez pas alerté en cas de nouvelle commande. <br>Il est également recommandé d'activer les alertes mail / Discord dans les paramètres de notification. <a class="link" href="/cmw-admin/notifications">Modifier les réglages des notifications</a></p>
         </div>
-    <?php endif;?>
+    <?php endif; ?>
     <div class="table-container table-container-striped">
         <table class="table" id="table1">
             <thead>
@@ -34,22 +34,22 @@ $description = "";
             </tr>
             </thead>
             <tbody >
-            <?php foreach ($inProgressOrders as $inProgressOrder) : ?>
+            <?php foreach ($inProgressOrders as $inProgressOrder): ?>
                 <tr>
-                    <td><?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . " " . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td><?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?></td>
                     <td>#<?= $inProgressOrder->getOrderNumber() ?></td>
                     <td>
-                        <?= "<b style='color: #6f6fad'>" . $inProgressOrder->getOrderTotalFormatted() ."</b>" ?><br>
+                        <?= "<b style='color: #6f6fad'>" . $inProgressOrder->getOrderTotalFormatted() . '</b>' ?><br>
                     </td>
                     <td><?= $inProgressOrder->getAdminStatus() ?></td>
                     <?php $payment = ShopPaymentsController::getInstance()->getPaymentByVarName($inProgressOrder->getPaymentMethod()->getVarName()) ?>
                     <td>
-                        <?php if ($payment->dashboardURL()) : ?>
-                            <a target="_blank" class="link" href="<?=$payment->dashboardURL()?>"><?=$inProgressOrder->getPaymentMethod()->getName()?></a>
+                        <?php if ($payment->dashboardURL()): ?>
+                            <a target="_blank" class="link" href="<?= $payment->dashboardURL() ?>"><?= $inProgressOrder->getPaymentMethod()->getName() ?></a>
                         <?php else: ?>
-                            <?=$inProgressOrder->getPaymentMethod()->getName()?>
+                            <?= $inProgressOrder->getPaymentMethod()->getName() ?>
                         <?php endif; ?>
-                        <?="(". $inProgressOrder->getPaymentMethod()->getFeeFormatted().")" ?></td>
+                        <?= '(' . $inProgressOrder->getPaymentMethod()->getFeeFormatted() . ')' ?></td>
                     <td><?= $inProgressOrder->getCreated() ?></td>
                     <td class="text-center">
                         <a href="orders/manage/<?= $inProgressOrder->getId() ?>">
@@ -79,12 +79,12 @@ $description = "";
                 </tr>
                 </thead>
                 <tbody >
-                <?php foreach ($finishedOrders as $finishedOrder) : ?>
+                <?php foreach ($finishedOrders as $finishedOrder): ?>
                     <tr>
-                        <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . " " . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                        <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
                         <td>#<?= $finishedOrder->getOrderNumber() ?></td>
                         <td>
-                            <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() ."</b>" ?><br>
+                            <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() . '</b>' ?><br>
                         </td>
                         <td><?= $finishedOrder->getAdminStatus() ?></td>
                         <td><?= $finishedOrder->getCreated() ?></td>
@@ -114,12 +114,12 @@ $description = "";
                 </tr>
                 </thead>
                 <tbody >
-                <?php foreach ($errorOrders as $errorOrder) : ?>
+                <?php foreach ($errorOrders as $errorOrder): ?>
                     <tr>
-                        <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . " " . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                        <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
                         <td>#<?= $errorOrder->getOrderNumber() ?></td>
                         <td>
-                            <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() ."</b>" ?><br>
+                            <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() . '</b>' ?><br>
                         </td>
                         <td><?= $errorOrder->getAdminStatus() ?></td>
                         <td><?= $errorOrder->getCreated() ?></td>

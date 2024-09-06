@@ -2,10 +2,10 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersShippingEntity {
+class ShopHistoryOrdersShippingEntity
+{
     private int $historyOrderShippingId;
     private ShopHistoryOrdersEntity $historyOrder;
     private ?string $historyOrderShippingName;
@@ -52,13 +52,12 @@ class ShopHistoryOrdersShippingEntity {
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getPrice(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
             return $symbol . $formattedPrice;
         }
     }
-
 }

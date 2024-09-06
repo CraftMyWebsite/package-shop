@@ -23,7 +23,6 @@ use CMW\Utils\Website;
 
 class ShopCartItemEntity
 {
-
     private int $id;
     private ShopCartEntity $cart;
     private ?ShopItemEntity $item;
@@ -32,7 +31,6 @@ class ShopCartItemEntity
     private string $cartCreated;
     private string $cartUpdated;
     private int $cartAside;
-
 
     public function __construct(int $id, ShopCartEntity $cart, ?ShopItemEntity $item, ?ShopDiscountEntity $discount, int $cartQuantity, string $cartCreated, string $cartUpdated, int $cartAside)
     {
@@ -83,31 +81,31 @@ class ShopCartItemEntity
      */
     public function getDiscountFormatted(): ?string
     {
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
 
         if (!is_null($this->discount)) {
             if ($this->discount->getDiscountQuantityImpacted() == 1) {
                 if ($this->discount->getPrice()) {
                     if ($symbolIsAfter) {
-                        return "- " . $this->discount->getPrice() . $symbol;
+                        return '- ' . $this->discount->getPrice() . $symbol;
                     } else {
-                        return "- " . $symbol . $this->discount->getPrice();
+                        return '- ' . $symbol . $this->discount->getPrice();
                     }
                 }
                 if ($this->discount->getPercentage()) {
-                    return "- " . $this->discount->getPercentage() . "%";
+                    return '- ' . $this->discount->getPercentage() . '%';
                 }
             } else {
                 if ($this->discount->getPrice()) {
                     if ($symbolIsAfter) {
-                        return "- " . $this->discount->getPrice() . $symbol . " sur le 1er article";
+                        return '- ' . $this->discount->getPrice() . $symbol . ' sur le 1er article';
                     } else {
-                        return "- " . $symbol . $this->discount->getPrice() . " sur le 1er article";
+                        return '- ' . $symbol . $this->discount->getPrice() . ' sur le 1er article';
                     }
                 }
                 if ($this->discount->getPercentage()) {
-                    return "- " . $this->discount->getPercentage() . "% sur le 1er article";
+                    return '- ' . $this->discount->getPercentage() . '% sur le 1er article';
                 }
             }
         }
@@ -120,7 +118,7 @@ class ShopCartItemEntity
     public function getFirstImageItemUrl(): string
     {
         $return = ShopImagesModel::getInstance()->getFirstImageByItemId($this->getItem()->getId());
-        return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $return;
+        return EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'Public/Uploads/Shop/' . $return;
     }
 
     /**
@@ -165,7 +163,7 @@ class ShopCartItemEntity
 
         if ($this->item->getPriceDiscountDefaultApplied()) {
             if ($quantityImpacted == 0) {
-                $itemPrice = $this->item->getPriceDiscountDefaultApplied() + ($this->cartQuantity-1) * $this->item->getPrice();
+                $itemPrice = $this->item->getPriceDiscountDefaultApplied() + ($this->cartQuantity - 1) * $this->item->getPrice();
             } else {
                 $itemPrice = $this->cartQuantity * $this->item->getPriceDiscountDefaultApplied();
             }
@@ -183,17 +181,17 @@ class ShopCartItemEntity
     public function getItemTotalPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPrice(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
         }
 
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -220,14 +218,14 @@ class ShopCartItemEntity
                     $discount = $this->discount->getPrice() * $this->cartQuantity;
                 }
                 if ($this->discount->getPercentage()) {
-                    $discount = ($basePrice*$this->discount->getPercentage())/100;
+                    $discount = ($basePrice * $this->discount->getPercentage()) / 100;
                 }
             } else {
                 if ($this->discount->getPrice()) {
                     $discount = $this->discount->getPrice();
                 }
                 if ($this->discount->getPercentage()) {
-                        $discount = ($this->getItem()->getPrice()*$this->discount->getPercentage()/100);
+                    $discount = ($this->getItem()->getPrice() * $this->discount->getPercentage() / 100);
                 }
             }
             return number_format($basePrice - $discount, 2, '.', '');
@@ -242,16 +240,16 @@ class ShopCartItemEntity
     public function getItemTotalPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPriceAfterDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -277,12 +275,12 @@ class ShopCartItemEntity
     public function getTotalCartPriceBeforeDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceBeforeDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
@@ -322,16 +320,16 @@ class ShopCartItemEntity
     public function getTotalCartPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceAfterDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -360,12 +358,12 @@ class ShopCartItemEntity
     public function getTotalPriceCompleteFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceComplete(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($this->getItem()->getPriceType() == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon()." ";
+            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
@@ -403,7 +401,7 @@ class ShopCartItemEntity
     public function getIncreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/increase_quantity/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/increase_quantity/$itemId";
     }
 
     /**
@@ -412,7 +410,7 @@ class ShopCartItemEntity
     public function getDecreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/decrease_quantity/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/decrease_quantity/$itemId";
     }
 
     /**
@@ -421,7 +419,6 @@ class ShopCartItemEntity
     public function getRemoveLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/remove/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/remove/$itemId";
     }
-
 }

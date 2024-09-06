@@ -6,7 +6,6 @@ use CMW\Entity\Shop\Items\ShopItemPhysicalRequirementEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 
-
 /**
  * Class: @ShopItemsPhysicalRequirementModel
  * @package Shop
@@ -28,29 +27,29 @@ class ShopItemsPhysicalRequirementModel extends AbstractModel
      */
     public function getShopItemPhysicalRequirementById(int $id): ?ShopItemPhysicalRequirementEntity
     {
-        $sql = "SELECT * FROM cmw_shops_items_physical_requirement WHERE shop_item_physical_requirement_id = :shop_item_physical_requirement_id";
+        $sql = 'SELECT * FROM cmw_shops_items_physical_requirement WHERE shop_item_physical_requirement_id = :shop_item_physical_requirement_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_item_physical_requirement_id" => $id))) {
+        if (!$res->execute(array('shop_item_physical_requirement_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $item = $this->itemModel->getShopItemsById($res["shop_item_id"]);
+        $item = $this->itemModel->getShopItemsById($res['shop_item_id']);
 
         return new ShopItemPhysicalRequirementEntity(
-            $res["shop_item_physical_requirement_id"],
+            $res['shop_item_physical_requirement_id'],
             $item,
-            $res["shop_physical_requirement_weight"] ?? null,
-            $res["shop_physical_requirement_length"] ?? null,
-            $res["shop_physical_requirement_width"] ?? null,
-            $res["shop_physical_requirement_height"] ?? null,
-            $res["shop_physical_requirement_created_at"],
-            $res["shop_physical_requirement_updated_at"]
+            $res['shop_physical_requirement_weight'] ?? null,
+            $res['shop_physical_requirement_length'] ?? null,
+            $res['shop_physical_requirement_width'] ?? null,
+            $res['shop_physical_requirement_height'] ?? null,
+            $res['shop_physical_requirement_created_at'],
+            $res['shop_physical_requirement_updated_at']
         );
     }
 
@@ -60,50 +59,48 @@ class ShopItemsPhysicalRequirementModel extends AbstractModel
      */
     public function getShopItemPhysicalRequirementByItemId(int $itemId): ?ShopItemPhysicalRequirementEntity
     {
-        $sql = "SELECT * FROM cmw_shops_items_physical_requirement WHERE shop_item_id = :shop_item_id";
+        $sql = 'SELECT * FROM cmw_shops_items_physical_requirement WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_item_id" => $itemId))) {
+        if (!$res->execute(array('shop_item_id' => $itemId))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $item = is_null($res["shop_item_id"]) ? null : $this->itemModel->getShopItemsById($res["shop_item_id"]);
-
+        $item = is_null($res['shop_item_id']) ? null : $this->itemModel->getShopItemsById($res['shop_item_id']);
 
         if ($item === null) {
             return null;
         }
 
         return new ShopItemPhysicalRequirementEntity(
-            $res["shop_item_physical_requirement_id"],
+            $res['shop_item_physical_requirement_id'],
             $item,
-            $res["shop_physical_requirement_weight"] ?? null,
-            $res["shop_physical_requirement_length"] ?? null,
-            $res["shop_physical_requirement_width"] ?? null,
-            $res["shop_physical_requirement_height"] ?? null,
-            $res["shop_physical_requirement_created_at"],
-            $res["shop_physical_requirement_updated_at"]
+            $res['shop_physical_requirement_weight'] ?? null,
+            $res['shop_physical_requirement_length'] ?? null,
+            $res['shop_physical_requirement_width'] ?? null,
+            $res['shop_physical_requirement_height'] ?? null,
+            $res['shop_physical_requirement_created_at'],
+            $res['shop_physical_requirement_updated_at']
         );
     }
 
     public function createPhysicalRequirement(int $itemId, ?float $weight, ?float $length, ?float $width, ?float $height): int
     {
         $data = array(
-            "itemId" => $itemId,
-            "weight" => $weight,
-            "length" => $length,
-            "width" => $width,
-            "height" => $height
+            'itemId' => $itemId,
+            'weight' => $weight,
+            'length' => $length,
+            'width' => $width,
+            'height' => $height
         );
 
-        $sql = "INSERT INTO cmw_shops_items_physical_requirement(shop_item_id, shop_physical_requirement_weight, shop_physical_requirement_length, shop_physical_requirement_width, shop_physical_requirement_height)
-                VALUES (:itemId,:weight,:length,:width,:height)";
-
+        $sql = 'INSERT INTO cmw_shops_items_physical_requirement(shop_item_id, shop_physical_requirement_weight, shop_physical_requirement_length, shop_physical_requirement_width, shop_physical_requirement_height)
+                VALUES (:itemId,:weight,:length,:width,:height)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -116,19 +113,19 @@ class ShopItemsPhysicalRequirementModel extends AbstractModel
     public function updatePhysicalRequirement(int $itemId, ?float $weight, ?float $length, ?float $width, ?float $height): int
     {
         $data = array(
-            "shop_item_id" => $itemId,
-            "shop_physical_requirement_weight" => $weight,
-            "shop_physical_requirement_length" => $length,
-            "shop_physical_requirement_width" => $width,
-            "shop_physical_requirement_height" => $height
+            'shop_item_id' => $itemId,
+            'shop_physical_requirement_weight' => $weight,
+            'shop_physical_requirement_length' => $length,
+            'shop_physical_requirement_width' => $width,
+            'shop_physical_requirement_height' => $height
         );
 
-        $sql = "UPDATE cmw_shops_items_physical_requirement SET 
+        $sql = 'UPDATE cmw_shops_items_physical_requirement SET 
         shop_physical_requirement_weight = :shop_physical_requirement_weight,
         shop_physical_requirement_length = :shop_physical_requirement_length,
         shop_physical_requirement_width = :shop_physical_requirement_width,
         shop_physical_requirement_height = :shop_physical_requirement_height
-        WHERE shop_item_id = :shop_item_id";
+        WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -142,7 +139,7 @@ class ShopItemsPhysicalRequirementModel extends AbstractModel
     {
         $data = ['shop_item_id' => $itemId];
 
-        $sql = "DELETE FROM cmw_shops_items_physical_requirement WHERE shop_item_id = :shop_item_id";
+        $sql = 'DELETE FROM cmw_shops_items_physical_requirement WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 

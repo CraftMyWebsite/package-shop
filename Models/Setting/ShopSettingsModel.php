@@ -13,7 +13,6 @@ use CMW\Manager\Package\AbstractModel;
  */
 class ShopSettingsModel extends AbstractModel
 {
-
     /**
      * @param string $key
      * @return string
@@ -24,7 +23,7 @@ class ShopSettingsModel extends AbstractModel
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('SELECT shop_settings_value FROM cmw_shops_settings WHERE shop_settings_key = ?');
 
-        return ($req->execute(array($key))) ? $req->fetch()["shop_settings_value"] : "EUR";
+        return ($req->execute(array($key))) ? $req->fetch()['shop_settings_value'] : 'EUR';
     }
 
     /**
@@ -37,7 +36,6 @@ class ShopSettingsModel extends AbstractModel
     {
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('UPDATE cmw_shops_settings SET shop_settings_value= :value WHERE shop_settings_key= :key');
-        $req->execute(array("value" => $value, "key" => $key));
+        $req->execute(array('value' => $value, 'key' => $key));
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace CMW\Entity\Shop\Carts;
 
-
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
@@ -50,16 +49,16 @@ class ShopCartDiscountEntity
     public function getDiscountFormatted(): ?string
     {
         if ($this->discountId->getPrice()) {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+            $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
             if ($symbolIsAfter) {
-                return "- " . $this->discountId->getPrice() . $symbol;
+                return '- ' . $this->discountId->getPrice() . $symbol;
             } else {
-                return "- " . $symbol . $this->discountId->getPrice();
+                return '- ' . $symbol . $this->discountId->getPrice();
             }
         }
         if ($this->discountId->getPercentage()) {
-            return "- " . $this->discountId->getPercentage() . "%";
+            return '- ' . $this->discountId->getPercentage() . '%';
         }
         return null;
     }
@@ -70,8 +69,6 @@ class ShopCartDiscountEntity
     public function getRemoveLink(): string
     {
         $discountId = $this->getDiscount()->getId();
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cart/discount/remove/$discountId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/discount/remove/$discountId";
     }
-
-
 }

@@ -7,6 +7,6 @@ class ShopPaymentCancelEvent extends AbstractEvent
 {
     public function getName(): string
     {
-        return "Shop-Payment-Cancel-Event-CraftMyWebsite";
+        return 'Shop-Payment-Cancel-Event-CraftMyWebsite';
     }
 }

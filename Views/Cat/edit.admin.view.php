@@ -6,8 +6,8 @@
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "Catégorie";
-$description = "Édition catégorie";
+$title = 'Catégorie';
+$description = 'Édition catégorie';
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-book"></i> Édition de <?= $category->getName() ?></h3>
@@ -33,15 +33,15 @@ $description = "Édition catégorie";
             <select id="move" name="move" class="form-select">
                 <?php if (!is_null($category->getParent())): ?><option value="">Catégorie principale</option><?php endif; ?>
                 <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
-                    <option value="<?= $cat->getId() ?>" <?= ($cat->getName() === $category->getName() ? "selected" : "") ?>> <?php if ($cat->getName() === $category->getName()) { echo "Ne pas déplacer";} else { echo $cat->getName();}?> </option>
+                    <option value="<?= $cat->getId() ?>" <?= ($cat->getName() === $category->getName() ? 'selected' : '') ?>> <?php if ($cat->getName() === $category->getName()) { echo 'Ne pas déplacer'; } else { echo $cat->getName(); } ?> </option>
                     <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
-                        <option value="<?= $subCategory->getSubCategory()->getId() ?>" <?= ($subCategory->getSubCategory()->getName() === $category->getName() ? "selected" : "") ?>> <?php if ($subCategory->getSubCategory()->getName() === $category->getName()) {echo str_repeat("      ", $subCategory->getDepth()) . " ↪ Ne pas déplacer";} else {echo str_repeat("      ", $subCategory->getDepth()) . " ↪ ". $subCategory->getSubCategory()->getName();} ?></option>
+                        <option value="<?= $subCategory->getSubCategory()->getId() ?>" <?= ($subCategory->getSubCategory()->getName() === $category->getName() ? 'selected' : '') ?>> <?php if ($subCategory->getSubCategory()->getName() === $category->getName()) { echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ Ne pas déplacer'; } else { echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ ' . $subCategory->getSubCategory()->getName(); } ?></option>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             </select>
             <div class="mt-6">
                 <button type="submit" class="btn-center btn-primary">
-                    <?= LangManager::translate("core.btn.edit") ?>
+                    <?= LangManager::translate('core.btn.edit') ?>
                 </button>
             </div>
         </form>

@@ -2,7 +2,6 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsGiftCodeController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
@@ -13,17 +12,17 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return "Carte cadeau";
+        return 'Carte cadeau';
     }
 
     public function varName(): string
     {
-        return "gift_code";
+        return 'gift_code';
     }
 
     public function documentationURL(): ?string
     {
-        return "";
+        return '';
     }
 
     public function description(): ?string
@@ -39,7 +38,7 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
     public function includeGlobalConfigWidgets(): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Global/giftCode.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Virtual/Global/giftCode.config.inc.view.php';
     }
 
     public function useGlobalConfigWidgetsInShopConfig(): bool
@@ -56,5 +55,4 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
     {
         return;
     }
-
 }

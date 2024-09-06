@@ -2,8 +2,8 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-
-class ShopHistoryOrdersUserAddressEntity {
+class ShopHistoryOrdersUserAddressEntity
+{
     private int $historyOrderUserAddressId;
     private ShopHistoryOrdersEntity $historyOrder;
     private ?string $historyOrderUserAddressName;
@@ -106,7 +106,4 @@ class ShopHistoryOrdersUserAddressEntity {
     {
         return $this->historyOrderUserAddressPhone;
     }
-
-
-
 }

@@ -15,7 +15,6 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
-
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
@@ -42,7 +41,6 @@ use CMW\Utils\Utils;
 use CMW\Utils\Website;
 use JetBrains\PhpStorm\NoReturn;
 
-
 /**
  * Class: @ShopHistoryOrdersController
  * @package shop
@@ -51,29 +49,29 @@ use JetBrains\PhpStorm\NoReturn;
  */
 class ShopHistoryOrdersController extends AbstractController
 {
-    #[Link("/orders", Link::GET, [], "/cmw-admin/shop")]
+    #[Link('/orders', Link::GET, [], '/cmw-admin/shop')]
     public function shopOrders(): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.orders");
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders');
 
         $inProgressOrders = ShopHistoryOrdersModel::getInstance()->getInProgressOrders();
         $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
         $finishedOrders = ShopHistoryOrdersModel::getInstance()->getFinishedOrders();
         $orderItemsModel = ShopHistoryOrdersModel::getInstance();
-        $notificationIsRefused = in_array("Shop", NotificationModel::getInstance()->getRefusedPackages());
+        $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages());
 
         View::createAdminView('Shop', 'Orders/orders')
-            ->addStyle("Admin/Resources/Assets/Css/simple-datatables.css")
-            ->addScriptAfter("Admin/Resources/Vendors/Simple-datatables/simple-datatables.js",
-                "Admin/Resources/Vendors/Simple-datatables/config-datatables.js")
-            ->addVariableList(["inProgressOrders" => $inProgressOrders,"errorOrders" => $errorOrders,"finishedOrders" => $finishedOrders, "orderItemsModel" => $orderItemsModel, "notificationIsRefused" => $notificationIsRefused])
+            ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
+            ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
+                'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
+            ->addVariableList(['inProgressOrders' => $inProgressOrders, 'errorOrders' => $errorOrders, 'finishedOrders' => $finishedOrders, 'orderItemsModel' => $orderItemsModel, 'notificationIsRefused' => $notificationIsRefused])
             ->view();
     }
 
-    #[Link("/orders/manage/:orderId", Link::GET, [], "/cmw-admin/shop")]
+    #[Link('/orders/manage/:orderId', Link::GET, [], '/cmw-admin/shop')]
     public function shopManageOrders(int $orderId): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.orders.manage");
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
@@ -82,7 +80,7 @@ class ShopHistoryOrdersController extends AbstractController
 
         if ($orderStatus == 0) {
             View::createAdminView('Shop', 'Orders/Manage/new')
-                ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
         if ($orderStatus == 1) {
@@ -90,10 +88,10 @@ class ShopHistoryOrdersController extends AbstractController
             $sessionId = session_id();
             $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($order->getUser()->getId(), $sessionId);
             $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
-            if ($cartOnlyVirtual && !ShopSettingsModel::getInstance()->getSettingValue("autoValidateVirtual")) {
+            if ($cartOnlyVirtual && !ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual')) {
                 ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
-                Flash::send(Alert::SUCCESS, "Boutique", "Félicitations commande terminé !");
-                //ExecVirtualNeeds :
+                Flash::send(Alert::SUCCESS, 'Boutique', 'Félicitations commande terminé !');
+                // ExecVirtualNeeds :
                 $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
                 foreach ($items as $item) {
                     if ($item->getItem()->getType() == 1) {
@@ -104,72 +102,75 @@ class ShopHistoryOrdersController extends AbstractController
                         }
                     }
                 }
-                //TODO Emitter endedOrder
-                //TODO Notify
-                Redirect::redirect("cmw-admin/shop/orders");
+                // TODO Emitter endedOrder
+                // TODO Notify
+                Redirect::redirect('cmw-admin/shop/orders');
             } else {
                 View::createAdminView('Shop', 'Orders/Manage/send')
-                    ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+                    ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                     ->view();
             }
         }
         if ($orderStatus == 2) {
             View::createAdminView('Shop', 'Orders/Manage/finish')
-                ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
         if ($orderStatus == -1) {
             View::createAdminView('Shop', 'Orders/Manage/cancel')
-                ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
     }
 
-    #[Link("/orders/view/:orderId", Link::GET, [], "/cmw-admin/shop")]
+    #[Link('/orders/view/:orderId', Link::GET, [], '/cmw-admin/shop')]
     public function shopViewOrders(int $orderId): void
     {
-        UsersController::redirectIfNotHavePermissions("core.dashboard", "shop.orders.manage");
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Orders/view')
-            ->addVariableList(["order" => $order,"defaultImage" => $defaultImage])
+            ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
             ->view();
     }
 
-    #[NoReturn] #[Link("/orders/manage/send/:orderId", Link::POST, [], "/cmw-admin/shop")]
+    #[NoReturn]
+    #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     public function shopManageSendStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
-        //TODO : Notifier l'utilisateur
+        // TODO : Notifier l'utilisateur
 
-        //TODO Emitter sendOrder
+        // TODO Emitter sendOrder
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/orders/manage/finish/:orderId", Link::POST, [], "/cmw-admin/shop")]
+    #[NoReturn]
+    #[Link('/orders/manage/finish/:orderId', Link::POST, [], '/cmw-admin/shop')]
     public function shopManageFinalStep(int $orderId): void
     {
-        [$shippingLink] = Utils::filterInput("shipping_link");
-        ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === "" ? null : $shippingLink) );
+        [$shippingLink] = Utils::filterInput('shipping_link');
+        ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === '' ? null : $shippingLink));
 
-        //TODO : Notifier l'utilisateur
+        // TODO : Notifier l'utilisateur
 
-        //TODO Emitter finishedOrder
+        // TODO Emitter finishedOrder
 
-        Redirect::redirect("cmw-admin/shop/orders");
+        Redirect::redirect('cmw-admin/shop/orders');
     }
 
-    #[NoReturn] #[Link("/orders/manage/end/:orderId", Link::POST, [], "/cmw-admin/shop")]
+    #[NoReturn]
+    #[Link('/orders/manage/end/:orderId', Link::POST, [], '/cmw-admin/shop')]
     public function shopManageEndStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
 
-        //TODO : Notifier l'utilisateur
+        // TODO : Notifier l'utilisateur
 
-        //ExecVirtualNeeds :
+        // ExecVirtualNeeds :
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
         foreach ($items as $item) {
@@ -182,43 +183,44 @@ class ShopHistoryOrdersController extends AbstractController
             }
         }
 
-        //TODO Emitter endedOrder
+        // TODO Emitter endedOrder
 
-        Redirect::redirect("cmw-admin/shop/orders");
+        Redirect::redirect('cmw-admin/shop/orders');
     }
 
-    #[NoReturn] #[Link("/orders/manage/cancel/:orderId", Link::POST, [], "/cmw-admin/shop")]
+    #[NoReturn]
+    #[Link('/orders/manage/cancel/:orderId', Link::POST, [], '/cmw-admin/shop')]
     public function shopManageCancelStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
 
-        //TODO : Notifier l'utilisateur
+        // TODO : Notifier l'utilisateur
 
-        //Eitter canceled
+        // Eitter canceled
 
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link("/orders/manage/refunded/:orderId", Link::POST, [], "/cmw-admin/shop")]
+    #[NoReturn]
+    #[Link('/orders/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
     public function shopManageRefundStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
 
-        //TODO : Notifier l'utilisateur
+        // TODO : Notifier l'utilisateur
 
-        //Eitter refunded
+        // Eitter refunded
 
-        Redirect::redirect("cmw-admin/shop/orders");
+        Redirect::redirect('cmw-admin/shop/orders');
     }
-
 
     public function handleCreateOrder(UserEntity $user): void
     {
-        //TODO : Baisser les stock si besoin
+        // TODO : Baisser les stock si besoin
         $sessionId = session_id();
 
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
-        $order = ShopHistoryOrdersModel::getInstance()->createHistoryOrder($user->getId(),0);
+        $order = ShopHistoryOrdersModel::getInstance()->createHistoryOrder($user->getId(), 0);
         $discountModel = ShopDiscountModel::getInstance();
 
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName($commandTunnel->getPaymentName());
@@ -229,7 +231,7 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         $userAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnel->getShopDeliveryUserAddress()->getId());
-        $userAddressHistory = ShopHistoryOrdersUserAddressModel::getInstance()->addHistoryUserAddressOrder($order->getId(), $userAddress->getLabel(), $user->getMail(),$userAddress->getLastName(),$userAddress->getFirstName(), $userAddress->getLine1(), $userAddress->getLine2(),$userAddress->getCity(), $userAddress->getPostalCode(),$userAddress->getCountry(), $userAddress->getPhone());
+        $userAddressHistory = ShopHistoryOrdersUserAddressModel::getInstance()->addHistoryUserAddressOrder($order->getId(), $userAddress->getLabel(), $user->getMail(), $userAddress->getLastName(), $userAddress->getFirstName(), $userAddress->getLine1(), $userAddress->getLine2(), $userAddress->getCity(), $userAddress->getPostalCode(), $userAddress->getCountry(), $userAddress->getPhone());
 
         $this->handleCartDiscount($user, $sessionId, $order, $discountModel);
 
@@ -240,16 +242,16 @@ class ShopHistoryOrdersController extends AbstractController
             if (!is_null($discountId)) {
                 $discountName = ShopDiscountModel::getInstance()->getAllShopDiscountById($discountId)->getName();
             } else {
-                $discountName = $cartItem->getDiscount()?->getName()?? "";
+                $discountName = $cartItem->getDiscount()?->getName() ?? '';
             }
-            $orderItem = ShopHistoryOrdersItemsModel::getInstance()->createHistoryOrderItems($cartItem->getItem()->getId(), $order->getId(), $cartItem->getItem()->getName(), $cartItem->getFirstImageItemUrl(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice(),$discountName, $cartItem->getItemTotalPriceBeforeDiscount(), $cartItem->getItemTotalPriceAfterDiscount());
+            $orderItem = ShopHistoryOrdersItemsModel::getInstance()->createHistoryOrderItems($cartItem->getItem()->getId(), $order->getId(), $cartItem->getItem()->getName(), $cartItem->getFirstImageItemUrl(), $cartItem->getQuantity(), $cartItem->getItem()->getPrice(), $discountName, $cartItem->getItemTotalPriceBeforeDiscount(), $cartItem->getItemTotalPriceAfterDiscount());
             $itemsVariantes = ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($cartItem->getId());
             if (!empty($itemsVariantes)) {
                 foreach ($itemsVariantes as $itemVariantes) {
                     ShopHistoryOrdersItemsVariantesModel::getInstance()->setVariantToItemInOrder($orderItem->getId(), $itemVariantes->getVariantValue()->getValue(), $itemVariantes->getVariantValue()->getVariant()->getName());
                 }
             }
-            if ($cartOnlyVirtual && ShopSettingsModel::getInstance()->getSettingValue("autoValidateVirtual")) {
+            if ($cartOnlyVirtual && ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual')) {
                 ShopHistoryOrdersModel::getInstance()->endOrder($order->getId());
                 $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($cartItem->getItem()->getId())->getVirtualMethod()->varName();
                 $quantity = $cartItem->getQuantity();
@@ -262,25 +264,25 @@ class ShopHistoryOrdersController extends AbstractController
                 ShopItemsModel::getInstance()->decreaseStock($cartItem->getItem()->getId(), $nextStock);
 
                 $percentage = ($nextStock / $cartItem->getItem()->getDefaultStock()) * 100;
-                $stockAlert = ShopSettingsModel::getInstance()->getSettingValue("stockAlert");
+                $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
 
                 if ($percentage <= $stockAlert) {
-                    NotificationManager::notify("Stock faible", "Les stock pour " .$cartItem->getItem()->getName(). " sont faible ! (" . $nextStock ."/". $cartItem->getItem()->getDefaultStock(). ")");
+                    NotificationManager::notify('Stock faible', 'Les stock pour ' . $cartItem->getItem()->getName() . ' sont faible ! (' . $nextStock . '/' . $cartItem->getItem()->getDefaultStock() . ')');
                 }
             }
         }
 
-        NotificationManager::notify("Nouvelle commande", $user->getPseudo(). " viens de passer une commande.", "shop/orders");
+        NotificationManager::notify('Nouvelle commande', $user->getPseudo() . ' viens de passer une commande.', 'shop/orders');
 
         $this->notifyUser($cartContent, $user, $order, $paymentHistory);
 
-        //Eitter newOrder
+        // Eitter newOrder
 
         ShopCartModel::getInstance()->clearUserCart($user->getId());
         ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
     }
 
-    private function handleCartDiscount(UserEntity $user, string $sessionId, ShopHistoryOrdersEntity $order, ShopDiscountModel $discountModel) :void
+    private function handleCartDiscount(UserEntity $user, string $sessionId, ShopHistoryOrdersEntity $order, ShopDiscountModel $discountModel): void
     {
         $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($user->getId(), $sessionId);
         foreach ($cartDiscounts as $cartDiscount) {
@@ -295,7 +297,7 @@ class ShopHistoryOrdersController extends AbstractController
             $discountModel->addUses($discountId, $currentUses);
 
             if ($cartDiscount->getDiscount()->getLinked() === 3) {
-                ShopHistoryOrdersDiscountModel::getInstance()->addHistoryDiscountOrder($order->getId(), $cartDiscount->getDiscount()->getName(), $cartDiscount->getDiscount()->getPrice(),0);
+                ShopHistoryOrdersDiscountModel::getInstance()->addHistoryDiscountOrder($order->getId(), $cartDiscount->getDiscount()->getName(), $cartDiscount->getDiscount()->getPrice(), 0);
             }
         }
     }
@@ -303,7 +305,7 @@ class ShopHistoryOrdersController extends AbstractController
     /**
      * @desc Add uses and define status if Max uses reached
      */
-    private function handleDefaultAppliedDiscount(ShopCartItemEntity $cartItem, ShopDiscountModel $discountModel) :?int
+    private function handleDefaultAppliedDiscount(ShopCartItemEntity $cartItem, ShopDiscountModel $discountModel): ?int
     {
         if ($cartItem->getItem()->getPriceDiscountDefaultApplied()) {
             $discountId = $cartItem->getItem()->getDiscountEntityApplied()?->getId();
@@ -323,7 +325,7 @@ class ShopHistoryOrdersController extends AbstractController
     /**
      * @param ShopCartItemEntity[] $cartContent
      */
-    private function handleCartTypeContent(array $cartContent) : bool
+    private function handleCartTypeContent(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
             if ($item->getItem()->getType() != 1) {
@@ -336,16 +338,16 @@ class ShopHistoryOrdersController extends AbstractController
     /**
      * @param ShopCartItemEntity[] $cartContent
      */
-    private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory):void
+    private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory): void
     {
-        //TODO : Retravaille cette partie pour mieux afficher les reduction appliqué et tout et aussi verifier si les mails sont bien configurer
+        // TODO : Retravaille cette partie pour mieux afficher les reduction appliqué et tout et aussi verifier si les mails sont bien configurer
         $websiteName = Website::getWebsiteName();
         $orderNumber = $order->getOrderNumber();
         $orderDate = $order->getCreated();
         $paymentMethod = $paymentHistory->getName();
-        $historyLink = Website::getUrl()."/shop/history";
+        $historyLink = Website::getUrl() . '/shop/history';
 
-        $priceType = "";
+        $priceType = '';
         $itemsHtml = '';
         foreach ($cartContent as $cartItem) {
             $priceType = $cartItem->getItem()->getPriceType();
@@ -353,22 +355,22 @@ class ShopHistoryOrdersController extends AbstractController
             $itemQuantity = $cartItem->getQuantity();
             $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
             $itemsHtml .= <<<HTML
-            <div class="summary-item">
-                <span class="summary-title">Article :</span> $itemName
-                <br>
-                <span class="summary-title">Quantité :</span> $itemQuantity
-                <br>
-                <span class="summary-title">Prix :</span> $itemPrice
-            </div>
-        HTML;
+                    <div class="summary-item">
+                        <span class="summary-title">Article :</span> $itemName
+                        <br>
+                        <span class="summary-title">Quantité :</span> $itemQuantity
+                        <br>
+                        <span class="summary-title">Prix :</span> $itemPrice
+                    </div>
+                HTML;
         }
 
-        if ($priceType == "money") {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        if ($priceType == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = " ".ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name()." ";
+            $symbol = ' ' . ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name() . ' ';
         }
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             $total = $order->getOrderTotal() . $symbol;
         } else {
@@ -376,82 +378,82 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         $htmlTemplate = <<<HTML
-        <!DOCTYPE html>
-        <html lang="fr">
-        <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Récapitulatif de Commande</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #d2d2d2;
-            }
-            .container {
-                width: 600px;
-                margin: 20px auto;
-                background: white;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            .header {
-                background-color: #214e7e;
-                color: white;
-                padding: 10px;
-                text-align: center;
-                border-radius: 5px 5px 0 0;
-            }
-            .summary-item {
-                border-bottom: 1px solid #eee;
-                padding: 10px 0;
-            }
-            .summary-item:last-child {
-                border-bottom: none;
-            }
-            .summary-title {
-                font-weight: bold;
-            }
-            .footer {
-                text-align: center;
-                margin-top: 20px;
-                color: #777;
-            }
-        </style>
-        </head>
-        <body>
-        <div class="container">
-            <div class="header">
-                <h2>Votre commande sur %WEBSITENAME%</h2>
-            </div>
-            <div class="summary">
-                <div class="summary-item">
-                    <span class="summary-title">Numéro de commande :</span> %ORDER%
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Récapitulatif de Commande</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #d2d2d2;
+                }
+                .container {
+                    width: 600px;
+                    margin: 20px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                .header {
+                    background-color: #214e7e;
+                    color: white;
+                    padding: 10px;
+                    text-align: center;
+                    border-radius: 5px 5px 0 0;
+                }
+                .summary-item {
+                    border-bottom: 1px solid #eee;
+                    padding: 10px 0;
+                }
+                .summary-item:last-child {
+                    border-bottom: none;
+                }
+                .summary-title {
+                    font-weight: bold;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                    color: #777;
+                }
+            </style>
+            </head>
+            <body>
+            <div class="container">
+                <div class="header">
+                    <h2>Votre commande sur %WEBSITENAME%</h2>
                 </div>
-                <div class="summary-item">
-                    <span class="summary-title">Date de la commande :</span> %DATE%
+                <div class="summary">
+                    <div class="summary-item">
+                        <span class="summary-title">Numéro de commande :</span> %ORDER%
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-title">Date de la commande :</span> %DATE%
+                    </div>
+                    $itemsHtml
+                    <div class="summary-item">
+                        <span class="summary-title">Total :</span> <b>%TOTAL%</b>
+                        <br>
+                        <span class="summary-title">Méthode de paiement :</span> %PAYMENT_METHOD%
+                        <a href="%HISTORY_LINK%"><p>Consultez mes commandes sur %WEBSITENAME%</p></a>
+                    </div>
                 </div>
-                $itemsHtml
-                <div class="summary-item">
-                    <span class="summary-title">Total :</span> <b>%TOTAL%</b>
-                    <br>
-                    <span class="summary-title">Méthode de paiement :</span> %PAYMENT_METHOD%
-                    <a href="%HISTORY_LINK%"><p>Consultez mes commandes sur %WEBSITENAME%</p></a>
+                <div class="footer">
+                    Merci pour votre achat !
                 </div>
             </div>
-            <div class="footer">
-                Merci pour votre achat !
-            </div>
-        </div>
-        </body>
-        </html>
-        HTML;
+            </body>
+            </html>
+            HTML;
 
-        $body = str_replace(["%WEBSITENAME%", "%ORDER%", "%DATE%", "%TOTAL%", "%PAYMENT_METHOD%", "%HISTORY_LINK%"],
+        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%'],
             [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink], $htmlTemplate);
-        $object = $websiteName." - Récapitulatif de Commande";
+        $object = $websiteName . ' - Récapitulatif de Commande';
         MailController::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 }

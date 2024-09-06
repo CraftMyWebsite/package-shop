@@ -11,7 +11,6 @@ use CMW\Manager\Package\AbstractModel;
 use CMW\Manager\Uploads\ImagesManager;
 use JetBrains\PhpStorm\NoReturn;
 
-
 /**
  * Class: @ShopImagesModel
  * @package Shop
@@ -22,26 +21,26 @@ class ShopImagesModel extends AbstractModel
 {
     public function getShopImagesById(int $id): ?ShopImageEntity
     {
-        $sql = "SELECT * FROM cmw_shops_images WHERE shop_image_id = :shop_image_id ORDER BY shop_image_order ASC";
+        $sql = 'SELECT * FROM cmw_shops_images WHERE shop_image_id = :shop_image_id ORDER BY shop_image_order ASC';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_image_id" => $id))) {
+        if (!$res->execute(array('shop_image_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
         return new ShopImageEntity(
-            $res["shop_image_id"],
-            $res["shop_image_name"],
-            $res["shop_category_id"] ?? null,
-            $res["shop_item_id"] ?? null,
-            $res["shop_image_order"],
-            $res["shop_image_created_at"],
-            $res["shop_image_updated_at"],
+            $res['shop_image_id'],
+            $res['shop_image_name'],
+            $res['shop_category_id'] ?? null,
+            $res['shop_item_id'] ?? null,
+            $res['shop_image_order'],
+            $res['shop_image_created_at'],
+            $res['shop_image_updated_at'],
         );
     }
 
@@ -50,7 +49,7 @@ class ShopImagesModel extends AbstractModel
      */
     public function getShopImages(): array
     {
-        $sql = "SELECT shop_image_id FROM cmw_shops_images";
+        $sql = 'SELECT shop_image_id FROM cmw_shops_images';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -62,7 +61,7 @@ class ShopImagesModel extends AbstractModel
         $toReturn = array();
 
         while ($items = $res->fetch()) {
-            $toReturn[] = $this->getShopImagesById($items["shop_image_id"]);
+            $toReturn[] = $this->getShopImagesById($items['shop_image_id']);
         }
 
         return $toReturn;
@@ -73,19 +72,19 @@ class ShopImagesModel extends AbstractModel
      */
     public function getShopImagesByItem(int $id): array
     {
-        $sql = "SELECT shop_image_id FROM cmw_shops_images WHERE shop_item_id = :shop_item_id ORDER BY shop_image_order ASC";
+        $sql = 'SELECT shop_image_id FROM cmw_shops_images WHERE shop_item_id = :shop_item_id ORDER BY shop_image_order ASC';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_item_id" => $id))) {
+        if (!$res->execute(array('shop_item_id' => $id))) {
             return array();
         }
 
         $toReturn = array();
 
         while ($items = $res->fetch()) {
-            $toReturn[] = $this->getShopImagesById($items["shop_image_id"]);
+            $toReturn[] = $this->getShopImagesById($items['shop_image_id']);
         }
 
         return $toReturn;
@@ -93,42 +92,42 @@ class ShopImagesModel extends AbstractModel
 
     public function addShopItemImage(array $image, int $itemId, int $order): void
     {
-        $imageName = ImagesManager::upload($image, "Shop");
+        $imageName = ImagesManager::upload($image, 'Shop');
 
-        if (!str_contains($imageName, "ERROR")) {
+        if (!str_contains($imageName, 'ERROR')) {
             $data = array(
-                "shop_image_name" => $imageName,
-                "shop_item_id" => $itemId,
-                "shop_image_order" => $order
+                'shop_image_name' => $imageName,
+                'shop_item_id' => $itemId,
+                'shop_image_order' => $order
             );
 
-            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
-                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)";
+            $sql = 'INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
+                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)';
 
             $db = DatabaseManager::getInstance();
             $req = $db->prepare($sql);
 
             $req->execute($data);
         } else {
-            Flash::send(Alert::ERROR, "Boutique", "Impossible d'envoyer une image pour la raison :" . $imageName);
+            Flash::send(Alert::ERROR, 'Boutique', "Impossible d'envoyer une image pour la raison :" . $imageName);
         }
     }
 
     public function addReuseShopItemImage(string $image, int $itemId, int $order): void
     {
-            $data = array(
-                "shop_image_name" => $image,
-                "shop_item_id" => $itemId,
-                "shop_image_order" => $order
-            );
+        $data = array(
+            'shop_image_name' => $image,
+            'shop_item_id' => $itemId,
+            'shop_image_order' => $order
+        );
 
-            $sql = "INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
-                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)";
+        $sql = 'INSERT INTO cmw_shops_images(shop_image_name, shop_item_id, shop_image_order)
+                VALUES (:shop_image_name, :shop_item_id, :shop_image_order)';
 
-            $db = DatabaseManager::getInstance();
-            $req = $db->prepare($sql);
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
 
-            $req->execute($data);
+        $req->execute($data);
     }
 
     /**
@@ -137,11 +136,11 @@ class ShopImagesModel extends AbstractModel
      */
     public function getFirstImageByItemId(int $itemId): string
     {
-        $sql = "SELECT `shop_image_name` FROM cmw_shops_images WHERE shop_item_id = :shop_item_id LIMIT 1;";
+        $sql = 'SELECT `shop_image_name` FROM cmw_shops_images WHERE shop_item_id = :shop_item_id LIMIT 1;';
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
 
-        if (!$req->execute(["shop_item_id" => $itemId])) {
+        if (!$req->execute(['shop_item_id' => $itemId])) {
             return 0;
         }
         $res = $req->fetch();
@@ -157,21 +156,21 @@ class ShopImagesModel extends AbstractModel
      */
     public function getDefaultImg(): string
     {
-        $sql = "SELECT shop_image_name FROM cmw_shops_images WHERE shop_default_image = 1;";
+        $sql = 'SELECT shop_image_name FROM cmw_shops_images WHERE shop_default_image = 1;';
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
 
         if (!$req->execute()) {
-            return "null";
+            return 'null';
         }
         $res = $req->fetch();
         if (!$res) {
-            return "null";
+            return 'null';
         }
-        if ($res['shop_image_name'] == "default") {
-            return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "App/Package/Shop/Views/Settings/Images/default.png";
+        if ($res['shop_image_name'] == 'default') {
+            return EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'App/Package/Shop/Views/Settings/Images/default.png';
         } else {
-            return EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "Public/Uploads/Shop/" . $res['shop_image_name'];
+            return EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'Public/Uploads/Shop/' . $res['shop_image_name'];
         }
     }
 
@@ -182,12 +181,12 @@ class ShopImagesModel extends AbstractModel
      */
     public function setDefaultImage(array $image): void
     {
-        $imageName = ImagesManager::upload($image, "Shop");
+        $imageName = ImagesManager::upload($image, 'Shop');
         $var = array(
-            "image_name" => $imageName,
+            'image_name' => $imageName,
         );
 
-        $sql = "UPDATE cmw_shops_images SET shop_image_name = :image_name WHERE shop_default_image = 1";
+        $sql = 'UPDATE cmw_shops_images SET shop_image_name = :image_name WHERE shop_default_image = 1';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -197,7 +196,6 @@ class ShopImagesModel extends AbstractModel
 
     public function resetDefaultImage(): void
     {
-
         $sql = "UPDATE cmw_shops_images SET shop_image_name = 'default' WHERE shop_default_image = 1";
 
         $db = DatabaseManager::getInstance();
@@ -210,25 +208,25 @@ class ShopImagesModel extends AbstractModel
     {
         $data = ['shop_item_id' => $itemId];
 
-        $sql = "DELETE FROM cmw_shops_images WHERE shop_item_id = :shop_item_id";
+        $sql = 'DELETE FROM cmw_shops_images WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();
 
         return $db->prepare($sql)->execute($data);
     }
 
-    public function clearLocalNonUsedImages() : bool
+    public function clearLocalNonUsedImages(): bool
     {
-        $localImages = array_diff(scandir("Public/Uploads/Shop/"), array('.', '..'));
+        $localImages = array_diff(scandir('Public/Uploads/Shop/'), array('.', '..'));
         $dbImages = $this->getShopImages();
 
-        $dbImageNames = array_map(function($imageEntity) {
+        $dbImageNames = array_map(function ($imageEntity) {
             return $imageEntity->getName();
         }, $dbImages);
 
         foreach ($localImages as $image) {
             if (!in_array($image, $dbImageNames)) {
-                ImagesManager::deleteImage($image, "Shop");
+                ImagesManager::deleteImage($image, 'Shop');
             }
         }
 

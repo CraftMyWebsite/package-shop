@@ -14,12 +14,12 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "CoinBase";
+        return 'CoinBase';
     }
 
     public function varName(): string
     {
-        return "coinbase";
+        return 'coinbase';
     }
 
     public function faIcon(?string $customClass = null): ?string
@@ -29,12 +29,12 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 
     public function dashboardURL(): ?string
     {
-        return "https://beta.commerce.coinbase.com/payments";
+        return 'https://beta.commerce.coinbase.com/payments';
     }
 
     public function documentationURL(): ?string
     {
-        return "https://docs.cloud.coinbase.com/commerce-onchain/docs/creating-api-key";
+        return 'https://docs.cloud.coinbase.com/commerce-onchain/docs/creating-api-key';
     }
 
     public function description(): ?string
@@ -44,7 +44,7 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 
     public function fees(): float
     {
-        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_fee') ?? 0;
+        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName() . '_fee') ?? 0;
     }
 
     /**
@@ -54,8 +54,8 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
     public function getFeesFormatted(): string
     {
         $formattedPrice = number_format($this->fees(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {
@@ -65,7 +65,7 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
 
     public function isActive(): bool
     {
-        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName().'_is_active') ?? 0;
+        return ShopPaymentMethodSettingsModel::getInstance()->getSetting($this->varName() . '_is_active') ?? 0;
     }
 
     public function isVirtualCurrency(): bool
@@ -76,7 +76,7 @@ class ShopPaymentMethodeCoinbaseImplementations implements IPaymentMethod
     public function includeConfigWidgets(): void
     {
         $varName = $this->varName();
-        require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php";
+        require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Payments/coinbase.config.inc.view.php';
     }
 
     public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void

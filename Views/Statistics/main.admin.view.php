@@ -3,9 +3,8 @@
 /* @var int $numberOrderThisMonth */
 /* @var int $refundedOrderThisMonth */
 
-
-$title = "Statistiques";
-$description = "Stats stats stats";
+$title = 'Statistiques';
+$description = 'Stats stats stats';
 
 ?>
 

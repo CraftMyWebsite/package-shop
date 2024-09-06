@@ -2,7 +2,6 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsDownloadableController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
@@ -13,12 +12,12 @@ class ShopVirtualItemEmptyImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return "Aucun";
+        return 'Aucun';
     }
 
     public function varName(): string
     {
-        return "nothing";
+        return 'nothing';
     }
 
     public function documentationURL(): ?string
@@ -52,5 +51,4 @@ class ShopVirtualItemEmptyImplementations implements IVirtualItems
     {
         return;
     }
-
 }

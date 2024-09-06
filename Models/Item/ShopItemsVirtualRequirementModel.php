@@ -7,7 +7,6 @@ use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 
-
 /**
  * Class: @ShopItemsVirtualRequirementModel
  * @package Shop
@@ -31,7 +30,7 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
             return null;
         }
 
-        if (!$req->execute(['key' => $key.$itemId])) {
+        if (!$req->execute(['key' => $key . $itemId])) {
             return null;
         }
 
@@ -49,13 +48,12 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
      */
     public function getAllSettingsForItem($itemId): array
     {
-
-        $sql = "SELECT * FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_requirement_key LIKE :key";
+        $sql = 'SELECT * FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_requirement_key LIKE :key';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(['key' => "%".$itemId."%"])) {
+        if (!$res->execute(['key' => '%' . $itemId . '%'])) {
             return array();
         }
 
@@ -66,7 +64,6 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -101,9 +98,9 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
      */
     public function insertSetting(int $virtualMethodId, string $key, string $value): bool
     {
-        $sql = "INSERT INTO cmw_shops_items_virtual_requirement 
+        $sql = 'INSERT INTO cmw_shops_items_virtual_requirement 
                             (shops_items_virtual_method_id, shops_items_virtual_requirement_key, shops_items_virtual_requirement_value) 
-                            VALUES (:virtualMethod, :key, :value) ";
+                            VALUES (:virtualMethod, :key, :value) ';
 
         $db = DatabaseManager::getInstance();
         return $db->prepare($sql)->execute(['virtualMethod' => $virtualMethodId, 'key' => $key, 'value' => $value]);
@@ -113,7 +110,7 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
     {
         $data = ['shops_items_virtual_method_id' => $virtualMethodId];
 
-        $sql = "DELETE FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_method_id = :shops_items_virtual_method_id";
+        $sql = 'DELETE FROM cmw_shops_items_virtual_requirement WHERE shops_items_virtual_method_id = :shops_items_virtual_method_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -127,9 +124,9 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
      */
     public function updateOrInsertGlobalSetting(string $key, string $value): bool
     {
-        $sql = "INSERT INTO cmw_shops_items_virtual_requirement 
+        $sql = 'INSERT INTO cmw_shops_items_virtual_requirement 
                             (shops_items_virtual_requirement_key, shops_items_virtual_requirement_value) 
-                            VALUES (:key, :value) ON DUPLICATE KEY UPDATE shops_items_virtual_requirement_value=:value2";
+                            VALUES (:key, :value) ON DUPLICATE KEY UPDATE shops_items_virtual_requirement_value=:value2';
 
         $db = DatabaseManager::getInstance();
         return $db->prepare($sql)->execute(['key' => $key, 'value' => $value, 'value2' => $value]);

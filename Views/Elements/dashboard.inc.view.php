@@ -1,7 +1,5 @@
 <?php
 
-
-
 ?>
 <div class="d-flex flex-wrap justify-content-between">
     <h3><i class="fa-solid fa-shop"></i>

@@ -2,7 +2,6 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-
 use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsDownloadableController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
@@ -14,18 +13,16 @@ class ShopShippingEmptyImplementations implements IShippingMethod
 {
     public function name(): string
     {
-        return "Aucun";
+        return 'Aucun';
     }
 
     public function varName(): string
     {
-        return "nothing";
+        return 'nothing';
     }
 
     public function execAfterCommandValidatedByAdmin(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         // TODO: Implement execAfterCommandValidatedByAdmin() method.
     }
-
-
 }

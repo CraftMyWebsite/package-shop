@@ -1,6 +1,7 @@
 <?php
 
 namespace CMW\Entity\Shop\Country;
+
 class ShopCountryEntity
 {
     private string $name;

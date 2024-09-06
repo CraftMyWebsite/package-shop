@@ -21,37 +21,37 @@ class ShopCartModel extends AbstractModel
             return null;
         }
 
-        $sql = "SELECT * FROM cmw_shops_cart WHERE shop_cart_id = :shop_cart_id";
+        $sql = 'SELECT * FROM cmw_shops_cart WHERE shop_cart_id = :shop_cart_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_cart_id" => $id])) {
+        if (!$res->execute(['shop_cart_id' => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $user = is_null($res["shop_user_id"]) ? null : UsersModel::getInstance()->getUserById($res["shop_user_id"]);
+        $user = is_null($res['shop_user_id']) ? null : UsersModel::getInstance()->getUserById($res['shop_user_id']);
 
         return new ShopCartEntity(
-            $res["shop_cart_id"],
+            $res['shop_cart_id'],
             $user,
-            $res["shop_client_session_id"] ?? null,
-            $res["shop_created_at"],
-            $res["shop_updated_at"]
+            $res['shop_client_session_id'] ?? null,
+            $res['shop_created_at'],
+            $res['shop_updated_at']
         );
     }
 
     public function getShopCartsByUserOrSessionId(?int $userId, $sessionId): ?ShopCartEntity
     {
         if (is_null($userId)) {
-            $sql = "SELECT * FROM cmw_shops_cart WHERE shop_client_session_id = :session_id";
-            $data = ["session_id" => $sessionId];
+            $sql = 'SELECT * FROM cmw_shops_cart WHERE shop_client_session_id = :session_id';
+            $data = ['session_id' => $sessionId];
         } else {
-            $sql = "SELECT * FROM cmw_shops_cart WHERE shop_user_id = :shop_user_id";
-            $data = ["shop_user_id" => $userId];
+            $sql = 'SELECT * FROM cmw_shops_cart WHERE shop_user_id = :shop_user_id';
+            $data = ['shop_user_id' => $userId];
         }
 
         $db = DatabaseManager::getInstance();
@@ -64,7 +64,7 @@ class ShopCartModel extends AbstractModel
 
         $res = $res->fetch();
 
-        return $this->getShopCartsById($res["shop_cart_id"] ?? null);
+        return $this->getShopCartsById($res['shop_cart_id'] ?? null);
     }
 
     /**
@@ -72,8 +72,7 @@ class ShopCartModel extends AbstractModel
      */
     public function getShopCartsForConnectedUsers(): array
     {
-
-        $sql = "SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id IS NOT NULL ORDER BY shop_updated_at DESC";
+        $sql = 'SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id IS NOT NULL ORDER BY shop_updated_at DESC';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -85,11 +84,10 @@ class ShopCartModel extends AbstractModel
         $toReturn = [];
 
         while ($cart = $res->fetch()) {
-            $toReturn[] = $this->getShopCartsById($cart["shop_cart_id"]);
+            $toReturn[] = $this->getShopCartsById($cart['shop_cart_id']);
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -97,8 +95,7 @@ class ShopCartModel extends AbstractModel
      */
     public function getShopCartsForSessions(): array
     {
-
-        $sql = "SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id IS NULL ORDER BY shop_updated_at DESC";
+        $sql = 'SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id IS NULL ORDER BY shop_updated_at DESC';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -110,34 +107,33 @@ class ShopCartModel extends AbstractModel
         $toReturn = [];
 
         while ($cart = $res->fetch()) {
-            $toReturn[] = $this->getShopCartsById($cart["shop_cart_id"]);
+            $toReturn[] = $this->getShopCartsById($cart['shop_cart_id']);
         }
 
         return $toReturn;
-
     }
 
     public function cartExist(?int $userId, string $sessionId): bool
     {
         if (is_null($userId)) {
-            $sql = "SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_client_session_id = :session_id";
+            $sql = 'SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_client_session_id = :session_id';
             $data['session_id'] = $sessionId;
         } else {
-            $sql = "SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id = :shop_user_id";
-            $data["shop_user_id"] = $userId;
+            $sql = 'SELECT shop_cart_id FROM cmw_shops_cart WHERE shop_user_id = :shop_user_id';
+            $data['shop_user_id'] = $userId;
         }
 
         $db = DatabaseManager::getInstance();
 
         $req = $db->prepare($sql);
 
-        if(!$req->execute($data)){
+        if (!$req->execute($data)) {
             return true;
         }
 
         $res = $req->fetch();
 
-        if (!$res){
+        if (!$res) {
             return false;
         }
 
@@ -146,13 +142,12 @@ class ShopCartModel extends AbstractModel
 
     public function createCart(?int $userId, ?string $sessionId): ?ShopCartEntity
     {
-
         if (is_null($userId)) {
-            $sql = "INSERT INTO cmw_shops_cart(shop_client_session_id) VALUES (:session_id)";
-            $data = ["session_id" => $sessionId];
+            $sql = 'INSERT INTO cmw_shops_cart(shop_client_session_id) VALUES (:session_id)';
+            $data = ['session_id' => $sessionId];
         } else {
-            $sql = "INSERT INTO cmw_shops_cart(shop_user_id) VALUES (:shop_user_id)";
-            $data = ["shop_user_id" => $userId];
+            $sql = 'INSERT INTO cmw_shops_cart(shop_user_id) VALUES (:shop_user_id)';
+            $data = ['shop_user_id' => $userId];
         }
 
         $db = DatabaseManager::getInstance();
@@ -170,7 +165,7 @@ class ShopCartModel extends AbstractModel
     {
         $data = ['shop_client_session_id' => $sessionId];
 
-        $sql = "DELETE FROM cmw_shops_cart WHERE shop_client_session_id = :shop_client_session_id";
+        $sql = 'DELETE FROM cmw_shops_cart WHERE shop_client_session_id = :shop_client_session_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -179,7 +174,7 @@ class ShopCartModel extends AbstractModel
 
     public function clearUserCart(int $userId): bool
     {
-        $sql = "DELETE FROM cmw_shops_cart WHERE shop_user_id  = :user_id";
+        $sql = 'DELETE FROM cmw_shops_cart WHERE shop_user_id  = :user_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -188,7 +183,7 @@ class ShopCartModel extends AbstractModel
 
     public function switchSessionToUserCart(string $session_id, mixed $userId): void
     {
-        $sql = "UPDATE cmw_shops_cart SET shop_user_id = :user_id, shop_client_session_id = null WHERE shop_client_session_id = :session_id";
+        $sql = 'UPDATE cmw_shops_cart SET shop_user_id = :user_id, shop_client_session_id = null WHERE shop_client_session_id = :session_id';
 
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute(['user_id' => $userId, 'session_id' => $session_id]);

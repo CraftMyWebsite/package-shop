@@ -13,12 +13,12 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return "Commande offerte";
+        return 'Commande offerte';
     }
 
     public function varName(): string
     {
-        return "free";
+        return 'free';
     }
 
     public function faIcon(?string $customClass = null): ?string
@@ -53,8 +53,8 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
     public function getFeesFormatted(): string
     {
         $formattedPrice = number_format($this->fees(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
         } else {

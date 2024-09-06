@@ -5,8 +5,8 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var CMW\Entity\Shop\Items\ShopItemEntity $item */
@@ -20,12 +20,13 @@ $description = "";
 <div class="grid-5">
     <div class="card">
         <?php
-        $v = 0;
-        foreach ($imagesItem as $countImage) {
-            $v++;
-        } ?>
-        <?php if ($imagesItem) : ?>
-            <?php if ($v !== 1) : ?>
+            $v = 0;
+            foreach ($imagesItem as $countImage) {
+                $v++;
+            }
+        ?>
+        <?php if ($imagesItem): ?>
+            <?php if ($v !== 1): ?>
                 <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="30rem">
                     <?php foreach ($imagesItem as $imagesUrl): ?>
                         <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">
@@ -96,11 +97,11 @@ $description = "";
         <p><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
         <?php foreach ($review->getRatingsPercentageByItemId($item->getId()) as $rating): ?>
             <div class="flex items-center mb-2">
-                <span class="text-sm font-medium"><?=$rating->getRating()?> étoiles</span>
+                <span class="text-sm font-medium"><?= $rating->getRating() ?> étoiles</span>
                 <div style="background-color: #b7abab; width: 50%" class="w-2/4 h-5 mx-4 bg-gray-200 rounded">
-                    <div class="h-5 rounded" style="height: 1.2rem; background-color: #FFD700; width: <?=$rating->getPercentage()?>%"></div>
+                    <div class="h-5 rounded" style="height: 1.2rem; background-color: #FFD700; width: <?= $rating->getPercentage() ?>%"></div>
                 </div>
-                <span class="text-sm font-medium"><?=$rating->getPercentage()?>%</span>
+                <span class="text-sm font-medium"><?= $rating->getPercentage() ?>%</span>
             </div>
         <?php endforeach; ?>
     </div>

@@ -6,8 +6,8 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
@@ -16,7 +16,7 @@ $description = "";
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-cart-plus"></i> Nouvel article</h3>
-    <button form="addItem" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.add") ?></button>
+    <button form="addItem" type="submit" class="btn-primary"><?= LangManager::translate('core.btn.add') ?></button>
 </div>
 
 <form id="addItem" method="post" enctype="multipart/form-data">
@@ -78,21 +78,23 @@ $description = "";
                             </label>
                             <select class="form-select" name="shop_item_virtual_prefix" id="virtual_type_selected" required>
                                 <?php foreach ($virtualMethods as $virtualMethod): ?>
-                                    <option value="<?= $virtualMethod->varName() ?>" <?= $virtualMethod->varName() === "nothing" ? "selected" : "" ?>><?= $virtualMethod->name() ?></option>
+                                    <option value="<?= $virtualMethod->varName() ?>" <?= $virtualMethod->varName() === 'nothing' ? 'selected' : '' ?>><?= $virtualMethod->name() ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
-                            <?php $i = 1; foreach ($virtualMethods as $virtualMethod): ?>
+                            <?php $i = 1;
+                            foreach ($virtualMethods as $virtualMethod): ?>
                                 <div class="virtual-method" id="method-<?= $virtualMethod->varName() ?>">
-                                    <?php if ($virtualMethod->documentationURL()) : ?>
+                                    <?php if ($virtualMethod->documentationURL()): ?>
                                         <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
-                                    <?php endif;?>
+                                    <?php endif; ?>
                                     <p><?= $virtualMethod->description() ?></p>
                                     <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
                                     <?php $virtualMethod->includeItemConfigWidgets(null) ?>
                                 </div>
-                                <?php ++$i; endforeach; ?>
+                                <?php ++$i;
+                            endforeach; ?>
                         </div>
                 </div>
             </div>
@@ -117,7 +119,7 @@ $description = "";
                             <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
                                 <option value="<?= $cat->getId() ?>"> <?= $cat->getName() ?> </option>
                                 <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
-                                    <option value="<?= $subCategory->getSubCategory()->getId() ?>"> <?php echo str_repeat("      ", $subCategory->getDepth()) . " ↪ ". $subCategory->getSubCategory()->getName() ?></option>
+                                    <option value="<?= $subCategory->getSubCategory()->getId() ?>"> <?php echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ ' . $subCategory->getSubCategory()->getName() ?></option>
                                 <?php endforeach; ?>
                             <?php endforeach; ?>
                         </select>

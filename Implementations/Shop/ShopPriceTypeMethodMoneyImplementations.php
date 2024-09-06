@@ -10,11 +10,11 @@ class ShopPriceTypeMethodMoneyImplementations implements IPriceTypeMethod
 {
     public function name(): string
     {
-        return ShopSettingsModel::getInstance()->getSettingValue("symbol");
+        return ShopSettingsModel::getInstance()->getSettingValue('symbol');
     }
 
     public function varName(): string
     {
-        return "money";
+        return 'money';
     }
 }

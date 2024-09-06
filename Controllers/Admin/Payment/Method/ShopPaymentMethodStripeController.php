@@ -23,7 +23,6 @@ use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 use JsonException;
 
-
 /**
  * Class: @ShopPaymentMethodStripeController
  * @package Shop
@@ -33,6 +32,7 @@ use JsonException;
 class ShopPaymentMethodStripeController extends AbstractController
 {
     private const STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
+
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
@@ -40,16 +40,16 @@ class ShopPaymentMethodStripeController extends AbstractController
     public function sendStripePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
     {
         if (!$this->isStripeConfigComplete()) {
-            throw new ShopPaymentException(message: "Stripe config is not complete");
+            throw new ShopPaymentException(message: 'Stripe config is not complete');
         }
 
-        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName("stripe");
+        $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('stripe');
         $paymentFee = $paymentMethod->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/complete';
 
-        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue("currency") ?? "EUR";
+        $currencyCode = ShopSettingsModel::getInstance()->getSettingValue('currency') ?? 'EUR';
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
         $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
@@ -81,7 +81,7 @@ class ShopPaymentMethodStripeController extends AbstractController
                 'price_data' => [
                     'currency' => $currencyCode,
                     'product_data' => [
-                        'name' => "Total du panier",
+                        'name' => 'Total du panier',
                     ],
                     'unit_amount' => $totalCart * 100,
                 ],
@@ -105,7 +105,7 @@ class ShopPaymentMethodStripeController extends AbstractController
                     'price_data' => [
                         'currency' => $currencyCode,
                         'product_data' => [
-                            'name' => $item->getQuantity()." ".$item->getItem()->getName(),
+                            'name' => $item->getQuantity() . ' ' . $item->getItem()->getName(),
                         ],
                         'unit_amount' => $item->getItemTotalPriceAfterDiscount() * 100,
                     ],
@@ -139,12 +139,10 @@ class ShopPaymentMethodStripeController extends AbstractController
                     'quantity' => 1,
                 ];
             }
-
         }
 
-
         $sessionData = [
-            'payment_method_types' => [],//if null is automatically handled by stripe and stripe payement account settings
+            'payment_method_types' => [],  // if null is automatically handled by stripe and stripe payement account settings
             'line_items' => $Items,
             'mode' => 'payment',
             'success_url' => $completeUrl,
@@ -154,7 +152,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $response = $this->createStripeSession($sessionData);
 
         if (!isset($response['id'])) {
-            throw new ShopPaymentException("Failed to create Stripe payment session.");
+            throw new ShopPaymentException('Failed to create Stripe payment session.');
         }
 
         $checkoutSessionId = $response['id'];
@@ -187,7 +185,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $response = curl_exec($curl);
 
         if (!$response) {
-            throw new ShopPaymentException("Unable to contact Stripe API.");
+            throw new ShopPaymentException('Unable to contact Stripe API.');
         }
 
         curl_close($curl);
@@ -195,7 +193,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         try {
             return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ShopPaymentException("Unable to decode JSON response from Stripe. Error: " . $e->getMessage());
+            throw new ShopPaymentException('Unable to decode JSON response from Stripe. Error: ' . $e->getMessage());
         }
     }
 
@@ -218,12 +216,12 @@ class ShopPaymentMethodStripeController extends AbstractController
         return !is_null(ShopPaymentMethodSettingsModel::getInstance()->getSetting('stripe_secret_key'));
     }
 
-    #[Link("/complete", Link::GET, [], "/shop/command/stripe")]
+    #[Link('/complete', Link::GET, [], '/shop/command/stripe')]
     private function paypalCommandComplete(): void
     {
         $user = UsersModel::getCurrentUser();
 
-        //TODO LOGS DATA
+        // TODO LOGS DATA
 
         if (!$user) {
             Flash::send(Alert::ERROR, 'Erreur', 'Utilisateur introuvable');
@@ -233,7 +231,8 @@ class ShopPaymentMethodStripeController extends AbstractController
         Emitter::send(ShopPaymentCompleteEvent::class, []);
     }
 
-    #[NoReturn] #[Link("/cancel", Link::GET, [], "/shop/command/stripe")]
+    #[NoReturn]
+    #[Link('/cancel', Link::GET, [], '/shop/command/stripe')]
     private function paypalCommandCancel(): void
     {
         Emitter::send(ShopPaymentCancelEvent::class, null);

@@ -6,8 +6,8 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = "Boutique";
-$description = "";
+$title = 'Boutique';
+$description = '';
 
 /* @var CMW\Model\Shop\Item\ShopItemsModel $items */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
@@ -20,7 +20,7 @@ $description = "";
     <h3><i class="fa-solid fa-cubes-stacked"></i> Articles</h3>
     <div>
         <a href="items/archived" type="submit" class="btn-warning">Voir les archives</a>
-        <a href="items/add" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.add") ?></a>
+        <a href="items/add" type="submit" class="btn-primary"><?= LangManager::translate('core.btn.add') ?></a>
     </div>
 </div>
 
@@ -50,8 +50,8 @@ $description = "";
                     foreach ($getImagesItem as $countImage) {
                         $v++;
                     } ?>
-                    <?php if ($getImagesItem) : ?>
-                        <?php if ($v !== 1) : ?>
+                    <?php if ($getImagesItem): ?>
+                        <?php if ($v !== 1): ?>
                             <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="80px">
                             <?php foreach ($getImagesItem as $imagesUrl): ?>
                                 <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">
@@ -126,7 +126,7 @@ $description = "";
                     </div>
                     <div class="modal-footer">
                         <a href="items/delete/<?= $item->getId() ?>"
-                           class="btn-danger"><?= LangManager::translate("core.btn.delete") ?>
+                           class="btn-danger"><?= LangManager::translate('core.btn.delete') ?>
                         </a>
                     </div>
                 </div>

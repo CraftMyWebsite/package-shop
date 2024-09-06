@@ -5,7 +5,6 @@ namespace CMW\Model\Shop\Country;
 use CMW\Entity\Shop\Country\ShopCountryEntity;
 use CMW\Manager\Package\AbstractModel;
 
-
 /**
  * Class: @ShopCountryModel
  * @package Shop

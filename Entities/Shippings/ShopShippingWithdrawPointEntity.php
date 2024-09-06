@@ -65,5 +65,4 @@ class ShopShippingWithdrawPointEntity
     {
         return ShopCountryModel::getInstance()->getCountryByCode($this->addressCountry)->getName();
     }
-
 }

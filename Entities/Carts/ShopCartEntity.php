@@ -53,6 +53,4 @@ class ShopCartEntity
     {
         return CoreController::formatDate($this->cartUpdated);
     }
-
-
 }

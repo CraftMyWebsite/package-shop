@@ -1,12 +1,11 @@
 <?php
 
-
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Users\UsersModel;
 
-$title = "Paniers";
-$description = "";
+$title = 'Paniers';
+$description = '';
 
 /* @var \CMW\Model\Shop\Cart\ShopCartModel $cartModel */
 /* @var \CMW\Model\Shop\Cart\ShopCartItemModel $cartItemsModel */
@@ -21,17 +20,18 @@ $description = "";
 <div class="grid-7">
 
 
-                <?php foreach ($cartModel->getShopCartsForConnectedUsers() as $connectedCart):
-                    $user = UsersModel::getInstance()->getUserById($connectedCart->getUser()->getId());
-                    ?>
+                <?php
+                    foreach ($cartModel->getShopCartsForConnectedUsers() as $connectedCart):
+                        $user = UsersModel::getInstance()->getUserById($connectedCart->getUser()->getId());
+                        ?>
 
                         <div class="card">
 
                                 <img style="width: 80px; height: 80px" class="mx-auto" src="<?= $user->getUserPicture()->getImage() ?>"
                                      alt="...">
                             <h6 class="text-center"><?= $user->getPseudo() ?></h6>
-                            <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId($user->getId(), "") ?></b> articles</p>
-                            <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/user/<?= $user->getId() ?>" class="btn-center btn-primary-sm text-center">Voir le panier</a>
+                            <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId($user->getId(), '') ?></b> articles</p>
+                            <a href="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>cmw-admin/shop/carts/user/<?= $user->getId() ?>" class="btn-center btn-primary-sm text-center">Voir le panier</a>
                         </div>
 
                 <?php endforeach; ?>
@@ -56,7 +56,7 @@ $description = "";
         </div>
         <div class="modal-footer">
             <a type="button" href="carts/session/delete/all/sessions"
-               class="btn btn-danger"><?= LangManager::translate("core.btn.delete") ?>
+               class="btn btn-danger"><?= LangManager::translate('core.btn.delete') ?>
             </a>
         </div>
     </div>
@@ -64,14 +64,15 @@ $description = "";
 <div class="alert alert-info mt-2">Les sessions sont des paniers temporaire.<br>Elle permet à vos utilisateurs non connecté de créer un panier.<br>Une fois connecté le panier sera automatique transmis vers un panier utilisateur, évitez de supprimez des sessions qui on moins de 24 heures.</div>
 <div class="grid-7 mt-3.5">
 
-        <?php foreach ($cartModel->getShopCartsForSessions() as $sessionCart):
-            $session = $sessionCart->getSession();
-            ?>
+        <?php
+            foreach ($cartModel->getShopCartsForSessions() as $sessionCart):
+                $session = $sessionCart->getSession();
+                ?>
                 <div class="card">
                     <small class="text-center"><?= $session ?></small>
                     <p class="text-center"><b style="font-size: large"><?= $cartItemsModel->countItemsByUserId(null, $session) ?></b> articles</p>
                     <small class="text-center mb-2"> Créer le <?= $sessionCart->getCartCreated() ?></small>
-                    <a href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/shop/carts/session/<?= $session ?>" class="btn-center text-center btn-primary-sm">Voir le panier</a>
+                    <a href="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>cmw-admin/shop/carts/session/<?= $session ?>" class="btn-center text-center btn-primary-sm">Voir le panier</a>
                     <a data-modal-toggle="modal-<?= $session ?>" class="cursor-pointer btn-center text-center btn-danger-sm">Supprimer</a>
                 </div>
             <!--
@@ -89,7 +90,7 @@ $description = "";
                     </div>
                     <div class="modal-footer">
                         <a type="button" href="carts/session/delete/<?= $session ?>"
-                           class="btn btn-danger ml-1"><?= LangManager::translate("core.btn.delete") ?>
+                           class="btn btn-danger ml-1"><?= LangManager::translate('core.btn.delete') ?>
                         </a>
                     </div>
                 </div>

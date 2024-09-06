@@ -8,7 +8,6 @@ use CMW\Entity\Shop\Shippings\ShopShippingZoneEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 
-
 /**
  * Class: @ShopShippingZoneModel
  * @package Shop
@@ -23,22 +22,22 @@ class ShopShippingZoneModel extends AbstractModel
      */
     public function getShopShippingZoneById(int $id): ?ShopShippingZoneEntity
     {
-        $sql = "SELECT * FROM cmw_shops_shipping_zone WHERE shops_shipping_zone_id = :shops_shipping_zone_id";
+        $sql = 'SELECT * FROM cmw_shops_shipping_zone WHERE shops_shipping_zone_id = :shops_shipping_zone_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shops_shipping_zone_id" => $id))) {
+        if (!$res->execute(array('shops_shipping_zone_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
         return new ShopShippingZoneEntity(
-            $res["shops_shipping_zone_id"],
-            $res["shops_shipping_zone_name"],
-            $res["shops_shipping_zone_country"]
+            $res['shops_shipping_zone_id'],
+            $res['shops_shipping_zone_name'],
+            $res['shops_shipping_zone_country']
         );
     }
 }

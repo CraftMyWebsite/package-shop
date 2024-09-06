@@ -2,8 +2,8 @@
 
 /* @var \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $carts */
 
-$title = "Paniers de ". $sessionId;
-$description = "";
+$title = 'Paniers de ' . $sessionId;
+$description = '';
 
 ?>
 
@@ -22,7 +22,7 @@ $description = "";
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($carts as $cart) : ?>
+            <?php foreach ($carts as $cart): ?>
                 <tr>
                     <td>
                         <a class="link" target="_blank" href="/shop/cat/<?= $cart->getItem()->getCategory()->getSlug() ?>/item/<?= $cart->getItem()->getSlug() ?>"><?= $cart->getItem()->getName() ?></a>

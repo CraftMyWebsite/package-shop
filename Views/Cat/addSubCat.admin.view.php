@@ -5,8 +5,8 @@
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "Catégorie";
-$description = "Ajouter une sous-catégorie";
+$title = 'Catégorie';
+$description = 'Ajouter une sous-catégorie';
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-book"></i> Ajout d'une sous catégorie dans <?= $category->getName() ?></h3>
@@ -30,7 +30,7 @@ $description = "Ajouter une sous-catégorie";
             </div>
             <div class="mt-6">
                 <button type="submit" class="btn-center btn-primary">
-                    <?= LangManager::translate("core.btn.add") ?>
+                    <?= LangManager::translate('core.btn.add') ?>
                 </button>
             </div>
 

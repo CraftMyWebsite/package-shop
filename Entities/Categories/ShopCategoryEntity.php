@@ -9,7 +9,6 @@ use CMW\Utils\Website;
 
 class ShopCategoryEntity
 {
-
     private int $categoryId;
     private string $categoryName;
     private ?string $categoryIcon;
@@ -18,7 +17,6 @@ class ShopCategoryEntity
     private ?ShopCategoryEntity $categoryParent;
     private string $categoryCreated;
     private string $categoryUpdated;
-
 
     public function __construct(int $categoryId, string $categoryName, ?string $categoryIcon, ?string $categoryDescription, string $categorySlug, ?ShopCategoryEntity $categoryParent, string $categoryCreated, string $categoryUpdated)
     {
@@ -107,7 +105,7 @@ class ShopCategoryEntity
      */
     public function getCatLink(): string
     {
-        return Website::getProtocol() . "://" . $_SERVER["SERVER_NAME"] . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . "shop/cat/$this->categorySlug";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cat/$this->categorySlug";
     }
 
     /**
@@ -117,5 +115,4 @@ class ShopCategoryEntity
     {
         return ShopCategoriesModel::getInstance()->countItemsByCatId($this->categoryId);
     }
-
 }

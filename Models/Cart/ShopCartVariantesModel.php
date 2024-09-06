@@ -30,40 +30,39 @@ class ShopCartVariantesModel extends AbstractModel
      */
     public function getCartsItemsVariantById(int $id): ?ShopCartVariantesEntity
     {
-        $sql = "SELECT * FROM cmw_shops_cart_items_variantes WHERE shop_cart_items_variantes_id = :shop_cart_items_variantes_id";
+        $sql = 'SELECT * FROM cmw_shops_cart_items_variantes WHERE shop_cart_items_variantes_id = :shop_cart_items_variantes_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["shop_cart_items_variantes_id" => $id])) {
+        if (!$res->execute(['shop_cart_items_variantes_id' => $id])) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $cart = $this->cartModel->getShopCartsItemsById($res["shop_cart_item_id"]);
-        $itemVariantValue = $this->itemVariantModel->getShopItemVariantValueById($res["shop_variants_values_id"]);
-
+        $cart = $this->cartModel->getShopCartsItemsById($res['shop_cart_item_id']);
+        $itemVariantValue = $this->itemVariantModel->getShopItemVariantValueById($res['shop_variants_values_id']);
 
         return new ShopCartVariantesEntity(
-            $res["shop_cart_items_variantes_id"],
+            $res['shop_cart_items_variantes_id'],
             $cart,
             $itemVariantValue,
-            $res["shop_cart_items_variantes_created_at"],
-            $res["shop_cart_items_variantes_updated_at"]
+            $res['shop_cart_items_variantes_created_at'],
+            $res['shop_cart_items_variantes_updated_at']
         );
     }
 
     public function setVariantToItemInCart(int $cartId, int $variantValueId): ?ShopCartVariantesEntity
     {
         $data = array(
-            "shop_cart_item_id" => $cartId,
-            "shop_variants_values_id" => $variantValueId,
+            'shop_cart_item_id' => $cartId,
+            'shop_variants_values_id' => $variantValueId,
         );
 
-        $sql = "INSERT INTO cmw_shops_cart_items_variantes (shop_cart_item_id, shop_variants_values_id)
-                VALUES (:shop_cart_item_id, :shop_variants_values_id)";
+        $sql = 'INSERT INTO cmw_shops_cart_items_variantes (shop_cart_item_id, shop_variants_values_id)
+                VALUES (:shop_cart_item_id, :shop_variants_values_id)';
 
         if (is_null($cartId)) {
             return null;
@@ -86,20 +85,20 @@ class ShopCartVariantesModel extends AbstractModel
      */
     public function getShopItemVariantValueByCartId(int $id): array
     {
-        $sql = "SELECT * FROM cmw_shops_cart_items_variantes WHERE shop_cart_item_id = :shop_cart_item_id";
+        $sql = 'SELECT * FROM cmw_shops_cart_items_variantes WHERE shop_cart_item_id = :shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_cart_item_id" => $id))) {
+        if (!$res->execute(array('shop_cart_item_id' => $id))) {
             return [];
         }
 
         $toReturn = [];
 
         while ($variants = $res->fetch()) {
-            $toReturn[] = $this->getCartsItemsVariantById($variants["shop_cart_items_variantes_id"]);
+            $toReturn[] = $this->getCartsItemsVariantById($variants['shop_cart_items_variantes_id']);
         }
 
         return $toReturn;

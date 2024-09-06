@@ -22,13 +22,13 @@ class ShopHistoryOrdersDiscountModel extends AbstractModel
      */
     public function getHistoryOrdersDiscountById(int $id): ?ShopHistoryOrdersDiscountEntity
     {
-        $sql = "SELECT * FROM cmw_shop_history_order_discount WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'SELECT * FROM cmw_shop_history_order_discount WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_history_order_id" => $id))) {
+        if (!$res->execute(array('shop_history_order_id' => $id))) {
             return null;
         }
 
@@ -38,14 +38,14 @@ class ShopHistoryOrdersDiscountModel extends AbstractModel
             return null;
         }
 
-        $historyOrder = is_null($res["shop_history_order_id"]) ? null : ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($res["shop_history_order_id"]) ?? null;
+        $historyOrder = is_null($res['shop_history_order_id']) ? null : ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($res['shop_history_order_id']) ?? null;
 
         return new ShopHistoryOrdersDiscountEntity(
-            $res["shop_history_order_discount_id"],
+            $res['shop_history_order_discount_id'],
             $historyOrder,
-            $res["shop_history_order_discount_name"] ?? null,
-            $res["shop_history_order_discount_price"] ?? null,
-            $res["shop_history_order_discount_percent"] ?? null
+            $res['shop_history_order_discount_name'] ?? null,
+            $res['shop_history_order_discount_price'] ?? null,
+            $res['shop_history_order_discount_percent'] ?? null
         );
     }
 
@@ -55,10 +55,10 @@ class ShopHistoryOrdersDiscountModel extends AbstractModel
     public function getHistoryOrdersDiscountByHistoryOrderId(int $orderId): ?array
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
+            'shop_history_order_id' => $orderId,
         );
 
-        $sql = "SELECT shop_history_order_id FROM cmw_shop_history_order_discount WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order_discount WHERE shop_history_order_id = :shop_history_order_id';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -70,23 +70,22 @@ class ShopHistoryOrdersDiscountModel extends AbstractModel
         $toReturn = array();
 
         while ($orderItem = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersDiscountById($orderItem["shop_history_order_id"]);
+            $toReturn[] = $this->getHistoryOrdersDiscountById($orderItem['shop_history_order_id']);
         }
 
         return $toReturn;
-
     }
 
     public function addHistoryDiscountOrder(int $orderId, string $discountName, float $discountPrice, int $discountPercent): ?ShopHistoryOrdersDiscountEntity
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
-            "shop_history_order_discount_name" => $discountName,
-            "shop_history_order_discount_price" => $discountPrice,
-            "shop_history_order_discount_percent" => $discountPercent
+            'shop_history_order_id' => $orderId,
+            'shop_history_order_discount_name' => $discountName,
+            'shop_history_order_discount_price' => $discountPrice,
+            'shop_history_order_discount_percent' => $discountPercent
         );
 
-        $sql = "INSERT INTO cmw_shop_history_order_discount (shop_history_order_id, shop_history_order_discount_name, shop_history_order_discount_price, shop_history_order_discount_percent) VALUES (:shop_history_order_id, :shop_history_order_discount_name, :shop_history_order_discount_price, :shop_history_order_discount_percent)";
+        $sql = 'INSERT INTO cmw_shop_history_order_discount (shop_history_order_id, shop_history_order_discount_name, shop_history_order_discount_price, shop_history_order_discount_percent) VALUES (:shop_history_order_id, :shop_history_order_discount_name, :shop_history_order_discount_price, :shop_history_order_discount_percent)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

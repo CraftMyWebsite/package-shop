@@ -7,7 +7,6 @@ use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Users\UsersModel;
 
-
 /**
  * Class: @ShopHistoryOrdersModel
  * @package Shop
@@ -22,28 +21,28 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function getHistoryOrdersById(int $id): ?ShopHistoryOrdersEntity
     {
-        $sql = "SELECT * FROM cmw_shop_history_order WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'SELECT * FROM cmw_shop_history_order WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_history_order_id" => $id))) {
+        if (!$res->execute(array('shop_history_order_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $user = is_null($res["user_id"]) ? null : UsersModel::getInstance()?->getUserById($res["user_id"]) ?? null;
+        $user = is_null($res['user_id']) ? null : UsersModel::getInstance()?->getUserById($res['user_id']) ?? null;
 
         return new ShopHistoryOrdersEntity(
-            $res["shop_history_order_id"],
+            $res['shop_history_order_id'],
             $user,
-            $res["shop_history_order_status"],
-            $res["shop_history_order_shipping_link"] ?? null,
-            $res["shop_history_order_number"] ?? null,
-            $res["shop_history_order_created_at"] ?? null,
-            $res["shop_history_order_updated_at"] ?? null
+            $res['shop_history_order_status'],
+            $res['shop_history_order_shipping_link'] ?? null,
+            $res['shop_history_order_number'] ?? null,
+            $res['shop_history_order_created_at'] ?? null,
+            $res['shop_history_order_updated_at'] ?? null
         );
     }
 
@@ -52,19 +51,19 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function getHistoryOrdersByUserId(int $userId): array
     {
-        $sql = "SELECT shop_history_order_id FROM cmw_shop_history_order WHERE user_id = :user_id ORDER BY shop_history_order_created_at DESC";
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE user_id = :user_id ORDER BY shop_history_order_created_at DESC';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(["user_id" => $userId])) {
+        if (!$res->execute(['user_id' => $userId])) {
             return [];
         }
 
         $toReturn = [];
 
         while ($order = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersById($order["shop_history_order_id"]);
+            $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
         }
 
         return $toReturn;
@@ -75,8 +74,7 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function getInProgressOrders(): array
     {
-
-        $sql = "SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status IN (1, 2, 0, -1) ORDER BY shop_history_order_status ASC;";
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status IN (1, 2, 0, -1) ORDER BY shop_history_order_status ASC;';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -88,11 +86,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $toReturn = array();
 
         while ($order = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersById($order["shop_history_order_id"]);
+            $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -100,8 +97,7 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function getFinishedOrders(): array
     {
-
-        $sql = "SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status = 3 ORDER BY shop_history_order_id DESC;";
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status = 3 ORDER BY shop_history_order_id DESC;';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -113,11 +109,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $toReturn = array();
 
         while ($order = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersById($order["shop_history_order_id"]);
+            $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -125,8 +120,7 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function getErrorOrders(): array
     {
-
-        $sql = "SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status = -2;";
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_status = -2;';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -138,11 +132,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $toReturn = array();
 
         while ($order = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersById($order["shop_history_order_id"]);
+            $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
         }
 
         return $toReturn;
-
     }
 
     /**
@@ -152,11 +145,11 @@ class ShopHistoryOrdersModel extends AbstractModel
      */
     public function countOrderByUserIdAndItemId(int $userId, int $itemId): int
     {
-        $sql = "SELECT SUM(soi.shop_history_order_items_quantity) AS total_quantity FROM cmw_shop_history_order_items soi
+        $sql = 'SELECT SUM(soi.shop_history_order_items_quantity) AS total_quantity FROM cmw_shop_history_order_items soi
                 JOIN cmw_shop_history_order so ON soi.shop_history_order_id = so.shop_history_order_id
-                WHERE so.user_id = :user_id AND soi.item_id = :item_id;";
+                WHERE so.user_id = :user_id AND soi.item_id = :item_id;';
 
-        $data = ["item_id" => $itemId, "user_id" => $userId];
+        $data = ['item_id' => $itemId, 'user_id' => $userId];
 
         $db = DatabaseManager::getInstance();
 
@@ -172,11 +165,11 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function createHistoryOrder(int $userId, int $status): ?ShopHistoryOrdersEntity
     {
         $var = array(
-            "user_id" => $userId,
-            "shop_history_order_status" => $status
+            'user_id' => $userId,
+            'shop_history_order_status' => $status
         );
 
-        $sql = "INSERT INTO cmw_shop_history_order (user_id, shop_history_order_status) VALUES (:user_id, :shop_history_order_status)";
+        $sql = 'INSERT INTO cmw_shop_history_order (user_id, shop_history_order_status) VALUES (:user_id, :shop_history_order_status)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -192,10 +185,10 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function generateOrderNumber(int $orderId): void
     {
-        $number = date("njy") . $orderId;
-        $data = ["shop_history_order_id" => $orderId, "number" => $number];
+        $number = date('njy') . $orderId;
+        $data = ['shop_history_order_id' => $orderId, 'number' => $number];
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_number = :number WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_number = :number WHERE shop_history_order_id = :shop_history_order_id';
         $db = DatabaseManager::getInstance();
         $db->prepare($sql)->execute($data);
     }
@@ -203,10 +196,10 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function toSendStep(int $orderId): void
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
+            'shop_history_order_id' => $orderId,
         );
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_status = 1 WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 1 WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -217,11 +210,11 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function toFinalStep(int $orderId, ?string $shippingLink): void
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
-            "shop_history_order_shipping_link" => $shippingLink,
+            'shop_history_order_id' => $orderId,
+            'shop_history_order_shipping_link' => $shippingLink,
         );
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_status = 2, shop_history_order_shipping_link = :shop_history_order_shipping_link WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 2, shop_history_order_shipping_link = :shop_history_order_shipping_link WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -232,10 +225,10 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function endOrder(int $orderId): void
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
+            'shop_history_order_id' => $orderId,
         );
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_status = 3 WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 3 WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -246,10 +239,10 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function toCancelStep(int $orderId): void
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
+            'shop_history_order_id' => $orderId,
         );
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_status = -1 WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = -1 WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -260,10 +253,10 @@ class ShopHistoryOrdersModel extends AbstractModel
     public function refundStep(int $orderId): void
     {
         $var = array(
-            "shop_history_order_id" => $orderId,
+            'shop_history_order_id' => $orderId,
         );
 
-        $sql = "UPDATE cmw_shop_history_order SET shop_history_order_status = -2 WHERE shop_history_order_id = :shop_history_order_id";
+        $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = -2 WHERE shop_history_order_id = :shop_history_order_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);

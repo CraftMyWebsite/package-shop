@@ -6,15 +6,15 @@
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "Services après ventes";
-$description = "SAV";
+$title = 'Services après ventes';
+$description = 'SAV';
 
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-headset"></i> Services après-ventes</h3>
     <?php if ($afterSale->getStatus() !== 2): ?>
     <button data-modal-toggle="modal-close" type="button" class="btn-success">Clôturer</button>
-    <?php else:?>
+    <?php else: ?>
         <a href=".." type="button" class="btn-primary">Retour au SAV</a>
     <?php endif; ?>
 </div>

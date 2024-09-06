@@ -5,8 +5,8 @@
 
 use CMW\Manager\Security\SecurityManager;
 
-$title = "Commandes #" . $order->getOrderNumber();
-$description = "";
+$title = 'Commandes #' . $order->getOrderNumber();
+$description = '';
 
 ?>
 <div class="page-title">
@@ -25,10 +25,10 @@ $description = "";
 </div>
 
 <div class="grid-4">
-    <?php foreach ($order->getOrderedItems() as $orderItem):?>
+    <?php foreach ($order->getOrderedItems() as $orderItem): ?>
         <div class="card">
 
-                    <?php if ($orderItem->getFirstImg() !== "/Public/Uploads/Shop/0"): ?>
+                    <?php if ($orderItem->getFirstImg() !== '/Public/Uploads/Shop/0'): ?>
                         <div class="text-center" >
                             <img class="mx-auto" style="width: 10rem; height: 10rem; object-fit: cover" src="<?= $orderItem->getFirstImg() ?>" alt="Panier">
                         </div>
@@ -52,5 +52,5 @@ $description = "";
                         <p>Prix : <b> <?= $orderItem->getTotalPriceBeforeDiscountFormatted() ?></b> | Quantité : <?= $orderItem->getQuantity() ?></p>
                     <?php endif; ?>
         </div>
-    <?php endforeach;?>
+    <?php endforeach; ?>
 </div>

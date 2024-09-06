@@ -9,7 +9,6 @@ use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Users\UsersModel;
 
-
 /**
  * Class: @ShopReviewsModel
  * @package Shop
@@ -24,30 +23,30 @@ class ShopReviewsModel extends AbstractModel
      */
     public function getShopReviewById(int $id): ?ShopReviewsEntity
     {
-        $sql = "SELECT * FROM cmw_shops_reviews WHERE shops_reviews_id = :shops_reviews_id AND shops_reviews_created_at = shops_reviews_updated_at ORDER BY shops_reviews_id DESC";
+        $sql = 'SELECT * FROM cmw_shops_reviews WHERE shops_reviews_id = :shops_reviews_id AND shops_reviews_created_at = shops_reviews_updated_at ORDER BY shops_reviews_id DESC';
 
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shops_reviews_id" => $id))) {
+        if (!$res->execute(array('shops_reviews_id' => $id))) {
             return null;
         }
 
         $res = $res->fetch();
 
-        $user = is_null($res["shop_user_id"]) ? null : UsersModel::getInstance()->getUserById($res["shop_user_id"]);
-        $item = is_null($res["shop_item_id"]) ? null : ShopItemsModel::getInstance()->getShopItemsById($res["shop_item_id"]);
+        $user = is_null($res['shop_user_id']) ? null : UsersModel::getInstance()->getUserById($res['shop_user_id']);
+        $item = is_null($res['shop_item_id']) ? null : ShopItemsModel::getInstance()->getShopItemsById($res['shop_item_id']);
 
         return new ShopReviewsEntity(
-            $res["shops_reviews_id"],
+            $res['shops_reviews_id'],
             $user,
             $item,
-            $res["shops_reviews_rating"],
-            $res["shops_reviews_title"],
-            $res["shops_reviews_text"],
-            $res["shops_reviews_created_at"],
-            $res["shops_reviews_updated_at"]
+            $res['shops_reviews_rating'],
+            $res['shops_reviews_title'],
+            $res['shops_reviews_text'],
+            $res['shops_reviews_created_at'],
+            $res['shops_reviews_updated_at']
         );
     }
 
@@ -56,19 +55,19 @@ class ShopReviewsModel extends AbstractModel
      */
     public function getShopReviewByItemId(int $id): array
     {
-        $sql = "SELECT shops_reviews_id FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at";
+        $sql = 'SELECT shops_reviews_id FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array("shop_item_id" => $id))) {
+        if (!$res->execute(array('shop_item_id' => $id))) {
             return array();
         }
 
         $toReturn = array();
 
         while ($items = $res->fetch()) {
-            $toReturn[] = $this->getShopReviewById($items["shops_reviews_id"]);
+            $toReturn[] = $this->getShopReviewById($items['shops_reviews_id']);
         }
 
         return $toReturn;
@@ -77,14 +76,14 @@ class ShopReviewsModel extends AbstractModel
     public function createReview(int $itemId, int $userId, int $rating, string $title, string $text): ?int
     {
         $data = [
-            "shop_item_id" => $itemId,
-            "shop_user_id" => $userId,
-            "shops_reviews_rating" => $rating,
-            "shops_reviews_title" => $title,
-            "shops_reviews_text" => $text
+            'shop_item_id' => $itemId,
+            'shop_user_id' => $userId,
+            'shops_reviews_rating' => $rating,
+            'shops_reviews_title' => $title,
+            'shops_reviews_text' => $text
         ];
 
-        $sql = "INSERT INTO cmw_shops_reviews(shop_user_id, shop_item_id, shops_reviews_rating, shops_reviews_title, shops_reviews_text) VALUES (:shop_user_id, :shop_item_id, :shops_reviews_rating, :shops_reviews_title, :shops_reviews_text)";
+        $sql = 'INSERT INTO cmw_shops_reviews(shop_user_id, shop_item_id, shops_reviews_rating, shops_reviews_title, shops_reviews_text) VALUES (:shop_user_id, :shop_item_id, :shops_reviews_rating, :shops_reviews_title, :shops_reviews_text)';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -105,10 +104,10 @@ class ShopReviewsModel extends AbstractModel
     public function getAverageRatingByItemId(int $itemId): int
     {
         $data = [
-            "shop_item_id" => $itemId,
+            'shop_item_id' => $itemId,
         ];
 
-        $sql = "SELECT AVG(shops_reviews_rating) AS average_rating FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at";
+        $sql = 'SELECT AVG(shops_reviews_rating) AS average_rating FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -130,10 +129,10 @@ class ShopReviewsModel extends AbstractModel
     public function countTotalRatingByItemId(int $itemId): int
     {
         $data = [
-            "shop_item_id" => $itemId,
+            'shop_item_id' => $itemId,
         ];
 
-        $sql = "SELECT shop_item_id, COUNT(shops_reviews_id) AS total_reviews FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at";
+        $sql = 'SELECT shop_item_id, COUNT(shops_reviews_id) AS total_reviews FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id AND shops_reviews_created_at = shops_reviews_updated_at';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -155,11 +154,12 @@ class ShopReviewsModel extends AbstractModel
      * @desc leave empty $faIcon $faSize for using default
      * @return string
      */
-    public function getStars(int $itemId, ?string $faIcon = "fa-star", ?string $faSize = "fa-sm"): string {
+    public function getStars(int $itemId, ?string $faIcon = 'fa-star', ?string $faSize = 'fa-sm'): string
+    {
         $averageRating = $this->getAverageRatingByItemId($itemId);
         $fullStars = floor($averageRating);
-        $fullStarColor = "#FFD700";
-        $emptyStarColor = "#a49b9b";
+        $fullStarColor = '#FFD700';
+        $emptyStarColor = '#a49b9b';
 
         $starsHtml = '';
 
@@ -173,9 +173,9 @@ class ShopReviewsModel extends AbstractModel
                 $style .= $emptyStarColor;
             }
 
-            $faSizeClass = !empty($faSize) ? " " . $faSize : "";
+            $faSizeClass = !empty($faSize) ? ' ' . $faSize : '';
 
-            $starsHtml .= '<i style="' . $style . ';" class="fa-solid ' . $icon . $faSizeClass . '"></i> ';
+            $starsHtml .= '<i style="' . $style . ';" class="fa-solid ' . $icon . $faSizeClass . "\"></i>\u{00A0}";
         }
 
         return $starsHtml;
@@ -186,24 +186,25 @@ class ShopReviewsModel extends AbstractModel
      * @desc leave empty $faIcon $faSize for using default
      * @return string
      */
-    public function getInputStars(?string $faIcon = "fa-star"): string {
+    public function getInputStars(?string $faIcon = 'fa-star'): string
+    {
         // CSS pour la notation par étoiles
-        $css = "<style>
+        $css = '<style>
             .rating { direction: rtl; text-align: left; }
             .rating-input { display: none; }
             .rating-star { font-size: 20px; color: #ddd; cursor: pointer; }
             .rating-input:checked ~ .rating-star,
             .rating-star:hover,
             .rating-star:hover ~ .rating-star { color: #FFD700; }
-            </style>";
+            </style>';
 
         // HTML pour les étoiles
         $html = '<div class="rating">';
 
         for ($i = 5; $i >= 1; $i--) {
             $required = ($i === 5) ? ' required' : '';
-            $html .= '<input id="star'.$i.'" name="rating" type="radio" value="'.$i.'" class="rating-input"'.$required.'/>
-                      <label for="star'.$i.'" class="rating-star"><i class="fa '.$faIcon.'"></i></label>';
+            $html .= '<input id="star' . $i . '" name="rating" type="radio" value="' . $i . '" class="rating-input"' . $required . '/>
+                      <label for="star' . $i . '" class="rating-star"><i class="fa ' . $faIcon . '"></i></label>';
         }
 
         $html .= '</div>';
@@ -215,14 +216,15 @@ class ShopReviewsModel extends AbstractModel
      * @param int $itemId
      * @return \CMW\Entity\Shop\Reviews\ShopRatingPercentageEntity[]
      */
-    public function getRatingsPercentageByItemId(int $itemId): array {
-        $sql = "SELECT rating_table.rating, 
+    public function getRatingsPercentageByItemId(int $itemId): array
+    {
+        $sql = 'SELECT rating_table.rating, 
         COALESCE(ROUND(COUNT(cmr.shops_reviews_id) * 100.0 / total.total_reviews, 2), 0) AS percentage
         FROM (SELECT 1 AS rating UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS rating_table
         LEFT JOIN cmw_shops_reviews cmr ON cmr.shops_reviews_rating = rating_table.rating AND cmr.shop_item_id = :shop_item_id
         CROSS JOIN (SELECT COUNT(*) AS total_reviews FROM cmw_shops_reviews WHERE shop_item_id = :shop_item_id_2) AS total
         GROUP BY rating_table.rating
-        ORDER BY rating_table.rating DESC ;";
+        ORDER BY rating_table.rating DESC ;';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -241,12 +243,10 @@ class ShopReviewsModel extends AbstractModel
     {
         $data = ['shops_reviews_id' => $reviewId];
 
-        $sql = "DELETE FROM cmw_shops_reviews WHERE shops_reviews_id = :shops_reviews_id";
+        $sql = 'DELETE FROM cmw_shops_reviews WHERE shops_reviews_id = :shops_reviews_id';
 
         $db = DatabaseManager::getInstance();
 
         return $db->prepare($sql)->execute($data);
     }
-
 }
-

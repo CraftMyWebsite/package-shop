@@ -3,8 +3,8 @@
 /* @var \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $carts */
 /* @var \CMW\Entity\Users\UserEntity $user */
 
-$title = "Paniers de ". $user->getPseudo();
-$description = "";
+$title = 'Paniers de ' . $user->getPseudo();
+$description = '';
 
 ?>
 
@@ -23,7 +23,7 @@ $description = "";
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($carts as $cart) : ?>
+            <?php foreach ($carts as $cart): ?>
                 <tr>
                     <td>
                         <a class="link" target="_blank" href="/shop/cat/<?= $cart->getItem()->getCategory()->getSlug() ?>/item/<?= $cart->getItem()->getSlug() ?>"><?= $cart->getItem()->getName() ?></a>

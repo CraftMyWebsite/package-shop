@@ -61,6 +61,4 @@ class ShopHistoryOrdersAfterSalesMessagesEntity
     {
         return CoreController::formatDate($this->updated);
     }
-
-
 }

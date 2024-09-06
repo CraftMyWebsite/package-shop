@@ -8,7 +8,6 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-
 class ShopReviewsEntity
 {
     private int $reviewsId;
@@ -78,11 +77,12 @@ class ShopReviewsEntity
      * @desc leave empty $faIcon $faSize for using default
      * @return string
      */
-    public function getStarsReview(?string $faIcon = "fa-star", ?string $faSize = "fa-sm"): string {
+    public function getStarsReview(?string $faIcon = 'fa-star', ?string $faSize = 'fa-sm'): string
+    {
         $averageRating = $this->getReviewRating();
         $fullStars = floor($averageRating);
-        $fullStarColor = "#FFD700";
-        $emptyStarColor = "#a49b9b";
+        $fullStarColor = '#FFD700';
+        $emptyStarColor = '#a49b9b';
 
         $starsHtml = '';
 
@@ -96,9 +96,9 @@ class ShopReviewsEntity
                 $style .= $emptyStarColor;
             }
 
-            $faSizeClass = !empty($faSize) ? " " . $faSize : "";
+            $faSizeClass = !empty($faSize) ? ' ' . $faSize : '';
 
-            $starsHtml .= '<i style="' . $style . ';" class="fa-solid ' . $icon . $faSizeClass . '"></i> ';
+            $starsHtml .= '<i style="' . $style . ';" class="fa-solid ' . $icon . $faSizeClass . "\"></i>\u{00A0}";
         }
 
         return $starsHtml;
@@ -123,5 +123,4 @@ class ShopReviewsEntity
     {
         return $this->reviewUpdated;
     }
-
 }

@@ -7,6 +7,6 @@ class ShopEditItemEvent extends AbstractEvent
 {
     public function getName(): string
     {
-        return "Shop-Edit-Item-Event-CraftMyWebsite";
+        return 'Shop-Edit-Item-Event-CraftMyWebsite';
     }
 }

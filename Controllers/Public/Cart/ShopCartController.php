@@ -9,8 +9,8 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
-use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
+use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
@@ -29,19 +29,19 @@ use CMW\Utils\Redirect;
  */
 class ShopCartController extends AbstractController
 {
-    #[Link("/cart", Link::GET, [], "/shop")]
+    #[Link('/cart', Link::GET, [], '/shop')]
     public function publicCartView(): void
     {
-        $maintenance = ShopSettingsModel::getInstance()->getSettingValue("maintenance");
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue("maintenanceMessage");
-            Flash::send(Alert::WARNING, "Boutique", $maintenanceMessage);
+            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
             Redirect::redirectToHome();
         }
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
-        $asideCartContent = ShopCartItemModel::getInstance()->getShopCartsItemsAsideByUserId($userId,$sessionId);
+        $asideCartContent = ShopCartItemModel::getInstance()->getShopCartsItemsAsideByUserId($userId, $sessionId);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemsVariantes = ShopCartVariantesModel::getInstance();
@@ -51,7 +51,7 @@ class ShopCartController extends AbstractController
 
         $this->handleItemHealth($userId, $sessionId);
 
-        //TODO: Verifier si les promotions appliquées au panier sont encore valides via date ou status
+        // TODO: Verifier si les promotions appliquées au panier sont encore valides via date ou status
         if (!empty($appliedDiscounts)) {
             $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
             foreach ($appliedDiscounts as $appliedDiscount) {
@@ -66,15 +66,15 @@ class ShopCartController extends AbstractController
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();
             $quantity = $itemCart->getQuantity();
-            $this->handleStock($itemCart,$itemId,$quantity,$userId,$sessionId);
-            $this->handleLimitePerUser($itemCart,$itemId,$quantity,$userId,$sessionId);
-            $this->handleGlobalLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
-            $this->handleByOrderLimit($itemCart,$itemId,$quantity,$userId,$sessionId);
+            $this->handleStock($itemCart, $itemId, $quantity, $userId, $sessionId);
+            $this->handleLimitePerUser($itemCart, $itemId, $quantity, $userId, $sessionId);
+            $this->handleGlobalLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
+            $this->handleByOrderLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
         }
 
-        $view = new View("Shop", "Cart/cart");
-        $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "asideCartContent" => $asideCartContent, "itemsVariantes" => $itemsVariantes, "appliedDiscounts" => $appliedDiscounts]);
-        $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
+        $view = new View('Shop', 'Cart/cart');
+        $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'asideCartContent' => $asideCartContent, 'itemsVariantes' => $itemsVariantes, 'appliedDiscounts' => $appliedDiscounts]);
+        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }
 
@@ -94,15 +94,15 @@ class ShopCartController extends AbstractController
      * @param ?int $userId
      * @param string $sessionId
      */
-    public function handleItemHealth(?int $userId, string $sessionId) : void
+    public function handleItemHealth(?int $userId, string $sessionId): void
     {
         if (ShopCartItemModel::getInstance()->cartItemIdAsNullValue($userId, $sessionId)) {
             ShopCartItemModel::getInstance()->removeUnreachableItem($userId, $sessionId);
-            Flash::send(Alert::WARNING, "Boutique", "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
+            Flash::send(Alert::WARNING, 'Boutique', "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
         }
     }
 
-    public function handleStock (ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleStock(ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         $currentStock = ShopItemsModel::getInstance()->getItemCurrentStock($itemId);
         if ($quantity > $currentStock) {
@@ -111,22 +111,22 @@ class ShopCartController extends AbstractController
                 ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
                 ShopCartItemModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
                 ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, 1);
-                Flash::send(Alert::WARNING, "Boutique", "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est plus en stock, Nous l'avons mis dans votre panier 'Mise de côté'.");
-                Redirect::redirect("shop/cart");
+                Flash::send(Alert::WARNING, 'Boutique', "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est plus en stock, Nous l'avons mis dans votre panier 'Mise de côté'.");
+                Redirect::redirect('shop/cart');
             } else {
                 ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, $quantity);
-                Flash::send(Alert::WARNING, "Boutique", "Les stock pour <b>" . $itemCart->getItem()->getName() . "</b> on changé. Il n'en reste que $quantity en stock, Nous avons mis automatiquement à jour votre panier");
-                Redirect::redirect("shop/cart");
+                Flash::send(Alert::WARNING, 'Boutique', 'Les stock pour <b>' . $itemCart->getItem()->getName() . "</b> on changé. Il n'en reste que $quantity en stock, Nous avons mis automatiquement à jour votre panier");
+                Redirect::redirect('shop/cart');
             }
         }
     }
 
-    public function handleLimitePerUser (ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleLimitePerUser(ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         if (ShopItemsModel::getInstance()->itemHaveUserLimit($itemId)) {
             if (is_null($userId)) {
-                Flash::send(Alert::WARNING, "Boutique", $itemCart->getItem()->getName() . " à besoin d'une vérification supplémentaire.");
-                Redirect::redirect("login");
+                Flash::send(Alert::WARNING, 'Boutique', $itemCart->getItem()->getName() . " à besoin d'une vérification supplémentaire.");
+                Redirect::redirect('login');
             }
             $numberBoughtByUser = ShopHistoryOrdersModel::getInstance()->countOrderByUserIdAndItemId($userId, $itemId);
             if ($numberBoughtByUser) {
@@ -134,12 +134,12 @@ class ShopCartController extends AbstractController
                     $quantity = ShopItemsModel::getInstance()->getItemUserLimit($itemId) - $numberBoughtByUser;
                     if ($quantity <= 0) {
                         ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
-                        Flash::send(Alert::WARNING, "Boutique", "Vous n'êtes plus en mesure d'acheter <b>" . $itemCart->getItem()->getName() . "</b>.");
-                        Redirect::redirect("shop/cart");
+                        Flash::send(Alert::WARNING, 'Boutique', "Vous n'êtes plus en mesure d'acheter <b>" . $itemCart->getItem()->getName() . '</b>.');
+                        Redirect::redirect('shop/cart');
                     } else {
                         ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, $quantity);
-                        Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas acheter autant de " . $itemCart->getItem()->getName() . ". Nous avons mis à jour votre panier");
-                        Redirect::redirect("shop/cart");
+                        Flash::send(Alert::WARNING, 'Boutique', 'Vous ne pouvez pas acheter autant de ' . $itemCart->getItem()->getName() . '. Nous avons mis à jour votre panier');
+                        Redirect::redirect('shop/cart');
                     }
                 }
             } else {
@@ -147,19 +147,19 @@ class ShopCartController extends AbstractController
                     $quantity = ShopItemsModel::getInstance()->getItemUserLimit($itemId);
                     if ($quantity <= 0) {
                         ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
-                        Flash::send(Alert::WARNING, "Boutique", "Vous n'êtes plus en mesure d'acheter <b>" . $itemCart->getItem()->getName() . "</b>.");
-                        Redirect::redirect("shop/cart");
+                        Flash::send(Alert::WARNING, 'Boutique', "Vous n'êtes plus en mesure d'acheter <b>" . $itemCart->getItem()->getName() . '</b>.');
+                        Redirect::redirect('shop/cart');
                     } else {
                         ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, $quantity);
-                        Flash::send(Alert::WARNING, "Boutique", "Vous ne pouvez pas acheter autant de " . $itemCart->getItem()->getName() . ". Nous avons mis à jour votre panier");
-                        Redirect::redirect("shop/cart");
+                        Flash::send(Alert::WARNING, 'Boutique', 'Vous ne pouvez pas acheter autant de ' . $itemCart->getItem()->getName() . '. Nous avons mis à jour votre panier');
+                        Redirect::redirect('shop/cart');
                     }
                 }
             }
         }
     }
 
-    public function handleGlobalLimit (ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
+    public function handleGlobalLimit(ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {
         if (ShopItemsModel::getInstance()->itemHaveGlobalLimit($itemId)) {
             $itemGlobalLimit = ShopItemsModel::getInstance()->getItemGlobalLimit($itemId);
@@ -167,12 +167,12 @@ class ShopCartController extends AbstractController
                 $quantity = $itemGlobalLimit;
                 if ($itemGlobalLimit == 0) {
                     ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
-                    Flash::send(Alert::WARNING, "Boutique", "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est malheuresement plus à vendre");
-                    Redirect::redirect("shop/cart");
+                    Flash::send(Alert::WARNING, 'Boutique', "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est malheuresement plus à vendre");
+                    Redirect::redirect('shop/cart');
                 } else {
                     ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, $quantity);
-                    Flash::send(Alert::WARNING, "Boutique", "Les stock pour <b>" . $itemCart->getItem()->getName() . "</b> on changé.");
-                    Redirect::redirect("shop/cart");
+                    Flash::send(Alert::WARNING, 'Boutique', 'Les stock pour <b>' . $itemCart->getItem()->getName() . '</b> on changé.');
+                    Redirect::redirect('shop/cart');
                 }
             }
         }
@@ -186,12 +186,12 @@ class ShopCartController extends AbstractController
                 $quantity = $itemByOrderLimit;
                 if ($itemByOrderLimit == 0) {
                     ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
-                    Flash::send(Alert::WARNING, "Boutique", "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est malheuresement plus à vendre");
-                    Redirect::redirect("shop/cart");
+                    Flash::send(Alert::WARNING, 'Boutique', "L'article <b>" . $itemCart->getItem()->getName() . "</b> n'est malheuresement plus à vendre");
+                    Redirect::redirect('shop/cart');
                 } else {
                     ShopCartItemModel::getInstance()->updateQuantity($userId, $sessionId, $itemId, $quantity);
-                    Flash::send(Alert::WARNING, "Boutique", "Les stock pour <b>" . $itemCart->getItem()->getName() . "</b> on changé.");
-                    Redirect::redirect("shop/cart");
+                    Flash::send(Alert::WARNING, 'Boutique', 'Les stock pour <b>' . $itemCart->getItem()->getName() . '</b> on changé.');
+                    Redirect::redirect('shop/cart');
                 }
             }
         }

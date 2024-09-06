@@ -88,16 +88,16 @@ class ShopDiscountEntity
     public function getLinkedFormatted(): string
     {
         if ($this->discountLinked == 0) {
-            return "Tout les produits";
+            return 'Tout les produits';
         }
         if ($this->discountLinked == 1) {
-            return "Un ou Des article(s)";
+            return 'Un ou Des article(s)';
         }
         if ($this->discountLinked == 2) {
-            return "Une ou Des catégorie(s)";
+            return 'Une ou Des catégorie(s)';
         }
         if ($this->discountLinked == 3) {
-            return "Total du panier";
+            return 'Total du panier';
         }
     }
 
@@ -124,7 +124,8 @@ class ShopDiscountEntity
     /**
      * @throws \Exception
      */
-    public function getDuration(): string {
+    public function getDuration(): string
+    {
         $now = new DateTime();
         $startDate = new DateTime($this->discountStartDate);
         $endDate = $this->discountEndDate ? new DateTime($this->discountEndDate) : null;
@@ -137,17 +138,18 @@ class ShopDiscountEntity
         } elseif ($endDate && $now < $endDate) {
             // La promotion est en cours
             $interval = $now->diff($endDate);
-            return "Termine dans " . $this->formatInterval($interval);
+            return 'Termine dans ' . $this->formatInterval($interval);
         } elseif ($endDate && $now >= $endDate) {
             // La promotion est terminée
-            return "Promotion terminée";
+            return 'Promotion terminée';
         } else {
             // Pas de date de fin ou statut à 0, considérée comme terminée ou indéfiniment active selon le statut
-            return $status == 0 ? "Promotion terminée" : "En cours, sans date de fin spécifiée";
+            return $status == 0 ? 'Promotion terminée' : 'En cours, sans date de fin spécifiée';
         }
     }
 
-    private function formatInterval(DateInterval $interval): string {
+    private function formatInterval(DateInterval $interval): string
+    {
         if ($interval->days >= 1) {
             return $interval->format('%a jour(s)');
         } else if ($interval->h > 0) {
@@ -184,12 +186,12 @@ class ShopDiscountEntity
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getPrice(), 2, '.', '');
-        $symbol = ShopSettingsModel::getInstance()->getSettingValue("symbol");
-        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue("after");
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
-            return $formattedPrice .  $symbol;
+            return $formattedPrice . $symbol;
         } else {
-            return $symbol .  $formattedPrice;
+            return $symbol . $formattedPrice;
         }
     }
 
@@ -211,10 +213,10 @@ class ShopDiscountEntity
     public function getStatusFormatted(): ?string
     {
         if ($this->discountStatus == 0) {
-            return "Inactive";
+            return 'Inactive';
         }
         if ($this->discountStatus == 1) {
-            return "Active";
+            return 'Active';
         }
     }
 
@@ -237,7 +239,6 @@ class ShopDiscountEntity
     {
         return $this->discountQuantityImpacted;
     }
-
 
     public function getCreated(): string
     {

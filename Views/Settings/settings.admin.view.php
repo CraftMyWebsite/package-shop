@@ -4,8 +4,8 @@ use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = "";
-$description = "";
+$title = '';
+$description = '';
 
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentCurrency */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentSymbol */
@@ -21,7 +21,7 @@ $description = "";
 ?>
 <div class="page-title">
     <h3><i class="fa-solid fa-gears"></i> Configuration</h3>
-    <button form="applyConfig" type="submit" class="btn-primary"><?= LangManager::translate("core.btn.save") ?></button>
+    <button form="applyConfig" type="submit" class="btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
 </div>
 
 <form id="applyConfig" method="post" enctype="multipart/form-data">
@@ -111,7 +111,7 @@ $description = "";
                     <?php $method->includeGlobalConfigWidgets(); ?>
                     <div class="d-flex justify-content-center mt-4">
                         <button form="virtualGlobal" type="submit"
-                                class="btn btn-primary"><?= LangManager::translate("core.btn.save") ?></button>
+                                class="btn btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
                     </div>
                 </form>
             </div>
