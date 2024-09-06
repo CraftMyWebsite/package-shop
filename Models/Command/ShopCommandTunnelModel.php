@@ -6,7 +6,7 @@ use CMW\Entity\Shop\Commands\ShopCommandTunnelEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
-use CMW\Model\Shop\Delivery\ShopShippingModel;
+use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Model\Users\UsersModel;
 
 
@@ -20,13 +20,11 @@ class ShopCommandTunnelModel extends AbstractModel
 {
 
     private UsersModel $userModel;
-    private ShopShippingModel $shippingModel;
     private ShopDeliveryUserAddressModel $deliveryUserAddressModel;
 
     public function __construct()
     {
         $this->userModel = new UsersModel();
-        $this->shippingModel = new ShopShippingModel();
         $this->deliveryUserAddressModel = new ShopDeliveryUserAddressModel();
     }
 
@@ -49,6 +47,7 @@ class ShopCommandTunnelModel extends AbstractModel
         $res = $res->fetch();
 
         $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
+        // TODO Refac :
         $shipping = is_null($res["shops_shipping_id"]) ? null : $this->shippingModel->getShopShippingById($res["shops_shipping_id"]);
         $deliveryUserAddress = is_null($res["shop_delivery_user_address_id"]) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res["shop_delivery_user_address_id"]);
 
@@ -223,7 +222,7 @@ class ShopCommandTunnelModel extends AbstractModel
         $res = $res->fetch();
 
         $user = is_null($res["shop_user_id"]) ? null : $this->userModel->getUserById($res["shop_user_id"]);
-        $shipping = is_null($res["shops_shipping_id"]) ? null : $this->shippingModel->getShopShippingById($res["shops_shipping_id"]);
+        $shipping = is_null($res["shops_shipping_id"]) ? null : ShopShippingModel::getInstance()->getShopShippingById($res["shops_shipping_id"]);
         $deliveryUserAddress = is_null($res["shop_delivery_user_address_id"]) ? null : $this->deliveryUserAddressModel->getShopDeliveryUserAddressById($res["shop_delivery_user_address_id"]);
 
         return new ShopCommandTunnelEntity(

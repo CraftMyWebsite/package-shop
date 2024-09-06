@@ -292,13 +292,43 @@ CREATE TABLE IF NOT EXISTS cmw_shops_cart_discounts
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shops_shipping_zone
+(
+    shops_shipping_zone_id      INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_zone_name    VARCHAR(50) NOT NULL,
+    shops_shipping_zone_country VARCHAR(5)  NOT NULL
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_shipping_withdraw_point
+(
+    shops_shipping_withdraw_point_id                  INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_withdraw_point_address_distance    INT         NULL,
+    shops_shipping_withdraw_point_address_line        VARCHAR(50) NOT NULL,
+    shops_shipping_withdraw_point_address_city        VARCHAR(50) NOT NULL,
+    shops_shipping_withdraw_point_address_postal_code VARCHAR(50) NOT NULL,
+    shops_shipping_withdraw_point_address_country     VARCHAR(50) NOT NULL
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS cmw_shops_shipping
 (
-    shops_shipping_id         INT AUTO_INCREMENT PRIMARY KEY,
-    shops_shipping_name       VARCHAR(50)  NOT NULL,
-    shops_shipping_price      FLOAT(10, 2) NULL,
-    shops_shipping_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shops_shipping_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    shops_shipping_id                   INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_name                 VARCHAR(50)  NOT NULL,
+    shops_shipping_price                FLOAT(10, 2) NULL,
+    shops_shipping_zone_id              INT          NOT NULL,
+    shops_shipping_type                 INT          NOT NULL,
+    shops_shipping_withdraw_point_id    INT          NULL,
+    shops_shipping_method_var_name      VARCHAR(50)  NULL,
+    shops_shipping_max_total_weight     INT          NULL,
+    shops_shipping_min_total_cart_price FLOAT(10, 2) NULL,
+    shops_shipping_max_total_cart_price FLOAT(10, 2) NULL,
+    CONSTRAINT fk_shops_shipping_zone_id_cmw_shops_shipping FOREIGN KEY (shops_shipping_zone_id)
+        REFERENCES cmw_shops_shipping_zone (shops_shipping_zone_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_shops_shipping_withdraw_point_id_cmw_shops_shipping FOREIGN KEY (shops_shipping_withdraw_point_id)
+        REFERENCES cmw_shops_shipping_withdraw_point (shops_shipping_withdraw_point_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -455,7 +485,7 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_afterSales_message
     shop_history_order_afterSales_message_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_cmw_shop_history_order_afterSales_message_history_order_id FOREIGN KEY (shop_history_order_afterSales_id)
         REFERENCES cmw_shop_history_order_afterSales (shop_history_order_afterSales_id) ON UPDATE CASCADE ON DELETE CASCADE,
-        CONSTRAINT fk_user_id_history_order_afterSales_message_user FOREIGN KEY (shop_history_order_afterSales_message_author)
+    CONSTRAINT fk_user_id_history_order_afterSales_message_user FOREIGN KEY (shop_history_order_afterSales_message_author)
         REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -560,3 +590,6 @@ VALUES ('currency', 'EUR'),
 
 INSERT INTO cmw_shops_images (`shop_image_name`, `shop_default_image`)
 VALUES ('default', '1');
+
+INSERT INTO cmw_shops_shipping_zone (`shops_shipping_zone_name`, `shops_shipping_zone_country`)
+VALUES ('Reste du monde', 'ALL');

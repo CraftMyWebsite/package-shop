@@ -4,6 +4,7 @@ namespace CMW\Entity\Shop\Deliveries;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Users\UserEntity;
+use CMW\Model\Shop\Country\ShopCountryModel;
 
 class ShopDeliveryUserAddressEntity
 {
@@ -109,6 +110,11 @@ class ShopDeliveryUserAddressEntity
     public function getCountry(): ?string
     {
         return $this->deliveryCountry;
+    }
+
+    public function getFormattedCountry(): ?string
+    {
+        return ShopCountryModel::getInstance()->getCountryByCode($this->deliveryCountry)->getName();
     }
 
     public function getPhone(): ?string

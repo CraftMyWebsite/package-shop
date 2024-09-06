@@ -3,9 +3,7 @@
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
-use CMW\Controller\Shop\ShopCountryController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Exception\Shop\Payment\ShopPaymentException;
@@ -17,9 +15,9 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
-use CMW\Model\Shop\Delivery\ShopShippingModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
@@ -56,6 +54,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
         $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
         $shippingMethod = null;
+        // TODO Refac :
         if (is_int($commandTunnelShippingId)) {
             $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
         }

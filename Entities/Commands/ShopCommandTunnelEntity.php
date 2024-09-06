@@ -4,7 +4,7 @@ namespace CMW\Entity\Shop\Commands;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
+use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 
 class ShopCommandTunnelEntity
@@ -22,7 +22,7 @@ class ShopCommandTunnelEntity
      * @param int|null $tunnelId
      * @param int|null $tunnelStep
      * @param \CMW\Entity\Users\UserEntity|null $user
-     * @param \CMW\Entity\Shop\Deliveries\ShopShippingEntity|null $shipping
+     * @param \CMW\Entity\Shop\Shippings\ShopShippingEntity|null $shipping
      * @param \CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity|null $shopDeliveryUserAddress
      * @param string|null $paymentName
      * @param string|null $tunnelCreated

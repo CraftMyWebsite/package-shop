@@ -1,7 +1,6 @@
 <?php
 namespace CMW\Controller\Shop\Public\Command;
 
-use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
@@ -14,15 +13,14 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
-use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
+use CMW\Model\Shop\Country\ShopCountryModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
-use CMW\Model\Shop\Delivery\ShopShippingModel;
-use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
@@ -73,6 +71,7 @@ class ShopCommandController extends AbstractController
 
         if (empty($cartContent)) {
             Flash::send(Alert::ERROR, "Boutique", "Votre panier est vide.");
+            //TODO : Fix redirect after item change in cart like Physical To virtual
             Redirect::redirectPreviousRoute();
         }
 
@@ -91,16 +90,18 @@ class ShopCommandController extends AbstractController
         //TODO: Verifier si les promotions appliquées au panier sont encore valides
 
         if (empty($userAddresses)) {
+            $country = ShopCountryModel::getInstance()->getCountry();
             $view = new View("Shop", "Command/newAddress");
-            $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
+            $view->addVariableList(["country" => $country, "cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
             $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
+                $country = ShopCountryModel::getInstance()->getCountry();
                 $view = new View("Shop", "Command/address");
-                $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
+                $view->addVariableList(["country" => $country, "cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "userAddresses" => $userAddresses, "giftCodes" => $giftCodes]);
                 $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
                 $view->view();
             }
@@ -111,10 +112,16 @@ class ShopCommandController extends AbstractController
                 } else {
                     $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                    $shippings = ShopShippingModel::getInstance()->getShopShipping();
+                    //TODO getCompatibleShipping:
+                    $shippings = ShopShippingModel::getInstance()->getAvailableShipping($selectedAddress, $cartContent);
+                    $withdrawPoints = ShopShippingModel::getInstance()->getAvailableWithdrawPoint($selectedAddress, $cartContent);
+                    if (empty($shippings) && empty($withdrawPoints)) {
+                        Flash::send(Alert::WARNING, "Boutique","Nous sommes désolé mais aucune méthode de livraison n'est disponible pour cette adresse.");
+                        //TODO : Notify admin adresse cant throw shipping
+                    }
                     $view = new View("Shop", "Command/delivery");
                     $view->addStyle("Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css");
-                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings, "giftCodes" => $giftCodes]);
+                    $view->addVariableList(["cartContent" => $cartContent, "imagesItem" => $imagesItem,"defaultImage" => $defaultImage, "selectedAddress" => $selectedAddress, "shippings" => $shippings, "withdrawPoints" => $withdrawPoints , "giftCodes" => $giftCodes]);
                     $view->view();
                 }
             }
@@ -123,6 +130,7 @@ class ShopCommandController extends AbstractController
                     $shippingMethod = null;
                 } else {
                     $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
+                    // TODO Refac :
                     $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
                 }
                 $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();

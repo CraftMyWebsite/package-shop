@@ -86,7 +86,7 @@ class Package implements IPackageConfig
                     new PackageSubMenuType(
                         title: 'Livraisons',
                         permission: 'todo', //TODO PERM
-                        url: 'shop/deliveries',
+                        url: 'shop/shipping',
                     ),
                     new PackageSubMenuType(
                         title: 'Paiements',
@@ -148,9 +148,9 @@ class Package implements IPackageConfig
                         url: 'shop/afterSales',
                     ),
                     new PackageSubMenuType(
-                        title: 'Deliveries',
+                        title: 'Shipping',
                         permission: 'todo', //TODO PERM
-                        url: 'shop/deliveries',
+                        url: 'shop/shipping',
                     ),
                     new PackageSubMenuType(
                         title: 'Payments',

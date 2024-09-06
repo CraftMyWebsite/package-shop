@@ -1,38 +1,55 @@
 <?php
 
-namespace CMW\Controller\Shop;
+namespace CMW\Model\Shop\Country;
 
-use CMW\Manager\Package\AbstractController;
+use CMW\Entity\Shop\Country\ShopCountryEntity;
+use CMW\Manager\Package\AbstractModel;
+
 
 /**
- * Class: @ShopCountryController
- * @desc This controller is only for contry
+ * Class: @ShopCountryModel
  * @package Shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
- * @version 1.0
+ * @author Zomb
+ * @version 0.0.1
  */
-class ShopCountryController extends AbstractController
+class ShopCountryModel extends AbstractModel
 {
     /**
-     * @param string $countryName
-     * @return string|null
-     * @desc Find country code <b>ISO 3166-1 alpha-2</b> by name.
+     * @return \CMW\Entity\Shop\Country\ShopCountryEntity[]
      */
-    public function findCountryCodeByName(string $countryName): null|string
+    public function getCountry(): array
     {
+        $countries = $this->getAllCountries();
+        $countryEntities = [];
 
-        $formattedCountryName = mb_strtolower(trim($countryName));
+        foreach ($countries as $name => $code) {
+            $countryEntities[] = new ShopCountryEntity($name, $code);
+        }
 
+        return $countryEntities;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Country\ShopCountryEntity|null
+     */
+    public function getCountryByCode($code): ?ShopCountryEntity
+    {
         $countries = $this->getAllCountries();
 
-        return $countries[ucwords($formattedCountryName)] ?? null;
+        foreach ($countries as $name => $countryCode) {
+            if ($countryCode === $code) {
+                return new ShopCountryEntity($name, $countryCode);
+            }
+        }
+
+        return null;
     }
 
     /**
      * @return string[]
      * @desc Find all countries. Return <b>ISO 3166-1 alpha-2</b> names and codes.
      */
-    public function getAllCountries(): array
+    private function getAllCountries(): array
     {
         return [
             'Afghanistan' => 'AF',

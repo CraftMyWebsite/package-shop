@@ -3,15 +3,8 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Controller\Core\CoreController;
-use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
-use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\Deliveries\ShopShippingEntity;
-use CMW\Entity\Shop\Items\ShopItemEntity;
-use CMW\Entity\Shop\Payments\ShopPaymentMethodSettingsEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Manager\Flash\Alert;
-use CMW\Manager\Flash\Flash;
 use CMW\Model\Shop\Discount\ShopGiftCardModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
