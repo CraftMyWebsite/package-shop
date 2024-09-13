@@ -31,7 +31,7 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopActionsCartController extends AbstractController
 {
     #[NoReturn]
-    #[Link('/add_to_cart/:itemId', Link::GET, [], '/shop')]
+    #[Link('/add_to_cart/:itemId', Link::GET, ['itemId' => '[0-9]+'], '/shop')]
     private function publicAddCart(int $itemId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
