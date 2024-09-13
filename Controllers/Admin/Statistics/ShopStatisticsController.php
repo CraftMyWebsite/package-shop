@@ -17,7 +17,7 @@ use CMW\Model\Shop\Statistics\ShopStatisticsModel;
 class ShopStatisticsController extends AbstractController
 {
     #[Link('/statistics', Link::GET, [], '/cmw-admin/shop')]
-    public function shopStatistics(): void
+    private function shopStatistics(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.statistics');
 

@@ -15,6 +15,7 @@ use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopSettingsController
@@ -25,7 +26,7 @@ use CMW\Utils\Utils;
 class ShopSettingsController extends AbstractController
 {
     // Based on PayPal accepted currencies
-    public static array $availableCurrencies = [
+    private static array $availableCurrencies = [
         'AUD' => ['name' => 'Australian Dollar', 'symbol' => 'A$'],
         'BRL' => ['name' => 'Brazilian Real', 'symbol' => 'R$'],
         'CAD' => ['name' => 'Canadian Dollar', 'symbol' => 'CA$'],
@@ -57,7 +58,7 @@ class ShopSettingsController extends AbstractController
     /* ///////////////////// CONFIG ///////////////////// */
 
     #[Link('/settings', Link::GET, [], '/cmw-admin/shop')]
-    public function shopSettings(): void
+    private function shopSettings(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
 
@@ -77,8 +78,8 @@ class ShopSettingsController extends AbstractController
             ->view();
     }
 
-    #[Link('/settings', Link::POST, [], '/cmw-admin/shop')]
-    public function shopApplyGlobalPost(): void
+    #[NoReturn] #[Link('/settings', Link::POST, [], '/cmw-admin/shop')]
+    private function shopApplyGlobalPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
 
@@ -104,7 +105,7 @@ class ShopSettingsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/settings/virtual', Link::POST, [], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/settings/virtual', Link::POST, [], '/cmw-admin/shop')]
     private function shopVirtualItemGlobalSettingsPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
@@ -127,8 +128,8 @@ class ShopSettingsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/settings/reset_default_image', Link::GET, [], '/cmw-admin/shop')]
-    public function shopResetDefaultImagePost(): void
+    #[NoReturn] #[Link('/settings/reset_default_image', Link::GET, [], '/cmw-admin/shop')]
+    private function shopResetDefaultImagePost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
 

@@ -6,7 +6,6 @@ use CMW\Controller\Users\UsersController;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
 use CMW\Event\Shop\ShopEditItemEvent;
-use CMW\Interface\Shop\IPaymentMethod;
 use CMW\Interface\Shop\IPriceTypeMethod;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Events\Emitter;
@@ -20,7 +19,6 @@ use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
@@ -33,6 +31,7 @@ use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use function array_filter;
 
 /**
  * Class: @ShopItemsController
@@ -44,7 +43,7 @@ use CMW\Utils\Utils;
 class ShopItemsController extends AbstractController
 {
     #[Link('/items', Link::GET, [], '/cmw-admin/shop')]
-    public function shopItems(): void
+    private function shopItems(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -63,7 +62,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/archived', Link::GET, [], '/cmw-admin/shop')]
-    public function shopItemsArchived(): void
+    private function shopItemsArchived(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -82,7 +81,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/review/:id', Link::GET, [], '/cmw-admin/shop')]
-    public function shopItemsReviews(int $id): void
+    private function shopItemsReviews(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -98,7 +97,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/review/:id/delete/:reviewId', Link::GET, [], '/cmw-admin/shop')]
-    public function shopItemsDeleteReviews(int $id, int $reviewId): void
+    private function shopItemsDeleteReviews(int $id, int $reviewId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -108,7 +107,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/cat/:catId', Link::GET, ['.*?'], '/cmw-admin/shop')]
-    public function shopItemsByCat(string $catId): void
+    private function shopItemsByCat(string $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -126,7 +125,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/add', Link::GET, [], '/cmw-admin/shop')]
-    public function adminAddShopItem(): void
+    private function adminAddShopItem(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -144,7 +143,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/add', Link::POST, [], '/cmw-admin/shop')]
-    public function adminAddShopItemPost(): void
+    private function adminAddShopItemPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -185,9 +184,9 @@ class ShopItemsController extends AbstractController
 
         if ($type == '0') {
             [$weight, $length, $width, $height] = Utils::filterInput('shop_item_weight', 'shop_item_length', 'shop_item_width', 'shop_item_height');
-            $length = is_null($length) ? 0 : (float) $length;
-            $width = is_null($width) ? 0 : (float) $width;
-            $height = is_null($height) ? 0 : (float) $height;
+            $length = is_null($length) ? 0 : (float)$length;
+            $width = is_null($width) ? 0 : (float)$width;
+            $height = is_null($height) ? 0 : (float)$height;
             ShopItemsPhysicalRequirementModel::getInstance()->createPhysicalRequirement($itemId, $weight, $length, $width, $height);
         }
 
@@ -226,7 +225,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/edit/:id', Link::GET, [], '/cmw-admin/shop')]
-    public function adminEditShopItem(int $id): void
+    private function adminEditShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -246,7 +245,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/edit/:id', Link::POST, [], '/cmw-admin/shop')]
-    public function adminEditShopItemPost(int $id): void
+    private function adminEditShopItemPost(int $id): void
     {
         $backupItemInfo = ShopItemsModel::getInstance()->getShopItemsById($id);
 
@@ -303,9 +302,9 @@ class ShopItemsController extends AbstractController
 
         if ($type == '0') {
             [$weight, $length, $width, $height] = Utils::filterInput('shop_item_weight', 'shop_item_length', 'shop_item_width', 'shop_item_height');
-            $length = is_null($length) ? 0 : (float) $length;
-            $width = is_null($width) ? 0 : (float) $width;
-            $height = is_null($height) ? 0 : (float) $height;
+            $length = is_null($length) ? 0 : (float)$length;
+            $width = is_null($width) ? 0 : (float)$width;
+            $height = is_null($height) ? 0 : (float)$height;
             if ($backupItemInfo->getType() === 0) {
                 ShopItemsPhysicalRequirementModel::getInstance()->updatePhysicalRequirement($id, $weight, $length, $width, $height);
             } else {
@@ -379,7 +378,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminDeleteShopItem(int $id): void
+    private function adminDeleteShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -406,7 +405,7 @@ class ShopItemsController extends AbstractController
     }
 
     #[Link('/items/activate/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminActivateShopItem(int $id): void
+    private function adminActivateShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -467,7 +466,7 @@ class ShopItemsController extends AbstractController
     public function getGlobalVarVirtualItemsMethods(): array
     {
         $allVirtualItemMethods = Loader::loadImplementations(IVirtualItems::class);
-        return array_filter($allVirtualItemMethods, function ($virtualItemMethods) {
+        return array_filter($allVirtualItemMethods, static function ($virtualItemMethods) {
             return $virtualItemMethods->useGlobalConfigWidgetsInShopConfig();
         });
     }

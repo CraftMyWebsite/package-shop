@@ -23,7 +23,7 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopCartsController extends AbstractController
 {
     #[Link('/carts', Link::GET, [], '/cmw-admin/shop')]
-    public function shopCarts(): void
+    private function shopCarts(): void
     {
         $cartModel = ShopCartModel::getInstance();
         $cartItemsModel = ShopCartItemModel::getInstance();
@@ -35,7 +35,7 @@ class ShopCartsController extends AbstractController
     }
 
     #[Link('/carts/user/:userId', Link::GET, [], '/cmw-admin/shop')]
-    public function shopCartUser(int $userId): void
+    private function shopCartUser(int $userId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
 
@@ -51,7 +51,7 @@ class ShopCartsController extends AbstractController
     }
 
     #[Link('/carts/session/:sessionId', Link::GET, [], '/cmw-admin/shop')]
-    public function shopCartSession(string $sessionId): void
+    private function shopCartSession(string $sessionId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
 
@@ -67,7 +67,7 @@ class ShopCartsController extends AbstractController
 
     #[NoReturn]
     #[Link('/carts/session/delete/:sessionId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminDeleteShopSessionCart(string $sessionId): void
+    private function adminDeleteShopSessionCart(string $sessionId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -80,7 +80,7 @@ class ShopCartsController extends AbstractController
 
     #[NoReturn]
     #[Link('/carts/session/delete/all/sessions', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminDeleteAllShopSessionCart(): void
+    private function adminDeleteAllShopSessionCart(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 

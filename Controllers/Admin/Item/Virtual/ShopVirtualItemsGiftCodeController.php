@@ -4,7 +4,6 @@ namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
 use CMW\Controller\Core\CoreController;
 use CMW\Controller\Core\MailController;
-use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Flash\Alert;
@@ -117,7 +116,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $mainBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
-                '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
+            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
             [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
         $object = $websiteName . " - $globalName " . $amount;
         MailController::getInstance()->sendMail($user->getMail(), $object, $body);
@@ -212,7 +211,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $mainBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
-                '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
+            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
             [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
         $object = $websiteName . " - $globalName " . $amount;
         MailController::getInstance()->sendMail($user->getMail(), $object, $body);

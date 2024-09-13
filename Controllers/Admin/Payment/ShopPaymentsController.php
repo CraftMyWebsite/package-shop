@@ -43,8 +43,8 @@ class ShopPaymentsController extends AbstractController
     public function getRealActivePaymentsMethods(): array
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
-        return array_filter($allPaymentMethods, function ($paymentMethod) {
-            return $paymentMethod->isVirtualCurrency() == 0 && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
+        return array_filter($allPaymentMethods, static function ($paymentMethod) {
+            return $paymentMethod->isVirtualCurrency() === 0 && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
         });
     }
 
@@ -54,8 +54,8 @@ class ShopPaymentsController extends AbstractController
     public function getFreePayment(): array
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
-        return array_filter($allPaymentMethods, function ($paymentMethod) {
-            return $paymentMethod->varName() == 'free';
+        return array_filter($allPaymentMethods, static function ($paymentMethod) {
+            return $paymentMethod->varName() === 'free';
         });
     }
 
@@ -80,8 +80,8 @@ class ShopPaymentsController extends AbstractController
     public function getVirtualPaymentByVarNameAsArray(string $varName): array
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
-        return array_filter($allPaymentMethods, function ($paymentMethod) use ($varName) {
-            return $paymentMethod->isVirtualCurrency() == 1 && $paymentMethod->isActive() && $paymentMethod->varName() == $varName;
+        return array_filter($allPaymentMethods, static function ($paymentMethod) use ($varName) {
+            return $paymentMethod->isVirtualCurrency() === 1 && $paymentMethod->isActive() && $paymentMethod->varName() === $varName;
         });
     }
 
@@ -150,6 +150,11 @@ class ShopPaymentsController extends AbstractController
     private function onPaymentComplete(): void
     {
         $user = UsersModel::getCurrentUser();
+
+        if (!$user) {
+            Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver l\'utilisateur');
+            Redirect::redirectPreviousRoute();
+        }
 
         ShopHistoryOrdersController::getInstance()->handleCreateOrder($user);
 

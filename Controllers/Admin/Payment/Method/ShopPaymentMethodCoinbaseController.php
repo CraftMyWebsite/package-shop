@@ -28,7 +28,7 @@ use JsonException;
  */
 class ShopPaymentMethodCoinbaseController extends AbstractController
 {
-    private const COINBASE_COMMERCE_API_URL = 'https://api.commerce.coinbase.com/charges';
+    private const string COINBASE_COMMERCE_API_URL = 'https://api.commerce.coinbase.com/charges';
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
@@ -44,7 +44,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/coinbase/complete';
 
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('coinbase');
-        $paymentFee = $paymentMethod->fees();
+        $paymentFee = $paymentMethod?->fees();
 
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue('currency') ?? 'EUR';
 
@@ -54,7 +54,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
             $totalAmount = $item->getTotalPriceComplete();
         }
 
-        if ($paymentFee != 0) {
+        if ($paymentFee !== 0) {
             $totalAmount += $paymentFee;
         }
 
@@ -64,7 +64,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
             'pricing_type' => 'fixed_price',
             'local_price' => [
                 'amount' => $totalAmount,
-                'currency' => $currencyCode
+                'currency' => $currencyCode,
             ],
             'metadata' => [
                 'order_id' => 'Votre ID de commande ici',
@@ -80,9 +80,9 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
         if (isset($response['data']['hosted_url'])) {
             header('Location: ' . $response['data']['hosted_url']);
             exit;
-        } else {
-            throw new ShopPaymentException('Échec de la création de la charge Coinbase.');
         }
+
+        throw new ShopPaymentException('Échec de la création de la charge Coinbase.');
     }
 
     /**

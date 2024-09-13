@@ -28,8 +28,8 @@ use JsonException;
  */
 class ShopPaymentMethodPayPalController extends AbstractController
 {
-    private const PAYPAL_API_URL = 'https://api.paypal.com';
-    private const PAYPAL_SANDBOX_API_URL = 'https://api.sandbox.paypal.com';  // Only for dev.
+    private const string PAYPAL_API_URL = 'https://api.paypal.com';
+    private const string PAYPAL_SANDBOX_API_URL = 'https://api.sandbox.paypal.com';  // Only for dev.
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
@@ -42,7 +42,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         }
 
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('paypal');
-        $paymentFee = $paymentMethod->fees();
+        $paymentFee = $paymentMethod?->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/paypal/complete';
@@ -55,7 +55,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
             $totalAmount = $item->getTotalPriceComplete();
         }
 
-        if ($paymentFee != 0) {
+        if ($paymentFee !== 0) {
             $totalAmount += $paymentFee;
         }
 
@@ -70,16 +70,16 @@ class ShopPaymentMethodPayPalController extends AbstractController
                             'item_total' => [
                                 'currency_code' => $currencyCode,
                                 'value' => number_format(0.0, 2, '.', ''),
-                            ]
-                        ]
+                            ],
+                        ],
                     ],
                     'items' => [],
-                ]
+                ],
             ],
             'application_context' => [
                 'cancel_url' => $cancelUrl,
                 'return_url' => $completeUrl,
-            ]
+            ],
         ];
 
         $response = $this->createPayPalOrder($orderData);

@@ -24,7 +24,6 @@ use CMW\Model\Shop\Cart\ShopCartVariantesModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
-use CMW\Model\Shop\Discount\ShopGiftCardModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsVariantesModel;
@@ -50,7 +49,7 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopHistoryOrdersController extends AbstractController
 {
     #[Link('/orders', Link::GET, [], '/cmw-admin/shop')]
-    public function shopOrders(): void
+    private function shopOrders(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders');
 
@@ -58,7 +57,7 @@ class ShopHistoryOrdersController extends AbstractController
         $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
         $finishedOrders = ShopHistoryOrdersModel::getInstance()->getFinishedOrders();
         $orderItemsModel = ShopHistoryOrdersModel::getInstance();
-        $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages());
+        $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages(), true);
 
         View::createAdminView('Shop', 'Orders/orders')
             ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
@@ -69,24 +68,29 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[Link('/orders/manage/:orderId', Link::GET, [], '/cmw-admin/shop')]
-    public function shopManageOrders(int $orderId): void
+    private function shopManageOrders(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+
+        if (!$order){
+            Redirect::errorPage(404);
+        }
+
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         $orderStatus = $order->getStatusCode();
 
-        if ($orderStatus == 0) {
+        if ($orderStatus === 0) {
             View::createAdminView('Shop', 'Orders/Manage/new')
                 ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
-        if ($orderStatus == 1) {
+        if ($orderStatus === 1) {
             $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
             $sessionId = session_id();
-            $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($order->getUser()->getId(), $sessionId);
+            $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($order->getUser()?->getId(), $sessionId);
             $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
             if ($cartOnlyVirtual && !ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual')) {
                 ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
@@ -94,11 +98,11 @@ class ShopHistoryOrdersController extends AbstractController
                 // ExecVirtualNeeds :
                 $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
                 foreach ($items as $item) {
-                    if ($item->getItem()->getType() == 1) {
+                    if ($item->getItem()->getType() === 1) {
                         $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($item->getItem()->getId())->getVirtualMethod()->varName();
                         $quantity = $item->getQuantity();
                         for ($i = 0; $i < $quantity; $i++) {
-                            ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $item->getItem(), $order->getUser());
+                            ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)?->execOnBuy($virtualItemVarName, $item->getItem(), $order->getUser());
                         }
                     }
                 }
@@ -111,12 +115,12 @@ class ShopHistoryOrdersController extends AbstractController
                     ->view();
             }
         }
-        if ($orderStatus == 2) {
+        if ($orderStatus === 2) {
             View::createAdminView('Shop', 'Orders/Manage/finish')
                 ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
-        if ($orderStatus == -1) {
+        if ($orderStatus === -1) {
             View::createAdminView('Shop', 'Orders/Manage/cancel')
                 ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
@@ -124,7 +128,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[Link('/orders/view/:orderId', Link::GET, [], '/cmw-admin/shop')]
-    public function shopViewOrders(int $orderId): void
+    private function shopViewOrders(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
 
@@ -138,7 +142,7 @@ class ShopHistoryOrdersController extends AbstractController
 
     #[NoReturn]
     #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
-    public function shopManageSendStep(int $orderId): void
+    private function shopManageSendStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
         // TODO : Notifier l'utilisateur
@@ -150,7 +154,7 @@ class ShopHistoryOrdersController extends AbstractController
 
     #[NoReturn]
     #[Link('/orders/manage/finish/:orderId', Link::POST, [], '/cmw-admin/shop')]
-    public function shopManageFinalStep(int $orderId): void
+    private function shopManageFinalStep(int $orderId): void
     {
         [$shippingLink] = Utils::filterInput('shipping_link');
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === '' ? null : $shippingLink));
@@ -164,7 +168,7 @@ class ShopHistoryOrdersController extends AbstractController
 
     #[NoReturn]
     #[Link('/orders/manage/end/:orderId', Link::POST, [], '/cmw-admin/shop')]
-    public function shopManageEndStep(int $orderId): void
+    private function shopManageEndStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
 
@@ -190,7 +194,7 @@ class ShopHistoryOrdersController extends AbstractController
 
     #[NoReturn]
     #[Link('/orders/manage/cancel/:orderId', Link::POST, [], '/cmw-admin/shop')]
-    public function shopManageCancelStep(int $orderId): void
+    private function shopManageCancelStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
 
@@ -203,7 +207,7 @@ class ShopHistoryOrdersController extends AbstractController
 
     #[NoReturn]
     #[Link('/orders/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
-    public function shopManageRefundStep(int $orderId): void
+    private function shopManageRefundStep(int $orderId): void
     {
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
 

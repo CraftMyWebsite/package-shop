@@ -9,6 +9,7 @@ use CMW\Event\Shop\ShopEditCatEvent;
 use CMW\Manager\Events\Emitter;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
@@ -16,6 +17,7 @@ use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopItemsController
@@ -27,7 +29,7 @@ use CMW\Utils\Utils;
 class ShopCatController extends AbstractController
 {
     #[Link('/cat', Link::GET, [], '/cmw-admin/shop')]
-    public function adminShopCat(): void
+    private function adminShopCat(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -38,14 +40,24 @@ class ShopCatController extends AbstractController
             ->view();
     }
 
-    #[Link('/cat/add', Link::POST, [], '/cmw-admin/shop')]
-    public function adminAddShopCategoryPost(): void
+    #[NoReturn] #[Link('/cat/add', Link::POST, [], '/cmw-admin/shop')]
+    private function adminAddShopCategoryPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
         [$name, $description, $icon] = Utils::filterInput('name', 'description', 'icon');
 
         $cat = ShopCategoriesModel::getInstance()->createShopCategory($name, $description, $icon);
+
+        if (!$cat) {
+            Flash::send(
+                Alert::ERROR,
+                LangManager::translate('core.toaster.error'),
+                'Une erreur est survenue lors de la création de la catégorie.',
+            );
+            Redirect::redirectPreviousRoute();
+        }
+
         $catId = $cat->getId();
 
         Emitter::send(ShopAddCatEvent::class, $catId);
@@ -54,7 +66,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link('/cat/addSubCat/:catId', Link::GET, [], '/cmw-admin/shop')]
-    public function adminAddSubCat(int $catId): void
+    private function adminAddSubCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -65,8 +77,8 @@ class ShopCatController extends AbstractController
             ->view();
     }
 
-    #[Link('/cat/addSubCat/:catId', Link::POST, [], '/cmw-admin/shop')]
-    public function adminAddSubCatPost(int $catId): void
+    #[NoReturn] #[Link('/cat/addSubCat/:catId', Link::POST, [], '/cmw-admin/shop')]
+    private function adminAddSubCatPost(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -80,7 +92,7 @@ class ShopCatController extends AbstractController
     }
 
     #[Link('/cat/edit/:catId', Link::GET, [], '/cmw-admin/shop')]
-    public function adminEditCat(int $catId): void
+    private function adminEditCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
@@ -92,13 +104,14 @@ class ShopCatController extends AbstractController
             ->view();
     }
 
-    #[Link('/cat/edit/:catId', Link::POST, [], '/cmw-admin/shop')]
-    public function adminEditCatPost(string $catId): void
+    #[NoReturn] #[Link('/cat/edit/:catId', Link::POST, [], '/cmw-admin/shop')]
+    private function adminEditCatPost(string $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
         [$name, $description, $icon, $move] = Utils::filterInput('name', 'description', 'icon', 'move');
 
+        //TODO Rewrite that...
         $move = ($move === $catId) ? (is_null(ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()) ? null : ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()->getId()) : (($move === '') ? null : $move);
 
         ShopCategoriesModel::getInstance()->editCategory($name, $description, $icon, $move, $catId);
@@ -108,8 +121,8 @@ class ShopCatController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/cat/delete/:catId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminDeleteShopCat(int $catId): void
+    #[NoReturn] #[Link('/cat/delete/:catId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    private function adminDeleteShopCat(int $catId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 

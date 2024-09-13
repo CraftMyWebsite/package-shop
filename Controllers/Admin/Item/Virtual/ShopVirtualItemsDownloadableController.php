@@ -17,6 +17,7 @@ use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 class ShopVirtualItemsDownloadableController extends AbstractController
 {
     /**
+     * @param string $varName
      * @param ShopItemEntity $item
      * @param UserEntity $user
      */

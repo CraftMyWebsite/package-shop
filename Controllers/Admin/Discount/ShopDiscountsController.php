@@ -15,10 +15,10 @@ use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
-use CMW\Utils\Log;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use DateTime;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopDiscountsController
@@ -33,7 +33,7 @@ class ShopDiscountsController extends AbstractController
      * @throws \Exception
      */
     #[Link('/discounts', Link::GET, [], '/cmw-admin/shop')]
-    public function shopDiscounts(): void
+    private function shopDiscounts(): void
     {
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
@@ -53,7 +53,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link('/discounts/add', Link::GET, [], '/cmw-admin/shop')]
-    public function shopDiscountsAdd(): void
+    private function shopDiscountsAdd(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -65,8 +65,8 @@ class ShopDiscountsController extends AbstractController
             ->view();
     }
 
-    #[Link('/discounts/add', Link::POST, [], '/cmw-admin/shop')]
-    public function shopDiscountsAddPost(): void
+    #[NoReturn] #[Link('/discounts/add', Link::POST, [], '/cmw-admin/shop')]
+    private function shopDiscountsAddPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts.add');
         $discountModel = ShopDiscountModel::getInstance();
@@ -137,6 +137,15 @@ class ShopDiscountsController extends AbstractController
         }
 
         $thisDiscount = ShopDiscountModel::getInstance()->createDiscount($name, $link, $startDate, $endDate, $maxUses, $currentUses, $percent, $price, $multiplePerUsers, 0, $test, $code, $defaultActive, $needPurchase, $applyQuantity);
+
+        if (!$thisDiscount) {
+            Flash::send(
+                Alert::ERROR,
+                'Discount',
+                'Une erreur est survenue lors de la création de la promotion.',
+            );
+            Redirect::redirectPreviousRoute();
+        }
 
         if ($link === '1') {
             if (!empty($_POST['linkedItems'])) {
@@ -239,7 +248,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link('/discounts/edit/:id', Link::GET, [], '/cmw-admin/shop')]
-    public function shopDiscountsEdit(int $id): void
+    private function shopDiscountsEdit(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -251,7 +260,7 @@ class ShopDiscountsController extends AbstractController
     }
 
     #[Link('/discounts/edit/:id', Link::POST, [], '/cmw-admin/shop')]
-    public function shopDiscountsEditPost(int $id): void
+    private function shopDiscountsEditPost(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts.add');
         $discountModel = ShopDiscountModel::getInstance();
@@ -314,8 +323,8 @@ class ShopDiscountsController extends AbstractController
         Redirect::redirect('cmw-admin/shop/discounts');
     }
 
-    #[Link('/discounts/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminDeleteShopDiscount(int $id): void
+    #[NoReturn] #[Link('/discounts/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    private function adminDeleteShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -326,8 +335,8 @@ class ShopDiscountsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/discounts/stop/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminStopShopDiscount(int $id): void
+    #[NoReturn] #[Link('/discounts/stop/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    private function adminStopShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -338,8 +347,8 @@ class ShopDiscountsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/discounts/start/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
-    public function adminStartShopDiscount(int $id): void
+    #[NoReturn] #[Link('/discounts/start/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    private function adminStartShopDiscount(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -350,8 +359,8 @@ class ShopDiscountsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/discounts/report', Link::POST, [], '/cmw-admin/shop')]
-    public function shopReportDiscountPost(): void
+    #[NoReturn] #[Link('/discounts/report', Link::POST, [], '/cmw-admin/shop')]
+    private function shopReportDiscountPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -371,7 +380,7 @@ class ShopDiscountsController extends AbstractController
      * @throws \Exception
      */
     #[Link('/giftCard', Link::GET, [], '/cmw-admin/shop')]
-    public function shopGiftCard(): void
+    private function shopGiftCard(): void
     {
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
@@ -390,8 +399,8 @@ class ShopDiscountsController extends AbstractController
             ->view();
     }
 
-    #[Link('/giftCard/generate', Link::POST, [], '/cmw-admin/shop')]
-    public function shopGenerateGiftCard(): void
+    #[NoReturn] #[Link('/giftCard/generate', Link::POST, [], '/cmw-admin/shop')]
+    private function shopGenerateGiftCard(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
@@ -405,8 +414,8 @@ class ShopDiscountsController extends AbstractController
     }
 
     /**
-     * @throws \Exception
      * @return ShopDiscountEntity[]
+     * @throws \Exception
      */
     private function sortDiscountsByDate($discounts): array
     {
@@ -424,12 +433,10 @@ class ShopDiscountsController extends AbstractController
             // Promotion en cours : a commencé, pas fini ou pas de date de fin, et statut actif
             if ($startDate <= $currentDate && ($endDate >= $currentDate || empty($endDateString)) && $status != 0) {
                 $ongoingDiscounts[] = $discount;
-            }
-            // Promotion à venir : n'a pas encore commencé
+            } // Promotion à venir : n'a pas encore commencé
             elseif ($currentDate < $startDate) {
                 $upcomingDiscounts[] = $discount;
-            }
-            // Toutes autres conditions, considérées comme promotions passées
+            } // Toutes autres conditions, considérées comme promotions passées
             else {
                 $pastDiscounts[] = $discount;
             }
@@ -442,7 +449,7 @@ class ShopDiscountsController extends AbstractController
         ];
     }
 
-    function isDiscountActive($currentDateTime, $startDate, $endDate = null): bool
+    private function isDiscountActive($currentDateTime, $startDate, $endDate = null): bool
     {
         if ($startDate <= $currentDateTime && ($endDate === null || $currentDateTime <= $endDate)) {
             return true;

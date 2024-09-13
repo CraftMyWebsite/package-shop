@@ -4,7 +4,6 @@ namespace CMW\Controller\Shop\Admin\Shipping;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Interface\Shop\IShippingMethod;
-use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
@@ -19,7 +18,7 @@ use CMW\Manager\Views\View;
 class ShopShippingController extends AbstractController
 {
     #[Link('/shipping', Link::GET, [], '/cmw-admin/shop')]
-    public function shopDiscounts(): void
+    private function shopDiscounts(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
         View::createAdminView('Shop', 'Shipping/main')

@@ -31,7 +31,7 @@ use JsonException;
  */
 class ShopPaymentMethodStripeController extends AbstractController
 {
-    private const STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
+    private const string STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
@@ -44,7 +44,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         }
 
         $paymentMethod = ShopPaymentsController::getInstance()->getPaymentByVarName('stripe');
-        $paymentFee = $paymentMethod->fees();
+        $paymentFee = $paymentMethod?->fees();
 
         $cancelUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/cancel';
         $completeUrl = EnvManager::getInstance()->getValue('PATH_URL') . 'shop/command/stripe/complete';
@@ -65,7 +65,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId(UsersModel::getCurrentUser()->getId(), session_id());
         foreach ($cartDiscounts as $cartDiscount) {
             $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
-            if ($discountGiftCode->getDiscount()->getLinked() == 3) {
+            if ($discountGiftCode?->getDiscount()->getLinked() === 3) {
                 $giftCode = $discountGiftCode->getDiscount();
                 break;
             }
