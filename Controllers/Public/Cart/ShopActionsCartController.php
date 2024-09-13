@@ -16,7 +16,6 @@ use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
-use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
