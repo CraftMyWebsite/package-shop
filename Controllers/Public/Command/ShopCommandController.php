@@ -1,4 +1,5 @@
 <?php
+
 namespace CMW\Controller\Shop\Public\Command;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
@@ -35,7 +36,7 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopCommandController extends AbstractController
 {
     #[Link('/command', Link::GET, [], '/shop')]
-    public function publicCommandView(): void
+    private function publicCommandView(): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -160,8 +161,8 @@ class ShopCommandController extends AbstractController
         }
     }
 
-    #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
-    public function publicCreateAddressPost(): void
+    #[NoReturn] #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
+    private function publicCreateAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -173,8 +174,8 @@ class ShopCommandController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
-    public function publicAddAddressPost(): void
+    #[NoReturn] #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
+    private function publicAddAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -193,7 +194,7 @@ class ShopCommandController extends AbstractController
 
     #[NoReturn]
     #[Link('/command/toDelivery', Link::POST, ['.*?'], '/shop')]
-    public function publicToDeliveryPost(): void
+    private function publicToDeliveryPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -211,7 +212,7 @@ class ShopCommandController extends AbstractController
 
     #[NoReturn]
     #[Link('/command/toAddress', Link::POST, ['.*?'], '/shop')]
-    public function publicToAddressPost(): void
+    private function publicToAddressPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -222,7 +223,7 @@ class ShopCommandController extends AbstractController
 
     #[NoReturn]
     #[Link('/command/toPayment', Link::POST, ['.*?'], '/shop')]
-    public function publicToPaymentPost(): void
+    private function publicToPaymentPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -240,7 +241,7 @@ class ShopCommandController extends AbstractController
 
     #[NoReturn]
     #[Link('/command/toShipping', Link::POST, ['.*?'], '/shop')]
-    public function publicToShippingPost(): void
+    private function publicToShippingPost(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
 
@@ -258,7 +259,7 @@ class ShopCommandController extends AbstractController
 
     #[NoReturn]
     #[Link('/command/finalize', Link::POST, [], '/shop')]
-    public function publicFinalizeCommand(): void
+    private function publicFinalizeCommand(): void
     {
         $user = UsersModel::getCurrentUser();
 

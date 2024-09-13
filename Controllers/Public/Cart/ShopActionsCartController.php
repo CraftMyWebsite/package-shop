@@ -32,7 +32,7 @@ class ShopActionsCartController extends AbstractController
 {
     #[NoReturn]
     #[Link('/add_to_cart/:itemId', Link::GET, [], '/shop')]
-    public function publicAddCart(int $itemId): void
+    private function publicAddCart(int $itemId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -40,7 +40,7 @@ class ShopActionsCartController extends AbstractController
 
         if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
             Flash::send(Alert::WARNING, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
-            $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)->getItemLink();
+            $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getItemLink();
             header('Location:' . $itemUrl);
             die();
         }
@@ -62,7 +62,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cat/:catSlug/item/:itemSlug', Link::POST, ['.*?'], '/shop')]
-    public function publicAddCartQuantity(string $catSlug, string $itemSlug): void
+    private function publicAddCartQuantity(string $catSlug, string $itemSlug): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -91,7 +91,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cart/discount/apply', Link::POST, [], '/shop')]
-    public function publicTestAndApplyDiscountCode(): void
+    private function publicTestAndApplyDiscountCode(): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -110,7 +110,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cart/discount/remove/:discountId', Link::GET, [], '/shop')]
-    public function publicRemoveDiscountCode(int $discountId): void
+    private function publicRemoveDiscountCode(int $discountId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -131,7 +131,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cart/increase_quantity/:itemId', Link::GET, [], '/shop')]
-    public function publicAddQuantity(int $itemId): void
+    private function publicAddQuantity(int $itemId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -152,7 +152,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cart/decrease_quantity/:itemId', Link::GET, [], '/shop')]
-    public function publicRemoveQuantity(int $itemId): void
+    private function publicRemoveQuantity(int $itemId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -187,7 +187,7 @@ class ShopActionsCartController extends AbstractController
 
     #[NoReturn]
     #[Link('/cart/remove/:itemId', Link::GET, [], '/shop')]
-    public function publicRemoveItem(int $itemId): void
+    private function publicRemoveItem(int $itemId): void
     {
         $userId = UsersModel::getCurrentUser()?->getId();
         $sessionId = session_id();

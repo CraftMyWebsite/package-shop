@@ -30,7 +30,7 @@ use CMW\Utils\Redirect;
 class ShopCartController extends AbstractController
 {
     #[Link('/cart', Link::GET, [], '/shop')]
-    public function publicCartView(): void
+    private function publicCartView(): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {

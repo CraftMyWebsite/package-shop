@@ -1,4 +1,5 @@
 <?php
+
 namespace CMW\Controller\Shop\Public\Cart;
 
 use CMW\Controller\Users\UsersController;
@@ -48,7 +49,7 @@ class ShopHandlerDiscountController extends AbstractController
 
     private function healthCode($code): void
     {
-        if ($code == '') {
+        if ($code === '') {
             Flash::send(Alert::ERROR, 'Boutique', "Vous n'avez pas entré de code");
             Redirect::redirectPreviousRoute();
         }

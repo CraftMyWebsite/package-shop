@@ -8,13 +8,7 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsVariantesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersPaymentModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersShippingModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersUserAddressModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Order\ShopOrdersItemsVariantesModel;
@@ -32,7 +26,7 @@ use CMW\Utils\Redirect;
 class ShopHistoryController extends AbstractController
 {
     #[Link('/history', Link::GET, [], '/shop')]
-    public function publicHistoryView(): void
+    private function publicHistoryView(): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {

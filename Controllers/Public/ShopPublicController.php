@@ -10,7 +10,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
-use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
@@ -24,6 +23,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopPublicController
@@ -34,7 +34,7 @@ use CMW\Utils\Utils;
 class ShopPublicController extends AbstractController
 {
     #[Link('/', Link::GET, [], '/shop')]
-    public function publicBaseView(): void
+    private function publicBaseView(): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -60,7 +60,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[Link('/cat/:catSlug', Link::GET, ['.*?'], '/shop')]
-    public function publicCatView(string $catSlug): void
+    private function publicCatView(string $catSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -85,7 +85,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[Link('/cat/:catSlug/item/:itemSlug', Link::GET, ['.*?'], '/shop')]
-    public function publicItemView(string $catSlug, string $itemSlug): void
+    private function publicItemView(string $catSlug, string $itemSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -113,7 +113,7 @@ class ShopPublicController extends AbstractController
     }
 
     #[Link('/settings', Link::GET, [], '/shop')]
-    public function publicSettingsView(): void
+    private function publicSettingsView(): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -133,9 +133,8 @@ class ShopPublicController extends AbstractController
         $view->view();
     }
 
-    #[NoReturn]
-    #[Link('/cat/:catSlug/item/:itemSlug/addReview', Link::POST, ['.*?'], '/shop')]
-    public function publicPostReview(string $catSlug, string $itemSlug): void
+    #[NoReturn] #[Link('/cat/:catSlug/item/:itemSlug/addReview', Link::POST, ['.*?'], '/shop')]
+    private function publicPostReview(string $catSlug, string $itemSlug): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
