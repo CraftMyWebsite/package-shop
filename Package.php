@@ -37,7 +37,6 @@ class Package implements IPackageConfig
     {
         return [
             new PackageMenuType(
-                lang: 'fr',
                 icon: 'fas fa-shop',
                 title: 'Boutique',
                 url: null,
@@ -95,70 +94,6 @@ class Package implements IPackageConfig
                     ),
                     new PackageSubMenuType(
                         title: 'Statistiques',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/statistics',
-                    ),
-                ]
-            ),
-            new PackageMenuType(
-                lang: 'en',
-                icon: 'fas fa-shop',
-                title: 'Boutique',
-                url: null,
-                permission: null,
-                subMenus: [
-                    new PackageSubMenuType(
-                        title: 'Configuration',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/settings',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Categories',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/cat',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Items',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/items',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Discounts',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/discounts',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Gift Card',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/giftCard',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Carts',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/carts',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Orders',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/orders',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'After Sales',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/afterSales',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Shipping',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/shipping',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Payments',
-                        permission: 'todo',  // TODO PERM
-                        url: 'shop/payments',
-                    ),
-                    new PackageSubMenuType(
-                        title: 'Statistics',
                         permission: 'todo',  // TODO PERM
                         url: 'shop/statistics',
                     ),
