@@ -44,7 +44,7 @@ class ShopPaymentsController extends AbstractController
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) {
-            return $paymentMethod->isVirtualCurrency() === 0 && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
+            return $paymentMethod->isVirtualCurrency() === false && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
         });
     }
 
