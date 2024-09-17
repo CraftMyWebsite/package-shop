@@ -114,7 +114,7 @@ class ShopDeliveryUserAddressEntity
 
     public function getFormattedCountry(): ?string
     {
-        return ShopCountryModel::getInstance()->getCountryByCode($this->deliveryCountry)->getName();
+        return ShopCountryModel::getInstance()->getCountryByCode($this->deliveryCountry)?->getName();
     }
 
     public function getPhone(): ?string
