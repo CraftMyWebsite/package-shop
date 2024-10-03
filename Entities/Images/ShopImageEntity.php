@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Images;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Manager\Env\EnvManager;
 
 class ShopImageEntity
@@ -79,7 +79,7 @@ class ShopImageEntity
      */
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->imageCreated);
+        return Date::formatDate($this->imageCreated);
     }
 
     /**
@@ -87,6 +87,6 @@ class ShopImageEntity
      */
     public function getUpdate(): string
     {
-        return CoreController::formatDate($this->imageUpdated);
+        return Date::formatDate($this->imageUpdated);
     }
 }

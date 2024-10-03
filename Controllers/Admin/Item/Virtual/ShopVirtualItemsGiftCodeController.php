@@ -2,7 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Controller\Core\MailController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
@@ -54,7 +54,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             MailController::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }
 
-        $formattedEndDate = CoreController::formatDate($endDateTime);
+        $formattedEndDate = Date::formatDate($endDateTime);
         $titre = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
         $message = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
         $use = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
@@ -149,7 +149,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             MailController::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }
 
-        $formattedEndDate = CoreController::formatDate($endDateTime);
+        $formattedEndDate = Date::formatDate($endDateTime);
         $titre = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
         $message = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
         $use = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';

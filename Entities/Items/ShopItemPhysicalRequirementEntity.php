@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Items;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 
 class ShopItemPhysicalRequirementEntity
 {
@@ -69,11 +69,11 @@ class ShopItemPhysicalRequirementEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->physicalRequirementCreated);
+        return Date::formatDate($this->physicalRequirementCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->physicalRequirementUpdated);
+        return Date::formatDate($this->physicalRequirementUpdated);
     }
 }

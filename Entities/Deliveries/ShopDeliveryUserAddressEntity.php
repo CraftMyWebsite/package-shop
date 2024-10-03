@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Deliveries;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
@@ -124,11 +124,11 @@ class ShopDeliveryUserAddressEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->deliveryCreated);
+        return Date::formatDate($this->deliveryCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->deliveryUpdated);
+        return Date::formatDate($this->deliveryUpdated);
     }
 }

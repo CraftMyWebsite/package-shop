@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Users\UserEntity;
 use CMW\Model\Shop\Discount\ShopGiftCardModel;
@@ -123,12 +123,12 @@ class ShopHistoryOrdersEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->historyOrderCreated);
+        return Date::formatDate($this->historyOrderCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->historyOrderUpdated);
+        return Date::formatDate($this->historyOrderUpdated);
     }
 
     public function getOrderTotal(): float

@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Categories;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Utils\Website;
@@ -89,7 +89,7 @@ class ShopCategoryEntity
      */
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->categoryCreated);
+        return Date::formatDate($this->categoryCreated);
     }
 
     /**
@@ -97,7 +97,7 @@ class ShopCategoryEntity
      */
     public function getUpdate(): string
     {
-        return CoreController::formatDate($this->categoryUpdated);
+        return Date::formatDate($this->categoryUpdated);
     }
 
     /**

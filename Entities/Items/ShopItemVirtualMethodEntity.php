@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Items;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Interface\Shop\IVirtualItems;
 
 class ShopItemVirtualMethodEntity
@@ -46,11 +46,11 @@ class ShopItemVirtualMethodEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->virtualMethodCreated);
+        return Date::formatDate($this->virtualMethodCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->virtualMethodUpdated);
+        return Date::formatDate($this->virtualMethodUpdated);
     }
 }

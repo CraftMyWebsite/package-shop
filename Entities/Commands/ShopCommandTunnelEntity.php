@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Commands;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
@@ -72,11 +72,11 @@ class ShopCommandTunnelEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->tunnelCreated);
+        return Date::formatDate($this->tunnelCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->tunnelUpdated);
+        return Date::formatDate($this->tunnelUpdated);
     }
 }

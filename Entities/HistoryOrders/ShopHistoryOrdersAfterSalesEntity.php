@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 
 class ShopHistoryOrdersAfterSalesEntity
@@ -105,12 +105,12 @@ class ShopHistoryOrdersAfterSalesEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->created);
+        return Date::formatDate($this->created);
         return $this->created;
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->updated);
+        return Date::formatDate($this->updated);
     }
 }

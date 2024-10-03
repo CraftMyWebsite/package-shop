@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Carts;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
@@ -376,7 +376,7 @@ class ShopCartItemEntity
      */
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->cartCreated);
+        return Date::formatDate($this->cartCreated);
     }
 
     /**
@@ -384,7 +384,7 @@ class ShopCartItemEntity
      */
     public function getUpdate(): string
     {
-        return CoreController::formatDate($this->cartUpdated);
+        return Date::formatDate($this->cartUpdated);
     }
 
     /**

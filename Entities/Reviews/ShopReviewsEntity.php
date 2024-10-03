@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Reviews;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Env\EnvManager;
@@ -116,7 +116,7 @@ class ShopReviewsEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->reviewCreated);
+        return Date::formatDate($this->reviewCreated);
     }
 
     public function getUpdated(): string

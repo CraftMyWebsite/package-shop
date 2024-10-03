@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Items;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 
 class ShopItemVariantEntity
 {
@@ -45,11 +45,11 @@ class ShopItemVariantEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->variantCreated);
+        return Date::formatDate($this->variantCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->variantUpdated);
+        return Date::formatDate($this->variantUpdated);
     }
 }

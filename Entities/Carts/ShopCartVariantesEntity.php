@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Carts;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Entity\Shop\Items\ShopItemVariantValueEntity;
 
 class ShopCartVariantesEntity
@@ -46,11 +46,11 @@ class ShopCartVariantesEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->cartVariantCreated);
+        return Date::formatDate($this->cartVariantCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->cartVariantUpdated);
+        return Date::formatDate($this->cartVariantUpdated);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CMW\Entity\Shop\Discounts;
 
-use CMW\Controller\Core\CoreController;
+use CMW\Utils\Date;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use DateInterval;
 use DateTime;
@@ -113,12 +113,12 @@ class ShopDiscountEntity
 
     public function getStartDateFormatted(): string
     {
-        return CoreController::formatDate($this->discountStartDate);
+        return Date::formatDate($this->discountStartDate);
     }
 
     public function getEndDateFormatted(): ?string
     {
-        return CoreController::formatDate($this->discountEndDate);
+        return Date::formatDate($this->discountEndDate);
     }
 
     /**
@@ -242,11 +242,11 @@ class ShopDiscountEntity
 
     public function getCreated(): string
     {
-        return CoreController::formatDate($this->discountCreated);
+        return Date::formatDate($this->discountCreated);
     }
 
     public function getUpdated(): string
     {
-        return CoreController::formatDate($this->discountUpdated);
+        return Date::formatDate($this->discountUpdated);
     }
 }
