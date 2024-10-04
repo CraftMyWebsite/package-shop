@@ -31,7 +31,7 @@ use JsonException;
  */
 class ShopPaymentMethodStripeController extends AbstractController
 {
-    private const STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
+    private const string  STRIPE_URL = 'https://api.stripe.com/v1/checkout/sessions';
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems

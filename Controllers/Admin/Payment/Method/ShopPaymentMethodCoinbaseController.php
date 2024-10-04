@@ -28,7 +28,7 @@ use JsonException;
  */
 class ShopPaymentMethodCoinbaseController extends AbstractController
 {
-    private const  COINBASE_COMMERCE_API_URL = 'https://api.commerce.coinbase.com/charges';
+    private const string COINBASE_COMMERCE_API_URL = 'https://api.commerce.coinbase.com/charges';
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
