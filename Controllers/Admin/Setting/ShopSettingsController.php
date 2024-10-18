@@ -26,7 +26,7 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopSettingsController extends AbstractController
 {
     // Based on PayPal accepted currencies
-    private static array $availableCurrencies = [
+    public static array $availableCurrencies = [
         'AUD' => ['name' => 'Australian Dollar', 'symbol' => 'A$'],
         'BRL' => ['name' => 'Brazilian Real', 'symbol' => 'R$'],
         'CAD' => ['name' => 'Canadian Dollar', 'symbol' => 'CA$'],
