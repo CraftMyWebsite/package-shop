@@ -23,7 +23,7 @@ use JetBrains\PhpStorm\NoReturn;
  * Class: @ShopItemsController
  * @desc this controller manages: categories, items requirement, items actions, items tags
  * @package shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
+ * @author Zomb
  * @version 1.0
  */
 class ShopCatController extends AbstractController

@@ -70,6 +70,26 @@ class ShopHistoryOrdersModel extends AbstractModel
     }
 
     /**
+     * @param int $orderId
+     * @return ShopHistoryOrdersEntity|null
+     */
+    public function getHistoryOrdersByOrderNumber(int $orderId): ?ShopHistoryOrdersEntity
+    {
+        $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_number = :orderId';
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(['orderId' => $orderId])) {
+            return null;
+        }
+
+        $res = $res->fetch();
+
+        return $this->getHistoryOrdersById($res['shop_history_order_id']);
+    }
+
+    /**
      * @return ShopHistoryOrdersEntity []
      */
     public function getInProgressOrders(): array

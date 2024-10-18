@@ -20,8 +20,8 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopHistoryOrdersAfterSalesController
  * @package shop
- * @author Zomblard
- * @version 1.0
+ * @author Zomb
+ * @version 0.0.1
  */
 class ShopHistoryOrdersAfterSalesController extends AbstractController
 {
@@ -41,7 +41,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     }
 
     #[Link('/afterSales/manage/:afterSalesId', Link::GET, [], '/cmw-admin/shop')]
-    private function shopManageOrders(Request $request, int $afterSalesId): void
+    private function shopManageOrders(int $afterSalesId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.sav');
 
@@ -54,7 +54,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     }
 
     #[NoReturn] #[Link('/afterSales/manage/:afterSalesId', Link::POST, [], '/cmw-admin/shop')]
-    private function shopManageFinalStep(Request $request, int $afterSalesId): void
+    private function shopManageFinalStep(int $afterSalesId): void
     {
         [$message] = Utils::filterInput('message');
 
@@ -81,7 +81,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     }
 
     #[NoReturn] #[Link('/afterSales/close/:afterSalesId', Link::GET, [], '/cmw-admin/shop')]
-    private function shopCloseOrders(Request $request, int $afterSalesId): void
+    private function shopCloseOrders(int $afterSalesId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.sav');
 

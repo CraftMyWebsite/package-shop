@@ -15,15 +15,15 @@ use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
 /**
- * Class: @ShopHistoryController
+ * Class: @ShopHistoryAfterSalesController
  * @package shop
  * @author Zomb
  * @version 0.0.1
  */
-class ShopHistoryController extends AbstractController
+class ShopHistoryAfterSalesController extends AbstractController
 {
-    #[Link('/history', Link::GET, [], '/shop')]
-    private function publicHistoryView(): void
+    #[Link('/history/afterSales/request/:orderNumber', Link::GET, [], '/shop')]
+    private function publicHistoryAfterSalesView(int $orderNumber): void
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
@@ -37,12 +37,11 @@ class ShopHistoryController extends AbstractController
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }
 
-        $historyOrders = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersByUserId($userId);
-
+        $historyOrder = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersByOrderNumber($orderNumber);
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
-        $view = new View('Shop', 'History/main');
-        $view->addVariableList(['historyOrders' => $historyOrders, 'defaultImage' => $defaultImage]);
+        $view = new View('Shop', 'History/afterSales');
+        $view->addVariableList(['historyOrder' => $historyOrder, 'defaultImage' => $defaultImage]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }

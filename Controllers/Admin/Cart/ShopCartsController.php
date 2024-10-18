@@ -17,7 +17,7 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopCartsController
  * @package shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
+ * @author Zomb
  * @version 1.0
  */
 class ShopCartsController extends AbstractController
