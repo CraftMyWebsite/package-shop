@@ -70,10 +70,10 @@ class ShopHistoryOrdersModel extends AbstractModel
     }
 
     /**
-     * @param int $orderId
+     * @param string $orderId
      * @return ShopHistoryOrdersEntity|null
      */
-    public function getHistoryOrdersByOrderNumber(int $orderId): ?ShopHistoryOrdersEntity
+    public function getHistoryOrdersByOrderNumber(string $orderId): ?ShopHistoryOrdersEntity
     {
         $sql = 'SELECT shop_history_order_id FROM cmw_shop_history_order WHERE shop_history_order_number = :orderId';
         $db = DatabaseManager::getInstance();

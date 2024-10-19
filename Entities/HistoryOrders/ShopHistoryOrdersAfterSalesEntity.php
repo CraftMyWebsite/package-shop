@@ -2,8 +2,10 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
+use CMW\Utils\Website;
 
 class ShopHistoryOrdersAfterSalesEntity
 {
@@ -106,11 +108,18 @@ class ShopHistoryOrdersAfterSalesEntity
     public function getCreated(): string
     {
         return Date::formatDate($this->created);
-        return $this->created;
     }
 
     public function getUpdated(): string
     {
         return Date::formatDate($this->updated);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCloseUrl(): string
+    {
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/history/$this->support_slug";
     }
 }

@@ -75,26 +75,27 @@ class ShopHistoryOrdersAfterSalesModel extends AbstractModel
     }
 
     /**
-     * @return ?ShopHistoryOrdersAfterSalesEntity []
+     * @return ?ShopHistoryOrdersAfterSalesEntity
      */
-    public function getHistoryOrdersAfterSalesByOrderId(int $orderId): ?array
+    public function getHistoryOrdersAfterSalesByOrderId(int $orderId): ?ShopHistoryOrdersAfterSalesEntity
     {
-        $sql = 'SELECT shop_history_order_afterSales_id FROM cmw_shop_history_order_afterSales WHERE shop_history_order_id = :shop_history_order_id';
+        $sql = 'SELECT shop_history_order_afterSales_id FROM cmw_shop_history_order_afterSales WHERE shop_history_order_id = :shop_history_order_id LIMIT 1';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
 
+
         if (!$res->execute(array('shop_history_order_id' => $orderId))) {
-            return array();
+            return null;
         }
 
-        $toReturn = array();
+        $res = $res->fetch();
 
-        while ($orderItem = $res->fetch()) {
-            $toReturn[] = $this->getHistoryOrdersAfterSalesById($orderItem['shop_history_order_afterSales_id']);
+        if (empty($res)) {
+            return null;
         }
 
-        return $toReturn;
+        return $this->getHistoryOrdersAfterSalesById($res['shop_history_order_afterSales_id']);
     }
 
     public function changeStatus(int $id, int $status): void
@@ -110,5 +111,26 @@ class ShopHistoryOrdersAfterSalesModel extends AbstractModel
         $req = $db->prepare($sql);
 
         $req->execute($data);
+    }
+
+    public function createHistoryOrdersAfterSales(int $userId, int $reason, int $orderId): ?ShopHistoryOrdersAfterSalesEntity
+    {
+        $var = array(
+            'userId' => $userId,
+            'reason' => $reason,
+            'orderId' => $orderId,
+            'status' => 0
+        );
+
+        $sql = 'INSERT INTO cmw_shop_history_order_afterSales (shop_history_order_afterSales_author, shop_history_order_afterSales_reason, shop_history_order_id, shop_history_order_afterSales_status) VALUES (:userId, :reason, :orderId, :status)';
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($var)) {
+            return $this->getHistoryOrdersAfterSalesById($db->lastInsertId());
+        }
+
+        return null;
     }
 }

@@ -67,8 +67,8 @@ $description = 'SAV';
                         <div class="max-w-2xl flex gap-2">
                             <div class="alert">
                                 <div class="flex justify-between">
+                                    <span class="badge">S.A.V</span>
                                     <p><span class="font-bold"><?= $message->getAuthor()->getPseudo() ?></span> <small><?= $message->getCreated() ?></small></p>
-                                    <span class="badge ml-12">S.A.V</span>
                                 </div>
                                 <p><?= $message->getMessage() ?></p>
                             </div>
