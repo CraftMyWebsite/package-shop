@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
+use CMW\Manager\Mail\MailManager;
 use CMW\Utils\Date;
 use CMW\Controller\Core\MailController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
@@ -51,7 +52,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
 
         if (!ShopDiscountModel::getInstance()->createDiscount($globalName . ' ' . $amount, 3, $dateTime, $endDateTime, 1, 0, null, $item->getPrice(), null, 1, 0, $code, 0, 0, 0)) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de créer la carte cadeau de ' . $amount . '!');
-            MailController::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
+            MailManager::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
@@ -119,7 +120,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
             [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
         $object = $websiteName . " - $globalName " . $amount;
-        MailController::getInstance()->sendMail($user->getMail(), $object, $body);
+        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 
     public function adminGenerateCode($amountGiven): void
@@ -146,7 +147,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
 
         if (!ShopDiscountModel::getInstance()->createDiscount($globalName . ' ' . $amount, 3, $dateTime, $endDateTime, 1, 0, null, $amountGiven, null, 1, 0, $code, 0, 0, 0)) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de créer la carte cadeau de ' . $amount . '!');
-            MailController::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
+            MailManager::getInstance()->sendMail($user->getMail(), $websiteName . " - $globalName " . $amount, "Nous n'avons pas réussi à créer votre bon cadeau de" . $amount . ". Veuillez contacter l'administrateur du site web pour le prévenir !");
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
@@ -214,7 +215,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
             [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
         $object = $websiteName . " - $globalName " . $amount;
-        MailController::getInstance()->sendMail($user->getMail(), $object, $body);
+        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 
     private function createCode($giftCodePrefix): string

@@ -2,9 +2,9 @@
 
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
-use CMW\Controller\Core\MailController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Mail\MailManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 
@@ -26,6 +26,6 @@ class ShopVirtualItemsDownloadableController extends AbstractController
         // TODO : Uniquement à des fin de test :
         $object = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName . 'object', $item->getId());
         $body = ShopItemsVirtualRequirementModel::getInstance()->getSetting($varName . 'text', $item->getId());
-        MailController::getInstance()->sendMail($user->getMail(), $object, $body);
+        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 }

@@ -12,6 +12,7 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Mail\MailManager;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
@@ -458,6 +459,6 @@ class ShopHistoryOrdersController extends AbstractController
         $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%'],
             [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink], $htmlTemplate);
         $object = $websiteName . ' - Récapitulatif de Commande';
-        MailController::getInstance()->sendMail($user->getMail(), $object, $body);
+        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
     }
 }
