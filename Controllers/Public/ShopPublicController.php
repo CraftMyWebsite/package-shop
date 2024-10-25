@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Public;
 
+use CMW\Controller\Users\UsersController;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -38,9 +39,13 @@ class ShopPublicController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
 
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
@@ -64,9 +69,13 @@ class ShopPublicController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
@@ -89,9 +98,13 @@ class ShopPublicController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
         $otherItemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $parentCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
@@ -117,9 +130,13 @@ class ShopPublicController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
         $userId = UsersModel::getCurrentUser()?->getId();
         if (!$userId) {
@@ -138,9 +155,13 @@ class ShopPublicController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
         $userId = UsersModel::getCurrentUser()?->getId();
 

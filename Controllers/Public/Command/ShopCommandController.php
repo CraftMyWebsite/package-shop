@@ -40,9 +40,13 @@ class ShopCommandController extends AbstractController
     {
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         if ($maintenance) {
-            $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-            Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-            Redirect::redirectToHome();
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
         }
 
         if (!UsersController::isUserLogged()) {
