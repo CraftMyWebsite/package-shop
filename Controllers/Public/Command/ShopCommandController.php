@@ -337,6 +337,7 @@ class ShopCommandController extends AbstractController
             $itemId = $itemCart->getItem()->getId();
             $quantity = $itemCart->getQuantity();
             ShopCartController::getInstance()->handleStock($itemCart, $itemId, $quantity, $userId, $sessionId);
+            ShopCartController::getInstance()->handleDraft($itemCart, $itemId, $userId, $sessionId);
             ShopCartController::getInstance()->handleLimitePerUser($itemCart, $itemId, $quantity, $userId, $sessionId);
             ShopCartController::getInstance()->handleGlobalLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
             ShopCartController::getInstance()->handleByOrderLimit($itemCart, $itemId, $quantity, $userId, $sessionId);

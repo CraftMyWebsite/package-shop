@@ -1,6 +1,7 @@
 <?php
 namespace CMW\Controller\Shop\Public\Cart;
 
+use CMW\Controller\Users\UsersController;
 use CMW\Event\Users\LoginEvent;
 use CMW\Manager\Events\Listener;
 use CMW\Manager\Flash\Alert;
@@ -38,7 +39,7 @@ class ShopActionsCartController extends AbstractController
         $quantity = 1;
 
         if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
-            Flash::send(Alert::WARNING, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
+            Flash::send(Alert::INFO, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
             $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getItemLink();
             header('Location:' . $itemUrl);
             die();
@@ -68,7 +69,11 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleSessionHealth($sessionId);
 
-        $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
+        if (UsersController::isAdminLogged()) {
+            $itemId = ShopItemsModel::getInstance()->getAdminShopItemIdBySlug($itemSlug);
+        } else {
+            $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
+        }
         [$quantity] = Utils::filterInput('quantity');
 
         $this->handlePriceType($userId, $sessionId, $itemId);

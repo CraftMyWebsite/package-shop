@@ -58,7 +58,7 @@ class ShopDiscountsController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
 
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
-        $items = ShopItemsModel::getInstance()->getShopItems();
+        $items = ShopItemsModel::getInstance()->getAdminShopItems();
 
         View::createAdminView('Shop', 'Discount/add')
             ->addVariableList(['categories' => $categories, 'items' => $items])
@@ -197,7 +197,7 @@ class ShopDiscountsController extends AbstractController
         if ($link === '2') {
             if (!empty($_POST['linkedCats'])) {
                 foreach ($_POST['linkedCats'] as $categoryId) {
-                    $itemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCat($categoryId);
+                    $itemsInThisCat = ShopItemsModel::getInstance()->getAdminShopItemByCat($categoryId);
                     $itemCatFound = false;
                     foreach ($discountModel->getAllDiscounts() as $discount) {
                         if ($defaultActive) {
