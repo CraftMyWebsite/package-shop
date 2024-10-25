@@ -193,7 +193,7 @@ $description = '';
                         <?php foreach ($categories as $category): ?>
                             <?php
                             $catHaveItemCompatible = false;
-                            foreach (ShopItemsModel::getInstance()->getAdminShopItemByCat($category->getId()) as $item):
+                            foreach (ShopItemsModel::getInstance()->getShopItemByCat($category->getId()) as $item):
                                 if ($item->getPriceType() == 'money' && $item->getPrice() > 0) {
                                     $catHaveItemCompatible = true;
                                     break;

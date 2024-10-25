@@ -126,7 +126,7 @@ class ShopCatController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
-        $itemInThisCat = ShopItemsModel::getInstance()->getAdminShopItemByCat($catId);
+        $itemInThisCat = ShopItemsModel::getInstance()->getShopItemByCat($catId);
         $haveChild = ShopCategoriesModel::getInstance()->getSubsCat($catId);
 
         if (empty($haveChild)) {

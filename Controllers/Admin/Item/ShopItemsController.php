@@ -47,7 +47,7 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
-        $items = ShopItemsModel::getInstance()->getAdminShopItems();
+        $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $review = ShopReviewsModel::getInstance();
@@ -112,7 +112,7 @@ class ShopItemsController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
-        $items = ShopItemsModel::getInstance()->getAdminShopItemByCat($catId);
+        $items = ShopItemsModel::getInstance()->getShopItemByCat($catId);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
@@ -147,9 +147,9 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
-        [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
+        [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit');
 
-        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit), ($draft === null ? 0 : 1));
+        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit));
 
         // Variantes
         $variantNames = $_POST['shop_item_variant_name'] ?? [];
@@ -251,9 +251,9 @@ class ShopItemsController extends AbstractController
 
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
 
-        [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
+        [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit');
 
-        ShopItemsModel::getInstance()->editShopItem($id, $name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit), ($draft === null ? 0 : 1));
+        ShopItemsModel::getInstance()->editShopItem($id, $name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit));
 
         // Variantes
         $variantNames = $_POST['shop_item_variant_name'] ?? [];

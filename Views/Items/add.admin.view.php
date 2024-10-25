@@ -114,13 +114,6 @@ $description = '';
     <div>
         <div class="card">
                     <div>
-                        <div class="checkbox mb-4">
-                            <input id="checkbox" name="shop_item_draft" type="checkbox">
-                            <label data-tooltip-target="tooltip-top" data-tooltip-placement="top" for="checkbox">Publié en tant que brouillon / test</label>
-                            <div id="tooltip-top" role="tooltip" class="tooltip-content">
-                                L'article ne s'affichera que pour les administrateurs
-                            </div>
-                        </div>
                         <label>Catégorie<span style="color: red">*</span> :</label>
                         <select name="shop_category_id" class="form-select">
                             <?php foreach ($categoryModel->getShopCategories() as $cat): ?>

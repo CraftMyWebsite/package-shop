@@ -49,11 +49,7 @@ class ShopPublicController extends AbstractController
         }
 
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
-        if (UsersController::isAdminLogged()) {
-            $items = ShopItemsModel::getInstance()->getAdminShopItems();
-        } else {
-            $items = ShopItemsModel::getInstance()->getPublicShopItems();
-        }
+        $items = ShopItemsModel::getInstance();
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
@@ -83,11 +79,7 @@ class ShopPublicController extends AbstractController
         }
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
-        if (UsersController::isAdminLogged()) {
-            $items = ShopItemsModel::getInstance()->getAdminShopItemByCatSlug($catSlug);
-        } else {
-            $items = ShopItemsModel::getInstance()->getPublicShopItemByCatSlug($catSlug);
-        }
+        $items = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
@@ -114,17 +106,9 @@ class ShopPublicController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
-        if (UsersController::isAdminLogged()) {
-            $otherItemsInThisCat = ShopItemsModel::getInstance()->getAdminShopItemByCatSlug($catSlug);
-        } else {
-            $otherItemsInThisCat = ShopItemsModel::getInstance()->getPublicShopItemByCatSlug($catSlug);
-        }
+        $otherItemsInThisCat = ShopItemsModel::getInstance()->getShopItemByCatSlug($catSlug);
         $parentCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
-        if (UsersController::isAdminLogged()) {
-            $itemId = ShopItemsModel::getInstance()->getAdminShopItemIdBySlug($itemSlug);
-        } else {
-            $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
-        }
+        $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
@@ -183,15 +167,7 @@ class ShopPublicController extends AbstractController
 
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
 
-        if (UsersController::isAdminLogged()) {
-            $itemId = ShopItemsModel::getInstance()->getAdminShopItemIdBySlug($itemSlug);
-        } else {
-            $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
-        }
-        if (is_null($itemId)) {
-            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de trouver cet article !');
-            Redirect::redirectToHome();
-        }
+        $itemId = ShopItemsModel::getInstance()->getShopItemIdBySlug($itemSlug);
         [$rating, $title, $content] = Utils::filterInput('rating', 'title', 'content');
 
         $this->handleOrderBeforeReview($itemId, $userId);

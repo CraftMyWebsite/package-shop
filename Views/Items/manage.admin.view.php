@@ -9,7 +9,7 @@ use CMW\Utils\Website;
 $title = 'Boutique';
 $description = '';
 
-/* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
+/* @var CMW\Model\Shop\Item\ShopItemsModel $items */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
@@ -42,7 +42,7 @@ $description = '';
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($items as $item): ?>
+        <?php foreach ($items->getShopItems() as $item): ?>
             <tr>
                 <td class="text-center" style="width: 6rem; height: 6rem;">
                     <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
@@ -72,12 +72,6 @@ $description = '';
                 </td>
                 <td style="width: fit-content;">
                     <h6><?= mb_strimwidth($item->getName(), 0, 30, '...') ?></h6>
-                    <?php if ($item->isDraft()): ?>
-                        <small class="cursor-pointer" data-tooltip-target="tooltip-top" data-tooltip-placement="top"><i class="fa-solid fa-circle-info"></i> Brouillon</small>
-                        <div id="tooltip-top" role="tooltip" class="tooltip-content">
-                            Visible uniquement par les administrateurs
-                        </div>
-                    <?php endif; ?>
                 </td>
                 <?php if ($allowReviews): ?>
                     <td class="text-center">

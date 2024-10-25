@@ -54,8 +54,7 @@ foreach ($itemVariants as $itemVariant) {
             <button type="button" data-modal-hide="modal-danger"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-            <p>Attention, certains utilisateurs ont déja ajouter cet article dans leur panier !<br>
-                Si vous avez des variantes ou si le type d'article a changé (Physique -> Virtuel ou Virtuel -> Physique), cela supprimera automatiquement cet article des paniers qui le contiennent !</p>
+            <p>Attention, si vous avez modifié les variantes ou si le type d'article a changé (Physique -> Virtuel ou Virtuel -> Physique), cela supprimera automatiquement cet article des paniers qui le contiennent !</p>
         </div>
         <div class="modal-footer">
             <button form="editItem" type="submit" class="btn-warning"><?= LangManager::translate('core.btn.edit') ?></button>
@@ -165,13 +164,6 @@ foreach ($itemVariants as $itemVariant) {
         <div>
             <div class="card">
                 <div>
-                    <div class="checkbox mb-4">
-                        <input <?= $item->isDraft() ? 'checked' : '' ?> id="checkbox" name="shop_item_draft" type="checkbox">
-                        <label data-tooltip-target="tooltip-top" data-tooltip-placement="top" for="checkbox">Publié en tant que brouillon / test</label>
-                        <div id="tooltip-top" role="tooltip" class="tooltip-content">
-                            L'article ne s'affichera que pour les administrateurs
-                        </div>
-                    </div>
                     <label>Catégorie<span style="color: red">*</span> :</label>
                     <select name="shop_category_id" class="form-select">
                         <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
