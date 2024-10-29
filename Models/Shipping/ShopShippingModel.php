@@ -115,9 +115,11 @@ class ShopShippingModel extends AbstractModel
         $totalCartWeight = 0;
         $totalCartPrice = 0;
         foreach ($cartContent as $item) {
-            $itemWeight = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($item->getItem()->getId())->getWeight();
-            $totalCartWeight += $itemWeight * $item->getQuantity();
-            $totalCartPrice += $item->getItemTotalPrice();
+            if ($item->getItem()->getType() == 0) {
+                $itemWeight = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($item->getItem()->getId())->getWeight();
+                $totalCartWeight += $itemWeight * $item->getQuantity();
+                $totalCartPrice += $item->getItemTotalPrice();
+            }
         }
         foreach ($allShippings as $allShipping) {
             $zoneCountry = $allShipping->getZone()->getCountry();
@@ -153,11 +155,12 @@ class ShopShippingModel extends AbstractModel
         $totalCartWeight = 0;
         $totalCartPrice = 0;
         foreach ($cartContent as $item) {
-            $itemWeight = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($item->getItem()->getId())->getWeight();
-            $totalCartWeight += $itemWeight * $item->getQuantity();
-            $totalCartPrice += $item->getItemTotalPrice();
+            if ($item->getItem()->getType() == 0) {
+                $itemWeight = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($item->getItem()->getId())->getWeight();
+                $totalCartWeight += $itemWeight * $item->getQuantity();
+                $totalCartPrice += $item->getItemTotalPrice();
+            }
         }
-
         foreach ($allShippings as $allShipping) {
             $zoneCountry = $allShipping->getZone()->getCountry();
             $selectedCountry = $selectedAddress->getCountry();
