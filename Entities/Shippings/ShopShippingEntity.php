@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Shippings;
 
 use CMW\Interface\Shop\IShippingMethod;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopShippingEntity
 {
@@ -56,6 +57,23 @@ class ShopShippingEntity
     public function getPrice(): ?float
     {
         return $this->price;
+    }
+
+    /**
+     * @return string
+     * @desc return the price for views
+     */
+    public function getPriceFormatted(): string
+    {
+        $formattedPrice = number_format($this->price, 2, '.', '');
+        $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
+        if ($symbolIsAfter) {
+            return $formattedPrice . $symbol;
+        } else {
+            return $symbol . $formattedPrice;
+        }
     }
 
     public function getZone(): ShopShippingZoneEntity
