@@ -2,12 +2,12 @@
 
 namespace CMW\Controller\Shop\Admin\HistoryOrder;
 
-use CMW\Controller\Core\MailController;
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
+use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Flash\Alert;
@@ -90,10 +90,8 @@ class ShopHistoryOrdersController extends AbstractController
         }
         if ($orderStatus === 1) {
             $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
-            $sessionId = session_id();
-            $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($order->getUser()?->getId(), $sessionId);
-            $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
-            if ($cartOnlyVirtual && !ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual')) {
+            $orderOnlyVirtual = $this->handleOrderTypeContent($order->getOrderedItems());
+            if ($orderOnlyVirtual) {
                 ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
                 Flash::send(Alert::SUCCESS, 'Boutique', 'Félicitations commande terminé !');
                 // ExecVirtualNeeds :
@@ -333,7 +331,20 @@ class ShopHistoryOrdersController extends AbstractController
     private function handleCartTypeContent(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
-            if ($item->getItem()->getType() != 1) {
+            if ($item->getItem()->getType() === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param ShopHistoryOrdersItemsEntity[] $orderContent
+     */
+    private function handleOrderTypeContent(array $orderContent): bool
+    {
+        foreach ($orderContent as $item) {
+            if ($item->getItem()->getType() === 0) {
                 return false;
             }
         }
