@@ -2,25 +2,29 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopHistoryOrdersShippingEntity
 {
     private int $historyOrderShippingId;
     private ShopHistoryOrdersEntity $historyOrder;
+    private ?ShopShippingEntity $shopShipping;
     private ?string $historyOrderShippingName;
     private ?float $historyOrderShippingPrice;
 
     /**
      * @param int $historyOrderShippingId
-     * @param \CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity $historyOrder
+     * @param ShopHistoryOrdersEntity $historyOrder
+     * @param ShopShippingEntity|null $shopShipping
      * @param string|null $historyOrderShippingName
      * @param float|null $historyOrderShippingPrice
      */
-    public function __construct(int $historyOrderShippingId, ShopHistoryOrdersEntity $historyOrder, ?string $historyOrderShippingName, ?float $historyOrderShippingPrice)
+    public function __construct(int $historyOrderShippingId, ShopHistoryOrdersEntity $historyOrder, ?ShopShippingEntity $shopShipping, ?string $historyOrderShippingName, ?float $historyOrderShippingPrice)
     {
         $this->historyOrderShippingId = $historyOrderShippingId;
         $this->historyOrder = $historyOrder;
+        $this->shopShipping = $shopShipping;
         $this->historyOrderShippingName = $historyOrderShippingName;
         $this->historyOrderShippingPrice = $historyOrderShippingPrice;
     }
@@ -33,6 +37,11 @@ class ShopHistoryOrdersShippingEntity
     public function getHistoryOrder(): ShopHistoryOrdersEntity
     {
         return $this->historyOrder;
+    }
+
+    public function getShipping(): ?ShopShippingEntity
+    {
+        return $this->shopShipping;
     }
 
     public function getName(): ?string

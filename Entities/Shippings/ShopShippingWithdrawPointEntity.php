@@ -7,6 +7,7 @@ use CMW\Model\Shop\Country\ShopCountryModel;
 class ShopShippingWithdrawPointEntity
 {
     private int $id;
+    private string $name;
     private ?int $addressDistance;
     private string $addressLine;
     private string $addressCity;
@@ -15,15 +16,17 @@ class ShopShippingWithdrawPointEntity
 
     /**
      * @param int $id
+     * @param string $name
      * @param int|null $addressDistance
      * @param string $addressLine
      * @param string $addressCity
      * @param string $addressPostalCode
      * @param string $addressCountry
      */
-    public function __construct(int $id, ?int $addressDistance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry)
+    public function __construct(int $id, string $name, ?int $addressDistance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry)
     {
         $this->id = $id;
+        $this->name = $name;
         $this->addressDistance = $addressDistance;
         $this->addressLine = $addressLine;
         $this->addressCity = $addressCity;
@@ -34,6 +37,11 @@ class ShopShippingWithdrawPointEntity
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function getAddressDistance(): ?int

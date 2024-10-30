@@ -4,59 +4,56 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
-/* @var CMW\Entity\Shop\Categories\ShopCategoryEntity[] $categories */
-/* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
+/* @var CMW\Entity\Shop\Items\ShopItemEntity[] $items */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
+/* @var CMW\Entity\Shop\Categories\ShopCategoryEntity $thisCat */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 
-Website::setTitle('Boutique');
-Website::setDescription('Découvrez la boutique !');
+Website::setTitle('Boutique - Catégorie : ' . $thisCat->getName());
+Website::setDescription('Découvrez nos produits de la catégorie : ' . $thisCat->getName());
 
 ?>
-<?php if (\CMW\Controller\Users\UsersController::isAdminLogged()): ?>
-    <div style="background-color: orange; padding: 6px; margin-bottom: 10px">
-        <span>Votre thème ne gère pas cette page !</span>
-        <br>
-        <small>Seuls les administrateurs voient ce message !</small>
-    </div>
-<?php endif;?>
 
-<section style="width: 80%; margin: 25px auto auto;">
-    <div style="display:flex; justify-content: space-between">
-        <select onchange="location = this.value;" style="display: block; border: 1px solid #a29292; border-radius: 9px">
-            <option selected value="<?= Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop' ?>" >Catégorie : Tout afficher</option>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= $category->getCatLink() ?>">Catégorie : <?= $category->getName() ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div style="position: relative; width: 17rem">
-            <input type="search" id="search-dropdown"
-                   class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-100 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                   placeholder="Rechercher" required>
-            <button type="submit"
-                    class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </button>
+<section class="bg-gray-800 relative text-white">
+    <img src="<?= ThemeModel::getInstance()->fetchImageLink('hero_img_bg') ?>" class="absolute h-full inset-0 object-center object-cover w-full" alt="Vous devez upload bg.webp depuis votre panel !" width="1080" height="720"/>
+    <div class="container mx-auto px-4 py-12 relative">
+        <div class="flex flex-wrap -mx-4">
+            <div class="mx-auto px-4 text-center w-full lg:w-8/12">
+                <h1 class="font-extrabold mb-4 text-2xl md:text-6xl">Boutique</h1>
+            </div>
         </div>
     </div>
 </section>
-
 
 <section class="bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-60">
     <div class="container p-4">
 
         <div class="flex flex-wrap justify-between border-t border-b py-2">
             <div>
-
+                <select onchange="location = this.value;" class="block pr-8 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="<?= Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop' ?>" >Catégorie : Tout afficher</option>
+                    <?php $i = 0;
+                    foreach ($categories as $category): ?>
+                        <option <?= $category->getName() === $thisCat->getName() ? 'selected' : '' ?> value="<?= $category->getCatLink() ?>">Catégorie : <?= $category->getName() ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="flex hidden xl:block">
-
+                <div class="relative w-full lg:w-96">
+                    <input type="search" id="search-dropdown"
+                           class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-100 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Rechercher" required>
+                    <button type="submit"
+                            class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -64,9 +61,9 @@ Website::setDescription('Découvrez la boutique !');
             <?php foreach ($items as $item): ?>
                 <div class="relative w-full xl:w-1/2 2xl:w-1/4 mt-4 mb-5 2xl:mb-0 px-4 hover:scale-105 transition">
                     <?php if ($item->getDiscountImpactDefaultApplied()): ?>
-                    <div style="z-index: 5000; position: absolute; top: 0; left: 0; transform: translate(5%, 10%) rotate(-10deg); background-color: #f44336; color: white; padding: 8px 16px; border-radius: 0 16px 0 16px;">
-                        <p class="text-center"><?= $item->getDiscountImpactDefaultApplied() ?></p>
-                    </div>
+                        <div style="z-index: 5000; position: absolute; top: 0; left: 0; transform: translate(5%, 10%) rotate(-10deg); background-color: #f44336; color: white; padding: 8px 16px; border-radius: 0 16px 0 16px;">
+                            <p class="text-center"><?= $item->getDiscountImpactDefaultApplied() ?></p>
+                        </div>
                     <?php endif; ?>
                     <div>
                         <div class="rounded-t border-t border-l border-r border-gray-200 p-4">
@@ -113,10 +110,10 @@ Website::setDescription('Découvrez la boutique !');
                                             </svg>
                                             <span class="sr-only">Previous</span>
                                         </span>
-                                                                        </button>
-                                                                        <button type="button"
-                                                                                class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                                                                                data-carousel-next>
+                                        </button>
+                                        <button type="button"
+                                                class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                                                data-carousel-next>
                                         <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
                                             <svg class="w-4 h-4 text-white dark:text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                  fill="none" viewBox="0 0 6 10">

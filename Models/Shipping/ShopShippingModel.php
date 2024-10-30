@@ -6,6 +6,7 @@ use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
+use CMW\Entity\Shop\Shippings\ShopShippingZoneEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -201,8 +202,92 @@ class ShopShippingModel extends AbstractModel
             return $totalCartPrice < $allShipping->getMaxTotalCartPrice();
         }
         if (!is_null($allShipping->getMinTotalCartPrice())) {
-            return $totalCartPrice > $allShipping->getMinTotalCartPrice();
+            return $totalCartPrice >= $allShipping->getMinTotalCartPrice();
         }
         return true;  // No max or min price conditions
+    }
+
+    public function createShipping(string $name, ?float $price, int $zoneId, int $type, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
+    {
+        $data = array(
+            'shops_shipping_name' => $name,
+            'shops_shipping_price' => $price,
+            'shops_shipping_zone_id' => $zoneId,
+            'shops_shipping_type' => $type,
+            'shops_shipping_withdraw_point_id' => $withdrawId,
+            'shops_shipping_method_var_name' => $varName,
+            'shops_shipping_max_total_weight' => $weight,
+            'shops_shipping_min_total_cart_price' => $minPrice,
+            'shops_shipping_max_total_cart_price' => $maxPrice,
+        );
+
+        $sql = 'INSERT INTO cmw_shops_shipping(
+                               shops_shipping_name, 
+                               shops_shipping_price, 
+                               shops_shipping_zone_id, 
+                               shops_shipping_type, 
+                               shops_shipping_withdraw_point_id, 
+                               shops_shipping_method_var_name,
+                               shops_shipping_max_total_weight,
+                               shops_shipping_min_total_cart_price,
+                               shops_shipping_max_total_cart_price)
+                VALUES (:shops_shipping_name, :shops_shipping_price, :shops_shipping_zone_id, :shops_shipping_type, :shops_shipping_withdraw_point_id,
+                        :shops_shipping_method_var_name, :shops_shipping_max_total_weight, :shops_shipping_min_total_cart_price, :shops_shipping_max_total_cart_price);';
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            $id = $db->lastInsertId();
+            return $this->getShopShippingById($id);
+        }
+
+        return null;
+    }
+
+    public function editShipping(int $shippingId, string $name, ?float $price, int $zoneId, int $type, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
+    {
+        $data = array(
+            'shops_shipping_id' => $shippingId,
+            'shops_shipping_name' => $name,
+            'shops_shipping_price' => $price,
+            'shops_shipping_zone_id' => $zoneId,
+            'shops_shipping_type' => $type,
+            'shops_shipping_withdraw_point_id' => $withdrawId,
+            'shops_shipping_method_var_name' => $varName,
+            'shops_shipping_max_total_weight' => $weight,
+            'shops_shipping_min_total_cart_price' => $minPrice,
+            'shops_shipping_max_total_cart_price' => $maxPrice,
+        );
+
+        $sql = 'UPDATE cmw_shops_shipping SET 
+                                             shops_shipping_name=:shops_shipping_name,
+                                             shops_shipping_price=:shops_shipping_price,
+                                             shops_shipping_zone_id=:shops_shipping_zone_id,
+                                             shops_shipping_type =:shops_shipping_type,
+                                             shops_shipping_withdraw_point_id =:shops_shipping_withdraw_point_id,
+                                             shops_shipping_method_var_name =:shops_shipping_method_var_name,
+                                             shops_shipping_max_total_weight =:shops_shipping_max_total_weight,
+                                             shops_shipping_min_total_cart_price =:shops_shipping_min_total_cart_price,
+                                             shops_shipping_max_total_cart_price =:shops_shipping_max_total_cart_price
+                                         WHERE shops_shipping_id=:shops_shipping_id';
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if ($req->execute($data)) {
+            return $this->getShopShippingById($shippingId);
+        }
+
+        return null;
+    }
+
+    public function deleteShipping(int $id): bool
+    {
+        $sql = 'DELETE FROM cmw_shops_shipping WHERE shops_shipping_id = :shops_shipping_id';
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute(array('shops_shipping_id' => $id));
     }
 }

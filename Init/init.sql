@@ -304,6 +304,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_shipping_zone
 CREATE TABLE IF NOT EXISTS cmw_shops_shipping_withdraw_point
 (
     shops_shipping_withdraw_point_id                  INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_withdraw_point_name                VARCHAR(50) NOT NULL,
     shops_shipping_withdraw_point_address_distance    INT         NULL,
     shops_shipping_withdraw_point_address_line        VARCHAR(50) NOT NULL,
     shops_shipping_withdraw_point_address_city        VARCHAR(50) NOT NULL,
@@ -387,10 +388,13 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_shipping
 (
     shop_history_order_shipping_id    INT AUTO_INCREMENT PRIMARY KEY,
     shop_history_order_id             INT          NOT NULL,
+    shops_shipping_id                 INT          NULL,
     shop_history_order_shipping_name  VARCHAR(255) NULL,
     shop_history_order_shipping_price FLOAT(10, 2) NULL,
     CONSTRAINT fk_cmw_shop_history_order_shipping_history_order_id FOREIGN KEY (shop_history_order_id)
-        REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
+        REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_cmw_shop_history_order_shipping_shops_shipping_id FOREIGN KEY (shops_shipping_id)
+    REFERENCES cmw_shops_shipping (shops_shipping_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -548,6 +552,15 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items_virtual_requirement
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_shipping_method_requirement
+(
+    shops_shipping_method_requirement_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shops_shipping_method_requirement_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
+    shops_shipping_method_requirement_value      VARCHAR(255) NOT NULL
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS cmw_shops_reviews
 (

@@ -133,8 +133,13 @@ class ShopCommandController extends AbstractController
                 if ($cartOnlyVirtual) {
                     $shippingMethod = null;
                 } else {
-                    $commandTunnelShippingId = $commandTunnelModel->getShipping()->getId();
-                    // TODO Refac :
+
+                    $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
+                    if (is_null($commandTunnelShippingId)) {
+                        Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoie n\'existe plus !');
+                        ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+                        Redirect::redirectPreviousRoute();
+                    }
                     $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
                 }
                 $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
@@ -282,6 +287,12 @@ class ShopCommandController extends AbstractController
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($user->getId(), $sessionId);
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
+
+        if (is_null($commandTunnelModel->getShipping()?->getId())) {
+            Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoie n\'existe plus !');
+            ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
+            Redirect::redirectPreviousRoute();
+        }
 
         if (!$commandTunnelModel) {
             // TODO Internal error.

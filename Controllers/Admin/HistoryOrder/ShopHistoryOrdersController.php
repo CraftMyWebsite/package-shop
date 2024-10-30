@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Admin\HistoryOrder;
 
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
@@ -36,6 +37,7 @@ use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use CMW\Utils\Website;
@@ -143,10 +145,20 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageSendStep(int $orderId): void
     {
-        ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+
+
         // TODO : Notifier l'utilisateur
 
-        // TODO Emitter sendOrder
+        // TODO : Emitter sendOrder
+
+        // Exec shipping method :
+        $thisOrder = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $shippingMethodVarName = $thisOrder->getShippingMethod()->getShipping()->getShippingMethod()->varName();
+        $items = $thisOrder->getOrderedItems();
+        $userEntity = $thisOrder->getUser();
+        ShopShippingController::getInstance()->getShippingMethodsByVarName($shippingMethodVarName)->execAfterCommandValidatedByAdmin($shippingMethodVarName,$items,$userEntity, $thisOrder);
+
+        ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
 
         Redirect::redirectPreviousRoute();
     }
@@ -230,7 +242,7 @@ class ShopHistoryOrdersController extends AbstractController
         $paymentHistory = ShopHistoryOrdersPaymentModel::getInstance()->addHistoryPaymentOrder($order->getId(), $paymentMethod->name(), $paymentMethod->varName(), $paymentMethod->fees());
 
         if (!is_null($commandTunnel->getShipping())) {
-            $shippingHistory = ShopHistoryOrdersShippingModel::getInstance()->addHistoryShippingOrder($order->getId(), $commandTunnel->getShipping()->getName(), $commandTunnel->getShipping()->getPrice());
+            $shippingHistory = ShopHistoryOrdersShippingModel::getInstance()->addHistoryShippingOrder($order->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShipping()->getName(), $commandTunnel->getShipping()->getPrice());
         }
 
         $userAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnel->getShopDeliveryUserAddress()->getId());

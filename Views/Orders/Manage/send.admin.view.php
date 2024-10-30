@@ -13,7 +13,7 @@ $description = '';
     <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
     <div>
         <a type="button" href="../" class="btn btn-warning">Plus tard ...</a>
-        <button form="finish" type="submit" class="btn btn-primary">Le colis est en route !</button>
+        <button form="finish" type="submit" class="btn btn-primary">Colis en route / Retrait en attente</button>
     </div>
 </div>
 

@@ -39,6 +39,10 @@ class ShopShippingZoneEntity
 
     public function getFormattedCountry(): ?string
     {
-        return ShopCountryModel::getInstance()->getCountryByCode($this->country)->getName();
+        if ($this->country === "ALL") {
+            return "Toute la terre";
+        } else {
+            return ShopCountryModel::getInstance()->getCountryByCode($this->country)->getName();
+        }
     }
 }
