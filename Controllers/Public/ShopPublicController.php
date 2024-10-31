@@ -48,7 +48,7 @@ class ShopPublicController extends AbstractController
             }
         }
 
-        $categories = ShopCategoriesModel::getInstance()->getShopCategories();
+        $categoryModel = ShopCategoriesModel::getInstance();
         if (UsersController::isAdminLogged()) {
             $items = ShopItemsModel::getInstance()->getAdminShopItems();
         } else {
@@ -62,7 +62,7 @@ class ShopPublicController extends AbstractController
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View('Shop', 'Main/main');
-        $view->addVariableList(['categories' => $categories, 'items' => $items, 'imagesItem' =>
+        $view->addVariableList(['categoryModel' => $categoryModel, 'items' => $items, 'imagesItem' =>
             $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'review' => $review, 'allowReviews' => $allowReviews]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
@@ -81,7 +81,7 @@ class ShopPublicController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
-        $categories = ShopCategoriesModel::getInstance()->getShopCategories();
+        $categoryModel = ShopCategoriesModel::getInstance();
         $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         if (UsersController::isAdminLogged()) {
             $items = ShopItemsModel::getInstance()->getAdminShopItemByCatSlug($catSlug);
@@ -96,7 +96,7 @@ class ShopPublicController extends AbstractController
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View('Shop', 'Main/cat');
-        $view->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categories' => $categories, 'review' => $review, 'allowReviews' => $allowReviews]);
+        $view->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categoryModel' => $categoryModel, 'review' => $review, 'allowReviews' => $allowReviews]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }
