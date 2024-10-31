@@ -8,8 +8,6 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IShippingMethod;
 use CMW\Manager\Env\EnvManager;
-use CMW\Manager\Flash\Alert;
-use CMW\Manager\Flash\Flash;
 
 class ShopShippingWithdrawPointImplementations implements IShippingMethod
 {
@@ -55,6 +53,5 @@ class ShopShippingWithdrawPointImplementations implements IShippingMethod
     public function execAfterCommandValidatedByAdmin(string $varName, array $items, UserEntity $user, ShopHistoryOrdersEntity $order): void
     {
         ShopShippingNotifyWithdrawController::getInstance()->sedMailWithInfo($varName, $items, $user, $order);
-        Flash::send(Alert::SUCCESS, 'Point de retrait', $user->getPseudo() . ' à été notifié que sa commande est prête pour le retrait dans le centre de dépôt ! vous pouvez valider cette étape !');
     }
 }

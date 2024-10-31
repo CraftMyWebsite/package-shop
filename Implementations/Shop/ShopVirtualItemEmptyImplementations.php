@@ -2,11 +2,9 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-use CMW\Controller\Shop\Admin\Item\Virtual\ShopVirtualItemsDownloadableController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IVirtualItems;
-use CMW\Manager\Env\EnvManager;
 
 class ShopVirtualItemEmptyImplementations implements IVirtualItems
 {

@@ -3,8 +3,8 @@
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
 use CMW\Manager\Mail\MailManager;
+use CMW\Model\Core\MailModel;
 use CMW\Utils\Date;
-use CMW\Controller\Core\MailController;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Flash\Alert;
@@ -28,7 +28,6 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
     /**
      * @param ShopItemEntity $item
      * @param UserEntity $user
-     * @throws \Exception
      */
     public function sedMailWithGiftCode(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
@@ -120,7 +119,12 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
             [$titre, $message, $amount, $code, $url, $websiteName, $use, $timeLeft, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
         $object = $websiteName . " - $globalName " . $amount;
-        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
+            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+            Flash::send(Alert::SUCCESS, 'Carte cadeau', $user->getPseudo() . ' à reçu sa carte cadeau par mail !');
+        } else {
+            Flash::send(Alert::ERROR, 'Carte cadeau','Nous n\'avons pas réussi à envoyer le mail au client ! Mais la carte cadeau à été créer !');
+        }
     }
 
     public function adminGenerateCode($amountGiven): void

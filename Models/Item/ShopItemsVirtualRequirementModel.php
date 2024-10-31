@@ -2,9 +2,7 @@
 
 namespace CMW\Model\Shop\Item;
 
-use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Database\DatabaseManager;
-use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 
 /**

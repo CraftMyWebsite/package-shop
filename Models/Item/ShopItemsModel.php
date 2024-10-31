@@ -59,6 +59,7 @@ class ShopItemsModel extends AbstractModel
             $res['shop_item_by_order_limit'] ?? null,
             $res['shop_item_global_limit'] ?? null,
             $res['shop_item_user_limit'] ?? null,
+            $res['shop_item_draft'],
             $res['shop_item_created_at'],
             $res['shop_item_updated_at'],
             $res['shop_item_archived'],
@@ -69,7 +70,30 @@ class ShopItemsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
-    public function getShopItems(): array
+    public function getPublicShopItems(): array
+    {
+        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC';
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
+        }
+
+        return $toReturn;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
+     */
+    public function getAdminShopItems(): array
     {
         $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 0 ORDER BY shop_item_id DESC';
         $db = DatabaseManager::getInstance();
@@ -115,7 +139,7 @@ class ShopItemsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
-    public function getShopItemByCat(int $id): array
+    public function getAdminShopItemByCat(int $id): array
     {
         $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id AND shop_item_archived = 0';
         $db = DatabaseManager::getInstance();
@@ -138,10 +162,10 @@ class ShopItemsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
-    public function getShopItemByCatSlug(string $catSlug): array
+    public function getPublicShopItemByCatSlug(string $catSlug): array
     {
         $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
-        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0';
+        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);
@@ -159,7 +183,50 @@ class ShopItemsModel extends AbstractModel
         return $toReturn;
     }
 
-    public function getShopItemIdBySlug(string $itemSlug): int
+    /**
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
+     */
+    public function getAdminShopItemByCatSlug(string $catSlug): array
+    {
+        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 ORDER BY shop_item_id DESC';
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array('shop_category_id' => $catId))) {
+            return array();
+        }
+
+        $toReturn = array();
+
+        while ($items = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($items['shop_item_id']);
+        }
+
+        return $toReturn;
+    }
+
+    public function getPublicShopItemIdBySlug(string $itemSlug): int
+    {
+        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_slug = :shop_item_slug AND shop_item_draft = 0';
+        $db = DatabaseManager::getInstance();
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array('shop_item_slug' => $itemSlug))) {
+            return 0;
+        }
+
+        $res = $res->fetch();
+
+        if (!$res) {
+            return 0;
+        }
+
+        return $res['shop_item_id'] ?? 0;
+    }
+
+    public function getAdminShopItemIdBySlug(string $itemSlug): int
     {
         $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_slug = :shop_item_slug';
 
@@ -206,7 +273,7 @@ ORDER BY csi.shop_item_price ASC;';
         return $toReturn;
     }
 
-    public function createShopItem(?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit): int
+    public function createShopItem(?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit, int $draft): int
     {
         $data = array(
             'shop_item_name' => $name,
@@ -222,10 +289,11 @@ ORDER BY csi.shop_item_price ASC;';
             'shop_item_by_order_limit' => $byOrderLimit,
             'shop_item_global_limit' => $globalLimit,
             'shop_item_user_limit' => $userLimit,
+            'shop_item_draft' => $draft,
         );
 
-        $sql = 'INSERT INTO cmw_shops_items(shop_item_name, shop_item_short_description, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_price_type, shop_item_by_order_limit, shop_item_global_limit, shop_item_user_limit )
-                VALUES (:shop_item_name, :shop_item_short_description, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_price_type, :shop_item_by_order_limit, :shop_item_global_limit, :shop_item_user_limit )';
+        $sql = 'INSERT INTO cmw_shops_items(shop_item_name, shop_item_short_description, shop_category_id, shop_item_description, shop_item_slug, shop_item_type, shop_item_default_stock, shop_item_current_stock, shop_item_price, shop_item_price_type, shop_item_by_order_limit, shop_item_global_limit, shop_item_user_limit, shop_item_draft )
+                VALUES (:shop_item_name, :shop_item_short_description, :shop_category_id, :shop_item_description, :shop_category_slug, :shop_item_type, :shop_item_default_stock, :shop_item_current_stock, :shop_item_price, :shop_item_price_type, :shop_item_by_order_limit, :shop_item_global_limit, :shop_item_user_limit, :shop_item_draft )';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
@@ -237,7 +305,7 @@ ORDER BY csi.shop_item_price ASC;';
         }
     }
 
-    public function editShopItem(int $itemId, ?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit): int
+    public function editShopItem(int $itemId, ?string $name, ?string $shortDesc, ?string $category, string $description, int $type, ?int $stock, float $price, string $priceType, ?int $byOrderLimit, ?int $globalLimit, ?int $userLimit, int $draft): int
     {
         $data = array(
             'shop_item_id' => $itemId,
@@ -254,6 +322,7 @@ ORDER BY csi.shop_item_price ASC;';
             'shop_item_by_order_limit' => $byOrderLimit,
             'shop_item_global_limit' => $globalLimit,
             'shop_item_user_limit' => $userLimit,
+            'shop_item_draft' => $draft,
         );
 
         $sql = 'UPDATE cmw_shops_items SET shop_item_name = :shop_item_name,
@@ -268,7 +337,8 @@ ORDER BY csi.shop_item_price ASC;';
         shop_item_price_type =:shop_item_price_type,
         shop_item_by_order_limit = :shop_item_by_order_limit,
         shop_item_global_limit = :shop_item_global_limit,
-        shop_item_user_limit = :shop_item_user_limit
+        shop_item_user_limit = :shop_item_user_limit,
+        shop_item_draft = :shop_item_draft
         WHERE shop_item_id = :shop_item_id';
 
         $db = DatabaseManager::getInstance();

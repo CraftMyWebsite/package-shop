@@ -3,7 +3,6 @@
 namespace CMW\Model\Shop\HistoryOrder;
 
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersAfterSalesMessagesEntity;
-use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersDiscountEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Users\UsersModel;

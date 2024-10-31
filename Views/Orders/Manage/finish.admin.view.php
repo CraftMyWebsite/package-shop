@@ -36,12 +36,42 @@ $description = '';
 </div>
 
 <div class="grid-2">
-    <div class="card">
-        <h6>Commande reçu ?</h6>
-        <p>Si votre client a bien reçu sa commande, il est conseiller de la clôturer pour un meilleur suivie.</p>
-        <?php if (!empty($order->getShippingLink())): ?>
-            <p>Vous pouvez suivre l'avancée de la livraison ici : <a href="<?= $order->getShippingLink() ?>" target="_blank" class="link">Suivre le colis</a></p>
-        <?php endif; ?>
+    <div>
+        <div class="card">
+            <?php if ($order->getShippingMethod()->getShipping()->getType() === 0): ?>
+                <h6>Commande reçu ?</h6>
+                <p>Si votre client a bien reçu sa commande, il est conseiller de la clôturer pour un meilleur suivi.</p>
+                <?php if (!empty($order->getShippingLink())): ?>
+                    <p>Vous pouvez suivre l'avancée de la livraison ici : <a href="<?= $order->getShippingLink() ?>" target="_blank" class="link">Suivre le colis</a></p>
+                <?php endif; ?>
+            <?php else: ?>
+                <h6>Commande récupérée ?</h6>
+                <p>Votre client est venu chercher sont colis dans votre centre ? Il est conseiller de la clôturer pour un meilleur suivi.</p>
+            <?php endif; ?>
+        </div>
+        <div class="card mt-4">
+            <h5>Expédition</h5>
+            <hr>
+            <h6>Type d'expédition (<?= $order->getShippingMethod()->getShipping()->getFormattedType() ?>) :</h6>
+            <p><?= $order->getShippingMethod()->getName() ?> - <b><?= $order->getShippingMethod()->getPriceFormatted() ?></b></p>
+            <hr>
+            <h6>Livrer à :</h6>
+            <p>
+                <?= $order->getUserAddressMethod()->getUserFirstName() ?>
+                <?= $order->getUserAddressMethod()->getUserLastName() ?><br>
+                <?= $order->getUserAddressMethod()->getUserLine1() ?><br>
+                <?php if (!empty($order->getUserAddressMethod()->getUserLine2())) { echo $order->getUserAddressMethod()->getUserLine2() . '<br>'; } ?>
+                <?= $order->getUserAddressMethod()->getUserPostalCode() ?>
+                <?= $order->getUserAddressMethod()->getUserCity() ?><br>
+                <?= $order->getUserAddressMethod()->getUserFormattedCountry() ?><br>
+            </p>
+            <hr>
+            <h6>Informations supplémentaires :</h6>
+            <p>
+                Téléphone : <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
+                @mail : <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>
+            </p>
+        </div>
     </div>
     <div class="card">
         <h6>Récap de commande</h6>

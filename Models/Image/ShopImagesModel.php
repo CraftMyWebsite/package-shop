@@ -9,7 +9,6 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Manager\Uploads\ImagesManager;
-use JetBrains\PhpStorm\NoReturn;
 
 /**
  * Class: @ShopImagesModel

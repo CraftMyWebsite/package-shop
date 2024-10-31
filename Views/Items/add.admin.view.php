@@ -44,7 +44,7 @@ $description = '';
             <div class="card-body">
                 <div id="typePhysique" style="display:none;">
                     <label>Caractéristique physique du produit :
-                        <button data-tooltip-target="tooltip-top-physical" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
+                        <button type="button"  data-tooltip-target="tooltip-top-physical" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
                         <div id="tooltip-top-physical" role="tooltip" class="tooltip-content">
                             Changer le type d'articles pour passer en contenue virtuel
                         </div>
@@ -71,7 +71,7 @@ $description = '';
                 <div id="typeVirtuel" style="display:none;">
                         <div class="mb-4">
                             <label>Contenue virtuel<span style="color: red">*</span> :
-                                <button data-tooltip-target="tooltip-top-virtual" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
+                                <button type="button"  data-tooltip-target="tooltip-top-virtual" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
                                 <div id="tooltip-top-virtual" role="tooltip" class="tooltip-content">
                                     Changer le type d'articles pour passer en contenue physique
                                 </div>
@@ -114,6 +114,13 @@ $description = '';
     <div>
         <div class="card">
                     <div>
+                        <div class="checkbox mb-4">
+                            <input id="checkbox" name="shop_item_draft" type="checkbox">
+                            <label data-tooltip-target="tooltip-top" data-tooltip-placement="top" for="checkbox">Publié en tant que brouillon / test</label>
+                            <div id="tooltip-top" role="tooltip" class="tooltip-content">
+                                L'article ne s'affichera que pour les administrateurs
+                            </div>
+                        </div>
                         <label>Catégorie<span style="color: red">*</span> :</label>
                         <select name="shop_category_id" class="form-select">
                             <?php foreach ($categoryModel->getShopCategories() as $cat): ?>

@@ -5,7 +5,6 @@ namespace CMW\Entity\Shop\Reviews;
 use CMW\Utils\Date;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
 class ShopReviewsEntity

@@ -15,11 +15,48 @@ $description = '';
     <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
     <div>
         <button form="cancel" type="submit" class="btn btn-danger">Cette commande n'est pas réalisable</button>
-        <button form="send" type="submit" class="btn btn-primary">Commande prête</button>
+        <button data-modal-toggle="modal-success" type="submit" class="btn btn-primary">Commande prête</button>
+    </div>
+</div>
+
+<!--MODAL SUCCESS-->
+<div id="modal-success" class="modal-container">
+    <div class="modal">
+        <div class="modal-header-success">
+            <h6>Tout est dans la boite ?</h6>
+            <button type="button" data-modal-hide="modal-success"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <?php if ($order->getShippingMethod()?->getShipping()->getType() === 0): ?>
+                    Tout est prêt à partir ?
+                <?php elseif($order->getShippingMethod()?->getShipping()->getType() === 1): ?>
+                    La validation permettra au client de venir récupérer son colis, tout est bon ?
+                <?php else: ?>
+                    Tout vos articles virtuels sont prêts ?
+                <?php endif; ?>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button data-modal-hide="modal-success" type="button" class="btn-danger">Fermer</button>
+            <button form="send" type="submit" class="btn btn-success">Tout est prêt !</button>
+        </div>
     </div>
 </div>
 
 
+<div class="alert-info">
+    <?php if ($order->getShippingMethod()?->getShipping()->getType() === 0): ?>
+        <p>Cette commande devra être expédiée</p>
+    <?php elseif ($order->getShippingMethod()?->getShipping()->getType() === 1): ?>
+        <p>Cette commande sera récupérer par le client au dépot :</p>
+        <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressLine() ?></p>
+        <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressPostalCode() ?> <?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressCity() ?></p>
+        <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getFormattedCountry() ?></p>
+    <?php else: ?>
+        <p>Cette commande ne contient que des articles virtuels</p>
+    <?php endif; ?>
+</div>
 <h6>Articles à préparer</h6>
 
 <div class="grid-4">

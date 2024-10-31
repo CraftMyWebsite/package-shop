@@ -6,7 +6,6 @@ use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
-use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopPaymentMethodeFreeImplementations implements IPaymentMethod

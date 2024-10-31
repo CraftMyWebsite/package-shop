@@ -5,14 +5,12 @@ namespace CMW\Entity\Shop\HistoryOrders;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Users\UserEntity;
-use CMW\Model\Shop\Discount\ShopGiftCardModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsVariantesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersPaymentModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersShippingModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersUserAddressModel;
-use CMW\Model\Shop\Order\ShopOrdersItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopHistoryOrdersEntity
@@ -78,7 +76,11 @@ class ShopHistoryOrdersEntity
             return "<i style='color: orange' class='fa-solid fa-spinner fa-spin-pulse'></i> En attente de livraison";
         }
         if ($this->orderStatus == 2) {
-            return "<i style='color: #517331' class='fa-solid fa-truck-fast'></i> Livraison en cours";
+            if ($this->getShippingMethod()->getShipping()->getType() == 0) {
+                return "<i style='color: #517331' class='fa-solid fa-truck-fast'></i> Livraison en cours";
+            } else {
+                return "<i style='color: #517331' class='fa-solid fa-boxes-packing'></i> En attente de retrait";
+            }
         }
         if ($this->orderStatus == 3) {
             return "<i style='color: green' class='fa-regular fa-circle-check'></i> Terminé";
@@ -97,10 +99,18 @@ class ShopHistoryOrdersEntity
             return 'Commande en préparation';
         }
         if ($this->orderStatus == 1) {
-            return 'Commande prête, votre colis sera remis dans un centre de livraison';
+            if ($this->getShippingMethod()->getShipping()->getType() == 0) {
+                return 'Commande prête, votre colis sera remis dans un centre de livraison';
+            } else {
+                return "Commande prête, Vous pouvez venir le retirer dans le centre";
+            }
         }
         if ($this->orderStatus == 2) {
-            return 'Livraison en cours';
+            if ($this->getShippingMethod()->getShipping()->getType() == 0) {
+                return 'Livraison en cours';
+            } else {
+                return "Commande prête, Vous pouvez venir le retirer dans le centre";
+            }
         }
         if ($this->orderStatus == 3) {
             return 'Terminé';

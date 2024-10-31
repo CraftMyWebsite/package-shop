@@ -2,8 +2,6 @@
 
 namespace CMW\Model\Shop\Shipping;
 
-use CMW\Entity\Shop\Shippings\ShopShippingEntity;
-use CMW\Entity\Shop\Shippings\ShopShippingWithdrawPointEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingZoneEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;

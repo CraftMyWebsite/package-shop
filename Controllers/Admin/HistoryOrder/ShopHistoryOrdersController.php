@@ -37,7 +37,6 @@ use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Shop\Shipping\ShopShippingModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use CMW\Utils\Website;
@@ -145,20 +144,29 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageSendStep(int $orderId): void
     {
-
-
-        // TODO : Notifier l'utilisateur
-
         // TODO : Emitter sendOrder
 
         // Exec shipping method :
         $thisOrder = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
-        $shippingMethodVarName = $thisOrder->getShippingMethod()->getShipping()->getShippingMethod()->varName();
-        $items = $thisOrder->getOrderedItems();
-        $userEntity = $thisOrder->getUser();
-        ShopShippingController::getInstance()->getShippingMethodsByVarName($shippingMethodVarName)->execAfterCommandValidatedByAdmin($shippingMethodVarName,$items,$userEntity, $thisOrder);
+        $orderOnlyVirtual = $this->handleOrderTypeContent($thisOrder->getOrderedItems());
+        if (!$orderOnlyVirtual) {
+            $shippingMethodVarName = $thisOrder->getShippingMethod()->getShipping()->getShippingMethod()->varName();
+            $items = $thisOrder->getOrderedItems();
+            $userEntity = $thisOrder->getUser();
+            ShopShippingController::getInstance()->getShippingMethodsByVarName($shippingMethodVarName)->execAfterCommandValidatedByAdmin($shippingMethodVarName,$items,$userEntity, $thisOrder);
+        }
 
-        ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+
+        if (!$orderOnlyVirtual) {
+            if ($thisOrder->getShippingMethod()->getShipping()->getType() === 0) {
+                ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+            } else {
+                ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, null);
+            }
+        } else {
+            ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+        }
+
 
         Redirect::redirectPreviousRoute();
     }
@@ -356,7 +364,7 @@ class ShopHistoryOrdersController extends AbstractController
     private function handleOrderTypeContent(array $orderContent): bool
     {
         foreach ($orderContent as $item) {
-            if ($item->getItem()->getType() === 0) {
+            if ( $item->getItem()->getType() === 0) {
                 return false;
             }
         }

@@ -4,7 +4,6 @@ namespace CMW\Interface\Shop;
 
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Manager\Env\EnvManager;
 
 interface IPaymentMethod
 {

@@ -13,7 +13,7 @@ $description = '';
     <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
     <div>
         <a type="button" href="../" class="btn btn-warning">Plus tard ...</a>
-        <button form="finish" type="submit" class="btn btn-primary">Colis en route / Retrait en attente</button>
+        <button form="finish" type="submit" class="btn btn-primary">Colis en route</button>
     </div>
 </div>
 
@@ -21,7 +21,7 @@ $description = '';
     <div class="card">
         <h5>Expédition</h5>
         <hr>
-        <h6>Type d'expédition :</h6>
+        <h6>Type d'expédition (<?= $order->getShippingMethod()->getShipping()->getFormattedType() ?>) :</h6>
         <p><?= $order->getShippingMethod()->getName() ?> - <b><?= $order->getShippingMethod()->getPriceFormatted() ?></b></p>
         <hr>
         <h6>Livrer à :</h6>
@@ -32,10 +32,10 @@ $description = '';
             <?php if (!empty($order->getUserAddressMethod()->getUserLine2())) { echo $order->getUserAddressMethod()->getUserLine2() . '<br>'; } ?>
             <?= $order->getUserAddressMethod()->getUserPostalCode() ?>
             <?= $order->getUserAddressMethod()->getUserCity() ?><br>
-            <?= $order->getUserAddressMethod()->getUserCountry() ?><br>
+            <?= $order->getUserAddressMethod()->getUserFormattedCountry() ?><br>
         </p>
         <hr>
-        <h6>Informations supplémentaire :</h6>
+        <h6>Informations supplémentaires :</h6>
         <p>
             Téléphone : <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
             @mail : <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>

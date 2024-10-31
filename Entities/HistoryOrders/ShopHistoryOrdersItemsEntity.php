@@ -2,13 +2,8 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-use CMW\Controller\Core\CoreController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
-use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Entity\Shop\Items\ShopItemEntity;
-use CMW\Entity\Shop\Payments\ShopPaymentDiscountEntity;
-use CMW\Manager\Env\EnvManager;
-use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopHistoryOrdersItemsEntity

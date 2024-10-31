@@ -2,7 +2,6 @@
 
 namespace CMW\Implementation\Shop\Shop;
 
-use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPriceTypeMethod;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 

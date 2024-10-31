@@ -16,7 +16,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
-use CMW\Model\Shopextendedtoken\ShopExtendedTokenInventoryModels;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
@@ -81,7 +80,7 @@ class ShopPaymentsController extends AbstractController
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) use ($varName) {
-            return $paymentMethod->isVirtualCurrency() === 1 && $paymentMethod->isActive() && $paymentMethod->varName() === $varName;
+            return $paymentMethod->isVirtualCurrency() && $paymentMethod->isActive() && $paymentMethod->varName() === $varName;
         });
     }
 

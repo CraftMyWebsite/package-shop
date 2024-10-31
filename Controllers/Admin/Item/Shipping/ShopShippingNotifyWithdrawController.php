@@ -5,16 +5,12 @@ namespace CMW\Controller\Shop\Admin\Item\Shipping;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Manager\Mail\MailManager;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
+use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Shipping\ShopShippingRequirementModel;
-use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
-use CMW\Model\Shop\Discount\ShopDiscountModel;
-use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
-use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 use DateTime;
 
@@ -30,7 +26,6 @@ class ShopShippingNotifyWithdrawController extends AbstractController
      * @param ShopHistoryOrdersItemsEntity[] $items
      * @param UserEntity $user
      * @param ShopHistoryOrdersEntity $order
-     * @throws \Exception
      */
     public function sedMailWithInfo(string $varName, array $items, UserEntity $user, ShopHistoryOrdersEntity $order): void
     {
@@ -137,6 +132,11 @@ class ShopShippingNotifyWithdrawController extends AbstractController
                 $titleColor,
                 $cardBG], $htmlTemplate);
         $object = Website::getWebsiteName() . " - " . $globalName ;
-        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
+            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+            Flash::send(Alert::SUCCESS, 'Point de retrait', $user->getPseudo() . ' à été notifié que sa commande est prête pour le retrait dans le centre de dépôt ! vous pouvez valider cette étape !');
+        } else {
+            Flash::send(Alert::ERROR, 'Point de retrait','Nous n\'avons pas réussi à envoyer le mail au client ! Mais le colis et quand même prêt à être reitré. trouvez un autre moyen de le prévenir !');
+        }
     }
 }

@@ -490,7 +490,9 @@ $description = '';
     </div>
 </div>
 
-<div class="tab-vertical-container mt-6">
+<hr>
+<h5 class="mt-6">Réglages des méthodes</h5>
+<div class="tab-vertical-container mt-2">
     <div class="tab-vertical" data-tabs-toggle="#tab-content-2">
         <?php foreach ($configShippingMethods as $method): ?>
             <button class="tab-button" data-tabs-target="#tab<?= $method->varName() ?>" role="tab"><?= $method->name() ?></button>

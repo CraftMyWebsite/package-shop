@@ -2,8 +2,6 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
-use CMW\Controller\Core\CoreController;
-use CMW\Entity\Shop\Items\ShopItemVariantValueEntity;
 
 class ShopHistoryOrdersItemsVariantesEntity
 {

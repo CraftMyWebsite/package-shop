@@ -3,13 +3,10 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Utils\Date;
-use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
-use CMW\Manager\Flash\Alert;
-use CMW\Manager\Flash\Flash;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
@@ -35,12 +32,13 @@ class ShopItemEntity
     private ?int $itemByOrderLimit;
     private ?int $itemGlobalLimit;
     private ?int $itemUserLimit;
+    private int $itemDraft;
     private string $itemCreated;
     private string $itemUpdated;
     private int $itemArchived;
     private int $itemArchivedReason;
 
-    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, string $itemPriceType, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, string $itemCreated, string $itemUpdated, int $itemArchived, int $itemArchivedReason)
+    public function __construct(int $itemId, ?ShopCategoryEntity $category, ?string $itemName, string $itemDescription, string $itemShortDescription, string $itemSlug, ?int $itemImage, int $itemType, ?int $itemDefaultStock, ?int $itemCurrentStock, ?float $itemPrice, string $itemPriceType, ?int $itemByOrderLimit, ?int $itemGlobalLimit, ?int $itemUserLimit, int $itemDraft, string $itemCreated, string $itemUpdated, int $itemArchived, int $itemArchivedReason)
     {
         $this->itemId = $itemId;
         $this->category = $category;
@@ -57,6 +55,7 @@ class ShopItemEntity
         $this->itemByOrderLimit = $itemByOrderLimit;
         $this->itemGlobalLimit = $itemGlobalLimit;
         $this->itemUserLimit = $itemUserLimit;
+        $this->itemDraft = $itemDraft;
         $this->itemCreated = $itemCreated;
         $this->itemUpdated = $itemUpdated;
         $this->itemArchived = $itemArchived;
@@ -506,6 +505,14 @@ class ShopItemEntity
     }
 
     /**
+     * @return int
+     */
+    public function isDraft(): int
+    {
+        return $this->itemDraft;
+    }
+
+    /**
      * @return string
      */
     public function getCreated(): string
@@ -550,8 +557,12 @@ class ShopItemEntity
      */
     public function getItemLink(): string
     {
-        $catSlug = $this->getCategory()->getSlug();
-        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cat/$catSlug/item/$this->itemSlug";
+        $catSlug = $this->getCategory()?->getSlug();
+        if ($catSlug) {
+            return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cat/$catSlug/item/$this->itemSlug";
+        } else {
+            return "#";
+        }
     }
 
     /**
