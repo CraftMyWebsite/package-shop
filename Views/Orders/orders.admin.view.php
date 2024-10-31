@@ -14,26 +14,30 @@ $description = '';
 <h3><i class="fa-solid fa-list-check"></i> Commandes</h3>
 
 <div class="card">
-    <h6>En cours</h6>
+    <h6><i class="fa-solid fa-spinner fa-spin text-info"></i> En cours</h6>
     <?php if ($notificationIsRefused): ?>
         <div class="alert alert-warning">
-            <p><i class="fa-solid fa-triangle-exclamation"></i> Attention, vous avez désactivé les notifications du package Shop ! Vous ne serez pas alerté en cas de nouvelle commande. <br>Il est également recommandé d'activer les alertes mail / Discord dans les paramètres de notification. <a class="link" href="/cmw-admin/notifications">Modifier les réglages des notifications</a></p>
+            <p><i class="fa-solid fa-triangle-exclamation"></i> Attention, vous avez désactivé les notifications du
+                package Shop ! Vous ne serez pas alerté en cas de nouvelle commande. <br>Il est également recommandé
+                d'activer les alertes mail / Discord dans les paramètres de notification. <a class="link"
+                                                                                             href="/cmw-admin/notifications">Modifier
+                    les réglages des notifications</a></p>
         </div>
     <?php endif; ?>
     <div class="table-container table-container-striped">
         <table class="table" id="table1">
             <thead>
             <tr>
-                <th >Utilisateur</th>
-                <th >N° de commande</th>
-                <th >Montant</th>
-                <th >Status</th>
-                <th >Paiement</th>
-                <th >Date</th>
+                <th>Utilisateur</th>
+                <th>N° de commande</th>
+                <th>Montant</th>
+                <th>Status</th>
+                <th>Paiement</th>
+                <th>Date</th>
                 <th class="text-center">Gérer</th>
             </tr>
             </thead>
-            <tbody >
+            <tbody>
             <?php foreach ($inProgressOrders as $inProgressOrder): ?>
                 <tr>
                     <td><?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?></td>
@@ -45,7 +49,8 @@ $description = '';
                     <?php $payment = ShopPaymentsController::getInstance()->getPaymentByVarName($inProgressOrder->getPaymentMethod()->getVarName()) ?>
                     <td>
                         <?php if ($payment->dashboardURL()): ?>
-                            <a target="_blank" class="link" href="<?= $payment->dashboardURL() ?>"><?= $inProgressOrder->getPaymentMethod()->getName() ?></a>
+                            <a target="_blank" class="link"
+                               href="<?= $payment->dashboardURL() ?>"><?= $inProgressOrder->getPaymentMethod()->getName() ?></a>
                         <?php else: ?>
                             <?= $inProgressOrder->getPaymentMethod()->getName() ?>
                         <?php endif; ?>
@@ -63,75 +68,74 @@ $description = '';
     </div>
 </div>
 
-<div class="grid-2 mt-6">
-    <div class="card">
-        <h6>Terminé</h6>
-        <div class="table-container table-container-striped">
-            <table id="table2">
-                <thead>
+<div class="card mt-6">
+    <h6><i class="fa-solid fa-circle-check text-success"></i> Terminé</h6>
+    <div class="table-container table-container-striped">
+        <table id="table2">
+            <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>N° de commande</th>
+                <th>Montant</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th class="text-center"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($finishedOrders as $finishedOrder): ?>
                 <tr>
-                    <th >Utilisateur</th>
-                    <th >N° de commande</th>
-                    <th >Montant</th>
-                    <th >Status</th>
-                    <th >Date</th>
-                    <th class="text-center"></th>
+                    <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td>#<?= $finishedOrder->getOrderNumber() ?></td>
+                    <td>
+                        <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() . '</b>' ?><br>
+                    </td>
+                    <td><?= $finishedOrder->getAdminStatus() ?></td>
+                    <td><?= $finishedOrder->getCreated() ?></td>
+                    <td class="text-center">
+                        <a href="orders/view/<?= $finishedOrder->getId() ?>">
+                            <i class="text-primary fa-solid fa-eye"></i>
+                        </a>
+                    </td>
                 </tr>
-                </thead>
-                <tbody >
-                <?php foreach ($finishedOrders as $finishedOrder): ?>
-                    <tr>
-                        <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
-                        <td>#<?= $finishedOrder->getOrderNumber() ?></td>
-                        <td>
-                            <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() . '</b>' ?><br>
-                        </td>
-                        <td><?= $finishedOrder->getAdminStatus() ?></td>
-                        <td><?= $finishedOrder->getCreated() ?></td>
-                        <td class="text-center">
-                            <a href="orders/view/<?= $finishedOrder->getId() ?>">
-                                <i class="text-primary fa-solid fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-    <div class="card">
-        <h6>Terminé et remboursé</h6>
-        <div class="table-container table-container-striped">
-            <table id="table3">
-                <thead>
+</div>
+
+<div class="card mt-6">
+    <h6><i class="fa-solid fa-square-xmark text-danger"></i> Terminé et remboursé</h6>
+    <div class="table-container table-container-striped">
+        <table id="table3">
+            <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>N° de commande</th>
+                <th>Montant</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th class="text-center"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($errorOrders as $errorOrder): ?>
                 <tr>
-                    <th >Utilisateur</th>
-                    <th >N° de commande</th>
-                    <th >Montant</th>
-                    <th >Status</th>
-                    <th >Date</th>
-                    <th class="text-center"></th>
+                    <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td>#<?= $errorOrder->getOrderNumber() ?></td>
+                    <td>
+                        <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() . '</b>' ?><br>
+                    </td>
+                    <td><?= $errorOrder->getAdminStatus() ?></td>
+                    <td><?= $errorOrder->getCreated() ?></td>
+                    <td class="text-center">
+                        <a href="orders/view/<?= $errorOrder->getId() ?>">
+                            <i class="text-primary fa-solid fa-eye"></i>
+                        </a>
+                    </td>
                 </tr>
-                </thead>
-                <tbody >
-                <?php foreach ($errorOrders as $errorOrder): ?>
-                    <tr>
-                        <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
-                        <td>#<?= $errorOrder->getOrderNumber() ?></td>
-                        <td>
-                            <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() . '</b>' ?><br>
-                        </td>
-                        <td><?= $errorOrder->getAdminStatus() ?></td>
-                        <td><?= $errorOrder->getCreated() ?></td>
-                        <td class="text-center">
-                            <a href="orders/view/<?= $errorOrder->getId() ?>">
-                                <i class="text-primary fa-solid fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </div>

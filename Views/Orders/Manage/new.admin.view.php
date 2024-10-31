@@ -2,9 +2,11 @@
 
 /* @var CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity $order */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var bool $reviewEnabled */
 
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
+use CMW\Model\Shop\Review\ShopReviewsModel;
 
 $title = 'Commandes #' . $order->getOrderNumber();
 $description = '';
@@ -68,6 +70,11 @@ $description = '';
                 <img style="width: 10rem; height: 10rem; object-fit: cover" class="mx-auto"  src="<?= $defaultImage ?>" alt="..."/>
             <?php endif; ?>
             <h4 class="text-center"><?= $orderItem->getName() ?></h4>
+            <?php if ($reviewEnabled): ?>
+                <div class="flex justify-center">
+                    <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?>
+                </div>
+            <?php endif; ?>
             <?php if ($orderItem->getItem()->getType() == 1):
                 $virtualMethod = ShopItemsVirtualMethodModel::getInstance()?->getVirtualItemMethodByItemId($orderItem->getItem()->getId())->getVirtualMethod()->name(); ?>
                 <p>Article virtuel, Méthode : <?= $virtualMethod ?></p>

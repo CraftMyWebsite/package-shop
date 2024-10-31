@@ -2,8 +2,10 @@
 
 /* @var CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity $order */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var bool $reviewEnabled */
 
 use CMW\Manager\Security\SecurityManager;
+use CMW\Model\Shop\Review\ShopReviewsModel;
 
 $title = 'Commandes #' . $order->getOrderNumber();
 $description = '';
@@ -63,6 +65,9 @@ $description = '';
                             <div class="me-2"><img style="width: 4rem; height: 4rem; object-fit: cover" src="<?= $defaultImage ?>" alt="Panier"></div>
                         <?php endif; ?>
                         <p><?= $orderItem->getName() ?> <br>
+                            <?php if ($reviewEnabled): ?>
+                            <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?><br>
+                    <?php endif; ?>
                             Quantité : <b><?= $orderItem->getQuantity() ?></b> <br>
                             <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
                                 <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b>

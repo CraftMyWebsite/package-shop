@@ -84,9 +84,11 @@ class ShopHistoryOrdersController extends AbstractController
 
         $orderStatus = $order->getStatusCode();
 
+        $reviewEnabled = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+
         if ($orderStatus === 0) {
             View::createAdminView('Shop', 'Orders/Manage/new')
-                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
+                ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
         if ($orderStatus === 1) {
@@ -111,18 +113,18 @@ class ShopHistoryOrdersController extends AbstractController
                 Redirect::redirect('cmw-admin/shop/orders');
             } else {
                 View::createAdminView('Shop', 'Orders/Manage/send')
-                    ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
+                    ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
                     ->view();
             }
         }
         if ($orderStatus === 2) {
             View::createAdminView('Shop', 'Orders/Manage/finish')
-                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
+                ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
         if ($orderStatus === -1) {
             View::createAdminView('Shop', 'Orders/Manage/cancel')
-                ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
+                ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
                 ->view();
         }
     }
@@ -134,9 +136,10 @@ class ShopHistoryOrdersController extends AbstractController
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $reviewEnabled = ShopSettingsModel::getInstance()->getSettingValue('reviews');
 
         View::createAdminView('Shop', 'Orders/view')
-            ->addVariableList(['order' => $order, 'defaultImage' => $defaultImage])
+            ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
             ->view();
     }
 
