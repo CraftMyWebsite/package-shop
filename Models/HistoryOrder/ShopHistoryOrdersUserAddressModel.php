@@ -2,12 +2,10 @@
 
 namespace CMW\Model\Shop\HistoryOrder;
 
-use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
-use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
-use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersShippingEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersUserAddressEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Manager\Security\EncryptManager;
 
 /**
  * Class: @ShopHistoryOrdersUserAddressModel
@@ -59,18 +57,24 @@ class ShopHistoryOrdersUserAddressModel extends AbstractModel
 
     public function addHistoryUserAddressOrder(int $orderId, ?string $addressName, ?string $addressUserMail, ?string $addressUserLastName, ?string $addressUserFirstName, ?string $addressUserLine1, ?string $addressUserLine2, ?string $addressUserCity, ?string $addressUserPostalCode, ?string $addressUserCountry, ?string $addressUserPhone): ?ShopHistoryOrdersUserAddressEntity
     {
+        $encryptedMail = EncryptManager::encrypt($addressUserMail);
+        $encryptedLine1 = EncryptManager::encrypt($addressUserLine1);
+        $encryptedLine2 = EncryptManager::encrypt($addressUserLine2);
+        $encryptedCity = EncryptManager::encrypt($addressUserCity);
+        $encryptedPostalCode = EncryptManager::encrypt($addressUserPostalCode);
+        $encryptedPhone = EncryptManager::encrypt($addressUserPhone);
         $var = array(
             'shop_history_order_id' => $orderId,
             'shop_history_order_user_address_name' => $addressName,
-            'shop_history_order_user_address_user_mail' => $addressUserMail,
+            'shop_history_order_user_address_user_mail' => $encryptedMail,
             'shop_history_order_user_address_user_last_name' => $addressUserLastName,
             'shop_history_order_user_address_user_first_name' => $addressUserFirstName,
-            'shop_history_order_user_address_user_line_1' => $addressUserLine1,
-            'shop_history_order_user_address_user_line_2' => $addressUserLine2,
-            'shop_history_order_user_address_user_city' => $addressUserCity,
-            'shop_history_order_user_address_user_postal_code' => $addressUserPostalCode,
+            'shop_history_order_user_address_user_line_1' => $encryptedLine1,
+            'shop_history_order_user_address_user_line_2' => $encryptedLine2,
+            'shop_history_order_user_address_user_city' => $encryptedCity,
+            'shop_history_order_user_address_user_postal_code' => $encryptedPostalCode,
             'shop_history_order_user_address_user_country' => $addressUserCountry,
-            'shop_history_order_user_address_user_phone' => $addressUserPhone,
+            'shop_history_order_user_address_user_phone' => $encryptedPhone,
         );
 
         $sql = 'INSERT INTO cmw_shop_history_order_user_address (shop_history_order_id, shop_history_order_user_address_name, shop_history_order_user_address_user_mail,shop_history_order_user_address_user_last_name, shop_history_order_user_address_user_first_name,shop_history_order_user_address_user_line_1, shop_history_order_user_address_user_line_2, shop_history_order_user_address_user_city,shop_history_order_user_address_user_postal_code, shop_history_order_user_address_user_country, shop_history_order_user_address_user_phone) VALUES (:shop_history_order_id, :shop_history_order_user_address_name, :shop_history_order_user_address_user_mail, :shop_history_order_user_address_user_last_name, :shop_history_order_user_address_user_first_name, :shop_history_order_user_address_user_line_1, :shop_history_order_user_address_user_line_2, :shop_history_order_user_address_user_city, :shop_history_order_user_address_user_postal_code, :shop_history_order_user_address_user_country, :shop_history_order_user_address_user_phone)';

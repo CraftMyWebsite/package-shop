@@ -53,10 +53,11 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items
     shop_item_by_order_limit    INT          NULL,
     shop_item_global_limit      INT          NULL,
     shop_item_user_limit        INT          NULL,
-    shop_item_created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_item_updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     shop_item_archived          TINYINT      NOT NULL DEFAULT 0,
     shop_item_archived_reason   TINYINT      NOT NULL DEFAULT 0,
+    shop_item_draft             TINYINT      NOT NULL DEFAULT 0,
+    shop_item_created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_item_updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_category_id_items FOREIGN KEY (shop_category_id)
         REFERENCES cmw_shops_categories (shop_category_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
@@ -243,7 +244,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_discount
     shop_discount_use_multiple_per_users         TINYINT      NULL,
     shop_discount_status                         TINYINT      NULL,
     shop_discount_test                           TINYINT      NULL,
-    shop_discount_code                           VARCHAR(50)  NULL UNIQUE,
+    shop_discount_code                           VARCHAR(500)  NULL UNIQUE,
     shop_discount_default_active                 TINYINT      NOT NULL DEFAULT 0,
     shop_discount_users_need_purchase_before_use TINYINT      NULL,
     shop_discount_quantity_impacted              TINYINT      NULL,
@@ -306,9 +307,9 @@ CREATE TABLE IF NOT EXISTS cmw_shops_shipping_withdraw_point
     shops_shipping_withdraw_point_id                  INT AUTO_INCREMENT PRIMARY KEY,
     shops_shipping_withdraw_point_name                VARCHAR(50) NOT NULL,
     shops_shipping_withdraw_point_address_distance    INT         NULL,
-    shops_shipping_withdraw_point_address_line        VARCHAR(50) NOT NULL,
-    shops_shipping_withdraw_point_address_city        VARCHAR(50) NOT NULL,
-    shops_shipping_withdraw_point_address_postal_code VARCHAR(50) NOT NULL,
+    shops_shipping_withdraw_point_address_line        VARCHAR(500) NOT NULL,
+    shops_shipping_withdraw_point_address_city        VARCHAR(500) NOT NULL,
+    shops_shipping_withdraw_point_address_postal_code VARCHAR(500) NOT NULL,
     shops_shipping_withdraw_point_address_country     VARCHAR(50) NOT NULL
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -342,12 +343,12 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
     shop_user_id                           INT         NULL,
     shop_delivery_user_address_first_name  VARCHAR(50) NOT NULL,
     shop_delivery_user_address_last_name   VARCHAR(50) NOT NULL,
-    shop_delivery_user_address_line_1      VARCHAR(50) NOT NULL,
-    shop_delivery_user_address_line_2      VARCHAR(50) NOT NULL,
-    shop_delivery_user_address_city        VARCHAR(50) NOT NULL,
-    shop_delivery_user_address_postal_code VARCHAR(50) NOT NULL,
+    shop_delivery_user_address_line_1      VARCHAR(500) NOT NULL,
+    shop_delivery_user_address_line_2      VARCHAR(500) NOT NULL,
+    shop_delivery_user_address_city        VARCHAR(500) NOT NULL,
+    shop_delivery_user_address_postal_code VARCHAR(500) NOT NULL,
     shop_delivery_user_address_country     VARCHAR(50) NOT NULL,
-    shop_delivery_user_address_phone       VARCHAR(50) NOT NULL,
+    shop_delivery_user_address_phone       VARCHAR(500) NOT NULL,
     shop_delivery_user_address_created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_delivery_user_address_updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_delivery_user_address FOREIGN KEY (shop_user_id)
@@ -404,15 +405,15 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_user_address
     shop_history_order_user_address_id               INT AUTO_INCREMENT PRIMARY KEY,
     shop_history_order_id                            INT         NOT NULL,
     shop_history_order_user_address_name             VARCHAR(50) NULL,
-    shop_history_order_user_address_user_mail        VARCHAR(50) NULL,
+    shop_history_order_user_address_user_mail        VARCHAR(500) NULL,
     shop_history_order_user_address_user_last_name   VARCHAR(50) NULL,
     shop_history_order_user_address_user_first_name  VARCHAR(50) NULL,
-    shop_history_order_user_address_user_line_1      VARCHAR(50) NULL,
-    shop_history_order_user_address_user_line_2      VARCHAR(50) NULL,
-    shop_history_order_user_address_user_city        VARCHAR(50) NULL,
-    shop_history_order_user_address_user_postal_code VARCHAR(50) NULL,
+    shop_history_order_user_address_user_line_1      VARCHAR(500) NULL,
+    shop_history_order_user_address_user_line_2      VARCHAR(500) NULL,
+    shop_history_order_user_address_user_city        VARCHAR(500) NULL,
+    shop_history_order_user_address_user_postal_code VARCHAR(500) NULL,
     shop_history_order_user_address_user_country     VARCHAR(50) NULL,
-    shop_history_order_user_address_user_phone       VARCHAR(50) NULL,
+    shop_history_order_user_address_user_phone       VARCHAR(500) NULL,
     CONSTRAINT fk_cmw_shop_history_order_user_address_history_order_id FOREIGN KEY (shop_history_order_id)
         REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -519,7 +520,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_payment_method_settings
 (
     shop_payment_method_settings_id         INT AUTO_INCREMENT PRIMARY KEY,
     shop_payment_method_settings_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
-    shop_payment_method_settings_value      VARCHAR(255) NOT NULL,
+    shop_payment_method_settings_value      VARCHAR(500) NOT NULL,
     shop_payment_method_settings_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_payment_method_settings_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB

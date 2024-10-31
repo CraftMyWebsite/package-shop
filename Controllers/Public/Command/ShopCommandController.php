@@ -12,6 +12,7 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Manager\Security\EncryptManager;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
@@ -177,9 +178,14 @@ class ShopCommandController extends AbstractController
 
         [$label, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        $encryptedPhone = EncryptManager::encrypt($phone);
+        $encryptedLine1 = EncryptManager::encrypt($line1);
+        $encryptedLine2 = EncryptManager::encrypt($line2);
+        $encryptedCity = EncryptManager::encrypt($city);
+        $encryptedPostalCode = EncryptManager::encrypt($postalCode);
 
-        // TODO : Bien mais pour éviter la perte de l'attention de l'utilisateur devra rediriger à l'étape 2 avec selection auto de l'adresse
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $encryptedPhone, $encryptedLine1, $encryptedLine2, $encryptedCity, $encryptedPostalCode, $country);
+
         Redirect::redirectPreviousRoute();
     }
 
@@ -196,7 +202,13 @@ class ShopCommandController extends AbstractController
             ShopDeliveryUserAddressModel::getInstance()->removeOtherFav($userId);
         }
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        $encryptedPhone = EncryptManager::encrypt($phone);
+        $encryptedLine1 = EncryptManager::encrypt($line1);
+        $encryptedLine2 = EncryptManager::encrypt($line2);
+        $encryptedCity = EncryptManager::encrypt($city);
+        $encryptedPostalCode = EncryptManager::encrypt($postalCode);
+
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $encryptedPhone, $encryptedLine1, $encryptedLine2, $encryptedCity, $encryptedPostalCode, $country);
 
         Redirect::redirectPreviousRoute();
     }
@@ -288,10 +300,13 @@ class ShopCommandController extends AbstractController
 
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
 
-        if (is_null($commandTunnelModel->getShipping()?->getId())) {
-            Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoie n\'existe plus !');
-            ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
-            Redirect::redirectPreviousRoute();
+        $cartOnlyVirtual = $this->handleCartTypeContent($cartContent);
+        if (!$cartOnlyVirtual) {
+            if (is_null($commandTunnelModel->getShipping()?->getId())) {
+                Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoie n\'existe plus !');
+                ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
+                Redirect::redirectPreviousRoute();
+            }
         }
 
         if (!$commandTunnelModel) {
@@ -351,6 +366,7 @@ class ShopCommandController extends AbstractController
             ShopCartController::getInstance()->handleLimitePerUser($itemCart, $itemId, $quantity, $userId, $sessionId);
             ShopCartController::getInstance()->handleGlobalLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
             ShopCartController::getInstance()->handleByOrderLimit($itemCart, $itemId, $quantity, $userId, $sessionId);
+            ShopCartController::getInstance()->handleDraft($itemCart, $itemId, $userId, $sessionId);
         }
     }
 

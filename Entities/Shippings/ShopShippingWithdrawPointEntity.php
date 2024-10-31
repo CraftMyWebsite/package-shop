@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\Shippings;
 
+use CMW\Manager\Security\EncryptManager;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
 class ShopShippingWithdrawPointEntity
@@ -51,17 +52,17 @@ class ShopShippingWithdrawPointEntity
 
     public function getAddressLine(): string
     {
-        return $this->addressLine;
+        return EncryptManager::decrypt($this->addressLine);
     }
 
     public function getAddressCity(): string
     {
-        return $this->addressCity;
+        return EncryptManager::decrypt($this->addressCity);
     }
 
     public function getAddressPostalCode(): string
     {
-        return $this->addressPostalCode;
+        return EncryptManager::decrypt($this->addressPostalCode);
     }
 
     public function getAddressCountry(): string

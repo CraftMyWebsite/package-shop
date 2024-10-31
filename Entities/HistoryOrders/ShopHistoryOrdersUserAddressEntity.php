@@ -2,6 +2,9 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Security\EncryptManager;
+use CMW\Model\Shop\Country\ShopCountryModel;
+
 class ShopHistoryOrdersUserAddressEntity
 {
     private int $historyOrderUserAddressId;
@@ -64,7 +67,7 @@ class ShopHistoryOrdersUserAddressEntity
 
     public function getUserMail(): ?string
     {
-        return $this->historyOrderUserAddressMail;
+        return EncryptManager::decrypt($this->historyOrderUserAddressMail);
     }
 
     public function getUserLastName(): ?string
@@ -79,22 +82,22 @@ class ShopHistoryOrdersUserAddressEntity
 
     public function getUserLine1(): ?string
     {
-        return $this->historyOrderUserAddressLine1;
+        return EncryptManager::decrypt($this->historyOrderUserAddressLine1);
     }
 
     public function getUserLine2(): ?string
     {
-        return $this->historyOrderUserAddressLine2;
+        return EncryptManager::decrypt($this->historyOrderUserAddressLine2);
     }
 
     public function getUserCity(): ?string
     {
-        return $this->historyOrderUserAddressCity;
+        return EncryptManager::decrypt($this->historyOrderUserAddressCity);
     }
 
     public function getUserPostalCode(): ?string
     {
-        return $this->historyOrderUserAddressPostalCode;
+        return EncryptManager::decrypt($this->historyOrderUserAddressPostalCode);
     }
 
     public function getUserCountry(): ?string
@@ -102,8 +105,13 @@ class ShopHistoryOrdersUserAddressEntity
         return $this->historyOrderUserAddressCountry;
     }
 
+    public function getUserFormattedCountry(): ?string
+    {
+        return ShopCountryModel::getInstance()->getCountryByCode($this->historyOrderUserAddressCountry)->getName();
+    }
+
     public function getUserPhone(): ?string
     {
-        return $this->historyOrderUserAddressPhone;
+        return EncryptManager::decrypt($this->historyOrderUserAddressPhone);
     }
 }

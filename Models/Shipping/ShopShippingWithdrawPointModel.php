@@ -2,10 +2,10 @@
 
 namespace CMW\Model\Shop\Shipping;
 
-use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingWithdrawPointEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Manager\Security\EncryptManager;
 
 /**
  * Class: @ShopShippingWithdrawPointModel
@@ -69,12 +69,15 @@ class ShopShippingWithdrawPointModel extends AbstractModel
 
     public function createWithdrawPoint(int $distance, string $name, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry): ?ShopShippingWithdrawPointEntity
     {
+        $encryptedAddressLine = EncryptManager::encrypt($addressLine);
+        $encryptedAddressCity = EncryptManager::encrypt($addressCity);
+        $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
         $data = array(
             'name' => $name,
             'distance' => $distance,
-            'address_line' => $addressLine,
-            'address_city' => $addressCity,
-            'address_postal_code' => $addressPostalCode,
+            'address_line' => $encryptedAddressLine,
+            'address_city' => $encryptedAddressCity,
+            'address_postal_code' => $encryptedAddressPostalCode,
             'address_country' => $addressCountry,
         );
 
@@ -94,13 +97,16 @@ class ShopShippingWithdrawPointModel extends AbstractModel
 
     public function editWithdrawPoint(int $withdrawPointId, string $name, int $distance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry): ?ShopShippingWithdrawPointEntity
     {
+        $encryptedAddressLine = EncryptManager::encrypt($addressLine);
+        $encryptedAddressCity = EncryptManager::encrypt($addressCity);
+        $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
         $data = array(
             'id' => $withdrawPointId,
             'distance' => $distance,
             'name' => $name,
-            'address_line' => $addressLine,
-            'address_city' => $addressCity,
-            'address_postal_code' => $addressPostalCode,
+            'address_line' => $encryptedAddressLine,
+            'address_city' => $encryptedAddressCity,
+            'address_postal_code' => $encryptedAddressPostalCode,
             'address_country' => $addressCountry,
         );
 

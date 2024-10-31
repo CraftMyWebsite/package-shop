@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\Discounts;
 
+use CMW\Manager\Security\EncryptManager;
 use CMW\Utils\Date;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use DateInterval;
@@ -222,7 +223,7 @@ class ShopDiscountEntity
 
     public function getCode(): ?string
     {
-        return $this->discountCode;
+        return EncryptManager::decrypt($this->discountCode);
     }
 
     public function getDefaultActive(): int

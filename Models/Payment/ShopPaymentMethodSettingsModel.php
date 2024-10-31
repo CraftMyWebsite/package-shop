@@ -5,6 +5,7 @@ namespace CMW\Model\Shop\Payment;
 use CMW\Entity\Shop\Payments\ShopPaymentMethodSettingsEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Manager\Security\EncryptManager;
 
 /**
  * Class: @ShopPaymentMethodSettingsModel
@@ -34,7 +35,7 @@ class ShopPaymentMethodSettingsModel extends AbstractModel
             return null;
         }
 
-        return $res['shop_payment_method_settings_value'];
+        return EncryptManager::decrypt($res['shop_payment_method_settings_value']);
     }
 
     /**
@@ -75,6 +76,7 @@ class ShopPaymentMethodSettingsModel extends AbstractModel
      */
     public function updateOrInsertSetting(string $key, string $value): bool
     {
+        $encryptedValue = EncryptManager::encrypt($value);
         $sql = 'INSERT INTO cmw_shops_payment_method_settings 
                             (shop_payment_method_settings_key, shop_payment_method_settings_value, shop_payment_method_settings_updated_at) 
                             VALUES (:key, :value, NOW()) 
@@ -82,6 +84,6 @@ class ShopPaymentMethodSettingsModel extends AbstractModel
                                                     shop_payment_method_settings_updated_at=NOW()';
 
         $db = DatabaseManager::getInstance();
-        return $db->prepare($sql)->execute(['key' => $key, 'value' => $value, 'value2' => $value]);
+        return $db->prepare($sql)->execute(['key' => $key, 'value' => $encryptedValue, 'value2' => $encryptedValue]);
     }
 }

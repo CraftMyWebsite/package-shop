@@ -5,7 +5,7 @@ namespace CMW\Model\Shop\Discount;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
-use CMW\Model\Shop\Item\ShopItemsModel;
+use CMW\Manager\Security\EncryptManager;
 
 /**
  * Class: @ShopDiscountModel
@@ -125,6 +125,7 @@ class ShopDiscountModel extends AbstractModel
 
     public function createDiscount(string $name, int $linked, ?string $startDate, ?string $endDate, ?int $maxUses, ?int $currentUses, ?int $percent, ?float $price, ?int $useMultipleByUser, ?int $status, ?int $isTest, ?string $code, int $defaultApplied, ?int $needPurchaseBeforeBuy, int $quantityImpacted): ?ShopDiscountEntity
     {
+        $encryptedCode = EncryptManager::encrypt($code);
         $data = [
             'shop_discount_name' => $name,
             'shop_discount_linked' => $linked,
@@ -137,7 +138,7 @@ class ShopDiscountModel extends AbstractModel
             'shop_discount_use_multiple_per_users' => $useMultipleByUser,
             'shop_discount_status' => $status,
             'shop_discount_test' => $isTest,
-            'shop_discount_code' => $code,
+            'shop_discount_code' => $encryptedCode,
             'shop_discount_default_active' => $defaultApplied,
             'shop_discount_users_need_purchase_before_use' => $needPurchaseBeforeBuy,
             'shop_discount_quantity_impacted' => $quantityImpacted,
@@ -376,6 +377,7 @@ class ShopDiscountModel extends AbstractModel
 
     public function editDiscount(int $id, string $name, ?string $endDate, ?int $maxUses, ?int $currentUses, ?int $percent, ?float $price, ?int $useMultipleByUser, ?int $status, ?int $isTest, ?string $code, ?int $needPurchaseBeforeBuy, int $quantityImpacted): void
     {
+        $encryptedCode = EncryptManager::encrypt($code);
         $data = [
             'shop_discount_id' => $id,
             'shop_discount_name' => $name,
@@ -387,7 +389,7 @@ class ShopDiscountModel extends AbstractModel
             'shop_discount_use_multiple_per_users' => $useMultipleByUser,
             'shop_discount_status' => $status,
             'shop_discount_test' => $isTest,
-            'shop_discount_code' => $code,
+            'shop_discount_code' => $encryptedCode,
             'shop_discount_users_need_purchase_before_use' => $needPurchaseBeforeBuy,
             'shop_discount_quantity_impacted' => $quantityImpacted,
         ];

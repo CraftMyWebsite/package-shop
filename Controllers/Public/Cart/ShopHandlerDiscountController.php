@@ -7,6 +7,7 @@ use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
+use CMW\Manager\Security\EncryptManager;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
@@ -14,8 +15,6 @@ use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
-use CMW\Model\Shop\Order\ShopOrdersItemsModel;
-use CMW\Model\Shop\Order\ShopOrdersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 
@@ -32,12 +31,14 @@ class ShopHandlerDiscountController extends AbstractController
     {
         $this->healthCode($code);
 
+        $encryptedCode = EncryptManager::encrypt($code);
+
         $itemInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
-        $codeExist = ShopDiscountModel::getInstance()->codeExist($code);
+        $codeExist = ShopDiscountModel::getInstance()->codeExist($encryptedCode);
 
         if ($codeExist) {
-            $discountCode = ShopDiscountModel::getInstance()->getShopDiscountsByCode($code);
-            $this->handleBasicVerification($userId, $sessionId, $code, $discountCode);
+            $discountCode = ShopDiscountModel::getInstance()->getShopDiscountsByCode($encryptedCode);
+            $this->handleBasicVerification($userId, $sessionId, $encryptedCode, $discountCode);
             $this->handleLinkedDiscount($userId, $sessionId, $discountCode, $itemInCart);
             $this->handleNonLinkedDiscount($userId, $sessionId, $discountCode, $itemInCart);
             $this->handleGiftCodeDiscount($userId, $sessionId, $discountCode, $itemInCart);

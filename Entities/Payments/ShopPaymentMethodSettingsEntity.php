@@ -2,6 +2,8 @@
 
 namespace CMW\Entity\Shop\Payments;
 
+use CMW\Manager\Security\EncryptManager;
+
 class ShopPaymentMethodSettingsEntity
 {
     private string $key;
@@ -30,6 +32,6 @@ class ShopPaymentMethodSettingsEntity
      */
     public function getValue(): string
     {
-        return $this->value;
+        return EncryptManager::decrypt($this->value);
     }
 }

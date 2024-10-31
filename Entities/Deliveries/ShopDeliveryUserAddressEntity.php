@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\Deliveries;
 
+use CMW\Manager\Security\EncryptManager;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 use CMW\Model\Shop\Country\ShopCountryModel;
@@ -89,22 +90,22 @@ class ShopDeliveryUserAddressEntity
 
     public function getLine1(): ?string
     {
-        return $this->deliveryLine1;
+        return EncryptManager::decrypt($this->deliveryLine1);
     }
 
     public function getLine2(): ?string
     {
-        return $this->deliveryLine2;
+        return EncryptManager::decrypt($this->deliveryLine2);
     }
 
     public function getCity(): ?string
     {
-        return $this->deliveryCity;
+        return EncryptManager::decrypt($this->deliveryCity);
     }
 
     public function getPostalCode(): ?string
     {
-        return $this->deliveryPostalCode;
+        return EncryptManager::decrypt($this->deliveryPostalCode);
     }
 
     public function getCountry(): ?string
@@ -119,7 +120,7 @@ class ShopDeliveryUserAddressEntity
 
     public function getPhone(): ?string
     {
-        return $this->deliveryPhone;
+        return EncryptManager::decrypt($this->deliveryPhone);
     }
 
     public function getCreated(): string
