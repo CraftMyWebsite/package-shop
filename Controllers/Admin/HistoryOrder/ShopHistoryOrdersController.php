@@ -144,6 +144,18 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
+    #[Link('/orders/view/:orderId/relance', Link::POST, [], '/cmw-admin/shop')]
+    private function shopViewOrdersRelanceReviews(int $orderId): void
+    {
+        [$message, $object] = Utils::filterInput('message', 'object');
+
+        //TODO : send mail relance avis avec url de l'article ...
+        Flash::send(Alert::SUCCESS, 'titre' , $object);
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn]
     #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageSendStep(int $orderId): void
     {
