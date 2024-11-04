@@ -6,6 +6,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
 use CMW\Event\Shop\ShopEditItemEvent;
+use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IPriceTypeMethod;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Events\Emitter;
@@ -464,13 +465,10 @@ class ShopItemsController extends AbstractController
     }
 
     /**
-     * @return \CMW\Interface\Shop\IVirtualItems[]
+     * @return \CMW\Interface\Shop\IGlobalConfig[]
      */
-    public function getGlobalVarVirtualItemsMethods(): array
+    public function getGlobalConfigMethods(): array
     {
-        $allVirtualItemMethods = Loader::loadImplementations(IVirtualItems::class);
-        return array_filter($allVirtualItemMethods, static function ($virtualItemMethods) {
-            return $virtualItemMethods->useGlobalConfigWidgetsInShopConfig();
-        });
+        return Loader::loadImplementations(IGlobalConfig::class);
     }
 }

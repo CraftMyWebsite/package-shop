@@ -41,19 +41,6 @@ interface IVirtualItems
     public function includeItemConfigWidgets(?int $itemId): void;
 
     /**
-     * @return void
-     * @desc Include the config widgets for set global variable
-     * @example require_once EnvManager::getInstance()->getValue("DIR") . "App/Package/Shop/Views/Elements/Virtual/Global/downloadable.config.inc.view.php";
-     */
-    public function includeGlobalConfigWidgets(): void;
-
-    /**
-     * @return bool
-     * @desc Include the config widgets for set global variable into shop config page
-     */
-    public function useGlobalConfigWidgetsInShopConfig(): bool;
-
-    /**
      * @param string $varName
      * @param ShopItemEntity $item
      * @param UserEntity $user

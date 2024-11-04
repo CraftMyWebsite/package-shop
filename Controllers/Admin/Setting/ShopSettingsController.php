@@ -71,10 +71,10 @@ class ShopSettingsController extends AbstractController
         $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
         $autoValidateVirtual = ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual');
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $virtualMethods = ShopItemsController::getInstance()->getGlobalVarVirtualItemsMethods();
+        $globalConfigMethod = ShopItemsController::getInstance()->getGlobalConfigMethods();
 
         View::createAdminView('Shop', 'Settings/settings')
-            ->addVariableList(['currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'virtualMethods' => $virtualMethods, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
+            ->addVariableList(['currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
             ->view();
     }
 
@@ -105,21 +105,20 @@ class ShopSettingsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link('/settings/virtual', Link::POST, [], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/settings/global', Link::POST, [], '/cmw-admin/shop')]
     private function shopVirtualItemGlobalSettingsPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
 
         $settings = $_POST;
 
+        unset($settings['security-csrf-token'], $settings['security-csrf-token-id'], $settings['honeyInput']);
+
         foreach ($settings as $key => $value) {
-            if ($key === 'security-csrf-token' || $key === 'honeyInput') {
-                continue;
-            }
             $key = FilterManager::filterData($key, 50);
             $value = FilterManager::filterData($value, 255);
 
-            if (!ShopItemsVirtualRequirementModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
+            if (!ShopSettingsModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
                 Flash::send(Alert::ERROR, 'Erreur', "Impossible de mettre à jour le paramètre $key");
             }
         }

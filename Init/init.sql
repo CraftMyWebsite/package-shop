@@ -8,6 +8,16 @@ CREATE TABLE IF NOT EXISTS cmw_shops_settings
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shops_global_implement_settings
+(
+    shop_global_implement_settings_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_global_implement_settings_key        VARCHAR(255) NOT NULL UNIQUE,
+    shop_global_implement_settings_value      VARCHAR(255) NOT NULL,
+    shop_global_implement_settings_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS cmw_shops_shopping_session
 (
     shop_shopping_session_id       INT AUTO_INCREMENT PRIMARY KEY,

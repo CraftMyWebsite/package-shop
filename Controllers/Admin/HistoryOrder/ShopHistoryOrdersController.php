@@ -19,6 +19,7 @@ use CMW\Manager\Notification\NotificationModel;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Cart\ShopCartModel;
@@ -37,6 +38,7 @@ use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use CMW\Utils\Website;
@@ -144,14 +146,90 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/orders/view/:orderId/relance', Link::POST, [], '/cmw-admin/shop')]
-    private function shopViewOrdersRelanceReviews(int $orderId): void
+    #[Link('/orders/view/:orderId/reviewReminder/:itemId/:userId', Link::GET, [], '/cmw-admin/shop')]
+    private function shopViewOrdersRelanceReviews(int $orderId, int $itemId, int $userId): void
     {
-        [$message, $object] = Utils::filterInput('message', 'object');
+        $user = UsersModel::getInstance()?->getUserById($userId);
+        $item = ShopItemsModel::getInstance()?->getShopItemsById($itemId);
 
-        //TODO : send mail relance avis avec url de l'article ...
-        Flash::send(Alert::SUCCESS, 'titre' , $object);
+        if (is_null($item) || is_null($user)) {
+            Flash::send(Alert::ERROR, 'Relance avis', 'Article ou Utilisateur introuvable !');
+            Redirect::redirectPreviousRoute();
+        }
 
+        $url = $item->getItemLink();
+
+        $varName = 'review_reminder';
+        $websiteName = Website::getWebsiteName();
+        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? $websiteName . ' - Votre avis nous intéresse !';
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Votre avis nous intéresse !';
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez récemment commander un article sur notre boutique.";
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail') ?? 'Nous aimerions savoir ce que vous pensez de cet article';
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail') ?? "Rendez-vous sur la boutique pour partager votre avis";
+
+        $htmlTemplate = <<<HTML
+            <html>
+            <head>
+            <style>
+              .gift-card {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: %CARDBG%;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                text-align: center;
+              }
+
+              .gift-card h1 {
+                color: %TITLECOLOR%;
+              }
+
+              .gift-card p {
+                color: %TEXTCOLOR%;
+              }
+
+              .code {
+                font-size: 18px;
+                color: %CODETEXT%;
+                margin: 20px 0;
+                padding: 10px;
+                background-color: %CODEBG%;
+                border-radius: 5px;
+                display: inline-block;
+              }
+            </style>
+            </head>
+            <body style="background-color: %MAINBG%">
+
+            <div class="gift-card">
+              <h1>%TITRE%</h1>
+              <p>%MESSAGE%</p>
+              <div class="code"><a href="%ITEM_URL%">%ITEM_NAME%</a></div><br>
+              <p>%FOOTER_1%<br>
+              <a href="%ITEM_URL%">%FOOTER_2%</a></p>
+            </div>
+            </body>
+            </html>
+            HTML;
+
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+
+        $body = str_replace(['%TITRE%', '%MESSAGE%',  '%ITEM_URL%', '%ITEM_NAME%', '%FOOTER_1%', '%FOOTER_2%',
+            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
+            [$titre, $message, $url, $item->getName(), $footer1, $footer2, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
+        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
+            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+            Flash::send(Alert::SUCCESS, 'Relance avis', $user->getPseudo() . ' à reçu une relance par mail !');
+        } else {
+            Flash::send(Alert::ERROR, 'Relance avis','Nous n\'avons pas réussi à envoyer le mail au client !');
+        }
         Redirect::redirectPreviousRoute();
     }
 

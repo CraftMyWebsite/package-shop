@@ -36,13 +36,6 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
         require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Virtual/Item/downloadable.config.inc.view.php';
     }
 
-    public function includeGlobalConfigWidgets(): void {}
-
-    public function useGlobalConfigWidgetsInShopConfig(): bool
-    {
-        return false;
-    }
-
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
         ShopVirtualItemsDownloadableController::getInstance()->sedMailWithDownloadLink($varName, $item, $user);

@@ -11,7 +11,6 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
-use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
@@ -31,10 +30,10 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
      */
     public function sedMailWithGiftCode(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
-        $giftCodePrefix = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_prefix') ?? 'GC_';
+        $giftCodePrefix = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_prefix') ?? 'GC_';
         $code = $this->createCode($giftCodePrefix);
         $websiteName = Website::getWebsiteName();
-        $globalName = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_global') ?? 'Carte cadeau';
+        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? 'Carte cadeau';
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
@@ -55,11 +54,11 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
-        $titre = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
-        $message = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
-        $use = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
-        $timeLeft = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_time_mail') ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
-        $url = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_url_mail') ?? Website::getUrl() . 'shop';
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
+        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
+        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail') ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
+        $url = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_url_mail') ?? Website::getUrl() . 'shop';
 
         $htmlTemplate = <<<HTML
             <html>
@@ -108,12 +107,12 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             </html>
             HTML;
 
-        $cardBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
-        $titleColor = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
-        $textColor = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
-        $codeText = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
-        $codeBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
-        $mainBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
@@ -131,10 +130,10 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
     {
         $user = UsersModel::getCurrentUser();
         $varName = 'gift_code';
-        $giftCodePrefix = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_prefix') ?? 'GC_';
+        $giftCodePrefix = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_prefix') ?? 'GC_';
         $code = $this->createCode($giftCodePrefix);
         $websiteName = Website::getWebsiteName();
-        $globalName = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_global') ?? 'Carte cadeau';
+        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? 'Carte cadeau';
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
@@ -155,11 +154,11 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
-        $titre = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
-        $message = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
-        $use = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
-        $timeLeft = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_time_mail') ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
-        $url = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_url_mail') ?? Website::getUrl() . 'shop';
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Félicitations !';
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez reçu une carte cadeau d'une valeur de";
+        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail') ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
+        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail') ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
+        $url = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_url_mail') ?? Website::getUrl() . 'shop';
 
         $htmlTemplate = <<<HTML
             <html>
@@ -208,12 +207,12 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
             </html>
             HTML;
 
-        $cardBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
-        $titleColor = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
-        $textColor = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
-        $codeText = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
-        $codeBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
-        $mainBG = ShopItemsVirtualRequirementModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],

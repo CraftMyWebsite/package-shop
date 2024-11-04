@@ -65,30 +65,6 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
     }
 
     /**
-     * @param string $key
-     * @param ?int $itemId
-     * @return string|null
-     */
-    public function getGlobalSetting(string $key): ?string
-    {
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare('SELECT shops_items_virtual_requirement_value FROM cmw_shops_items_virtual_requirement 
-                                          WHERE shops_items_virtual_requirement_key = :key');
-
-        if (!$req->execute(['key' => $key])) {
-            return null;
-        }
-
-        $res = $req->fetch();
-
-        if (!$res) {
-            return null;
-        }
-
-        return $res['shops_items_virtual_requirement_value'];
-    }
-
-    /**
      * @param int $virtualMethodId
      * @param string $key
      * @param string $value
@@ -113,20 +89,5 @@ class ShopItemsVirtualRequirementModel extends AbstractModel
         $db = DatabaseManager::getInstance();
 
         return $db->prepare($sql)->execute($data);
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     * @return bool
-     */
-    public function updateOrInsertGlobalSetting(string $key, string $value): bool
-    {
-        $sql = 'INSERT INTO cmw_shops_items_virtual_requirement 
-                            (shops_items_virtual_requirement_key, shops_items_virtual_requirement_value) 
-                            VALUES (:key, :value) ON DUPLICATE KEY UPDATE shops_items_virtual_requirement_value=:value2';
-
-        $db = DatabaseManager::getInstance();
-        return $db->prepare($sql)->execute(['key' => $key, 'value' => $value, 'value2' => $value]);
     }
 }

@@ -4,7 +4,7 @@ use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 
-$title = '';
+$title = 'Configuration';
 $description = '';
 
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $currentCurrency */
@@ -16,7 +16,7 @@ $description = '';
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $autoValidateVirtual */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
-/* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
+/* @var CMW\Interface\Shop\IGlobalConfig[] $globalConfigMethod */
 
 ?>
 <div class="page-title">
@@ -97,25 +97,24 @@ $description = '';
 
 <div class="tab-vertical-container mt-6">
     <div class="tab-vertical" data-tabs-toggle="#tab-content-2">
-        <?php foreach ($virtualMethods as $method): ?>
-            <button class="tab-button" data-tabs-target="#tab<?= $method->varName() ?>" role="tab"><?= $method->name() ?></button>
+        <?php foreach ($globalConfigMethod as $method): ?>
+            <button class="tab-button" data-tabs-target="#tab-<?= $method->varName() ?>" role="tab"><?= $method->name() ?></button>
         <?php endforeach; ?>
     </div>
     <div id="tab-content-2" class="tab-container">
-        <?php foreach ($virtualMethods as $method): ?>
-        <div class="tab-content" id="tab<?= $method->varName() ?>">
-            <div class="card">
-                <h6><?= $method->name() ?></h6>
-                <form id="virtualGlobal" action="settings/virtual" method="post">
-                    <?php (new SecurityManager())->insertHiddenToken(); ?>
-                    <?php $method->includeGlobalConfigWidgets(); ?>
-                    <div class="d-flex justify-content-center mt-4">
-                        <button form="virtualGlobal" type="submit"
-                                class="btn btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
+        <form id="virtualGlobal" action="settings/global" method="post">
+            <?php (new SecurityManager())->insertHiddenToken(); ?>
+        <?php foreach ($globalConfigMethod as $method): ?>
+            <div class="tab-content" id="tab-<?= $method->varName() ?>">
+                <div class="card">
+                    <div class="card-title">
+                        <h6><?= $method->name() ?></h6>
+                        <button type="submit" class="btn btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
                     </div>
-                </form>
+                        <?php $method->includeGlobalConfigWidgets(); ?>
+                </div>
             </div>
-        </div>
         <?php endforeach; ?>
+        </form>
     </div>
 </div>
