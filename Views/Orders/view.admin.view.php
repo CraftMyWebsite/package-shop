@@ -60,34 +60,29 @@ $description = '';
                 }
                 if (!$hasReview): ?>
                     <div class="alert-info">
-                        <b><?= $order->getUser()->getPseudo() ?></b> n'as pas encore donner son avis sur cet article !<br>
-                        <a data-modal-toggle="modal-relance-<?= $orderItem->getId() ?>" class="btn-success-sm flex justify-center cursor-pointer">Envoyer une relance</a>
+                        <b><?= $order->getUser()->getPseudo() ?></b> n'as pas encore donné son avis sur cet article !<br>
+                        <a data-modal-toggle="modal-relance-<?= $orderItem->getItem()->getId() ?>" class="btn-success-sm flex justify-center cursor-pointer">Envoyer une relance</a>
                         <!--MODAL SUCCESS-->
-                        <div id="modal-relance-<?= $orderItem->getId() ?>" class="modal-container">
+                        <div id="modal-relance-<?= $orderItem->getItem()->getId() ?>" class="modal-container">
                             <div class="modal">
                                 <div class="modal-header-success">
                                     <h6>Relance d'avis pour <?= $orderItem->getName() ?></h6>
-                                    <button type="button" data-modal-hide="modal-relance-<?= $orderItem->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
+                                    <button type="button" data-modal-hide="modal-relance-<?= $orderItem->getItem()->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
-                                <form method="post" action="<?= $order->getId() ?>/relance">
-                                    <?php (new SecurityManager())->insertHiddenToken() ?>
                                     <div class="modal-body">
-                                        <div class="alert-info">L'url vers l'article sera automatiquement fournis dans le mail que le client recevra !</div>
-                                        <label for="object">Objet du mail :</label>
-                                        <input type="text" name="object" id="object" class="input" value="Que diriez vous de mettre un avis sur <?= $orderItem->getName() ?>">
-                                        <label for="message">Votre message</label>
-                                        <textarea style="height: 150px" id="message" class="textarea" name="message">Bonjour
-Ont espère que vous appréciez votre nouveau produit "<?= $orderItem->getName() ?>" !
-Nous vous invitons à mettre un avis sur notre site <?= Website::getWebsiteName() ?>.
-Merci d'avance pour votre temps !</textarea>
+                                        <div class="alert-warning">Avez-vous configurer le mail d'envoie de relance dans l'onglet configuration de la boutique ?</div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn-success">Envoyer</button>
+                                        <a href="../../../shop/settings" type="button" class="btn-warning">Non, configurer</a>
+                                        <a href="<?= $order->getId() ?>/reviewReminder/<?= $orderItem->getItem()->getId() ?>/<?= $order->getUser()->getId() ?>" type="button" class="btn-success">Oui, envoyer</a>
                                     </div>
-                                </form>
                             </div>
                         </div>
                     </div>
+                <?php else: ?>
+                <div class="alert-success text-center">
+                    <b><?= $order->getUser()->getPseudo() ?></b> à donner son avis !<br>
+                </div>
                 <?php endif; ?>
             <?php endif; ?>
             <?php endif; ?>
