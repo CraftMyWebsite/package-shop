@@ -225,6 +225,7 @@ class ShopHandlerDiscountController extends AbstractController
                                 Flash::send(Alert::ERROR, 'Boutique', 'Ce code va impacter négativement le prix de ' . $cartItem->getItem()->getName());
                             } else {
                                 Flash::send(Alert::SUCCESS, 'Boutique', 'Ce code est lié à ' . $cartItem->getItem()->getName());
+                                //TODO : Apply to cart, Not to item
                                 ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId, $cartItem->getItem()->getId(), $discountCode->getId());
                                 $entityFound = 1;
                             }
@@ -233,6 +234,7 @@ class ShopHandlerDiscountController extends AbstractController
                                 Flash::send(Alert::ERROR, 'Boutique', "Ce code n'est pas applicable à des articles gratuit");
                             } else {
                                 Flash::send(Alert::SUCCESS, 'Boutique', 'Ce code est lié à ' . $cartItem->getItem()->getName());
+                                //TODO : Apply to cart, Not to item
                                 ShopCartItemModel::getInstance()->applyCodeToItem($userId, $sessionId, $cartItem->getItem()->getId(), $discountCode->getId());
                                 $entityFound = 1;
                             }

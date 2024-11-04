@@ -16,8 +16,25 @@ $description = '';
 <div class="page-title">
     <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
     <div>
-        <button form="cancel" type="submit" class="btn btn-danger">Cette commande n'est pas réalisable</button>
-        <button data-modal-toggle="modal-success" type="submit" class="btn btn-primary">Commande prête</button>
+        <button data-modal-toggle="modal-danger" type="button" class="btn btn-danger">Non réalisable</button>
+        <button data-modal-toggle="modal-success" type="button" class="btn btn-primary">Commande prête</button>
+    </div>
+</div>
+
+<div id="modal-danger" class="modal-container">
+    <div class="modal">
+        <div class="modal-header-danger">
+            <h6>Non réalisable</h6>
+            <button type="button" data-modal-hide="modal-danger"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                Vous devrez rembourser votre client !
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button form="cancel" type="submit" class="btn btn-danger">Cette commande n'est pas réalisable</button>
+        </div>
     </div>
 </div>
 

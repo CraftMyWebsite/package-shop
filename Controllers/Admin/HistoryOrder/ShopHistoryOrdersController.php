@@ -11,6 +11,7 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Mail\MailManager;
@@ -321,11 +322,95 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageRefundStep(int $orderId): void
     {
-        ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+        [$name] = Utils::filterInput('name');
 
-        // TODO : Notifier l'utilisateur
+        $varName = 'credit_launcher';
 
-        // Eitter refunded
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $orderPrice = $order->getOrderTotal();
+        $user = $order->getUser();
+        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? Website::getWebsiteName().' - Votre avoir pour la commande') . ' ' . $order->getOrderNumber();
+        $code = Utils::generateRandomNumber('6') . '_' . $order->getOrderNumber();
+
+        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Avoir pour') . ' ' . $order->getOrderNumber();
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable";
+        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value') ?? "Ce code à une valeur total de") . ' ' . $order->getOrderTotalFormatted();
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail') ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !';
+        $shopUrl = Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop';
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail') ?? "Rendez-vous sur la boutique " . Website::getWebsiteName();
+
+        $htmlTemplate = <<<HTML
+            <html>
+            <head>
+            <style>
+              .gift-card {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: %CARDBG%;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                text-align: center;
+              }
+
+              .gift-card h1 {
+                color: %TITLECOLOR%;
+              }
+
+              .gift-card p {
+                color: %TEXTCOLOR%;
+              }
+
+              .code {
+                font-size: 18px;
+                color: %CODETEXT%;
+                margin: 20px 0;
+                padding: 10px;
+                background-color: %CODEBG%;
+                border-radius: 5px;
+                display: inline-block;
+              }
+            </style>
+            </head>
+            <body style="background-color: %MAINBG%">
+
+            <div class="gift-card">
+              <h1>%TITRE%</h1>
+              <p>%MESSAGE%</p>
+              <p><strong>%VALUE%</strong></p>
+              <div class="code">%CODE%</div><br>
+              <p>%FOOTER_1%<br>
+              <a href="%SHOP_URL%">%FOOTER_2%</a></p>
+            </div>
+            </body>
+            </html>
+            HTML;
+
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+
+        $body = str_replace(['%TITRE%', '%MESSAGE%', '%VALUE%', '%CODE%', '%FOOTER_1%', '%SHOP_URL%', '%FOOTER_2%',
+            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
+            [$titre, $message, $value, $code, $footer1, $shopUrl , $footer2, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
+
+
+        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
+            $discount = ShopDiscountModel::getInstance()->createDiscount($name,0,null,null,1,0,null,$orderPrice,0,1,0,$code,0,0,1);
+            if ($discount) {
+                ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+                MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+                Flash::send(Alert::SUCCESS, 'Avoir', $user->getPseudo() . ' à reçu son avoir par mail !');
+            }
+        } else {
+            Flash::send(Alert::ERROR, 'Avoir','Nous n\'avons pas réussi à envoyer le mail au client ! aucun avoir n\'a été créer');
+        }
+
+        // Emitter refunded
 
         Redirect::redirect('cmw-admin/shop/orders');
     }

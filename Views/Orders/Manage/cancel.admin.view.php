@@ -29,7 +29,12 @@ $description = '';
         <form id="avoir" action="refunded/<?= $order->getId() ?>" method="post">
             <?php (new SecurityManager())->insertHiddenToken() ?>
             <div class="modal-body">
-                Créer un avoir du montant total de la commande incluant faire de livraison et frais de paiement si applicable.
+                <div class="alert-info">
+                    Créer un avoir (code promo) applicable sur toute la boutique du montant total de la commande incluant faire de livraison et frais de paiement si applicable.
+                </div>
+                <label for="name">Nom<span style="color: red">*</span> :</label>
+                <input type="text" id="name" name="name" class="input" placeholder="Credit : Avoir">
+                <small>A titre indicatif pour votre historique</small>
             </div>
             <div class="modal-footer">
                 <button form="avoir" type="submit" class="btn btn-warning-sm">Créer un avoir</button>
