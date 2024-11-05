@@ -125,7 +125,10 @@ class ShopDiscountModel extends AbstractModel
 
     public function createDiscount(string $name, int $linked, ?string $startDate, ?string $endDate, ?int $maxUses, ?int $currentUses, ?int $percent, ?float $price, ?int $useMultipleByUser, ?int $status, ?int $isTest, ?string $code, int $defaultApplied, ?int $needPurchaseBeforeBuy, int $quantityImpacted): ?ShopDiscountEntity
     {
-        $encryptedCode = EncryptManager::encrypt($code);
+        if (!is_null($code)) {
+            $encryptedCode = EncryptManager::encrypt($code);
+        }
+
         $data = [
             'shop_discount_name' => $name,
             'shop_discount_linked' => $linked,
@@ -187,6 +190,29 @@ class ShopDiscountModel extends AbstractModel
     public function getAllGiftCard(): array
     {
         $sql = 'SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_linked = 3';
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($discount = $res->fetch()) {
+            $toReturn[] = $this->getAllShopDiscountById($discount['shop_discount_id']);
+        }
+
+        return $toReturn;
+    }
+
+    /**
+     * @return \CMW\Entity\Shop\Discounts\ShopDiscountEntity []
+     */
+    public function getAllCredits(): array
+    {
+        $sql = 'SELECT shop_discount_id FROM cmw_shops_discount WHERE shop_discount_linked = 4';
         $db = DatabaseManager::getInstance();
 
         $res = $db->prepare($sql);

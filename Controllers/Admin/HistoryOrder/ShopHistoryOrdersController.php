@@ -400,7 +400,7 @@ class ShopHistoryOrdersController extends AbstractController
 
 
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
-            $discount = ShopDiscountModel::getInstance()->createDiscount($name,0,null,null,1,0,null,$orderPrice,0,1,0,$code,0,0,1);
+            $discount = ShopDiscountModel::getInstance()->createDiscount($name,4,null,null,1,0,null,$orderPrice,0,1,0,$code,0,0,0);
             if ($discount) {
                 ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
                 MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
@@ -497,7 +497,7 @@ class ShopHistoryOrdersController extends AbstractController
             }
             $discountModel->addUses($discountId, $currentUses);
 
-            if ($cartDiscount->getDiscount()->getLinked() === 3) {
+            if ($cartDiscount->getDiscount()->getLinked() === 3 || $cartDiscount->getDiscount()->getLinked() === 4) {
                 ShopHistoryOrdersDiscountModel::getInstance()->addHistoryDiscountOrder($order->getId(), $cartDiscount->getDiscount()->getName(), $cartDiscount->getDiscount()->getPrice(), 0);
             }
         }

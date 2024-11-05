@@ -60,19 +60,19 @@ class ShopPaymentMethodStripeController extends AbstractController
         }
         $shippingPrice = $shippingMethod?->getPrice() ?? 0;
 
-        $giftCode = null;
+        $totalCartCode = null;
         $cartDiscountModel = ShopCartDiscountModel::getInstance();
         $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId(UsersModel::getCurrentUser()->getId(), session_id());
         foreach ($cartDiscounts as $cartDiscount) {
             $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
-            if ($discountGiftCode?->getDiscount()->getLinked() === 3) {
-                $giftCode = $discountGiftCode->getDiscount();
+            if ($discountGiftCode?->getDiscount()->getLinked() === 3 || $discountGiftCode?->getDiscount()->getLinked() === 4) {
+                $totalCartCode = $discountGiftCode->getDiscount();
                 break;
             }
         }
 
         $Items = [];
-        if (!is_null($giftCode)) {
+        if (!is_null($totalCartCode)) {
             $totalCart = 0;
             foreach ($cartItems as $item) {
                 $totalCart = $item->getTotalPriceComplete();

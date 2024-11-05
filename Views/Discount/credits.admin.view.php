@@ -6,24 +6,25 @@ $title = '';
 $description = '';
 
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $ongoingDiscounts */
-/* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $upcomingDiscounts */
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $pastDiscounts */
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-gift"></i> Carte cadeau</h3>
-    <button data-bs-toggle="modal" data-modal-toggle="modal-generate" class="btn-primary">Générer une carte</button>
+    <h3><i class="fa-solid fa-money-bill-transfer"></i> Avoirs / Credits</h3>
+    <button data-bs-toggle="modal" data-modal-toggle="modal-generate" class="btn-primary">Générer un avoir</button>
 </div>
 
 <div id="modal-generate" class="modal-container">
     <div class="modal">
         <div class="modal-header">
-            <h6>Générer une carte cadeau</h6>
+            <h6>Générer un avoir</h6>
             <button type="button" data-modal-hide="modal-generate"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form method="post" action="giftCard/generate">
+        <form method="post" action="credits/generate">
             <?php (new SecurityManager())->insertHiddenToken(); ?>
         <div class="modal-body">
+            <label for="name">Nom :</label>
+            <input placeholder="Avoir pour X" type="text" name="name" id="name" class="input" required>
             <label for="amount">Montant :</label>
             <input placeholder="18.99" type="text" name="amount" id="amount" class="input" required>
         </div>
@@ -39,7 +40,7 @@ $description = '';
 <div class="grid-2">
     <div class="card">
         <div class="card-header">
-            <h4>Carte active</h4>
+            <h4>Avoir actif</h4>
         </div>
         <div class="table-container">
             <table class="table" id="table1">
@@ -47,7 +48,7 @@ $description = '';
                 <tr>
                     <th>Nom</th>
                     <th>CODE</th>
-                    <th>Terminé dans</th>
+                    <th>Montant</th>
                     <th class="text-center">Gérer</th>
                 </tr>
                 </thead>
@@ -56,7 +57,7 @@ $description = '';
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= $discount->getCode() ?></td>
-                        <td><?= $discount->getDuration() ?></td>
+                        <td><b><?= $discount->getPriceFormatted() ?></b></td>
                         <td class="text-center">
                             <button data-modal-toggle="modal-delete-<?= $discount->getId() ?>" title="Supprimé">
                                 <i class="text-danger fa-solid fa-trash"></i>
@@ -84,7 +85,7 @@ $description = '';
     </div>
     <div class="card">
         <div class="card-header">
-            <h4>Carte passée ou utilisé</h4>
+            <h4>Avoir utilisé</h4>
         </div>
         <div class="table-container">
             <table class="table" id="table2">
@@ -92,7 +93,7 @@ $description = '';
                 <tr>
                     <th class="text-center">Nom</th>
                     <th class="text-center">CODE</th>
-                    <th class="text-center">Nombre d'utilisation</th>
+                    <th>Montant</th>
                 </tr>
                 </thead>
                 <tbody class="text-center">
@@ -100,7 +101,7 @@ $description = '';
                     <tr>
                         <td><?= $discount->getName() ?></td>
                         <td><?= $discount->getCode() ?></td>
-                        <td><?= $discount->getCurrentUses() ?? '∞' ?>/<?= $discount->getMaxUses() ?? '∞' ?></td>
+                        <td><b><?= $discount->getPriceFormatted() ?></b></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>

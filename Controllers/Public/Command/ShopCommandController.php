@@ -62,13 +62,13 @@ class ShopCommandController extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
-        $giftCodes = [];
+        $appliedCartDiscounts = [];
         $cartDiscountModel = ShopCartDiscountModel::getInstance();
         $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId($userId, $sessionId);
         foreach ($cartDiscounts as $cartDiscount) {
-            $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
-            if ($discountGiftCode->getDiscount()->getLinked() == 3) {
-                $giftCodes[] = $discountGiftCode->getDiscount();
+            $discount = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
+            if ($discount->getDiscount()->getLinked() == 3 || $discount->getDiscount()->getLinked() == 4) {
+                $appliedCartDiscounts[] = $discount->getDiscount();
             }
         }
 
@@ -97,7 +97,7 @@ class ShopCommandController extends AbstractController
         if (empty($userAddresses)) {
             $country = ShopCountryModel::getInstance()->getCountry();
             $view = new View('Shop', 'Command/newAddress');
-            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'giftCodes' => $giftCodes]);
+            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts]);
             $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
             $view->view();
         } else {
@@ -106,7 +106,7 @@ class ShopCommandController extends AbstractController
             if ($currentStep === 0) {
                 $country = ShopCountryModel::getInstance()->getCountry();
                 $view = new View('Shop', 'Command/address');
-                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'giftCodes' => $giftCodes]);
+                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts]);
                 $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
                 $view->view();
             }
@@ -126,7 +126,7 @@ class ShopCommandController extends AbstractController
                     }
                     $view = new View('Shop', 'Command/delivery');
                     $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-                    $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'giftCodes' => $giftCodes]);
+                    $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'appliedCartDiscounts' => $appliedCartDiscounts]);
                     $view->view();
                 }
             }
@@ -165,7 +165,7 @@ class ShopCommandController extends AbstractController
                 $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
                 $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
                     'selectedAddress' => $selectedAddress, 'shippingMethod' => $shippingMethod,
-                    'paymentMethods' => $paymentMethods, 'giftCodes' => $giftCodes]);
+                    'paymentMethods' => $paymentMethods, 'appliedCartDiscounts' => $appliedCartDiscounts]);
                 $view->view();
             }
         }

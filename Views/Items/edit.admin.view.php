@@ -180,7 +180,7 @@ foreach ($itemVariants as $itemVariant) {
                             > <?= $cat->getName() ?> </option>
                             <?php foreach ($categoryModel->getSubsCat($cat->getId()) as $subCategory): ?>
                                 <option value="<?= $subCategory->getSubCategory()->getId() ?>"
-                                    <?= $subCategory->getId() === $item->getCategory()->getId() ? 'selected' : '' ?>> <?php echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ ' . $subCategory->getSubCategory()->getName() ?></option>
+                                    <?= $subCategory->getSubCategory()->getId() === $item->getCategory()->getId() ? 'selected' : '' ?>> <?php echo str_repeat("\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' ↪ ' . $subCategory->getSubCategory()->getName() ?></option>
                             <?php endforeach; ?>
                         <?php endforeach; ?>
                     </select>

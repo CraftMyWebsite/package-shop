@@ -98,7 +98,10 @@ class ShopDiscountEntity
             return 'Une ou Des catégorie(s)';
         }
         if ($this->discountLinked == 3) {
-            return 'Total du panier';
+            return 'Carte cadeau';
+        }
+        if ($this->discountLinked == 4) {
+            return 'Avoir';
         }
     }
 
@@ -223,7 +226,10 @@ class ShopDiscountEntity
 
     public function getCode(): ?string
     {
-        return EncryptManager::decrypt($this->discountCode);
+        if ($this->discountCode) {
+            return EncryptManager::decrypt($this->discountCode);
+        }
+        return null;
     }
 
     public function getDefaultActive(): int

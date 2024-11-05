@@ -10,6 +10,7 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
@@ -243,7 +244,13 @@ class ShopDiscountsController extends AbstractController
             }
         }
 
-        Flash::send(Alert::SUCCESS, 'Discount', 'Promotion ajouté !');
+        //Prevent negative basket
+        $cartDiscount = ShopCartDiscountModel::getInstance()->getCartDiscount();
+        foreach ($cartDiscount as $discount) {
+            ShopCartDiscountModel::getInstance()->removeCode($discount->getCart()->getId(), $discount->getDiscount()->getId());
+        }
+
+        Flash::send(Alert::SUCCESS, 'Discount', 'Promotion ajouté ! Les promotions appliqué aux paniers existant sont réinitialisé !');
         Redirect::redirect('cmw-admin/shop/discounts');
     }
 
@@ -409,6 +416,49 @@ class ShopDiscountsController extends AbstractController
         ShopVirtualItemsGiftCodeController::getInstance()->adminGenerateCode($amount);
 
         Flash::send(Alert::SUCCESS, 'Boutique', 'Code généré !');
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    /**
+     * @throws \CMW\Manager\Router\RouterException
+     * @throws \Exception
+     */
+    #[Link('/credits', Link::GET, [], '/cmw-admin/shop')]
+    private function shopCredits(): void
+    {
+        ShopDiscountModel::getInstance()->autoStatusChecker();
+
+        $credits = ShopDiscountModel::getInstance()->getAllCredits();
+
+        $sortedDiscounts = $this->sortDiscountsByDate($credits);
+
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        View::createAdminView('Shop', 'Discount/credits')
+            ->addVariableList(['ongoingDiscounts' => $sortedDiscounts['ongoing'],
+                'pastDiscounts' => $sortedDiscounts['past']])
+            ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
+            ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
+                'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
+            ->view();
+    }
+
+    #[NoReturn] #[Link('/credits/generate', Link::POST, [], '/cmw-admin/shop')]
+    private function shopGenerateCredit(): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+
+        [$name, $amount] = Utils::filterInput('name', 'amount');
+
+        $code = Utils::generateRandomNumber(15);
+
+        $discount = ShopDiscountModel::getInstance()->createDiscount($name,4,null,null,1,0,null,$amount,0,1,0,$code,0,0,0);
+
+        if ($discount) {
+            Flash::send(Alert::SUCCESS, 'Boutique', 'Avoir créer');
+        } else {
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de créer l\'avoir !');
+        }
 
         Redirect::redirectPreviousRoute();
     }

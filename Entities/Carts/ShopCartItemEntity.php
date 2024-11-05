@@ -299,6 +299,9 @@ class ShopCartItemEntity
             if ($cartDiscount->getDiscount()->getLinked() == 3) {
                 $totalCartDiscountPrice += $cartDiscount->getDiscount()->getPrice();
             }
+            if ($cartDiscount->getDiscount()->getLinked() == 4) {
+                $totalCartDiscountPrice += $cartDiscount->getDiscount()->getPrice();
+            }
         }
 
         $total = 0;

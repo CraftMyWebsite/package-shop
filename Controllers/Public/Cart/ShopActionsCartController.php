@@ -145,6 +145,8 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);
 
+        $this->handleTotalCartDiscount($userId , $sessionId);
+
         ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
 
         if (!is_null($userId)) {
@@ -162,6 +164,8 @@ class ShopActionsCartController extends AbstractController
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
+
+        $this->handleTotalCartDiscount($userId , $sessionId);
 
         $currentQuantity = ShopCartItemModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
 
@@ -503,6 +507,26 @@ class ShopActionsCartController extends AbstractController
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param ?int $userId
+     * @param string $sessionId
+     */
+    private function handleTotalCartDiscount(?int $userId, string $sessionId): void
+    {
+        $discountCart = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
+        $entityFound = 0;
+        foreach ($discountCart as $discount) {
+            if ($discount->getDiscount()->getLinked() == 4 || $discount->getDiscount()->getLinked() == 3) {
+                $entityFound = 1;
+            }
+        }
+        if ($entityFound == 1) {
+            if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+                Flash::send(Alert::INFO, 'Boutique', 'Vos promotions de panier ont été réinitialisées, appliquer la à nouveau pour verifier si vous pouvez toujours en bénéficier');
+            }
+        }
     }
 
     /*

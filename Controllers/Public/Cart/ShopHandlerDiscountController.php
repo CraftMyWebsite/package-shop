@@ -42,6 +42,7 @@ class ShopHandlerDiscountController extends AbstractController
             $this->handleLinkedDiscount($userId, $sessionId, $discountCode, $itemInCart);
             $this->handleNonLinkedDiscount($userId, $sessionId, $discountCode, $itemInCart);
             $this->handleGiftCodeDiscount($userId, $sessionId, $discountCode, $itemInCart);
+            $this->handleCreditDiscount($userId, $sessionId, $discountCode, $itemInCart);
         } else {
             Flash::send(Alert::ERROR, 'Boutique', "Ce code n'est pas valable");
             Redirect::redirectPreviousRoute();
@@ -142,7 +143,7 @@ class ShopHandlerDiscountController extends AbstractController
 
     private function handleLinkedDiscount($userId, $sessionId, $discountCode, $itemInCart): void
     {
-        if ($discountCode->getLinked() != 0 && $discountCode->getLinked() != 3) {
+        if ($discountCode->getLinked() != 0 && $discountCode->getLinked() != 3 && $discountCode->getLinked() != 4) {
             $entityFound = 0;
             foreach ($itemInCart as $cartItem) {
                 $linkedDiscount = null;
@@ -201,16 +202,25 @@ class ShopHandlerDiscountController extends AbstractController
         /* @var ShopCartItemEntity[] $itemInCart */
         if ($discountCode->getLinked() == 0) {
             $giftCardFound = 0;
+            $creditsFound = 0;
             $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
             foreach ($cartDiscounts as $cartDiscount) {
                 if ($cartDiscount->getDiscount()->getLinked() == 3) {
                     $giftCardFound = 1;
                     break;
                 }
+                if ($cartDiscount->getDiscount()->getLinked() == 4) {
+                    $creditsFound = 1;
+                    break;
+                }
             }
 
             if ($giftCardFound == 1) {
                 Flash::send(Alert::WARNING, 'Boutique', 'Vous avez une carte cadeau active, les reductions ne sont pas applicable.');
+                Redirect::redirectPreviousRoute();
+            }
+            if ($creditsFound == 1) {
+                Flash::send(Alert::WARNING, 'Boutique', 'Vous avez un avoir actif, les reductions ne sont pas applicable.');
                 Redirect::redirectPreviousRoute();
             }
 
@@ -273,15 +283,68 @@ class ShopHandlerDiscountController extends AbstractController
             } else {
                 $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscount();
                 $alreadyApplied = 0;
+                $haveAGiftCardApplied = 0;
                 foreach ($cartDiscounts as $cartDiscount) {
                     if ($cartDiscount->getDiscount()->getCode() == $discountCode->getCode()) {
                         $alreadyApplied = 1;
                         break;
                     }
+                    if ($cartDiscount->getDiscount()) {
+                        $haveAGiftCardApplied = 1;
+                    }
                 }
 
                 if ($alreadyApplied) {
-                    Flash::send(Alert::WARNING, 'Boutique', 'Cette carte cadeau est déja appliqué à un autre panier');
+                    Flash::send(Alert::WARNING, 'Boutique', 'Cette carte cadeau est déja appliqué à un panier');
+                } elseif ($haveAGiftCardApplied) {
+                    Flash::send(Alert::WARNING, 'Boutique', 'Vous avez déjà appliquer une réduction à votre panier !');
+                } else {
+                    if ($totalCart - $discountCode->getPrice() <= 0) {
+                        Flash::send(Alert::WARNING, 'Boutique', 'Le total de votre panier doit être supérieur à ' . $discountCode->getPriceFormatted());
+                    } else {
+                        ShopCartDiscountModel::getInstance()->applyCode($userId, $sessionId, $discountCode->getId());
+                        Flash::send(Alert::SUCCESS, 'Boutique', 'Carte cadeau appliqué !');
+                    }
+                }
+            }
+            Redirect::redirectPreviousRoute();
+        }
+    }
+
+    #[NoReturn]
+    private function handleCreditDiscount($userId, $sessionId, $discountCode, $itemInCart): void
+    {
+        /* @var ShopCartItemEntity[] $itemInCart */
+        if ($discountCode->getLinked() == 4) {
+            $totalCart = 0;
+            $entityFound = 0;
+            foreach ($itemInCart as $cartItem) {
+                $totalCart += $cartItem->getItemTotalPriceAfterDiscount();
+                if ($cartItem->getDiscount()) {
+                    $entityFound = 1;
+                }
+            }
+
+            if ($entityFound == 1) {
+                Flash::send(Alert::WARNING, 'Boutique', "Les avoirs ne peuvent pas s'appliquer sur des articles en réduction.");
+            } else {
+                $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscount();
+                $alreadyApplied = 0;
+                $haveACreditApplied = 0;
+                foreach ($cartDiscounts as $cartDiscount) {
+                    if ($cartDiscount->getDiscount()->getCode() == $discountCode->getCode()) {
+                        $alreadyApplied = 1;
+                        break;
+                    }
+                    if ($cartDiscount->getDiscount()) {
+                        $haveACreditApplied = 1;
+                    }
+                }
+
+                if ($alreadyApplied) {
+                    Flash::send(Alert::WARNING, 'Boutique', 'Cette avoir est déja appliqué à un panier');
+                } elseif ($haveACreditApplied) {
+                    Flash::send(Alert::WARNING, 'Boutique', 'Vous avez déjà appliquer une réduction à votre panier !');
                 } else {
                     if ($totalCart - $discountCode->getPrice() <= 0) {
                         Flash::send(Alert::WARNING, 'Boutique', 'Le total de votre panier doit être supérieur à ' . $discountCode->getPriceFormatted());

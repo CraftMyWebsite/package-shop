@@ -63,6 +63,11 @@ class Package implements IPackageConfig
                         url: 'shop/discounts',
                     ),
                     new PackageSubMenuType(
+                        title: 'Avoirs / Credits',
+                        permission: 'todo',  // TODO PERM
+                        url: 'shop/credits',
+                    ),
+                    new PackageSubMenuType(
                         title: 'Carte cadeau',
                         permission: 'todo',  // TODO PERM
                         url: 'shop/giftCard',
