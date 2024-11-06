@@ -13,6 +13,8 @@ class ShopShippingWithdrawPointEntity
     private string $addressLine;
     private string $addressCity;
     private string $addressPostalCode;
+    private string $addressLatitude;
+    private string $addressLongitude;
     private string $addressCountry;
 
     /**
@@ -22,9 +24,11 @@ class ShopShippingWithdrawPointEntity
      * @param string $addressLine
      * @param string $addressCity
      * @param string $addressPostalCode
+     * @param string $addressLatitude
+     * @param string $addressLongitude
      * @param string $addressCountry
      */
-    public function __construct(int $id, string $name, ?int $addressDistance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry)
+    public function __construct(int $id, string $name, ?int $addressDistance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressLatitude, string $addressLongitude, string $addressCountry)
     {
         $this->id = $id;
         $this->name = $name;
@@ -32,6 +36,8 @@ class ShopShippingWithdrawPointEntity
         $this->addressLine = $addressLine;
         $this->addressCity = $addressCity;
         $this->addressPostalCode = $addressPostalCode;
+        $this->addressLatitude = $addressLatitude;
+        $this->addressLongitude = $addressLongitude;
         $this->addressCountry = $addressCountry;
     }
 
@@ -73,5 +79,15 @@ class ShopShippingWithdrawPointEntity
     public function getFormattedCountry(): ?string
     {
         return ShopCountryModel::getInstance()->getCountryByCode($this->addressCountry)->getName();
+    }
+
+    public function getLatitude(): string
+    {
+        return EncryptManager::decrypt($this->addressLatitude);
+    }
+
+    public function getLongitude(): string
+    {
+        return EncryptManager::decrypt($this->addressLongitude);
     }
 }

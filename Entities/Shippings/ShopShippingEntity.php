@@ -4,6 +4,7 @@ namespace CMW\Entity\Shop\Shippings;
 
 use CMW\Interface\Shop\IShippingMethod;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Model\Shop\Shipping\ShopCoordinatesModel;
 
 class ShopShippingEntity
 {
@@ -120,5 +121,14 @@ class ShopShippingEntity
     public function getMaxTotalCartPrice(): ?float
     {
         return $this->maxTotalCartPrice;
+    }
+
+    /**
+     * @desc Permet d'afficher la distance entre le point de retrait et l'adresse du client
+     * */
+    public function getDistance(float $userAddressLatitude, float $userAddressLongitude): ?float
+    {
+        $distance = ShopCoordinatesModel::getInstance()->calculateDistance($userAddressLatitude, $userAddressLongitude, $this->getWithdrawPoint()->getLatitude(), $this->withdrawPointEntity->getLongitude());
+        return round($distance, 2);
     }
 }

@@ -320,6 +320,8 @@ CREATE TABLE IF NOT EXISTS cmw_shops_shipping_withdraw_point
     shops_shipping_withdraw_point_address_line        VARCHAR(500) NOT NULL,
     shops_shipping_withdraw_point_address_city        VARCHAR(500) NOT NULL,
     shops_shipping_withdraw_point_address_postal_code VARCHAR(500) NOT NULL,
+    shops_shipping_withdraw_point_address_latitude    VARCHAR(500) NOT NULL,
+    shops_shipping_withdraw_point_address_longitude   VARCHAR(500) NOT NULL,
     shops_shipping_withdraw_point_address_country     VARCHAR(50) NOT NULL
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -359,6 +361,8 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
     shop_delivery_user_address_postal_code VARCHAR(500) NOT NULL,
     shop_delivery_user_address_country     VARCHAR(50) NOT NULL,
     shop_delivery_user_address_phone       VARCHAR(500) NOT NULL,
+    shop_delivery_user_address_latitude    VARCHAR(500) NOT NULL,
+    shop_delivery_user_address_longitude   VARCHAR(500) NOT NULL,
     shop_delivery_user_address_created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_delivery_user_address_updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_id_delivery_user_address FOREIGN KEY (shop_user_id)

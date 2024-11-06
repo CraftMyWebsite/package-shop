@@ -4,7 +4,12 @@ namespace CMW\Model\Shop\Delivery;
 
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
+use CMW\Manager\Security\EncryptManager;
+use CMW\Model\Shop\Country\ShopCountryModel;
+use CMW\Model\Shop\Shipping\ShopCoordinatesModel;
 use CMW\Model\Users\UsersModel;
 
 /**
@@ -74,6 +79,8 @@ class ShopDeliveryUserAddressModel extends AbstractModel
             $res['shop_delivery_user_address_postal_code'] ?? null,
             $res['shop_delivery_user_address_country'] ?? null,
             $res['shop_delivery_user_address_phone'] ?? null,
+            $res['shop_delivery_user_address_latitude'] ?? null,
+            $res['shop_delivery_user_address_longitude'] ?? null,
             $res['shop_delivery_user_address_created_at'],
             $res['shop_delivery_user_address_updated_at']
         );
@@ -116,32 +123,48 @@ class ShopDeliveryUserAddressModel extends AbstractModel
      */
     public function createDeliveryUserAddress(string $label, int $isFav, int $userId, string $firstName, string $lastName, string $phone, string $line1, string $line2, string $city, string $postalCode, string $country): ?ShopDeliveryUserAddressEntity
     {
-        $var = array(
-            'shop_delivery_user_address_label' => $label,
-            'shop_delivery_is_fav' => $isFav,
-            'shop_user_id' => $userId,
-            'shop_delivery_user_address_first_name' => $firstName,
-            'shop_delivery_user_address_last_name' => $lastName,
-            'shop_delivery_user_address_phone' => $phone,
-            'shop_delivery_user_address_line_1' => $line1,
-            'shop_delivery_user_address_line_2' => $line2,
-            'shop_delivery_user_address_city' => $city,
-            'shop_delivery_user_address_postal_code' => $postalCode,
-            'shop_delivery_user_address_country' => $country
-        );
+        $formattedCountry = ShopCountryModel::getInstance()->getCountryByCode($country)->getName();
+        $coordinates = ShopCoordinatesModel::getInstance()->generateCoordinates($line1, $city, $postalCode, $formattedCountry);
+        if ($coordinates) {
+            $encryptedPhone = EncryptManager::encrypt($phone);
+            $encryptedLine1 = EncryptManager::encrypt($line1);
+            $encryptedLine2 = EncryptManager::encrypt($line2);
+            $encryptedCity = EncryptManager::encrypt($city);
+            $encryptedPostalCode = EncryptManager::encrypt($postalCode);
+            $encryptedLatitude = EncryptManager::encrypt($coordinates['latitude']);
+            $encryptedLongitude = EncryptManager::encrypt($coordinates['longitude']);
 
-        $sql = 'INSERT INTO cmw_shops_delivery_user_address (shop_delivery_user_address_label, shop_delivery_is_fav, shop_user_id, shop_delivery_user_address_first_name, 
-                               shop_delivery_user_address_last_name, shop_delivery_user_address_line_1, shop_delivery_user_address_line_2, shop_delivery_user_address_city, shop_delivery_user_address_postal_code, shop_delivery_user_address_country, shop_delivery_user_address_phone) 
+            $var = array(
+                'shop_delivery_user_address_label' => $label,
+                'shop_delivery_is_fav' => $isFav,
+                'shop_user_id' => $userId,
+                'shop_delivery_user_address_first_name' => $firstName,
+                'shop_delivery_user_address_last_name' => $lastName,
+                'shop_delivery_user_address_phone' => $encryptedPhone,
+                'shop_delivery_user_address_line_1' => $encryptedLine1,
+                'shop_delivery_user_address_line_2' => $encryptedLine2,
+                'shop_delivery_user_address_city' => $encryptedCity,
+                'shop_delivery_user_address_postal_code' => $encryptedPostalCode,
+                'shop_delivery_user_address_latitude' => $encryptedLatitude,
+                'shop_delivery_user_address_longitude' => $encryptedLongitude,
+                'shop_delivery_user_address_country' => $country
+            );
+
+            $sql = 'INSERT INTO cmw_shops_delivery_user_address (shop_delivery_user_address_label, shop_delivery_is_fav, shop_user_id, shop_delivery_user_address_first_name, 
+                               shop_delivery_user_address_last_name, shop_delivery_user_address_line_1, shop_delivery_user_address_line_2, shop_delivery_user_address_city, shop_delivery_user_address_postal_code, shop_delivery_user_address_country, shop_delivery_user_address_phone, shop_delivery_user_address_latitude, shop_delivery_user_address_longitude) 
                 VALUES (:shop_delivery_user_address_label, :shop_delivery_is_fav, :shop_user_id, :shop_delivery_user_address_first_name,
                         :shop_delivery_user_address_last_name, :shop_delivery_user_address_line_1, :shop_delivery_user_address_line_2,
-                        :shop_delivery_user_address_city, :shop_delivery_user_address_postal_code, :shop_delivery_user_address_country, :shop_delivery_user_address_phone)';
+                        :shop_delivery_user_address_city, :shop_delivery_user_address_postal_code, :shop_delivery_user_address_country, :shop_delivery_user_address_phone, :shop_delivery_user_address_latitude, :shop_delivery_user_address_longitude)';
 
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare($sql);
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
 
-        if ($req->execute($var)) {
-            $id = $db->lastInsertId();
-            return $this->getShopDeliveryUserAddressById($id);
+            if ($req->execute($var)) {
+                $id = $db->lastInsertId();
+                return $this->getShopDeliveryUserAddressById($id);
+            }
+        } else {
+            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
         }
 
         return null;

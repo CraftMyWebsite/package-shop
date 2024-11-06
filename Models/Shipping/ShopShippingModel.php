@@ -158,16 +158,27 @@ class ShopShippingModel extends AbstractModel
                 $totalCartPrice += $item->getItemTotalPrice();
             }
         }
+
         foreach ($allShippings as $allShipping) {
             $zoneCountry = $allShipping->getZone()->getCountry();
             $selectedCountry = $selectedAddress->getCountry();
 
             if ($zoneCountry === $selectedCountry || $zoneCountry === 'ALL') {
                 $withdrawPoint = $allShipping->getWithdrawPoint();
-                $distance = $withdrawPoint->getAddressDistance();
-                if (!is_null($distance)) {
-                    // TODO Check With openStreetMap the distance autorized between user address and zone
+                $maxDistance = $withdrawPoint->getAddressDistance();
+                if (!is_null($maxDistance)) {
+                    $userLat = $selectedAddress->getLatitude();
+                    $userLng = $selectedAddress->getLongitude();
+                    $pointLat = $withdrawPoint->getLatitude();
+                    $pointLng = $withdrawPoint->getLongitude();
+
+                    $distance = ShopCoordinatesModel::getInstance()->calculateDistance($userLat, $userLng, $pointLat, $pointLng);
+
+                    if ($distance > $maxDistance) {
+                        continue; // Ce point est trop loin, on passe au suivant
+                    }
                 }
+
                 if (!is_null($allShipping->getMaxTotalWeight())) {
                     if ($totalCartWeight < $allShipping->getMaxTotalWeight()) {
                         if ($this->checkPriceConditions($allShipping, $totalCartPrice)) {

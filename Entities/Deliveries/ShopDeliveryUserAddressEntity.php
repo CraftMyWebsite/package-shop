@@ -21,6 +21,8 @@ class ShopDeliveryUserAddressEntity
     private ?string $deliveryPostalCode;
     private ?string $deliveryCountry;
     private ?string $deliveryPhone;
+    private string $deliveryLatitude;
+    private string $deliveryLongitude;
     private string $deliveryCreated;
     private string $deliveryUpdated;
 
@@ -37,10 +39,12 @@ class ShopDeliveryUserAddressEntity
      * @param string|null $deliveryPostalCode
      * @param string|null $deliveryCountry
      * @param string|null $deliveryPhone
+     * @param string|null $deliveryLatitude
+     * @param string|null $deliveryLongitude
      * @param string $deliveryCreated
      * @param string $deliveryUpdated
      */
-    public function __construct(int $deliveryId, int $deliveryFav, ?string $deliveryLabel, ?UserEntity $user, ?string $deliveryFirstName, ?string $deliveryLastName, ?string $deliveryLine1, ?string $deliveryLine2, ?string $deliveryCity, ?string $deliveryPostalCode, ?string $deliveryCountry, ?string $deliveryPhone, string $deliveryCreated, string $deliveryUpdated)
+    public function __construct(int $deliveryId, int $deliveryFav, ?string $deliveryLabel, ?UserEntity $user, ?string $deliveryFirstName, ?string $deliveryLastName, ?string $deliveryLine1, ?string $deliveryLine2, ?string $deliveryCity, ?string $deliveryPostalCode, ?string $deliveryCountry, ?string $deliveryPhone, ?string $deliveryLatitude, ?string $deliveryLongitude, string $deliveryCreated, string $deliveryUpdated)
     {
         $this->deliveryId = $deliveryId;
         $this->deliveryFav = $deliveryFav;
@@ -54,6 +58,8 @@ class ShopDeliveryUserAddressEntity
         $this->deliveryPostalCode = $deliveryPostalCode;
         $this->deliveryCountry = $deliveryCountry;
         $this->deliveryPhone = $deliveryPhone;
+        $this->deliveryLatitude = $deliveryLatitude;
+        $this->deliveryLongitude = $deliveryLongitude;
         $this->deliveryCreated = $deliveryCreated;
         $this->deliveryUpdated = $deliveryUpdated;
     }
@@ -131,5 +137,15 @@ class ShopDeliveryUserAddressEntity
     public function getUpdated(): string
     {
         return Date::formatDate($this->deliveryUpdated);
+    }
+
+    public function getLatitude(): string
+    {
+        return EncryptManager::decrypt($this->deliveryLatitude);
+    }
+
+    public function getLongitude(): string
+    {
+        return EncryptManager::decrypt($this->deliveryLongitude);
     }
 }

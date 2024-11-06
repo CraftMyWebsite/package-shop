@@ -12,7 +12,6 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
-use CMW\Manager\Security\EncryptManager;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
@@ -117,16 +116,24 @@ class ShopCommandController extends AbstractController
                 } else {
                     $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                    // TODO getCompatibleShipping:
                     $shippings = ShopShippingModel::getInstance()->getAvailableShipping($selectedAddress, $cartContent);
                     $withdrawPoints = ShopShippingModel::getInstance()->getAvailableWithdrawPoint($selectedAddress, $cartContent);
+                    usort($withdrawPoints, function($a, $b) use ($selectedAddress) {
+                        $distanceA = $a->getDistance($selectedAddress->getLatitude(), $selectedAddress->getLongitude());
+                        $distanceB = $b->getDistance($selectedAddress->getLatitude(), $selectedAddress->getLongitude());
+                        return $distanceA <=> $distanceB;
+                    });
                     if (empty($shippings) && empty($withdrawPoints)) {
                         Flash::send(Alert::WARNING, 'Boutique', "Nous sommes désolé mais aucune méthode de livraison n'est disponible pour cette adresse.");
                         // TODO : Notify admin adresse cant throw shipping
                     }
+                    $varName = 'withdraw_point_map';
+                    $useInteractiveMap = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') ?? '1';
                     $view = new View('Shop', 'Command/delivery');
-                    $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-                    $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'appliedCartDiscounts' => $appliedCartDiscounts]);
+                    $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css', 'App/Package/Shop/Resources/OST/leaflet.css');
+                    $view->addScriptBefore('App/Package/Shop/Resources/OST/leaflet.js');
+                    $view->addVariableList(['useInteractiveMap' => $useInteractiveMap, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'appliedCartDiscounts' => $appliedCartDiscounts]);
+                    $view->addPhpAfter('App/Package/Shop/Resources/OST/map.php');
                     $view->view();
                 }
             }
@@ -178,13 +185,7 @@ class ShopCommandController extends AbstractController
 
         [$label, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
-        $encryptedPhone = EncryptManager::encrypt($phone);
-        $encryptedLine1 = EncryptManager::encrypt($line1);
-        $encryptedLine2 = EncryptManager::encrypt($line2);
-        $encryptedCity = EncryptManager::encrypt($city);
-        $encryptedPostalCode = EncryptManager::encrypt($postalCode);
-
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $encryptedPhone, $encryptedLine1, $encryptedLine2, $encryptedCity, $encryptedPostalCode, $country);
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
 
         Redirect::redirectPreviousRoute();
     }
@@ -202,13 +203,7 @@ class ShopCommandController extends AbstractController
             ShopDeliveryUserAddressModel::getInstance()->removeOtherFav($userId);
         }
 
-        $encryptedPhone = EncryptManager::encrypt($phone);
-        $encryptedLine1 = EncryptManager::encrypt($line1);
-        $encryptedLine2 = EncryptManager::encrypt($line2);
-        $encryptedCity = EncryptManager::encrypt($city);
-        $encryptedPostalCode = EncryptManager::encrypt($postalCode);
-
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $encryptedPhone, $encryptedLine1, $encryptedLine2, $encryptedCity, $encryptedPostalCode, $country);
+        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
 
         Redirect::redirectPreviousRoute();
     }

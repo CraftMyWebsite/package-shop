@@ -4,8 +4,11 @@ namespace CMW\Model\Shop\Shipping;
 
 use CMW\Entity\Shop\Shippings\ShopShippingWithdrawPointEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Manager\Security\EncryptManager;
+use CMW\Model\Shop\Country\ShopCountryModel;
 
 /**
  * Class: @ShopShippingWithdrawPointModel
@@ -40,6 +43,8 @@ class ShopShippingWithdrawPointModel extends AbstractModel
             $res['shops_shipping_withdraw_point_address_line'],
             $res['shops_shipping_withdraw_point_address_city'],
             $res['shops_shipping_withdraw_point_address_postal_code'],
+            $res['shops_shipping_withdraw_point_address_latitude'],
+            $res['shops_shipping_withdraw_point_address_longitude'],
             $res['shops_shipping_withdraw_point_address_country']
         );
     }
@@ -69,27 +74,37 @@ class ShopShippingWithdrawPointModel extends AbstractModel
 
     public function createWithdrawPoint(int $distance, string $name, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry): ?ShopShippingWithdrawPointEntity
     {
-        $encryptedAddressLine = EncryptManager::encrypt($addressLine);
-        $encryptedAddressCity = EncryptManager::encrypt($addressCity);
-        $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
-        $data = array(
-            'name' => $name,
-            'distance' => $distance,
-            'address_line' => $encryptedAddressLine,
-            'address_city' => $encryptedAddressCity,
-            'address_postal_code' => $encryptedAddressPostalCode,
-            'address_country' => $addressCountry,
-        );
+        $formattedCountry = ShopCountryModel::getInstance()->getCountryByCode($addressCountry)->getName();
+        $coordinates = ShopCoordinatesModel::getInstance()->generateCoordinates($addressLine, $addressCity, $addressPostalCode, $formattedCountry);
+        if ($coordinates) {
+            $encryptedAddressLine = EncryptManager::encrypt($addressLine);
+            $encryptedAddressCity = EncryptManager::encrypt($addressCity);
+            $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
+            $encryptedAddressLatitude = EncryptManager::encrypt($coordinates['latitude']);
+            $encryptedAddressLongitude = EncryptManager::encrypt($coordinates['longitude']);
+            $data = array(
+                'name' => $name,
+                'distance' => $distance,
+                'address_line' => $encryptedAddressLine,
+                'address_city' => $encryptedAddressCity,
+                'address_postal_code' => $encryptedAddressPostalCode,
+                'latitude' => $encryptedAddressLatitude,
+                'longitude' => $encryptedAddressLongitude,
+                'address_country' => $addressCountry,
+            );
 
-        $sql = 'INSERT INTO cmw_shops_shipping_withdraw_point(shops_shipping_withdraw_point_name, shops_shipping_withdraw_point_address_distance, shops_shipping_withdraw_point_address_line, shops_shipping_withdraw_point_address_city, shops_shipping_withdraw_point_address_postal_code, shops_shipping_withdraw_point_address_country)
-                VALUES (:name, :distance, :address_line, :address_city, :address_postal_code, :address_country)';
+            $sql = 'INSERT INTO cmw_shops_shipping_withdraw_point(shops_shipping_withdraw_point_name, shops_shipping_withdraw_point_address_distance, shops_shipping_withdraw_point_address_line, shops_shipping_withdraw_point_address_city, shops_shipping_withdraw_point_address_postal_code, shops_shipping_withdraw_point_address_latitude, shops_shipping_withdraw_point_address_longitude, shops_shipping_withdraw_point_address_country)
+                VALUES (:name, :distance, :address_line, :address_city, :address_postal_code, :latitude, :longitude, :address_country)';
 
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare($sql);
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
 
-        if ($req->execute($data)) {
-            $id = $db->lastInsertId();
-            return $this->getShopShippingWithdrawPointById($id);
+            if ($req->execute($data)) {
+                $id = $db->lastInsertId();
+                return $this->getShopShippingWithdrawPointById($id);
+            }
+        } else {
+            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
         }
 
         return null;
@@ -97,33 +112,46 @@ class ShopShippingWithdrawPointModel extends AbstractModel
 
     public function editWithdrawPoint(int $withdrawPointId, string $name, int $distance, string $addressLine, string $addressCity, string $addressPostalCode, string $addressCountry): ?ShopShippingWithdrawPointEntity
     {
-        $encryptedAddressLine = EncryptManager::encrypt($addressLine);
-        $encryptedAddressCity = EncryptManager::encrypt($addressCity);
-        $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
-        $data = array(
-            'id' => $withdrawPointId,
-            'distance' => $distance,
-            'name' => $name,
-            'address_line' => $encryptedAddressLine,
-            'address_city' => $encryptedAddressCity,
-            'address_postal_code' => $encryptedAddressPostalCode,
-            'address_country' => $addressCountry,
-        );
+        $formattedCountry = ShopCountryModel::getInstance()->getCountryByCode($addressCountry)->getName();
+        $coordinates = ShopCoordinatesModel::getInstance()->generateCoordinates($addressLine, $addressCity, $addressPostalCode, $formattedCountry);
 
-        $sql = 'UPDATE cmw_shops_shipping_withdraw_point SET 
+        if ($coordinates) {
+            $encryptedAddressLine = EncryptManager::encrypt($addressLine);
+            $encryptedAddressCity = EncryptManager::encrypt($addressCity);
+            $encryptedAddressPostalCode = EncryptManager::encrypt($addressPostalCode);
+            $encryptedAddressLatitude = EncryptManager::encrypt($coordinates['latitude']);
+            $encryptedAddressLongitude = EncryptManager::encrypt($coordinates['longitude']);
+            $data = array(
+                'id' => $withdrawPointId,
+                'distance' => $distance,
+                'name' => $name,
+                'address_line' => $encryptedAddressLine,
+                'address_city' => $encryptedAddressCity,
+                'address_postal_code' => $encryptedAddressPostalCode,
+                'latitude' => $encryptedAddressLatitude,
+                'longitude' => $encryptedAddressLongitude,
+                'address_country' => $addressCountry,
+            );
+
+            $sql = 'UPDATE cmw_shops_shipping_withdraw_point SET 
                                              shops_shipping_withdraw_point_address_distance=:distance,
                                              shops_shipping_withdraw_point_name=:name,
                                              shops_shipping_withdraw_point_address_line=:address_line,
                                              shops_shipping_withdraw_point_address_city =:address_city,
                                              shops_shipping_withdraw_point_address_postal_code =:address_postal_code,
-                                             shops_shipping_withdraw_point_address_country =:address_country
+                                             shops_shipping_withdraw_point_address_country =:address_country,
+                                             shops_shipping_withdraw_point_address_latitude =:latitude, 
+                                             shops_shipping_withdraw_point_address_longitude =:longitude
                                          WHERE shops_shipping_withdraw_point_id=:id';
 
-        $db = DatabaseManager::getInstance();
-        $req = $db->prepare($sql);
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
 
-        if ($req->execute($data)) {
-            return $this->getShopShippingWithdrawPointById($withdrawPointId);
+            if ($req->execute($data)) {
+                return $this->getShopShippingWithdrawPointById($withdrawPointId);
+            }
+        } else {
+            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
         }
 
         return null;
