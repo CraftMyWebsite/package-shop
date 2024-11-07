@@ -91,7 +91,7 @@ class ShopImagesModel extends AbstractModel
 
     public function addShopItemImage(array $image, int $itemId, int $order): void
     {
-        $imageName = ImagesManager::upload($image, 'Shop');
+        $imageName = ImagesManager::convertAndUpload($image, 'Shop');
 
         if (!str_contains($imageName, 'ERROR')) {
             $data = array(
@@ -180,7 +180,7 @@ class ShopImagesModel extends AbstractModel
      */
     public function setDefaultImage(array $image): void
     {
-        $imageName = ImagesManager::upload($image, 'Shop');
+        $imageName = ImagesManager::convertAndUpload($image, 'Shop');
         $var = array(
             'image_name' => $imageName,
         );
