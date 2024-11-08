@@ -123,9 +123,14 @@ class ShopDeliveryUserAddressModel extends AbstractModel
      */
     public function createDeliveryUserAddress(string $label, int $isFav, int $userId, string $firstName, string $lastName, string $phone, string $line1, string $line2, string $city, string $postalCode, string $country): ?ShopDeliveryUserAddressEntity
     {
+
         $formattedCountry = ShopCountryModel::getInstance()->getCountryByCode($country)->getName();
         $coordinates = ShopCoordinatesModel::getInstance()->generateCoordinates($line1, $city, $postalCode, $formattedCountry);
+
         if ($coordinates) {
+            if ($isFav === 1) {
+                $this->removeOtherFav($userId);
+            }
             $encryptedPhone = EncryptManager::encrypt($phone);
             $encryptedLine1 = EncryptManager::encrypt($line1);
             $encryptedLine2 = EncryptManager::encrypt($line2);
@@ -170,10 +175,115 @@ class ShopDeliveryUserAddressModel extends AbstractModel
         return null;
     }
 
+    /**
+     * @param int $addressId
+     * @param string $label
+     * @param int $isFav
+     * @param \CMW\Entity\Users\UserEntity $userId;
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $phone
+     * @param string $line1
+     * @param string $line2
+     * @param string $city
+     * @param string $postalCode
+     * @param string $country
+     * @return ShopDeliveryUserAddressEntity|null
+     */
+    public function editDeliveryUserAddress(int $addressId,string $label, int $isFav, int $userId, string $firstName, string $lastName, string $phone, string $line1, string $line2, string $city, string $postalCode, string $country): ?ShopDeliveryUserAddressEntity
+    {
+
+        $formattedCountry = ShopCountryModel::getInstance()->getCountryByCode($country)?->getName();
+        $coordinates = ShopCoordinatesModel::getInstance()->generateCoordinates($line1, $city, $postalCode, $formattedCountry);
+
+        if ($coordinates) {
+            if ($isFav === 1) {
+                $this->removeOtherFav($userId);
+            }
+            $encryptedPhone = EncryptManager::encrypt($phone);
+            $encryptedLine1 = EncryptManager::encrypt($line1);
+            $encryptedLine2 = EncryptManager::encrypt($line2);
+            $encryptedCity = EncryptManager::encrypt($city);
+            $encryptedPostalCode = EncryptManager::encrypt($postalCode);
+            $encryptedLatitude = EncryptManager::encrypt($coordinates['latitude']);
+            $encryptedLongitude = EncryptManager::encrypt($coordinates['longitude']);
+
+            $var = array(
+                'shop_delivery_user_address_id' => $addressId,
+                'shop_delivery_user_address_label' => $label,
+                'shop_delivery_is_fav' => $isFav,
+                'shop_user_id' => $userId,
+                'shop_delivery_user_address_first_name' => $firstName,
+                'shop_delivery_user_address_last_name' => $lastName,
+                'shop_delivery_user_address_phone' => $encryptedPhone,
+                'shop_delivery_user_address_line_1' => $encryptedLine1,
+                'shop_delivery_user_address_line_2' => $encryptedLine2,
+                'shop_delivery_user_address_city' => $encryptedCity,
+                'shop_delivery_user_address_postal_code' => $encryptedPostalCode,
+                'shop_delivery_user_address_latitude' => $encryptedLatitude,
+                'shop_delivery_user_address_longitude' => $encryptedLongitude,
+                'shop_delivery_user_address_country' => $country
+            );
+
+            $sql = 'UPDATE cmw_shops_delivery_user_address SET shop_delivery_user_address_label=:shop_delivery_user_address_label, 
+                                           shop_delivery_is_fav=:shop_delivery_is_fav,
+                                           shop_user_id=:shop_user_id,
+                                           shop_delivery_user_address_first_name=:shop_delivery_user_address_first_name,
+                                           shop_delivery_user_address_last_name=:shop_delivery_user_address_last_name,
+                                           shop_delivery_user_address_phone=:shop_delivery_user_address_phone,
+                                           shop_delivery_user_address_line_1=:shop_delivery_user_address_line_1,
+                                           shop_delivery_user_address_line_2=:shop_delivery_user_address_line_2,
+                                           shop_delivery_user_address_city=:shop_delivery_user_address_city,
+                                           shop_delivery_user_address_postal_code=:shop_delivery_user_address_postal_code,
+                                           shop_delivery_user_address_latitude=:shop_delivery_user_address_latitude,
+                                           shop_delivery_user_address_longitude=:shop_delivery_user_address_longitude,
+                                           shop_delivery_user_address_country=:shop_delivery_user_address_country
+                                       WHERE shop_delivery_user_address_id =:shop_delivery_user_address_id';
+
+
+            $db = DatabaseManager::getInstance();
+            $req = $db->prepare($sql);
+
+            if ($req->execute($var)) {
+                return $this->getShopDeliveryUserAddressById($addressId);
+            }
+        } else {
+            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
+        }
+
+        return null;
+    }
+
     public function removeOtherFav(int $userId): void
     {
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('UPDATE cmw_shops_delivery_user_address SET shop_delivery_is_fav=0 WHERE shop_user_id=:userId');
         $req->execute(array('userId' => $userId));
+    }
+
+    public function makeAsFav(int $addressId): bool
+    {
+        $userId = UsersModel::getCurrentUser()?->getId();
+        $this->removeOtherFav($userId);
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare('UPDATE cmw_shops_delivery_user_address SET shop_delivery_is_fav=1 WHERE shop_delivery_user_address_id=:addressId');
+
+        if (!$req->execute(array('addressId' => $addressId))) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function deleteAddress(int $addressId): void
+    {
+        $sql = 'DELETE FROM cmw_shops_delivery_user_address WHERE shop_delivery_user_address_id = :id';
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+        $req->execute(['id' => $addressId]);
     }
 }

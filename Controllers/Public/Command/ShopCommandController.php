@@ -199,10 +199,6 @@ class ShopCommandController extends AbstractController
 
         $fav = is_null($fav) ? 0 : 1;
 
-        if ($fav === 1) {
-            ShopDeliveryUserAddressModel::getInstance()->removeOtherFav($userId);
-        }
-
         ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
 
         Redirect::redirectPreviousRoute();

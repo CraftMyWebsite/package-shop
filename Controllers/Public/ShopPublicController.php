@@ -141,31 +141,6 @@ class ShopPublicController extends AbstractController
         $view->view();
     }
 
-    #[Link('/settings', Link::GET, [], '/shop')]
-    private function publicSettingsView(): void
-    {
-        $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
-        if ($maintenance) {
-            if (UsersController::isAdminLogged()) {
-                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
-            } else {
-                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
-                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
-                Redirect::redirectToHome();
-            }
-        }
-        $userId = UsersModel::getCurrentUser()?->getId();
-        if (!$userId) {
-            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
-        }
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
-
-        $view = new View('Shop', 'Users/settings');
-        $view->addVariableList(['itemInCart' => $itemInCart]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
-    }
-
     #[NoReturn] #[Link('/cat/:catSlug/item/:itemSlug/addReview', Link::POST, ['.*?'], '/shop')]
     private function publicPostReview(string $catSlug, string $itemSlug): void
     {
