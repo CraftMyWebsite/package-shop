@@ -27,7 +27,7 @@ class ShopHistoryOrdersModel extends AbstractModel
 
         $res = $db->prepare($sql);
 
-        if (!$res->execute(array('shop_history_order_id' => $id))) {
+        if (!$res->execute(['shop_history_order_id' => $id])) {
             return null;
         }
 
@@ -100,10 +100,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $res = $db->prepare($sql);
 
         if (!$res->execute()) {
-            return array();
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($order = $res->fetch()) {
             $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
@@ -123,10 +123,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $res = $db->prepare($sql);
 
         if (!$res->execute()) {
-            return array();
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($order = $res->fetch()) {
             $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
@@ -146,10 +146,10 @@ class ShopHistoryOrdersModel extends AbstractModel
         $res = $db->prepare($sql);
 
         if (!$res->execute()) {
-            return array();
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($order = $res->fetch()) {
             $toReturn[] = $this->getHistoryOrdersById($order['shop_history_order_id']);
@@ -184,10 +184,10 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function createHistoryOrder(int $userId, int $status): ?ShopHistoryOrdersEntity
     {
-        $var = array(
+        $var = [
             'user_id' => $userId,
             'shop_history_order_status' => $status
-        );
+        ];
 
         $sql = 'INSERT INTO cmw_shop_history_order (user_id, shop_history_order_status) VALUES (:user_id, :shop_history_order_status)';
 
@@ -215,9 +215,9 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function toSendStep(int $orderId): void
     {
-        $var = array(
+        $var = [
             'shop_history_order_id' => $orderId,
-        );
+        ];
 
         $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 1 WHERE shop_history_order_id = :shop_history_order_id';
 
@@ -229,10 +229,10 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function toFinalStep(int $orderId, ?string $shippingLink): void
     {
-        $var = array(
+        $var = [
             'shop_history_order_id' => $orderId,
             'shop_history_order_shipping_link' => $shippingLink,
-        );
+        ];
 
         $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 2, shop_history_order_shipping_link = :shop_history_order_shipping_link WHERE shop_history_order_id = :shop_history_order_id';
 
@@ -244,9 +244,9 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function endOrder(int $orderId): void
     {
-        $var = array(
+        $var = [
             'shop_history_order_id' => $orderId,
-        );
+        ];
 
         $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = 3 WHERE shop_history_order_id = :shop_history_order_id';
 
@@ -258,9 +258,9 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function toCancelStep(int $orderId): void
     {
-        $var = array(
+        $var = [
             'shop_history_order_id' => $orderId,
-        );
+        ];
 
         $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = -1 WHERE shop_history_order_id = :shop_history_order_id';
 
@@ -272,9 +272,9 @@ class ShopHistoryOrdersModel extends AbstractModel
 
     public function refundStep(int $orderId): void
     {
-        $var = array(
+        $var = [
             'shop_history_order_id' => $orderId,
-        );
+        ];
 
         $sql = 'UPDATE cmw_shop_history_order SET shop_history_order_status = -2 WHERE shop_history_order_id = :shop_history_order_id';
 

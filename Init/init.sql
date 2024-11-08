@@ -375,12 +375,14 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order
 (
     shop_history_order_id            INT AUTO_INCREMENT PRIMARY KEY,
-    user_id                          INT          NOT NULL,
+    user_id                          INT          NULL,
     shop_history_order_status        INT          NOT NULL DEFAULT 0,
     shop_history_order_shipping_link VARCHAR(255) NULL,
     shop_history_order_number        VARCHAR(50)  NULL,
     shop_history_order_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_history_order_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    shop_history_order_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_id_shop_history_order FOREIGN KEY (user_id)
+    REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -613,7 +615,8 @@ VALUES ('currency', 'EUR'),
        ('stockAlert', '20'),
        ('maintenance', '0'),
        ('maintenanceMessage', 'La boutique est en cours de maintenance.'),
-       ('autoValidateVirtual', '0');
+       ('autoValidateVirtual', '0'),
+       ('topBestBuyer', '3'),;
 
 
 INSERT INTO cmw_shops_images (`shop_image_name`, `shop_default_image`)
