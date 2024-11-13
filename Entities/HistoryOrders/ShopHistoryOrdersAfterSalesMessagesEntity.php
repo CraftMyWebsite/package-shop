@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 
-class ShopHistoryOrdersAfterSalesMessagesEntity
+class ShopHistoryOrdersAfterSalesMessagesEntity extends AbstractEntity
 {
     private int $id;
     private ShopHistoryOrdersAfterSalesEntity $afterSales;

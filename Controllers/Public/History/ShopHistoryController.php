@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Public\History;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -12,7 +13,6 @@ use CMW\Manager\Views\View;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
 /**
@@ -37,7 +37,7 @@ class ShopHistoryController extends AbstractController
             }
         }
 
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         if (!$userId) {
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }

@@ -5,6 +5,7 @@ namespace CMW\Controller\Shop\Public\Command;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Public\Cart\ShopCartController;
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Exception\Shop\Payment\ShopPaymentException;
 use CMW\Manager\Filter\FilterManager;
@@ -22,7 +23,6 @@ use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopShippingModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -55,7 +55,7 @@ class ShopCommandController extends AbstractController
 
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
         $imagesItem = ShopImagesModel::getInstance();
@@ -181,7 +181,7 @@ class ShopCommandController extends AbstractController
     #[NoReturn] #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
     private function publicCreateAddressPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         [$label, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
@@ -193,7 +193,7 @@ class ShopCommandController extends AbstractController
     #[NoReturn] #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
     private function publicAddAddressPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         [$label, $fav, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'fav', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
@@ -208,7 +208,7 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toDelivery', Link::POST, ['.*?'], '/shop')]
     private function publicToDeliveryPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         [$addressId] = Utils::filterInput('addressId');
 
@@ -226,7 +226,7 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toAddress', Link::POST, ['.*?'], '/shop')]
     private function publicToAddressPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
 
@@ -237,7 +237,7 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toPayment', Link::POST, ['.*?'], '/shop')]
     private function publicToPaymentPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         [$shippingId] = Utils::filterInput('shippingId');
 
@@ -255,7 +255,7 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toShipping', Link::POST, ['.*?'], '/shop')]
     private function publicToShippingPost(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
@@ -273,7 +273,7 @@ class ShopCommandController extends AbstractController
     #[Link('/command/finalize', Link::POST, [], '/shop')]
     private function publicFinalizeCommand(): void
     {
-        $user = UsersModel::getCurrentUser();
+        $user = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$user) {
             // TODO Internal error.

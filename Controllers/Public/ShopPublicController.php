@@ -3,7 +3,7 @@
 namespace CMW\Controller\Shop\Public;
 
 use CMW\Controller\Users\UsersController;
-use CMW\Manager\Env\EnvManager;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
@@ -21,7 +21,6 @@ use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Item\ShopItemVariantValueModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -56,7 +55,7 @@ class ShopPublicController extends AbstractController
         }
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
         $review = ShopReviewsModel::getInstance();
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
@@ -90,7 +89,7 @@ class ShopPublicController extends AbstractController
         }
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
         $review = ShopReviewsModel::getInstance();
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
@@ -154,7 +153,7 @@ class ShopPublicController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
 
@@ -180,7 +179,7 @@ class ShopPublicController extends AbstractController
         if (!is_null($userId)) {
             ShopReviewsModel::getInstance()->createReview($itemId, $userId, $rating, $title, $content);
             Flash::send(Alert::SUCCESS, 'Boutique', 'Merci pour votre avis, il nous aide à nous améliorer !');
-            NotificationManager::notify('Avis produit', UsersModel::getCurrentUser()->getPseudo() . ' viens de laisser un avis sur ' . ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() . ' (' . $rating . ' étoiles)', 'shop/items');
+            NotificationManager::notify('Avis produit', UsersSessionsController::getInstance()->getCurrentUser()?->getPseudo() . ' viens de laisser un avis sur ' . ShopItemsModel::getInstance()->getShopItemsById($itemId)->getName() . ' (' . $rating . ' étoiles)', 'shop/items');
         }
 
         Redirect::redirectPreviousRoute();

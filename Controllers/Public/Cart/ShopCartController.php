@@ -2,6 +2,7 @@
 namespace CMW\Controller\Shop\Public\Cart;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -18,7 +19,6 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 
 /**
@@ -42,7 +42,7 @@ class ShopCartController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
         $asideCartContent = ShopCartItemModel::getInstance()->getShopCartsItemsAsideByUserId($userId, $sessionId);

@@ -1,13 +1,13 @@
 <?php
 
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopShippingModel;
-use CMW\Model\Users\UsersModel;
 
-$userId = UsersModel::getCurrentUser()?->getId();
+$userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 $sessionId = session_id();
 $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
 $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();

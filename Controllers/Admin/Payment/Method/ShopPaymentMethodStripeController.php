@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
@@ -18,7 +19,6 @@ use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopShippingModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 use JsonException;
@@ -51,7 +51,7 @@ class ShopPaymentMethodStripeController extends AbstractController
 
         $currencyCode = ShopSettingsModel::getInstance()->getSettingValue('currency') ?? 'EUR';
 
-        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()->getId());
+        $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId());
         $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
         $shippingMethod = null;
         // TODO Refac :
@@ -62,7 +62,7 @@ class ShopPaymentMethodStripeController extends AbstractController
 
         $totalCartCode = null;
         $cartDiscountModel = ShopCartDiscountModel::getInstance();
-        $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId(UsersModel::getCurrentUser()->getId(), session_id());
+        $cartDiscounts = $cartDiscountModel->getCartDiscountByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
         foreach ($cartDiscounts as $cartDiscount) {
             $discountGiftCode = $cartDiscountModel->getCartDiscountById($cartDiscount->getId());
             if ($discountGiftCode?->getDiscount()->getLinked() === 3 || $discountGiftCode?->getDiscount()->getLinked() === 4) {
@@ -105,7 +105,7 @@ class ShopPaymentMethodStripeController extends AbstractController
                     'price_data' => [
                         'currency' => $currencyCode,
                         'product_data' => [
-                            'name' => $item->getQuantity() . ' ' . $item->getItem()->getName(),
+                            'name' => $item->getQuantity() . ' ' . $item->getItem()?->getName(),
                         ],
                         'unit_amount' => $item->getItemTotalPriceAfterDiscount() * 100,
                     ],
@@ -219,7 +219,7 @@ class ShopPaymentMethodStripeController extends AbstractController
     #[Link('/complete', Link::GET, [], '/shop/command/stripe')]
     private function paypalCommandComplete(): void
     {
-        $user = UsersModel::getCurrentUser();
+        $user = UsersSessionsController::getInstance()->getCurrentUser();
 
         // TODO LOGS DATA
 

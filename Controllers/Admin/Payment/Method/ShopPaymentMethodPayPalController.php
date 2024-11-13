@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Admin\Payment\Method;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
@@ -15,7 +16,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 use JsonException;
@@ -220,7 +220,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     #[Link('/complete', Link::GET, [], '/shop/command/paypal')]
     private function paypalCommandComplete(): void
     {
-        $user = UsersModel::getCurrentUser();
+        $user = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$user) {
             Flash::send(Alert::ERROR, 'Erreur', 'Utilisateur introuvable');

@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Admin\Payment;
 
 use CMW\Controller\Shop\Admin\HistoryOrder\ShopHistoryOrdersController;
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Interface\Shop\IPaymentMethod;
@@ -16,7 +17,6 @@ use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use JetBrains\PhpStorm\NoReturn;
 
@@ -148,7 +148,7 @@ class ShopPaymentsController extends AbstractController
     #[Listener(eventName: ShopPaymentCompleteEvent::class, times: 0, weight: 1)]
     private function onPaymentComplete(): void
     {
-        $user = UsersModel::getCurrentUser();
+        $user = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$user) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver l\'utilisateur');

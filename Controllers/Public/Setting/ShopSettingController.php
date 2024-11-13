@@ -3,27 +3,16 @@
 namespace CMW\Controller\Shop\Public\Setting;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
-use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
-use CMW\Model\Shop\Cart\ShopCartItemModel;
-use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Model\Shop\Country\ShopCountryModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
-use CMW\Model\Shop\Discount\ShopDiscountModel;
-use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
-use CMW\Model\Shop\Image\ShopImagesModel;
-use CMW\Model\Shop\Item\ShopItemsModel;
-use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
-use CMW\Model\Shop\Item\ShopItemVariantModel;
-use CMW\Model\Shop\Item\ShopItemVariantValueModel;
-use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -49,7 +38,7 @@ class ShopSettingController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         if (!$userId) {
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }
@@ -74,7 +63,7 @@ class ShopSettingController extends AbstractController
     #[Link('/settings/editAddress/:id', Link::GET, [], '/shop')]
     private function publicEditAddressGet(int $addressId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         if (!$userId) {
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }
@@ -91,7 +80,7 @@ class ShopSettingController extends AbstractController
     #[NoReturn] #[Link('/settings/editAddress/:id', Link::POST, ['.*?'], '/shop')]
     private function publicEditAddressPost(int $addressId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
         [$label, $fav, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'fav', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 

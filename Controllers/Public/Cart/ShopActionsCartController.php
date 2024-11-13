@@ -2,6 +2,7 @@
 namespace CMW\Controller\Shop\Public\Cart;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Event\Users\LoginEvent;
 use CMW\Manager\Events\Listener;
 use CMW\Manager\Flash\Alert;
@@ -17,7 +18,6 @@ use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -34,7 +34,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/add_to_cart/:itemId', Link::GET, ['itemId' => '[0-9]+'], '/shop')]
     private function publicAddCart(int $itemId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $quantity = 1;
 
@@ -64,7 +64,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cat/:catSlug/item/:itemSlug', Link::POST, ['.*?'], '/shop')]
     private function publicAddCartQuantity(string $catSlug, string $itemSlug): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
@@ -97,7 +97,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cart/discount/apply', Link::POST, [], '/shop')]
     private function publicTestAndApplyDiscountCode(): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         [$code] = Utils::filterInput('code');
 
@@ -116,7 +116,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cart/discount/remove/:discountId', Link::GET, [], '/shop')]
     private function publicRemoveDiscountCode(int $discountId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId)->getId();
@@ -137,7 +137,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cart/increase_quantity/:itemId', Link::GET, [], '/shop')]
     private function publicAddQuantity(int $itemId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $quantity = 1;
 
@@ -160,7 +160,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cart/decrease_quantity/:itemId', Link::GET, [], '/shop')]
     private function publicRemoveQuantity(int $itemId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
@@ -197,7 +197,7 @@ class ShopActionsCartController extends AbstractController
     #[Link('/cart/remove/:itemId', Link::GET, [], '/shop')]
     private function publicRemoveItem(int $itemId): void
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);

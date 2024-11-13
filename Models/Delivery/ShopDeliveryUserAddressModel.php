@@ -2,6 +2,7 @@
 
 namespace CMW\Model\Shop\Delivery;
 
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Flash\Alert;
@@ -263,7 +264,7 @@ class ShopDeliveryUserAddressModel extends AbstractModel
 
     public function makeAsFav(int $addressId): bool
     {
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $this->removeOtherFav($userId);
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('UPDATE cmw_shops_delivery_user_address SET shop_delivery_is_fav=1 WHERE shop_delivery_user_address_id=:addressId');

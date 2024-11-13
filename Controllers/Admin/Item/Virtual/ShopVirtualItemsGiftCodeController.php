@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Mail\MailManager;
 use CMW\Model\Core\MailModel;
 use CMW\Utils\Date;
@@ -12,7 +13,6 @@ use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 use DateTime;
 
@@ -128,7 +128,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
 
     public function adminGenerateCode($amountGiven): void
     {
-        $user = UsersModel::getCurrentUser();
+        $user = UsersSessionsController::getInstance()->getCurrentUser();
         $varName = 'gift_code';
         $giftCodePrefix = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_prefix') ?? 'GC_';
         $code = $this->createCode($giftCodePrefix);

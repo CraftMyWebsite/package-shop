@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\Shippings;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
-class ShopShippingWithdrawPointEntity
+class ShopShippingWithdrawPointEntity extends AbstractEntity
 {
     private int $id;
     private string $name;

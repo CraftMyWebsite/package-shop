@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Admin\HistoryOrder;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Lang\LangManager;
@@ -11,7 +12,6 @@ use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersAfterSalesMessagesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersAfterSalesModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -57,7 +57,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     {
         [$message] = Utils::filterInput('message');
 
-        $author = UsersModel::getCurrentUser();
+        $author = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$author) {
             Flash::send(

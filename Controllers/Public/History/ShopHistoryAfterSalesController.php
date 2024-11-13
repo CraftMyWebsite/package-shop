@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Public\History;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -16,7 +17,6 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersAfterSalesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -43,7 +43,7 @@ class ShopHistoryAfterSalesController extends AbstractController
             }
         }
 
-        $userId = UsersModel::getCurrentUser()?->getId();
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         if (!$userId) {
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'login');
         }
@@ -69,7 +69,7 @@ class ShopHistoryAfterSalesController extends AbstractController
     {
         [$reason, $content] = Utils::filterInput('reason', 'content');
 
-        $author = UsersModel::getCurrentUser();
+        $author = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$author) {
             Flash::send(
@@ -101,7 +101,7 @@ class ShopHistoryAfterSalesController extends AbstractController
     {
         [$content] = Utils::filterInput('content');
 
-        $author = UsersModel::getCurrentUser();
+        $author = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$author) {
             Flash::send(
@@ -137,7 +137,7 @@ class ShopHistoryAfterSalesController extends AbstractController
     #[NoReturn] #[Link('/history/afterSales/request/:orderNumber/close', Link::GET, [], '/shop')]
     private function publicHistoryAfterSalesClose(int $orderNumber): void
     {
-        $author = UsersModel::getCurrentUser();
+        $author = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$author) {
             Flash::send(
