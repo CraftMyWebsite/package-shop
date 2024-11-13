@@ -16,7 +16,7 @@ $description = 'Édition catégorie';
 <div class="center-flex">
     <div class="flex-content">
         <form class="card" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <label for="name">Nom<span style="color: red">*</span> :</label>
             <div class="input-group">
                 <i class="fa-solid fa-heading"></i>

@@ -13,7 +13,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 <a target="_blank" class="link" href="https://dashboard.stripe.com/settings/payment_methods?config_id=pmc_1NQztq2b9x8tnST4GWwYqyWt">Gérer mes moyens de paiement Stripe</a></p>
 
 <form id="stripe" action="payments/settings" method="post">
-    <?php (new SecurityManager())->insertHiddenToken(); ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
 <div class="grid-4">
     <div class="col-span-3">
         <label for="<?= $varName ?>_secret_key">Clé Secrète :</label>

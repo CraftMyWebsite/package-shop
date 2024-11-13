@@ -26,7 +26,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-finish-him"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="end/<?= $order->getId() ?>" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 Parfait ! bonne vente à vous.
             </div>

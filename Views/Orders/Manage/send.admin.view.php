@@ -48,7 +48,7 @@ $description = '';
         <div class="card">
             <h6>Suivie</h6>
             <form id="finish" action="finish/<?= $order->getId() ?>" method="post">
-                <?php (new SecurityManager())->insertHiddenToken() ?>
+                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                 <h6>Lien de suivie colis :</h6>
                 <input type="text" class="input" name="shipping_link">
                 <small>Si vous n'êtes pas en mesure de fournir de lien de suivie merci de ne pas remplir ce champ.</small>

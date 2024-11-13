@@ -22,7 +22,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-generate"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form method="post" action="giftCard/generate">
-            <?php (new SecurityManager())->insertHiddenToken(); ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
         <div class="modal-body">
             <label for="amount">Montant :</label>
             <input placeholder="18.99" type="text" name="amount" id="amount" class="input" required>

@@ -27,7 +27,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-avoir"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="avoir" action="refunded/<?= $order->getId() ?>" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <div class="alert-info">
                     Créer un avoir (code promo) applicable sur toute la boutique du montant total de la commande incluant faire de livraison et frais de paiement si applicable.
@@ -50,7 +50,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-refunded"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="refunded" action="refunded/<?= $order->getId() ?>" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
         <div class="modal-body">
             Avez-vous remboursé votre client ? cette commande est donc maintenant terminé ?
         </div>

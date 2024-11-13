@@ -110,8 +110,8 @@ $description = '';
 </div>
 
 <form id="cancel" action="cancel/<?= $order->getId() ?>" method="post">
-    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
 </form>
 <form id="send" action="send/<?= $order->getId() ?>" method="post">
-    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
 </form>

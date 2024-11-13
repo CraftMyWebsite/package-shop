@@ -27,7 +27,7 @@ $description = '';
 </div>
 
 <form id="addDiscount" method="post" class="space-y-6">
-    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
 
     <div class="grid-2">
         <div class="card">

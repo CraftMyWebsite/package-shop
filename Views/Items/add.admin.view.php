@@ -20,7 +20,7 @@ $description = '';
 </div>
 
 <form id="addItem" method="post" enctype="multipart/form-data">
-    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
 <div class="grid-4">
     <div class="col-span-3">
         <div class="card">

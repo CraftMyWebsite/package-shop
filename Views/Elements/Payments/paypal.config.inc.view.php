@@ -9,7 +9,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 ?>
 
 <form id="paypal" action="payments/settings" method="post">
-    <?php (new SecurityManager())->insertHiddenToken(); ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
 <div class="grid-5">
     <div class="col-span-4">
         <div class="grid-2">

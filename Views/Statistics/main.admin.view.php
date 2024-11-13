@@ -282,7 +282,7 @@ $description = 'Stats stats stats';
                     <button type="button" data-modal-hide="modal"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <form method="post">
-                    <?php (new SecurityManager())->insertHiddenToken() ?>
+                    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                     <div class="modal-body">
                         <label for="default-input">Nombre affiché :</label>
                         <input value="<?= $limit ?>" name="limit" type="number" required id="default-input" class="input" placeholder="3">

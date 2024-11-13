@@ -25,7 +25,7 @@ $description = '';
 </div>
 
 <form id="applyConfig" method="post" enctype="multipart/form-data">
-    <?php (new SecurityManager())->insertHiddenToken() ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
 <div class="grid-3">
     <div class="card">
         <div class="flex justify-between">
@@ -103,7 +103,7 @@ $description = '';
     </div>
     <div id="tab-content-2" class="tab-container">
         <form id="virtualGlobal" action="settings/global" method="post">
-            <?php (new SecurityManager())->insertHiddenToken(); ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
         <?php foreach ($globalConfigMethod as $method): ?>
             <div class="tab-content" id="tab-<?= $method->varName() ?>">
                 <div class="card">

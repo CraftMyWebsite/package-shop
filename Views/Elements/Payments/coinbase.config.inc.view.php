@@ -9,7 +9,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 ?>
 
 <form id="coinbase" action="payments/settings" method="post">
-    <?php (new SecurityManager())->insertHiddenToken(); ?>
+    <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
     <div class="grid-4">
         <div class="col-span-3">
             <label for="<?= $varName ?>_api_key">Clé Secrète :</label>

@@ -89,7 +89,7 @@ $description = '';
                                                         class="fa-solid fa-xmark"></i></button>
                                             </div>
                                             <form action="shipping/delivery/edit/<?= $shipping->getId() ?>" method="post">
-                                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                                 <div class="modal-body">
                                                     <div class="grid-2">
                                                         <div>
@@ -226,7 +226,7 @@ $description = '';
                                                         class="fa-solid fa-xmark"></i></button>
                                             </div>
                                             <form action="shipping/withdraw/edit/<?= $shipping->getId() ?>" method="post">
-                                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                                 <div class="modal-body">
                                                     <div class="grid-2">
                                                         <div>
@@ -369,7 +369,7 @@ $description = '';
                                         class="fa-solid fa-xmark"></i></button>
                             </div>
                             <form action="shipping/depot/edit/<?= $withdrawPoint->getId() ?>" method="post">
-                                <?php (new SecurityManager())->insertHiddenToken() ?>
+                                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                 <div class="modal-body">
                                     <label for="name">Nom<span style="color: red">*</span></label>
                                     <input value="<?= $withdrawPoint->getName() ?>" required type="text" name="name" id="name" class="input" placeholder="Entreprise">
@@ -459,7 +459,7 @@ $description = '';
                                                 class="fa-solid fa-xmark"></i></button>
                                     </div>
                                     <form action="shipping/zone/edit/<?= $zone->getId() ?>" method="post">
-                                        <?php (new SecurityManager())->insertHiddenToken() ?>
+                                        <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                         <div class="modal-body">
                                             <label for="default-input">Nom</label>
                                             <input type="text" name="name" value="<?= $zone->getName() ?>"
@@ -504,7 +504,7 @@ $description = '';
                 <div class="card">
                     <h6><?= $method->name() ?></h6>
                     <form id="virtualGlobal" action="shipping/method" method="post">
-                        <?php (new SecurityManager())->insertHiddenToken(); ?>
+                        <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
                         <?php $method->includeGlobalConfigWidgets(); ?>
                         <div class="d-flex justify-content-center mt-4">
                             <button form="virtualGlobal" type="submit"
@@ -525,7 +525,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-add-zone"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="shipping/zone" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <label for="default-input">Nom<span style="color: red">*</span></label>
                 <input required type="text" name="name" id="default-input" class="input" placeholder="France">
@@ -555,7 +555,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-add-depot"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="shipping/depot" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <label for="name">Nom<span style="color: red">*</span></label>
                 <input required type="text" name="name" id="name" class="input" placeholder="Entreprise">
@@ -600,7 +600,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-add-shipping"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="shipping/delivery" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <div class="grid-2">
                     <div>
@@ -681,7 +681,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-add-withdraw"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="shipping/withdraw" method="post">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <div class="grid-2">
                     <div>

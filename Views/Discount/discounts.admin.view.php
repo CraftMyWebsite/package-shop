@@ -69,7 +69,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                                     <button type="button" data-modal-hide="modal-report-<?= $discount->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                                 <form action="discounts/report" method="post">
-                                    <?php (new SecurityManager())->insertHiddenToken() ?>
+                                    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                 <div class="modal-body">
                                     <div>
                                         <input hidden="" name="id" value="<?= $discount->getId() ?>">

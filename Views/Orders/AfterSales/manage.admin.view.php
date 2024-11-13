@@ -82,7 +82,7 @@ $description = 'SAV';
         <?php if ($afterSale->getStatus() !== 2): ?>
         <div class="card mt-6">
             <form method="post">
-                <?php (new SecurityManager())->insertHiddenToken() ?>
+                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                 <label for="message">Votre réponse :</label>
                 <textarea id="message" name="message" minlength="3" required class="textarea"></textarea>
                 <button type="submit" class="btn-center btn-success mt-4">Envoyer</button>

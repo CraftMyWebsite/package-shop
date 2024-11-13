@@ -135,7 +135,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-add-cat"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form method="post" action="cat/add">
-            <?php (new SecurityManager())->insertHiddenToken() ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <label for="name">Nom<span style="color: red">*</span> :</label>
                 <div class="input-group">

@@ -21,7 +21,7 @@ $description = '';
             <button type="button" data-modal-hide="modal-generate"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form method="post" action="credits/generate">
-            <?php (new SecurityManager())->insertHiddenToken(); ?>
+            <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
         <div class="modal-body">
             <label for="name">Nom :</label>
             <input placeholder="Avoir pour X" type="text" name="name" id="name" class="input" required>
