@@ -2,13 +2,14 @@
 
 namespace CMW\Entity\Shop\Discounts;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 use CMW\Utils\Date;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use DateInterval;
 use DateTime;
 
-class ShopDiscountEntity
+class ShopDiscountEntity extends AbstractEntity
 {
     private int $id;
     private string $discountName;

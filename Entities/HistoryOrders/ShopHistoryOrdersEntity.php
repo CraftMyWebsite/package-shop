@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Users\UserEntity;
@@ -13,7 +14,7 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersShippingModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersUserAddressModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersEntity
+class ShopHistoryOrdersEntity extends AbstractEntity
 {
     private int $historyOrderId;
     private ?UserEntity $user;

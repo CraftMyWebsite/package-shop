@@ -4,10 +4,11 @@ namespace CMW\Entity\Shop\Carts;
 
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-class ShopCartDiscountEntity
+class ShopCartDiscountEntity extends AbstractEntity
 {
     private $id;
     private ShopCartEntity $cartId;

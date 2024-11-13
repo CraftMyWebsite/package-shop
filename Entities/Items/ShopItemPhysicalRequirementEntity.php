@@ -2,9 +2,10 @@
 
 namespace CMW\Entity\Shop\Items;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 
-class ShopItemPhysicalRequirementEntity
+class ShopItemPhysicalRequirementEntity extends AbstractEntity
 {
     private int $physicalRequirementId;
     private ShopItemEntity $shopItemId;

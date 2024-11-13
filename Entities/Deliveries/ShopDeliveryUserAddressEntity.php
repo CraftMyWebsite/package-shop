@@ -2,12 +2,13 @@
 
 namespace CMW\Entity\Shop\Deliveries;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
-class ShopDeliveryUserAddressEntity
+class ShopDeliveryUserAddressEntity extends AbstractEntity
 {
     private int $deliveryId;
     private ?string $deliveryLabel;

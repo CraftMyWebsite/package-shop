@@ -2,7 +2,9 @@
 
 namespace CMW\Entity\Shop\Categories;
 
-class ShopSubCategoryEntity
+use CMW\Manager\Package\AbstractEntity;
+
+class ShopSubCategoryEntity extends AbstractEntity
 {
     private ShopCategoryEntity $subCategory;
     private int $depth;

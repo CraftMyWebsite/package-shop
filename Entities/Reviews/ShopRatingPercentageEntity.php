@@ -2,7 +2,9 @@
 
 namespace CMW\Entity\Shop\Reviews;
 
-class ShopRatingPercentageEntity
+use CMW\Manager\Package\AbstractEntity;
+
+class ShopRatingPercentageEntity extends AbstractEntity
 {
     private int $rating;
     private float $percentage;

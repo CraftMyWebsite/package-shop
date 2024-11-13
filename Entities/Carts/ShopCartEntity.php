@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\Carts;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
 
-class ShopCartEntity
+class ShopCartEntity extends AbstractEntity
 {
     private ?int $id;
     private ?userEntity $user;

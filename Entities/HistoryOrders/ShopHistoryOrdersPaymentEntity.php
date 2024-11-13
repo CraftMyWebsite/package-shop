@@ -3,9 +3,10 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersPaymentEntity
+class ShopHistoryOrdersPaymentEntity extends AbstractEntity
 {
     private int $historyOrderPaymentId;
     private ShopHistoryOrdersEntity $historyOrder;

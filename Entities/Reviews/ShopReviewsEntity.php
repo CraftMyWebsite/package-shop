@@ -2,12 +2,13 @@
 
 namespace CMW\Entity\Shop\Reviews;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-class ShopReviewsEntity
+class ShopReviewsEntity extends AbstractEntity
 {
     private int $reviewsId;
     private UserEntity $user;

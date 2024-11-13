@@ -2,9 +2,10 @@
 
 namespace CMW\Entity\Shop\Shippings;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
-class ShopShippingZoneEntity
+class ShopShippingZoneEntity extends AbstractEntity
 {
     private int $id;
     private string $name;

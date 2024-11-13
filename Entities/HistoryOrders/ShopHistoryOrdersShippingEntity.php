@@ -3,9 +3,10 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopHistoryOrdersShippingEntity
+class ShopHistoryOrdersShippingEntity extends AbstractEntity
 {
     private int $historyOrderShippingId;
     private ShopHistoryOrdersEntity $historyOrder;

@@ -3,10 +3,11 @@
 namespace CMW\Entity\Shop\Shippings;
 
 use CMW\Interface\Shop\IShippingMethod;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopCoordinatesModel;
 
-class ShopShippingEntity
+class ShopShippingEntity extends AbstractEntity
 {
     private int $id;
     private string $name;

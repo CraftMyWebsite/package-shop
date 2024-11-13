@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\Images;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Manager\Env\EnvManager;
 
-class ShopImageEntity
+class ShopImageEntity extends AbstractEntity
 {
     private int $imageId;
     private string $imageName;

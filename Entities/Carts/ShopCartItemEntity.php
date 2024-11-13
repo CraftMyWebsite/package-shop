@@ -2,6 +2,8 @@
 
 namespace CMW\Entity\Shop\Carts;
 
+use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
@@ -15,10 +17,9 @@ use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
-class ShopCartItemEntity
+class ShopCartItemEntity extends AbstractEntity
 {
     private int $id;
     private ShopCartEntity $cart;
@@ -256,7 +257,7 @@ class ShopCartItemEntity
      */
     public function getTotalCartPriceBeforeDiscount(): float
     {
-        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
 
         $total = 0;
         foreach ($cartContents as $cartContent) {
@@ -291,8 +292,8 @@ class ShopCartItemEntity
      */
     public function getTotalCartPriceAfterDiscount(): float
     {
-        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
-        $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId(UsersModel::getCurrentUser()?->getId(), session_id());
+        $cartContents = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
+        $cartDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
 
         $totalCartDiscountPrice = 0;
         foreach ($cartDiscounts as $cartDiscount) {
@@ -339,7 +340,7 @@ class ShopCartItemEntity
      */
     public function getTotalPriceComplete(): float
     {
-        $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersModel::getCurrentUser()?->getId());
+        $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId());
 
         $shipping = $commandTunnel->getShipping();
         $shippingFees = $shipping !== null ? $shipping->getPrice() : 0;

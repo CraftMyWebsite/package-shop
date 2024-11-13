@@ -2,12 +2,13 @@
 
 namespace CMW\Entity\Shop\Categories;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
 use CMW\Utils\Website;
 
-class ShopCategoryEntity
+class ShopCategoryEntity extends AbstractEntity
 {
     private int $categoryId;
     private string $categoryName;

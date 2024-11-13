@@ -2,9 +2,10 @@
 
 namespace CMW\Entity\Shop\Payments;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 
-class ShopPaymentMethodSettingsEntity
+class ShopPaymentMethodSettingsEntity extends AbstractEntity
 {
     private string $key;
     private string $value;

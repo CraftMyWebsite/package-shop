@@ -3,8 +3,9 @@
 namespace CMW\Entity\Shop\Discounts;
 
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
+use CMW\Manager\Package\AbstractEntity;
 
-class ShopDiscountCategoriesEntity
+class ShopDiscountCategoriesEntity extends AbstractEntity
 {
     private int $id;
     private ShopDiscountEntity $discount;

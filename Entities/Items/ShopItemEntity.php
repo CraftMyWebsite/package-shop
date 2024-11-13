@@ -2,6 +2,8 @@
 
 namespace CMW\Entity\Shop\Items;
 
+use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
@@ -12,10 +14,9 @@ use CMW\Model\Shop\Discount\ShopDiscountCategoriesModel;
 use CMW\Model\Shop\Discount\ShopDiscountItemsModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
-use CMW\Model\Users\UsersModel;
 use CMW\Utils\Website;
 
-class ShopItemEntity
+class ShopItemEntity extends AbstractEntity
 {
     private int $itemId;
     private ?ShopCategoryEntity $category;
@@ -584,7 +585,7 @@ class ShopItemEntity
     public function getTotalPriceInCart(): float
     {
         // TODO : Gérer les promo
-        $quantity = ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersModel::getCurrentUser()?->getId(), session_id());
+        $quantity = ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
         return $quantity * $this->getPrice();
     }
 
@@ -594,7 +595,7 @@ class ShopItemEntity
      */
     public function getQuantityInCart(): string
     {
-        return ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersModel::getCurrentUser()?->getId(), session_id());
+        return ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
     }
 
     /**

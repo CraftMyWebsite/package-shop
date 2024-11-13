@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
-class ShopHistoryOrdersUserAddressEntity
+class ShopHistoryOrdersUserAddressEntity extends AbstractEntity
 {
     private int $historyOrderUserAddressId;
     private ShopHistoryOrdersEntity $historyOrder;

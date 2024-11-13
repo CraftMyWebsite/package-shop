@@ -3,7 +3,9 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 
-class ShopHistoryOrdersItemsVariantesEntity
+use CMW\Manager\Package\AbstractEntity;
+
+class ShopHistoryOrdersItemsVariantesEntity extends AbstractEntity
 {
     private int $historyOrderItemVariantesId;
     private ShopHistoryOrdersItemsEntity $historyOrderItems;

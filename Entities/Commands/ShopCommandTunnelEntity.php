@@ -2,12 +2,13 @@
 
 namespace CMW\Entity\Shop\Commands;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Entity\Users\UserEntity;
 
-class ShopCommandTunnelEntity
+class ShopCommandTunnelEntity extends AbstractEntity
 {
     private ?int $tunnelId;
     private ?int $tunnelStep;

@@ -2,11 +2,11 @@
 
 namespace CMW\Entity\Shop\Statistics;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopBestBuyerEntity
+class ShopBestBuyerEntity extends AbstractEntity
 {
-
     private string $userPseudo;
     private string $userImage;
     private ?float $spent;

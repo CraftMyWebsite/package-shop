@@ -2,7 +2,9 @@
 
 namespace CMW\Entity\Shop\Country;
 
-class ShopCountryEntity
+use CMW\Manager\Package\AbstractEntity;
+
+class ShopCountryEntity extends AbstractEntity
 {
     private string $name;
     private string $code;

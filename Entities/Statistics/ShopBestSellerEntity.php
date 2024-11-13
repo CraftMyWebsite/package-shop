@@ -3,8 +3,9 @@
 namespace CMW\Entity\Shop\Statistics;
 
 use CMW\Entity\Shop\Items\ShopItemEntity;
+use CMW\Manager\Package\AbstractEntity;
 
-class ShopBestSellerEntity
+class ShopBestSellerEntity extends AbstractEntity
 {
 
     private ShopItemEntity $item;

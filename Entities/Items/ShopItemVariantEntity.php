@@ -2,9 +2,10 @@
 
 namespace CMW\Entity\Shop\Items;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 
-class ShopItemVariantEntity
+class ShopItemVariantEntity extends AbstractEntity
 {
     private int $variantId;
     private ShopItemEntity $item;

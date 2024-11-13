@@ -2,10 +2,11 @@
 
 namespace CMW\Entity\Shop\Items;
 
+use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Interface\Shop\IVirtualItems;
 
-class ShopItemVirtualMethodEntity
+class ShopItemVirtualMethodEntity extends AbstractEntity
 {
     private int $virtualMethodId;
     private IVirtualItems $virtualMethod;
