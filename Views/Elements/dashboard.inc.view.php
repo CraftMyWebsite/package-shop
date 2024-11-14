@@ -1,8 +1,10 @@
 <?php
 
-use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Statistics\ShopStatisticsModel;
+
+$gainThisMonth = number_format(ShopStatisticsModel::getInstance()->gainThisMonth(), 2, '.', ' ');
+$gainTotal = number_format(ShopStatisticsModel::getInstance()->gainTotal(), 2, '.', ' ');
 
 $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
@@ -25,7 +27,7 @@ $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
                 <i class="w-24 fa-solid fa-money-bill-trend-up text-3xl rounded-lg p-3 text-white" style="background-color: #d56b6b"></i>
                 <div class="w-1/2">
                     <p class="text-muted font-semibold">Gains ce mois</p>
-                    <h6 class="font-extrabold mb-0" style="color: green">+ <?= $symbolIsAfter ? ShopStatisticsModel::getInstance()->gainThisMonth() . ' ' . $symbol : $symbol . ' ' . ShopStatisticsModel::getInstance()->gainThisMonth()?></h6>
+                    <h6 class="font-extrabold mb-0" style="color: green">+ <?= $symbolIsAfter ? $gainThisMonth . ' ' . $symbol : $symbol . ' ' . $gainThisMonth?></h6>
                 </div>
             </div>
         </div>
@@ -34,7 +36,7 @@ $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
                 <i class="w-24 fa-solid fa-sack-dollar text-3xl rounded-lg p-3 text-white" style="background-color: #d62828"></i>
                 <div class="w-1/2">
                     <p class="text-muted font-semibold">Gains total</p>
-                    <h6 class="font-extrabold mb-0" style="color: green">+ <?= $symbolIsAfter ? ShopStatisticsModel::getInstance()->gainTotal() . ' ' . $symbol : $symbol . ' ' . ShopStatisticsModel::getInstance()->gainTotal() ?></h6>
+                    <h6 class="font-extrabold mb-0" style="color: green">+ <?= $symbolIsAfter ? $gainTotal . ' ' . $symbol : $symbol . ' ' . $gainTotal ?></h6>
                 </div>
             </div>
         </div>

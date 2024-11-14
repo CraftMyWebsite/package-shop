@@ -1,9 +1,8 @@
 <?php
 
-/* @var int $numberOrderThisMonth */
+
 /* @var int $totalOrders */
 /* @var int $refundedOrder */
-/* @var int $refundedOrderThisMonth */
 /* @var int $limit */
 /* @var int $gainTotal */
 /* @var \CMW\Entity\Shop\Statistics\ShopBestBuyerEntity [] $bestsBuyersThisMonth */
@@ -11,8 +10,6 @@
 /* @var \CMW\Entity\Shop\Statistics\ShopBestSellerEntity [] $bestsSeller */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $symbol */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $symbolIsAfter */
-/* @var int $gainThisMonth */
-/* @var int $lostThisMonth */
 /* @var int $lostTotal */
 /* @var int $activeItems */
 /* @var int $draftItems */
@@ -24,6 +21,15 @@
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 /* @var array $gains*/
 /* @var array $losses*/
+/* @var array $monthlyGainsAndLossesLastYear*/
+/* @var array $monthlyOrderCurrentCompletedAndLossesLastYear*/
+/* @var int $perfOrderDiff */
+/* @var float $perfOrderPercent*/
+/* @var float $perfRevenuePercent*/
+/* @var float $perfRevenueDiff*/
+/* @var float $refundRate*/
+/* @var string $averageOrderProcessingTime*/
+/* @var float $averageOrderValue*/
 
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -51,6 +57,85 @@ $description = 'Stats stats stats';
 </style>
 
 <h3><i class="fa-solid fa-chart-pie"></i> Statistiques</h3>
+
+<div class="grid-2">
+    <div class="card">
+        <h6>Gain et pertes par mois</h6>
+        <small>Sur année -1</small>
+        <div id="chartGainLoss"></div>
+    </div>
+    <div class="card">
+        <h6>Commandes par mois</h6>
+        <small>Sur année -1</small>
+        <div id="chartCommands"></div>
+    </div>
+</div>
+
+<hr>
+
+<h5>Performance</h5>
+<div class="flex gap-6">
+    <div class="card text-center">
+        <div style="background: #3398cf" class="icon-background mx-auto">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+        </div>
+        <div class="text-center">
+            <b class="text-muted font-semibold">Commandes</b><br>
+            <small>Par rapport au mois dernier</small>
+            <h5 class="font-extrabold mb-0" style="color: <?= $perfOrderPercent >= 0 ? 'green' : 'red' ?>">
+                <?= $perfOrderPercent > 0 ? '+' : '' ?> <?= $perfOrderPercent ?> %
+            </h5>
+            <p><?= $perfOrderDiff > 0 ? '+' : '' ?> <?= $perfOrderDiff ?> commande(s)</p>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div style="background: #0ab312" class="icon-background mx-auto">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+        <div class="text-center">
+            <b class="text-muted font-semibold">Revenues</b><br>
+            <small>Par rapport au mois dernier</small>
+            <h5 class="font-extrabold mb-0" style="color: <?= $perfRevenuePercent >= 0 ? 'green' : 'red' ?>">
+                <?= $perfRevenuePercent > 0 ? '+' : '' ?> <?= $perfRevenuePercent ?> %</h5>
+            <p><?= $perfRevenuePercent > 0 ? '+' : '' ?> <?= $symbolIsAfter ? $perfRevenueDiff . ' ' . $symbol : $symbol . ' ' . $perfRevenueDiff?></p>
+        </div>
+    </div>
+    <div class="card">
+        <div style="background: #da2a2a" class="icon-background mx-auto">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <div class="text-center">
+            <b class="text-muted font-semibold">Taux de remboursement </b><br>
+            <small>Nombre de commandes remboursées par rapport au nombre total de commandes passé. (Garder cette valeur la plus basse possible !)</small>
+            <h5 class="font-extrabold mb-0" style="color: <?= $refundRate > 0 ? 'red' : 'green' ?>"><?= $refundRate ?> %</h5>
+        </div>
+    </div>
+</div>
+<div class="flex gap-6 mt-6">
+    <div class="card text-center">
+        <div style="background: #d1ce22" class="icon-background mx-auto">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="text-center">
+            <b class="text-muted font-semibold">Temp de traitement moyen</b><br>
+            <small>Du moment où l'utilisateur commande jusqu'à ce que la commande soit entièrement finalisé</small>
+            <h5 class="font-extrabold mb-0">
+                <?= $averageOrderProcessingTime ?>
+            </h5>
+        </div>
+    </div>
+    <div class="card text-center">
+        <div style="background: #226ed1" class="icon-background mx-auto">
+            <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+        <div class="text-center">
+            <b class="text-muted font-semibold">Revenues moyen</b><br>
+            <small>Par commandes</small>
+            <h5 class="font-extrabold mb-0"><?= $symbolIsAfter ? $averageOrderValue . ' ' . $symbol : $symbol . ' ' . $averageOrderValue?></h5>
+        </div>
+    </div>
+</div>
+<hr>
 
 <h5>Depuis l'ouverture du Shop</h5>
 <div class="flex gap-6">
@@ -88,48 +173,6 @@ $description = 'Stats stats stats';
         <div class="text-center">
             <b class="text-muted font-semibold">Perte total</b>
             <h5 style="color: red" class="font-extrabold mb-0">- <?= $symbolIsAfter ? $lostTotal . ' ' . $symbol : $symbol . ' ' . $lostTotal?></h5>
-        </div>
-    </div>
-</div>
-
-<hr>
-
-<h5>Du mois en cours</h5>
-<div class="flex gap-6">
-    <div class="card text-center">
-            <div style="background: #5e9dbf" class="icon-background mx-auto">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
-            </div>
-            <div class="text-center">
-                <b class="text-muted font-semibold">Commandes total</b>
-                <h5 class="font-extrabold mb-0"><?= $numberOrderThisMonth ?></h5>
-            </div>
-    </div>
-    <div class="card text-center">
-            <div style="background: #c14444" class="icon-background mx-auto">
-                <i class="fa-solid fa-hand-holding-dollar"></i>
-            </div>
-            <div class="text-center">
-                <b class="text-muted font-semibold">Commandes remboursées</b>
-                <h5 class="font-extrabold mb-0"><?= $refundedOrderThisMonth ?></h5>
-            </div>
-    </div>
-    <div class="card">
-        <div style="background: #5ebf64" class="icon-background mx-auto">
-            <i class="fa-solid fa-arrow-trend-up"></i>
-        </div>
-        <div class="text-center">
-            <b class="text-muted font-semibold">Gains ce mois</b>
-            <h5 style="color: green" class="font-extrabold mb-0">+ <?= $symbolIsAfter ? $gainThisMonth . ' ' . $symbol : $symbol . ' ' . $gainThisMonth?></h5>
-        </div>
-    </div>
-    <div class="card">
-        <div style="background: #9f1515" class="icon-background mx-auto">
-            <i class="fa-solid fa-arrow-trend-down"></i>
-        </div>
-        <div class="text-center">
-            <b class="text-muted font-semibold">Perte ce mois</b>
-            <h5 style="color: red" class="font-extrabold mb-0">- <?= $symbolIsAfter ? $lostThisMonth . ' ' . $symbol : $symbol . ' ' . $lostThisMonth?></h5>
         </div>
     </div>
 </div>
@@ -263,12 +306,6 @@ $description = 'Stats stats stats';
 
 <hr>
 
-<!--TODO Finish him-->
-<div class="card">
-    <div id="chartGlobal"></div>
-</div>
-
-
 <div class="card mt-6">
     <div class="flex justify-between">
         <h5>Top <?= $limit ?> des meilleur acheteur</h5>
@@ -362,44 +399,120 @@ $description = 'Stats stats stats';
 
 
 <script>
-    function getLast3Months() {
-
-        const monthNames = <?= LangManager::translate('core.months.list') ?>
-
+    function getMonths() {
+        const monthNames = <?= json_encode(json_decode(LangManager::translate('core.months.list')), JSON_THROW_ON_ERROR); ?>;
         const today = new Date();
-        let toReturn = [];
+        let months = [];
 
-        for (let i = 0; i < 3; i++) {
-            toReturn.push(monthNames[(today.getMonth() - i)]);
+        for (let i = 0; i < 12; i++) {
+            let month = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            months.unshift(monthNames[month.getMonth()]);
         }
-        return toReturn.reverse();
+        return months;
     }
 
-    const gains = <?= json_encode($gains, JSON_THROW_ON_ERROR) ?>;
-    const losses = <?= json_encode($losses, JSON_THROW_ON_ERROR) ?>;
+    const monthlyData = <?= json_encode($monthlyGainsAndLossesLastYear, JSON_THROW_ON_ERROR) ?>;
+    const monthlyData2 = <?= json_encode($monthlyOrderCurrentCompletedAndLossesLastYear, JSON_THROW_ON_ERROR) ?>;
+    const gains = Object.values(monthlyData['gains'] ?? []);
+    const losses = Object.values(monthlyData['losses'] ?? []);
+    const completed = Object.values(monthlyData2['monthly_completed'] ?? []);
+    const current = Object.values(monthlyData2['monthly_current'] ?? []);
+    const commandsLosses = Object.values(monthlyData2['monthly_losses'] ?? []);
 
-    const areaOptions = {
+    const areaOptions1 = {
         chart: {
             type: 'area'
         },
         series: [
             {
-                name: 'Gains',
+                name: <?php if ($symbolIsAfter): ?>'Gains (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Gains'<?php endif; ?>,
                 data: gains
             },
             {
-                name: 'Pertes',
+                name: <?php if ($symbolIsAfter): ?>'Pertes (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Pertes'<?php endif; ?>,
                 data: losses
             }
         ],
         xaxis: {
-            categories: getLast3Months()
-        }
+            categories: getMonths()
+        },
+        yaxis: {
+            title: {
+                text: <?php if ($symbolIsAfter): ?>'Montant (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Montant'<?php endif; ?>
+            },
+            labels: {
+                formatter: function(value) {
+                    return value.toFixed(2); // Limite à 2 décimales
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function(value) {
+                return <?php if ($symbolIsAfter): ?>value.toFixed(2) + ' <?= $symbol ?>' <?php else: ?>'<?= $symbol ?> ' + value.toFixed(2)<?php endif; ?>;
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value.toFixed(2); // Limite à 2 décimales dans les tooltips
+                }
+            }
+        },
+        colors: ['#4CAF50', '#FF0000'],
     };
 
-    const areaChart = new ApexCharts(document.querySelector("#chartGlobal"), areaOptions);
-    areaChart.render();
+    const areaChart1 = new ApexCharts(document.querySelector("#chartGainLoss"), areaOptions1);
+    areaChart1.render();
+
+    const areaOptions2 = {
+        chart: {
+            type: 'area'
+        },
+        series: [
+            {
+                name: 'Commandes Complétées',
+                data: completed
+            },
+            {
+                name: 'Commandes en Cours',
+                data: current
+            },
+            {
+                name: 'Commandes Perdues',
+                data: commandsLosses
+            }
+        ],
+        xaxis: {
+            categories: getMonths()
+        },
+        yaxis: {
+            title: {
+                text: 'Nombre de Commandes'
+            },
+            labels: {
+                formatter: function(value) {
+                    return value.toFixed(0); // Limite à 0 décimales pour le nombre de commandes
+                }
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            formatter: function(value) {
+                return value.toFixed(0); // Limite à 0 décimales
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value.toFixed(0); // Limite à 0 décimales dans les tooltips
+                }
+            }
+        },
+        colors: ['#4c6faf', '#FFC107', '#FF0000'],
+    };
+
+    const areaChart2 = new ApexCharts(document.querySelector("#chartCommands"), areaOptions2);
+    areaChart2.render();
 </script>
-
-
 

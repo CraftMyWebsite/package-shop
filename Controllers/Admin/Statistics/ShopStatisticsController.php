@@ -33,17 +33,11 @@ class ShopStatisticsController extends AbstractController
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
 
-        $numberOrderThisMonth = $statisticsModel->countTotalOrdersThisMonth();
-        $refundedOrderThisMonth = $statisticsModel->countOrdersStatusThisMonth(-2);
-
-        $gainThisMonth = $statisticsModel->gainThisMonth();
-        $lostThisMonth = $statisticsModel->lostThisMonth();
-
         $totalOrders = $statisticsModel->countTotalOrders();
         $refundedOrder = $statisticsModel->countOrdersStatus(-2);
 
-        $gainTotal = $statisticsModel->gainTotal();
-        $lostTotal = $statisticsModel->lostTotal();
+        $gainTotal = number_format($statisticsModel->gainTotal(), 2, '.', ' ');
+        $lostTotal = number_format($statisticsModel->lostTotal(), 2, '.', ' ');
 
         $activeItems = $statisticsModel->countActiveItems();
         $archivedItems = $statisticsModel->countArchivedItems();
@@ -60,22 +54,27 @@ class ShopStatisticsController extends AbstractController
         $bestsBuyers = $statisticsModel->bestBuyers();
         $limit = ShopSettingsModel::getInstance()->getSettingValue('topBestBuyer');
 
-        $gains = [];
-        $losses = [];
+        $monthlyGainsAndLossesLastYear = $statisticsModel->monthlyGainsAndLossesLastYear();
+        $monthlyOrderCurrentCompletedAndLossesLastYear = $statisticsModel->monthlyOrderCurrentCompletedAndLossesLastYear();
 
-        for ($i = 0; $i < 3; $i++) {
-            $gains[] = $statisticsModel->gainByMonth($i);
-            $losses[] = $statisticsModel->lostByMonth($i);
-        }
+        $orderDifferenceComparedToLastMonth = $statisticsModel->orderDifferenceComparedToLastMonth();
+        $perfOrderDiff = $orderDifferenceComparedToLastMonth['difference'];
+        $perfOrderPercent = round($orderDifferenceComparedToLastMonth['percentageChange'], 2);
+
+        $revenueDifferenceComparedToLastMonth = $statisticsModel->revenueDifferenceComparedToLastMonth();
+        $perfRevenueDiff = number_format($revenueDifferenceComparedToLastMonth['difference'], 2, '.', ' ');
+        $perfRevenuePercent = round($revenueDifferenceComparedToLastMonth['percentageChange'], 2);
+
+        $refundRate = round($statisticsModel->refundRate(), 2);
+
+        $averageOrderProcessingTime = $statisticsModel->averageOrderProcessingTime();
+        $averageOrderValue = number_format($statisticsModel->averageOrderValue(), 2, '.', ' ');
 
         View::createAdminView('Shop', 'Statistics/main')
             ->addScriptBefore('Admin/Resources/Vendors/Apexcharts/Js/apexcharts.js')
-            ->addVariableList(['numberOrderThisMonth' => $numberOrderThisMonth,
-                'refundedOrderThisMonth' => $refundedOrderThisMonth,
+            ->addVariableList([
                 'bestsBuyersThisMonth' => $bestsBuyersThisMonth,
                 'bestsBuyers' => $bestsBuyers,
-                'gainThisMonth' => $gainThisMonth,
-                'lostThisMonth' => $lostThisMonth,
                 'totalOrders' => $totalOrders,
                 'refundedOrder' => $refundedOrder,
                 'activeItems' => $activeItems,
@@ -92,8 +91,15 @@ class ShopStatisticsController extends AbstractController
                 'limit' => $limit,
                 'symbol' => $symbol,
                 'symbolIsAfter' => $symbolIsAfter,
-                'gains' => $gains,
-                'losses' => $losses,
+                'monthlyGainsAndLossesLastYear' => $monthlyGainsAndLossesLastYear,
+                'monthlyOrderCurrentCompletedAndLossesLastYear' => $monthlyOrderCurrentCompletedAndLossesLastYear,
+                'perfOrderDiff' => $perfOrderDiff,
+                'perfOrderPercent' => $perfOrderPercent,
+                'perfRevenueDiff' => $perfRevenueDiff,
+                'perfRevenuePercent' => $perfRevenuePercent,
+                'refundRate' => $refundRate,
+                'averageOrderProcessingTime' => $averageOrderProcessingTime,
+                'averageOrderValue' => $averageOrderValue,
             ])
             ->view();
     }
