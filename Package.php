@@ -44,62 +44,62 @@ class Package implements IPackageConfig
                 subMenus: [
                     new PackageSubMenuType(
                         title: 'Configuration',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.config',
                         url: 'shop/settings',
                     ),
                     new PackageSubMenuType(
                         title: 'Catégories',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.cat',
                         url: 'shop/cat',
                     ),
                     new PackageSubMenuType(
                         title: 'Articles',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.items',
                         url: 'shop/items',
                     ),
                     new PackageSubMenuType(
                         title: 'Promotions',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.discount',
                         url: 'shop/discounts',
                     ),
                     new PackageSubMenuType(
                         title: 'Avoirs / Credits',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.credit',
                         url: 'shop/credits',
                     ),
                     new PackageSubMenuType(
                         title: 'Carte cadeau',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.gift',
                         url: 'shop/giftCard',
                     ),
                     new PackageSubMenuType(
                         title: 'Paniers',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.cart',
                         url: 'shop/carts',
                     ),
                     new PackageSubMenuType(
                         title: 'Commandes',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.order',
                         url: 'shop/orders',
                     ),
                     new PackageSubMenuType(
                         title: 'S.A.V',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.afterSales',
                         url: 'shop/afterSales',
                     ),
                     new PackageSubMenuType(
                         title: 'Livraisons',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.shipping',
                         url: 'shop/shipping',
                     ),
                     new PackageSubMenuType(
                         title: 'Paiements',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.payment',
                         url: 'shop/payments',
                     ),
                     new PackageSubMenuType(
                         title: 'Statistiques',
-                        permission: 'todo',  // TODO PERM
+                        permission: 'shop.stats',
                         url: 'shop/statistics',
                     ),
                 ]
@@ -114,8 +114,6 @@ class Package implements IPackageConfig
 
     public function uninstall(): bool
     {
-        // Return true, we don't need other operations for uninstall.
-        // TODO uninstal.sql
         return false;
     }
 }
