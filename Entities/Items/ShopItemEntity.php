@@ -579,17 +579,6 @@ class ShopItemEntity extends AbstractEntity
      */
 
     /**
-     * @return float
-     * @desc perfect for get the total price in cart
-     */
-    public function getTotalPriceInCart(): float
-    {
-        // TODO : Gérer les promo
-        $quantity = ShopCartItemModel::getInstance()->getQuantity($this->itemId, UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
-        return $quantity * $this->getPrice();
-    }
-
-    /**
      * @return string
      * @desc perfect if you retrieve the quantities in the cart from the item page
      */

@@ -54,7 +54,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId());
         $commandTunnelShippingId = $commandTunnelModel->getShipping()?->getId();
         $shippingMethod = null;
-        // TODO Refac :
+
         if (is_int($commandTunnelShippingId)) {
             $shippingMethod = ShopShippingModel::getInstance()->getShopShippingById($commandTunnelShippingId);
         }

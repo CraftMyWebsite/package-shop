@@ -521,7 +521,7 @@ ORDER BY csi.shop_item_price ASC;';
             return 0;
         }
 
-        return $res->fetch(0)['shop_item_current_stock'] ?? 999999;  // TODO : 999999 est correct ?
+        return $res->fetch(0)['shop_item_current_stock'] ?? 999999;
     }
 
     public function itemHaveUserLimit(int $itemId): bool

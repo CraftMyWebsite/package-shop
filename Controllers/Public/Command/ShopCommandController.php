@@ -11,11 +11,13 @@ use CMW\Exception\Shop\Payment\ShopPaymentException;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartDiscountModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
+use CMW\Model\Shop\Cart\ShopCartModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Country\ShopCountryModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
@@ -58,6 +60,12 @@ class ShopCommandController extends AbstractController
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+
+        if (empty($cartContent)) {
+            Flash::send(Alert::ERROR, 'Boutique', 'Votre panier est vide.');
+            Redirect::redirect('shop/cart');
+        }
+
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
@@ -73,12 +81,6 @@ class ShopCommandController extends AbstractController
 
         $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
 
-        if (empty($cartContent)) {
-            Flash::send(Alert::ERROR, 'Boutique', 'Votre panier est vide.');
-            // TODO : Fix redirect after item change in cart like Physical To virtual
-            Redirect::redirectPreviousRoute();
-        }
-
         if (!ShopCommandTunnelModel::getInstance()->tunnelExist($userId)) {
             ShopCommandTunnelModel::getInstance()->createTunnel($userId);
         }
@@ -91,7 +93,26 @@ class ShopCommandController extends AbstractController
         $cartIsFree = $this->handleCartIsFree($cartContent);
         $priceType = $this->handleCartPriceType($cartContent);
 
-        // TODO: Verifier si les promotions appliquées au panier sont encore valides
+        $appliedDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
+        ShopDiscountModel::getInstance()->autoStatusChecker();
+
+        if (!empty($appliedDiscounts)) {
+            $cart = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
+            $entityFound = 0;
+            foreach ($appliedDiscounts as $appliedDiscount) {
+                if ($appliedDiscount->getDiscount()->getStatus() == 0) {
+                    ShopCartDiscountModel::getInstance()->removeCode($cart->getId(), $appliedDiscount->getDiscount()->getId());
+                    $entityFound = 1;
+                    foreach ($cartContent as $cartItem) {
+                        ShopCartItemModel::getInstance()->removeCodeToItem($userId, $sessionId, $cartItem->getItem()->getId(), $appliedDiscount->getDiscount()->getId());
+                    }
+                }
+            }
+            if ($entityFound == 1) {
+                Flash::send(Alert::INFO, 'Boutique', 'Certaines promotions ne sont plus disponible !');
+                Redirect::redirect('shop/command');
+            }
+        }
 
         if (empty($userAddresses)) {
             $country = ShopCountryModel::getInstance()->getCountry();
@@ -125,7 +146,7 @@ class ShopCommandController extends AbstractController
                     });
                     if (empty($shippings) && empty($withdrawPoints)) {
                         Flash::send(Alert::WARNING, 'Boutique', "Nous sommes désolé mais aucune méthode de livraison n'est disponible pour cette adresse.");
-                        // TODO : Notify admin adresse cant throw shipping
+                        NotificationManager::notify('Adresse introuvable', $selectedAddress->getLine1() . ' ' . $selectedAddress->getCity() . ' ' . $selectedAddress->getPostalCode() . ' ' . $selectedAddress->getFormattedCountry() . ' ne trouve pas de méthode d\'envoie !');
                     }
                     $varName = 'withdraw_point_map';
                     $useInteractiveMap = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') ?? '1';
@@ -276,7 +297,7 @@ class ShopCommandController extends AbstractController
         $user = UsersSessionsController::getInstance()->getCurrentUser();
 
         if (!$user) {
-            // TODO Internal error.
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traité la commande, veuillez-vous connecter !');
             Redirect::redirectToHome();
         }
 
@@ -301,21 +322,21 @@ class ShopCommandController extends AbstractController
         }
 
         if (!$commandTunnelModel) {
-            // TODO Internal error.
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traité la commande !');
             Redirect::redirectToHome();
         }
 
         $addressId = $commandTunnelModel->getShopDeliveryUserAddress()?->getId();
 
         if (!$addressId) {
-            // TODO Error unable to reach delivery ID
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traité la commande, adresse introuvable !');
             Redirect::redirectToHome();
         }
 
         $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
 
         if (!$selectedAddress) {
-            // TODO Error no address selected / valid
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traité la commande, adresse introuvable !');
             Redirect::redirectToHome();
         }
 

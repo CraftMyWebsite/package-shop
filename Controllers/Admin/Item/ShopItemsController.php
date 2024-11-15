@@ -19,6 +19,7 @@ use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
@@ -315,7 +316,6 @@ class ShopItemsController extends AbstractController
             }
         }
 
-        // TODO : If this change : clear basket and notify user type changed
         if ($type == '1') {
             [$varName] = Utils::filterInput('shop_item_virtual_method_var_name');
             if (!empty($varName)) {

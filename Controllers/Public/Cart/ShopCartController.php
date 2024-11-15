@@ -20,6 +20,7 @@ use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
+use CMW\Utils\Website;
 
 /**
  * Class: @ShopCartController
@@ -55,17 +56,25 @@ class ShopCartController extends AbstractController
 
         $this->handleItemHealth($userId, $sessionId);
 
-        // TODO: Verifier si les promotions appliquées au panier sont encore valides via date ou status
+        ShopDiscountModel::getInstance()->autoStatusChecker();
+
         if (!empty($appliedDiscounts)) {
-            $cartId = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
+            $cart = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
+            $entityFound = 0;
             foreach ($appliedDiscounts as $appliedDiscount) {
                 if ($appliedDiscount->getDiscount()->getStatus() == 0) {
-                    ShopCartDiscountModel::getInstance()->removeCode($cartId->getId(), $appliedDiscount->getDiscount()->getCode());
+                    ShopCartDiscountModel::getInstance()->removeCode($cart->getId(), $appliedDiscount->getDiscount()->getId());
+                    $entityFound = 1;
+                    foreach ($cartContent as $cartItem) {
+                        ShopCartItemModel::getInstance()->removeCodeToItem($userId, $sessionId, $cartItem->getItem()->getId(), $appliedDiscount->getDiscount()->getId());
+                    }
                 }
             }
+            if ($entityFound == 1) {
+                Flash::send(Alert::INFO, 'Boutique', 'Certaines promotions ne sont plus disponible !');
+                Redirect::redirect('shop/cart');
+            }
         }
-
-        ShopDiscountModel::getInstance()->autoStatusChecker();
 
         foreach ($cartContent as $itemCart) {
             $itemId = $itemCart->getItem()->getId();

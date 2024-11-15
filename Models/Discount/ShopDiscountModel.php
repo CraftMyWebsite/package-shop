@@ -338,13 +338,15 @@ class ShopDiscountModel extends AbstractModel
 
     public function autoStatusChecker(): void
     {
-        // TODO : Max uses ateint on desactive
         $discounts = $this->getAllDiscounts();
         if (!empty($discounts)) {
             foreach ($discounts as $discount) {
                 if ($this->checkDate($discount->getStartDate(), $discount->getEndDate())) {
                     ShopDiscountModel::getInstance()->updateStatus($discount->getId(), 1);
                 } else {
+                    ShopDiscountModel::getInstance()->updateStatus($discount->getId(), 0);
+                }
+                if ($discount->getMaxUses() !== null && $discount->getCurrentUses() === $discount->getMaxUses()) {
                     ShopDiscountModel::getInstance()->updateStatus($discount->getId(), 0);
                 }
             }

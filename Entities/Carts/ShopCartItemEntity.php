@@ -53,7 +53,7 @@ class ShopCartItemEntity extends AbstractEntity
     /**
      * @return \CMW\Entity\Shop\Carts\ShopCartEntity
      */
-    public function getSessionId(): ShopCartEntity
+    public function getCart(): ShopCartEntity
     {
         return $this->cart;
     }
