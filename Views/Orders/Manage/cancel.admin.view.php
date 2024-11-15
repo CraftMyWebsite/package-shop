@@ -49,7 +49,7 @@ $description = '';
             <h6>Commande remboursée</h6>
             <button type="button" data-modal-hide="modal-refunded"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <form id="refunded" action="refunded/<?= $order->getId() ?>" method="post">
+        <form id="refunded" action="endFailed/<?= $order->getId() ?>" method="post">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
         <div class="modal-body">
             Avez-vous remboursé votre client ? cette commande est donc maintenant terminé ?

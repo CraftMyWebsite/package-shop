@@ -26,7 +26,7 @@ class ShopStatisticsController extends AbstractController
     #[Link('/statistics', Link::GET, [], '/cmw-admin/shop')]
     private function shopStatistics(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.statistics');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.stats');
 
         $statisticsModel = ShopStatisticsModel::getInstance();
 

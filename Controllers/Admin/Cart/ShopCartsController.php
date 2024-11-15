@@ -28,7 +28,7 @@ class ShopCartsController extends AbstractController
         $cartModel = ShopCartModel::getInstance();
         $cartItemsModel = ShopCartItemModel::getInstance();
 
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cart');
         View::createAdminView('Shop', 'Carts/carts')
             ->addVariableList(['cartModel' => $cartModel, 'cartItemsModel' => $cartItemsModel])
             ->view();
@@ -37,7 +37,7 @@ class ShopCartsController extends AbstractController
     #[Link('/carts/user/:userId', Link::GET, [], '/cmw-admin/shop')]
     private function shopCartUser(int $userId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cart');
 
         $carts = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, '');
         $user = UsersModel::getInstance()->getUserById($userId);
@@ -53,7 +53,7 @@ class ShopCartsController extends AbstractController
     #[Link('/carts/session/:sessionId', Link::GET, [], '/cmw-admin/shop')]
     private function shopCartSession(string $sessionId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.carts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cart');
 
         $carts = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId(null, $sessionId);
 
@@ -69,7 +69,7 @@ class ShopCartsController extends AbstractController
     #[Link('/carts/session/delete/:sessionId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteShopSessionCart(string $sessionId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cart.delete');
 
         ShopCartModel::getInstance()->removeSessionCart($sessionId);
 
@@ -82,7 +82,7 @@ class ShopCartsController extends AbstractController
     #[Link('/carts/session/delete/all/sessions', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteAllShopSessionCart(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cart.delete');
 
         $cartSessions = ShopCartModel::getInstance()->getShopCartsForSessions();
 

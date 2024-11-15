@@ -87,7 +87,7 @@ class ShopPaymentsController extends AbstractController
     #[Link('/payments', Link::GET, [], '/cmw-admin/shop')]
     private function shopPayments(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payment');
         View::createAdminView('Shop', 'payments')
             ->addVariableList(['methods' => $this->getPaymentsMethods()])
             ->view();
@@ -97,7 +97,7 @@ class ShopPaymentsController extends AbstractController
     #[Link('/payments/enable/:name', Link::GET, [], '/cmw-admin/shop')]
     private function shopEnablePayments(string $name): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payment.edit');
         $nameWithStatus = $name . '_is_active';
         if (!ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 1)) {
             Flash::send(Alert::ERROR, 'Boutique', "Impossible de d'activer la méthode de paiement'");
@@ -110,7 +110,7 @@ class ShopPaymentsController extends AbstractController
     #[Link('/payments/disable/:name', Link::GET, [], '/cmw-admin/shop')]
     private function shopDisablePayments(string $name): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payment.edit');
         $nameWithStatus = $name . '_is_active';
         if (!ShopPaymentMethodSettingsModel::getInstance()->updateOrInsertSetting($nameWithStatus, 0)) {
             Flash::send(Alert::ERROR, 'Boutique', "Impossible de désactiver la méthode de paiement'");
@@ -123,7 +123,7 @@ class ShopPaymentsController extends AbstractController
     #[Link('/payments/settings', Link::POST, [], '/cmw-admin/shop')]
     private function shopPaymentsSettingsPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payment.edit');
 
         $settings = $_POST;
 

@@ -31,7 +31,7 @@ class ShopCatController extends AbstractController
     #[Link('/cat', Link::GET, [], '/cmw-admin/shop')]
     private function adminShopCat(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat');
 
         $categoryModel = ShopCategoriesModel::getInstance();
 
@@ -43,7 +43,7 @@ class ShopCatController extends AbstractController
     #[NoReturn] #[Link('/cat/add', Link::POST, [], '/cmw-admin/shop')]
     private function adminAddShopCategoryPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.add');
 
         [$name, $description, $icon] = Utils::filterInput('name', 'description', 'icon');
 
@@ -68,7 +68,7 @@ class ShopCatController extends AbstractController
     #[Link('/cat/addSubCat/:catId', Link::GET, [], '/cmw-admin/shop')]
     private function adminAddSubCat(int $catId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.add');
 
         $category = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
 
@@ -80,7 +80,7 @@ class ShopCatController extends AbstractController
     #[NoReturn] #[Link('/cat/addSubCat/:catId', Link::POST, [], '/cmw-admin/shop')]
     private function adminAddSubCatPost(int $catId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.add');
 
         [$name, $description, $icon] = Utils::filterInput('name', 'description', 'icon');
 
@@ -94,7 +94,7 @@ class ShopCatController extends AbstractController
     #[Link('/cat/edit/:catId', Link::GET, [], '/cmw-admin/shop')]
     private function adminEditCat(int $catId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.edit');
 
         $category = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
         $categoryModel = ShopCategoriesModel::getInstance();
@@ -107,13 +107,17 @@ class ShopCatController extends AbstractController
     #[NoReturn] #[Link('/cat/edit/:catId', Link::POST, [], '/cmw-admin/shop')]
     private function adminEditCatPost(string $catId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.edit');
 
         [$name, $description, $icon, $move] = Utils::filterInput('name', 'description', 'icon', 'move');
 
-        //TODO Rewrite that...
-        $move = ($move === $catId) ? (is_null(ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()) ? null : ShopCategoriesModel::getInstance()->getShopCategoryById($catId)->getParent()->getId()) : (($move === '') ? null : $move);
+        $currentCategory = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
 
+        if ($move === $catId) {
+            $move = is_null($currentCategory->getParent()) ? null : $currentCategory->getParent()?->getId();
+        } elseif ($move === '') {
+            $move = null;
+        }
         ShopCategoriesModel::getInstance()->editCategory($name, $description, $icon, $move, $catId);
 
         Emitter::send(ShopEditCatEvent::class, $catId);
@@ -124,7 +128,7 @@ class ShopCatController extends AbstractController
     #[NoReturn] #[Link('/cat/delete/:catId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteShopCat(int $catId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.cat.delete');
 
         $itemInThisCat = ShopItemsModel::getInstance()->getAdminShopItemByCat($catId);
         $haveChild = ShopCategoriesModel::getInstance()->getSubsCat($catId);

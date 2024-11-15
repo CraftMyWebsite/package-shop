@@ -43,6 +43,7 @@ use CMW\Model\Users\UsersModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use CMW\Utils\Website;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
@@ -56,7 +57,7 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders', Link::GET, [], '/cmw-admin/shop')]
     private function shopOrders(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order');
 
         $inProgressOrders = ShopHistoryOrdersModel::getInstance()->getInProgressOrders();
         $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
@@ -75,7 +76,7 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/:orderId', Link::GET, [], '/cmw-admin/shop')]
     private function shopManageOrders(int $orderId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage');
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
 
@@ -135,7 +136,7 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/view/:orderId', Link::GET, [], '/cmw-admin/shop')]
     private function shopViewOrders(int $orderId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.orders.manage');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.passed');
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
@@ -150,6 +151,8 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/view/:orderId/reviewReminder/:itemId/:userId', Link::GET, [], '/cmw-admin/shop')]
     private function shopViewOrdersRelanceReviews(int $orderId, int $itemId, int $userId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.passed.rating');
+
         $user = UsersModel::getInstance()?->getUserById($userId);
         $item = ShopItemsModel::getInstance()?->getShopItemsById($itemId);
 
@@ -238,10 +241,10 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageSendStep(int $orderId): void
     {
-        // TODO : Emitter sendOrder
-
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.ready');
         // Exec shipping method :
         $thisOrder = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+
         $orderOnlyVirtual = $this->handleOrderTypeContent($thisOrder->getOrderedItems());
         if (!$orderOnlyVirtual) {
             $shippingMethodVarName = $thisOrder->getShippingMethod()->getShipping()->getShippingMethod()->varName();
@@ -252,7 +255,7 @@ class ShopHistoryOrdersController extends AbstractController
 
 
         if (!$orderOnlyVirtual) {
-            if ($thisOrder->getShippingMethod()->getShipping()->getType() === 0) {
+            if ($thisOrder->getShippingMethod()?->getShipping()->getType() === 0) {
                 ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
             } else {
                 ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, null);
@@ -269,12 +272,18 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/finish/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageFinalStep(int $orderId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.shipping');
+
         [$shippingLink] = Utils::filterInput('shipping_link');
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === '' ? null : $shippingLink));
 
         // TODO : Notifier l'utilisateur
 
-        // TODO Emitter finishedOrder
+        try {
+            Emitter::send(ShopFinishedOrderEvent::class, $orderId);
+        } catch (Exception) {
+            error_log('Error while sending ShopSendOrderEvent');
+        }
 
         Redirect::redirect('cmw-admin/shop/orders');
     }
@@ -283,6 +292,8 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/end/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageEndStep(int $orderId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endSuccess');
+
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
 
         // TODO : Notifier l'utilisateur
@@ -309,6 +320,8 @@ class ShopHistoryOrdersController extends AbstractController
     #[Link('/orders/manage/cancel/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageCancelStep(int $orderId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.unrealizable');
+
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
 
         // TODO : Notifier l'utilisateur
@@ -319,9 +332,28 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
+    #[Link('/orders/manage/endFailed/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    private function shopManageEndFailedStep(int $orderId): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endFailed');
+
+        ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+
+        try {
+            Emitter::send(ShopRefundedSelfOrderEvent::class, $orderId);
+        } catch (Exception) {
+            error_log('Error while sending ShopRefundedSelfOrderEvent');
+        }
+
+        Redirect::redirect('cmw-admin/shop/orders');
+    }
+
+    #[NoReturn]
     #[Link('/orders/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageRefundStep(int $orderId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.refund');
+
         [$name] = Utils::filterInput('name');
 
         $varName = 'credit_launcher';
@@ -417,7 +449,6 @@ class ShopHistoryOrdersController extends AbstractController
 
     public function handleCreateOrder(UserEntity $user): void
     {
-        // TODO : Baisser les stock si besoin
         $sessionId = session_id();
 
         $commandTunnel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($user->getId());
@@ -460,9 +491,9 @@ class ShopHistoryOrdersController extends AbstractController
                     ShopItemsController::getInstance()->getVirtualItemsMethodsByVarName($virtualItemVarName)->execOnBuy($virtualItemVarName, $cartItem->getItem(), $user);
                 }
             }
-            if ($cartItem->getItem()->getCurrentStock()) {
-                $nextStock = $cartItem->getItem()->getCurrentStock() - $cartItem->getQuantity();
-                ShopItemsModel::getInstance()->decreaseStock($cartItem->getItem()->getId(), $nextStock);
+            if ($cartItem->getItem()?->getCurrentStock()) {
+                $nextStock = $cartItem->getItem()?->getCurrentStock() - $cartItem->getQuantity();
+                ShopItemsModel::getInstance()->decreaseStock($cartItem->getItem()?->getId(), $nextStock);
 
                 $percentage = ($nextStock / $cartItem->getItem()->getDefaultStock()) * 100;
                 $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
@@ -554,7 +585,6 @@ class ShopHistoryOrdersController extends AbstractController
      */
     private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory): void
     {
-        // TODO : Retravaille cette partie pour mieux afficher les reduction appliqué et tout et aussi verifier si les mails sont bien configurer
         $websiteName = Website::getWebsiteName();
         $orderNumber = $order->getOrderNumber();
         $orderDate = $order->getCreated();
@@ -668,6 +698,11 @@ class ShopHistoryOrdersController extends AbstractController
         $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%'],
             [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink], $htmlTemplate);
         $object = $websiteName . ' - Récapitulatif de Commande';
-        MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+
+        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
+            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+        } else {
+            Flash::send(Alert::WARNING, 'Commande','Nous n\'avons pas réussi à vous envoyer le mail de recap !');
+        }
     }
 }

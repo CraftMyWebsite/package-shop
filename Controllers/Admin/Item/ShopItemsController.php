@@ -99,7 +99,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/review/:id/delete/:reviewId', Link::GET, [], '/cmw-admin/shop')]
     private function shopItemsDeleteReviews(int $id, int $reviewId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.deleteRating');
 
         ShopReviewsModel::getInstance()->deleteReview($reviewId);
         Flash::send(Alert::SUCCESS, 'Boutique', 'Avis supprimé !');
@@ -127,7 +127,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/add', Link::GET, [], '/cmw-admin/shop')]
     private function adminAddShopItem(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
         if (ShopCategoriesModel::getInstance()->getShopCategories()) {
             $categoryModel = ShopCategoriesModel::getInstance();
@@ -145,7 +145,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/add', Link::POST, [], '/cmw-admin/shop')]
     private function adminAddShopItemPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
         [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
 
@@ -227,7 +227,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/edit/:id', Link::GET, [], '/cmw-admin/shop')]
     private function adminEditShopItem(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.edit');
 
         $categoryModel = ShopCategoriesModel::getInstance();
         $item = ShopItemsModel::getInstance()->getShopItemsById($id);
@@ -249,7 +249,7 @@ class ShopItemsController extends AbstractController
     {
         $backupItemInfo = ShopItemsModel::getInstance()->getShopItemsById($id);
 
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.edit');
 
         [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
 
@@ -380,7 +380,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteShopItem(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.delete');
 
         $isInACart = ShopCartItemModel::getInstance()->itemIsPresentInACart($id);
         $isOrdered = ShopHistoryOrdersItemsModel::getInstance()->itemIsOrdered($id);
@@ -407,7 +407,7 @@ class ShopItemsController extends AbstractController
     #[Link('/items/activate/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminActivateShopItem(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
         $thisItem = ShopItemsModel::getInstance()->getShopItemsById($id);
         if ($thisItem->getCategory()) {

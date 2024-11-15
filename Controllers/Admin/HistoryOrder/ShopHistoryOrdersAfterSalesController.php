@@ -27,7 +27,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     #[Link('/afterSales', Link::GET, [], '/cmw-admin/shop')]
     private function shopOrders(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.sav');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.afterSales');
 
         $afterSales = ShopHistoryOrdersAfterSalesModel::getInstance()->getHistoryOrdersAfterSales();
 
@@ -42,7 +42,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     #[Link('/afterSales/manage/:afterSalesId', Link::GET, [], '/cmw-admin/shop')]
     private function shopManageOrders(int $afterSalesId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.sav');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.afterSales.manage');
 
         $afterSale = ShopHistoryOrdersAfterSalesModel::getInstance()->getHistoryOrdersAfterSalesById($afterSalesId);
         $afterSaleMessages = ShopHistoryOrdersAfterSalesMessagesModel::getInstance()->getHistoryOrdersAfterSalesMessageByAfterSalesId($afterSalesId);
@@ -55,6 +55,8 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     #[NoReturn] #[Link('/afterSales/manage/:afterSalesId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageFinalStep(int $afterSalesId): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.afterSales.manage');
+
         [$message] = Utils::filterInput('message');
 
         $author = UsersSessionsController::getInstance()->getCurrentUser();
@@ -82,7 +84,7 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
     #[NoReturn] #[Link('/afterSales/close/:afterSalesId', Link::GET, [], '/cmw-admin/shop')]
     private function shopCloseOrders(int $afterSalesId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.sav');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.afterSales.manage');
 
         ShopHistoryOrdersAfterSalesModel::getInstance()->changeStatus($afterSalesId, 2);
 

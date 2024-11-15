@@ -59,7 +59,7 @@ class ShopSettingsController extends AbstractController
     #[Link('/settings', Link::GET, [], '/cmw-admin/shop')]
     private function shopSettings(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config');
 
         $currentCurrency = ShopSettingsModel::getInstance()->getSettingValue('currency');
         $currentSymbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
@@ -80,7 +80,7 @@ class ShopSettingsController extends AbstractController
     #[NoReturn] #[Link('/settings', Link::POST, [], '/cmw-admin/shop')]
     private function shopApplyGlobalPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config.edit');
 
         if (isset($_FILES['defaultPicture'])) {
             if ($_FILES['defaultPicture']['error'] === UPLOAD_ERR_OK) {
@@ -107,7 +107,7 @@ class ShopSettingsController extends AbstractController
     #[NoReturn] #[Link('/settings/global', Link::POST, [], '/cmw-admin/shop')]
     private function shopVirtualItemGlobalSettingsPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.payments.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config.edit');
 
         $settings = $_POST;
 
@@ -129,7 +129,7 @@ class ShopSettingsController extends AbstractController
     #[NoReturn] #[Link('/settings/reset_default_image', Link::GET, [], '/cmw-admin/shop')]
     private function shopResetDefaultImagePost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config.edit');
 
         ShopImagesModel::getInstance()->resetDefaultImage();
 

@@ -36,6 +36,8 @@ class ShopDiscountsController extends AbstractController
     #[Link('/discounts', Link::GET, [], '/cmw-admin/shop')]
     private function shopDiscounts(): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount');
+
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $discounts = ShopDiscountModel::getInstance()->getAllDiscounts();
@@ -56,7 +58,7 @@ class ShopDiscountsController extends AbstractController
     #[Link('/discounts/add', Link::GET, [], '/cmw-admin/shop')]
     private function shopDiscountsAdd(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.add');
 
         $categories = ShopCategoriesModel::getInstance()->getShopCategories();
         $items = ShopItemsModel::getInstance()->getAdminShopItems();
@@ -69,7 +71,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/discounts/add', Link::POST, [], '/cmw-admin/shop')]
     private function shopDiscountsAddPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts.add');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.add');
         $discountModel = ShopDiscountModel::getInstance();
 
         [$name, $startDate, $endDate, $multiplePerUsers, $maxUses, $impact, $price, $percent, $defaultActive, $code, $test, $needPurchase, $applyQuantity, $link] = Utils::filterInput('name', 'startDate', 'endDate', 'multiplePerUsers', 'maxUses', 'impact', 'price', 'percent', 'defaultActive', 'code', 'test', 'needPurchase', 'applyQuantity', 'link');
@@ -257,7 +259,7 @@ class ShopDiscountsController extends AbstractController
     #[Link('/discounts/edit/:id', Link::GET, [], '/cmw-admin/shop')]
     private function shopDiscountsEdit(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.edit');
 
         $discount = ShopDiscountModel::getInstance()->getAllShopDiscountById($id);
 
@@ -269,7 +271,7 @@ class ShopDiscountsController extends AbstractController
     #[Link('/discounts/edit/:id', Link::POST, [], '/cmw-admin/shop')]
     private function shopDiscountsEditPost(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts.add');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.edit');
         $discountModel = ShopDiscountModel::getInstance();
 
         [$name, $startDate, $endDate, $multiplePerUsers, $maxUses, $impact, $price, $percent, $defaultActive, $code, $test, $needPurchase, $applyQuantity, $link] = Utils::filterInput('name', 'startDate', 'endDate', 'multiplePerUsers', 'maxUses', 'impact', 'price', 'percent', 'defaultActive', 'code', 'test', 'needPurchase', 'applyQuantity', 'link');
@@ -333,7 +335,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/discounts/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteShopDiscount(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.delete');
 
         ShopDiscountModel::getInstance()->deleteDiscount($id);
 
@@ -345,7 +347,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/discounts/stop/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminStopShopDiscount(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.edit');
 
         ShopDiscountModel::getInstance()->stopDiscount($id);
 
@@ -357,7 +359,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/discounts/start/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminStartShopDiscount(int $id): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.edit');
 
         ShopDiscountModel::getInstance()->startDiscount($id);
 
@@ -369,7 +371,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/discounts/report', Link::POST, [], '/cmw-admin/shop')]
     private function shopReportDiscountPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discount.edit');
 
         [$id, $startDate] = Utils::filterInput('id', 'startDate');
 
@@ -389,6 +391,8 @@ class ShopDiscountsController extends AbstractController
     #[Link('/giftCard', Link::GET, [], '/cmw-admin/shop')]
     private function shopGiftCard(): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.gift');
+
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $giftCard = ShopDiscountModel::getInstance()->getAllGiftCard();
@@ -409,7 +413,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/giftCard/generate', Link::POST, [], '/cmw-admin/shop')]
     private function shopGenerateGiftCard(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.gift.add');
 
         [$amount] = Utils::filterInput('amount');
 
@@ -427,6 +431,8 @@ class ShopDiscountsController extends AbstractController
     #[Link('/credits', Link::GET, [], '/cmw-admin/shop')]
     private function shopCredits(): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.credit');
+
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $credits = ShopDiscountModel::getInstance()->getAllCredits();
@@ -446,7 +452,7 @@ class ShopDiscountsController extends AbstractController
     #[NoReturn] #[Link('/credits/generate', Link::POST, [], '/cmw-admin/shop')]
     private function shopGenerateCredit(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.discounts');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.credit.add');
 
         [$name, $amount] = Utils::filterInput('name', 'amount');
 

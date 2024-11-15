@@ -33,6 +33,8 @@ class ShopShippingController extends AbstractController
     #[Link('/shipping', Link::GET, [], '/cmw-admin/shop')]
     private function shopShippingViews(): void
     {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping');
+
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $shippingMethods = $this->getShippingMethods();
         $configShippingMethods = $this->getGlobalVarShippingMethods();
@@ -52,7 +54,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/zone', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingAddZone(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
         [$name, $zone] = Utils::filterInput(  'name', 'zone');
 
@@ -79,7 +81,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/zone/edit/:zoneId', Link::POST, ['[0-9]+'], '/cmw-admin/shop')]
     private function shopShippingEditZone(int $zoneId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.edit');
 
         [$name, $zone] = Utils::filterInput(  'name', 'zone');
 
@@ -90,7 +92,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/zone/delete/:zoneId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function shopShippingDeleteZone(int $zoneId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.delete');
 
         $shippings = ShopShippingModel::getInstance()->getShopShippings();
         foreach ($shippings as $shipping) {
@@ -109,7 +111,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/depot', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingAddDepot(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
         [$name, $distance, $address , $city, $postalCode, $country] = Utils::filterInput(  'name', 'distance', 'address', 'city', 'postalCode', 'country');
 
@@ -125,7 +127,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/depot/edit/:depotId', Link::POST, ['[0-9]+'], '/cmw-admin/shop')]
     private function shopShippingEditDepot(int $depotId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.edit');
 
         [$name, $distance, $address , $city, $postalCode, $country] = Utils::filterInput(  'name', 'distance', 'address', 'city', 'postalCode', 'country');
 
@@ -140,7 +142,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/depot/delete/:depotId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function shopShippingDeleteDepot(int $depotId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.delete');
 
         $shippingMethods = ShopShippingModel::getInstance()->getShopShippings();
 
@@ -159,7 +161,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/delivery', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingAddDelivery(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
         [$name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
 
@@ -175,7 +177,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/delivery/edit/:shippingId', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingEditDelivery(int $shippingId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.edit');
 
         [$name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
 
@@ -199,7 +201,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/withdraw', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingAddWithdraw(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
         [$name, $price, $depotId, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'withdraw_name', 'withdraw_price', 'withdraw_depot', 'withdraw_zone', 'withdraw_method', 'withdraw_weight', 'withdraw_min_price', 'withdraw_max_price');
 
@@ -215,7 +217,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/withdraw/edit/:shippingId', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingEditWithdraw(int $shippingId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.settings');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.edit');
 
         [$name, $price, $depotId, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'withdraw_name', 'withdraw_price', 'withdraw_depot', 'withdraw_zone', 'withdraw_method', 'withdraw_weight', 'withdraw_min_price', 'withdraw_max_price');
 
@@ -239,7 +241,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/method/delete/:shippingId', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function shopShippingDeleteShipping(int $shippingId): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.delete');
 
         $commands = ShopHistoryOrdersModel::getInstance()->getInProgressOrders();
         foreach ($commands as $command) {
@@ -256,7 +258,7 @@ class ShopShippingController extends AbstractController
     #[NoReturn] #[Link('/shipping/method', Link::POST, [], '/cmw-admin/shop')]
     private function shopShippingGlobalSettingsPost(): void
     {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.');
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
         $settings = $_POST;
 
