@@ -97,7 +97,7 @@ $description = '';
                     <b><?= $item->getPriceFormatted() ?></b>
                 </td>
                 <td>
-                    <?= $item->getFormattedStock() ?>
+                    <?= $item->getAdminFormattedStock() ?>
                 </td>
                 <td class="text-center">
                     <?= $item->getQuantityInCart() ?>

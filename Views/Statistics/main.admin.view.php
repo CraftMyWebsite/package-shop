@@ -292,7 +292,7 @@ $description = 'Stats stats stats';
                         <b><?= $bestSeller->getItem()->getPriceFormatted() ?></b>
                     </td>
                     <td>
-                        <?= $bestSeller->getItem()->getFormattedStock() ?>
+                        <?= $bestSeller->getItem()->getAdminFormattedStock() ?>
                     </td>
                     <td class="text-center">
                         <?= $bestSeller->getItem()->getQuantityInCart() ?>

@@ -218,7 +218,7 @@ foreach ($itemVariants as $itemVariant) {
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 mt-2">
-                            <label>Stock : <small>(<?= $item->getFormattedStock() ?>)</small></label>
+                            <label>Stock : <small>(<?= $item->getAdminFormattedStock() ?>)</small></label>
                             <input value="<?= $item->getCurrentStock() ?>" type="number" class="input" name="shop_item_default_stock"
                                    placeholder="Pas de limites">
                         </div>

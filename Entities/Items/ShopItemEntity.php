@@ -146,7 +146,7 @@ class ShopItemEntity extends AbstractEntity
     /**
      * @return ?string
      */
-    public function getFormattedStock(): ?string
+    public function getAdminFormattedStock(): ?string
     {
         if (is_null($this->getDefaultStock())) {
             return "<b style='color: #0ab312'>Illimité</b>";
@@ -160,6 +160,30 @@ class ShopItemEntity extends AbstractEntity
                 return "<b style='color: red '><i class='fa-solid fa-circle-exclamation'></i> {$currentStock} / {$defaultStock}</b>";
             } else {
                 return "{$currentStock} / {$defaultStock}";
+            }
+        }
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getPublicFormattedStock(): ?string
+    {
+        if (is_null($this->getDefaultStock())) {
+            return "<b style='color: #0ab312'>En stock !</b>";
+        } else {
+            $currentStock = $this->itemCurrentStock;
+            $defaultStock = $this->itemDefaultStock;
+            $percentage = ($currentStock / $defaultStock) * 100;
+            $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
+
+            if ($currentStock === 0) {
+                return "<b style='color: red '>Indisponible !</b>";
+            }
+            if ($percentage <= $stockAlert) {
+                return "<b style='color: red '>{$currentStock}</b> bientôt épuisé !";
+            } else {
+                return "<b style='color: #0ab312'>{$currentStock}</b>";
             }
         }
     }

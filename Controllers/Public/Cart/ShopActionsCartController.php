@@ -217,6 +217,32 @@ class ShopActionsCartController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
+    #[NoReturn]
+    #[Link('/cart/aside/:itemId', Link::GET, [], '/shop')]
+    private function publicAsideItem(int $itemId): void
+    {
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        $this->handleSessionHealth($sessionId);
+
+        ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+
+        ShopCartItemModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
+
+        if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+            Flash::send(Alert::SUCCESS, 'Boutique', "Cet article est mis de côté (Vos promotions ont été réinitialisées)");
+        } else {
+            Flash::send(Alert::SUCCESS, 'Boutique', "Cet article est mis de côté");
+        }
+
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
+
+        Redirect::redirectPreviousRoute();
+    }
+
     /*
      * -----------------------------------------------------------------------------------------------*\
      * ------------------------------------------HANDELER--------------------------------------------*\

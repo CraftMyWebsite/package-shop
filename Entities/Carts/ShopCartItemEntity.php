@@ -422,4 +422,13 @@ class ShopCartItemEntity extends AbstractEntity
         $itemId = $this->item->getId();
         return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/remove/$itemId";
     }
+
+    /**
+     * @return string
+     */
+    public function getAsideLink(): string
+    {
+        $itemId = $this->item->getId();
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/aside/$itemId";
+    }
 }

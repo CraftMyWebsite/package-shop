@@ -86,7 +86,7 @@ $description = '';
                     <?= $item->getPriceFormatted() ?>
                 </td>
                 <td>
-                    <?= $item->getFormattedStock() ?>
+                    <?= $item->getAdminFormattedStock() ?>
                 </td>
                 <td class="text-center space-x-2">
                     <button data-modal-toggle="modal-push-<?= $item->getId() ?>" type="button">
