@@ -11,7 +11,15 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
 use CMW\Entity\Users\UserEntity;
+use CMW\Event\Shop\ShopCanceledOrderEvent;
+use CMW\Event\Shop\ShopEndOrderEvent;
+use CMW\Event\Shop\ShopFinishedOrderEvent;
+use CMW\Event\Shop\ShopNewOrderEvent;
+use CMW\Event\Shop\ShopRefundedCreditOrderEvent;
+use CMW\Event\Shop\ShopRefundedSelfOrderEvent;
+use CMW\Event\Shop\ShopSendOrderEvent;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Events\Emitter;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Mail\MailManager;
@@ -112,7 +120,11 @@ class ShopHistoryOrdersController extends AbstractController
                         }
                     }
                 }
-                // TODO Emitter endedOrder
+                try {
+                    Emitter::send(ShopEndOrderEvent::class, $order);
+                } catch (Exception) {
+                    error_log('Error while sending ShopEndOrderEvent');
+                }
                 // TODO Notify
                 Redirect::redirect('cmw-admin/shop/orders');
             } else {
@@ -264,6 +276,11 @@ class ShopHistoryOrdersController extends AbstractController
             ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
         }
 
+        try {
+            Emitter::send(ShopSendOrderEvent::class, $thisOrder);
+        } catch (Exception) {
+            error_log('Error while sending ShopSendOrderEvent');
+        }
 
         Redirect::redirectPreviousRoute();
     }
@@ -311,7 +328,11 @@ class ShopHistoryOrdersController extends AbstractController
             }
         }
 
-        // TODO Emitter endedOrder
+        try {
+            Emitter::send(ShopEndOrderEvent::class, $order);
+        } catch (Exception) {
+            error_log('Error while sending ShopEndOrderEvent');
+        }
 
         Redirect::redirect('cmw-admin/shop/orders');
     }
@@ -326,7 +347,11 @@ class ShopHistoryOrdersController extends AbstractController
 
         // TODO : Notifier l'utilisateur
 
-        // Eitter canceled
+        try {
+            Emitter::send(ShopCanceledOrderEvent::class, $orderId);
+        } catch (Exception) {
+            error_log('Error while sending ShopCanceledOrderEvent');
+        }
 
         Redirect::redirectPreviousRoute();
     }
@@ -442,7 +467,11 @@ class ShopHistoryOrdersController extends AbstractController
             Flash::send(Alert::ERROR, 'Avoir','Nous n\'avons pas réussi à envoyer le mail au client ! aucun avoir n\'a été créer');
         }
 
-        // Emitter refunded
+        try {
+            Emitter::send(ShopRefundedCreditOrderEvent::class, $orderId);
+        } catch (Exception) {
+            error_log('Error while sending ShopRefundedCreditOrderEvent');
+        }
 
         Redirect::redirect('cmw-admin/shop/orders');
     }
@@ -508,7 +537,11 @@ class ShopHistoryOrdersController extends AbstractController
 
         $this->notifyUser($cartContent, $user, $order, $paymentHistory);
 
-        // Eitter newOrder
+        try {
+            Emitter::send(ShopNewOrderEvent::class, $order);
+        } catch (Exception) {
+            error_log('Error while sending ShopNewOrderEvent');
+        }
 
         ShopCartModel::getInstance()->clearUserCart($user->getId());
         ShopCommandTunnelModel::getInstance()->clearTunnel($user->getId());
