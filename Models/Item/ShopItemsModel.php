@@ -614,4 +614,28 @@ ORDER BY csi.shop_item_price ASC;';
 
         $req->execute($data);
     }
+
+    /**
+     * @param string $search
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity|null
+     */
+    public function getItemByResearch(string $search): ?array
+    {
+        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE ( shop_item_name LIKE :search  OR shop_item_description LIKE :search1 OR shop_item_short_description LIKE :search2 ) AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC;';
+        $db = DatabaseManager::getInstance();
+
+        $res = $db->prepare($sql);
+
+        if (!$res->execute(array('search' => '%'.$search.'%', 'search1' => '%'.$search.'%', 'search2' => '%'.$search.'%'))) {
+            return [];
+        }
+
+        $toReturn = array();
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
+        }
+
+        return $toReturn;
+    }
 }

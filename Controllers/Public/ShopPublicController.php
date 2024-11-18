@@ -214,4 +214,28 @@ class ShopPublicController extends AbstractController
             }
         }
     }
+
+    #[Link('/search', Link::POST, ['.*?'], '/shop')]
+    private function publicShopResearch(): void
+    {
+        [$for] = Utils::filterInput('for');
+
+        $results = ShopItemsModel::getInstance()->getItemByResearch($for);
+
+        $imagesItem = ShopImagesModel::getInstance();
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+        $review = ShopReviewsModel::getInstance();
+        $categoryModel = ShopCategoriesModel::getInstance();
+
+        View::createPublicView('Shop', 'Main/search')
+            ->addVariableList(['for' => $for, 'results' => $results
+                , 'imagesItem' => $imagesItem
+                , 'defaultImage' => $defaultImage
+                , 'allowReviews' => $allowReviews
+                , 'review' => $review
+                , 'categoryModel' => $categoryModel])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
+    }
 }
