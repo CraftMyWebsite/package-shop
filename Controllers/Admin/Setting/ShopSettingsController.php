@@ -69,11 +69,12 @@ class ShopSettingsController extends AbstractController
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
         $autoValidateVirtual = ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual');
+        $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $globalConfigMethod = ShopItemsController::getInstance()->getGlobalConfigMethods();
 
         View::createAdminView('Shop', 'Settings/settings')
-            ->addVariableList(['currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
+            ->addVariableList(['showPublicStock' => $showPublicStock, 'currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
             ->view();
     }
 
@@ -89,7 +90,7 @@ class ShopSettingsController extends AbstractController
             }
         }
 
-        [$currency, $showAfter, $allowReviews, $stockAlert, $maintenance, $maintenanceMessage, $autoValidateVirtual] = Utils::filterInput('currency', 'showAfter', 'allowReviews', 'stockAlert', 'maintenance', 'maintenanceMessage', 'autoValidateVirtual');
+        [$currency, $showAfter, $allowReviews, $stockAlert, $maintenance, $maintenanceMessage, $autoValidateVirtual, $showPublicStock] = Utils::filterInput('currency', 'showAfter', 'allowReviews', 'stockAlert', 'maintenance', 'maintenanceMessage', 'autoValidateVirtual', 'showPublicStock');
         $symbol = ShopSettingsController::$availableCurrencies[$currency]['symbol'] ?? '€';
         ShopSettingsModel::getInstance()->updateSetting('currency', $currency);
         ShopSettingsModel::getInstance()->updateSetting('symbol', $symbol);
@@ -99,6 +100,7 @@ class ShopSettingsController extends AbstractController
         ShopSettingsModel::getInstance()->updateSetting('maintenance', $maintenance ?? 0);
         ShopSettingsModel::getInstance()->updateSetting('maintenanceMessage', $maintenanceMessage);
         ShopSettingsModel::getInstance()->updateSetting('autoValidateVirtual', $autoValidateVirtual ?? 0);
+        ShopSettingsModel::getInstance()->updateSetting('showPublicStock', $showPublicStock ?? 0);
 
         Flash::send(Alert::SUCCESS, 'Boutique', 'Configuration appliqué !');
         Redirect::redirectPreviousRoute();

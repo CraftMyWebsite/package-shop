@@ -124,6 +124,7 @@ class ShopPublicController extends AbstractController
         } else {
             $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
         }
+        $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
@@ -135,7 +136,7 @@ class ShopPublicController extends AbstractController
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         $view = new View('Shop', 'Main/item');
-        $view->addVariableList(['otherItemsInThisCat' => $otherItemsInThisCat, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews]);
+        $view->addVariableList(['showPublicStock' => $showPublicStock, 'otherItemsInThisCat' => $otherItemsInThisCat, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }

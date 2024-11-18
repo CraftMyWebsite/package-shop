@@ -51,6 +51,7 @@ class ShopCartController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemsVariantes = ShopCartVariantesModel::getInstance();
         $appliedDiscounts = ShopCartDiscountModel::getInstance()->getCartDiscountByUserId($userId, $sessionId);
+        $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
 
         $this->handleSessionHealth($sessionId);
 
@@ -87,7 +88,7 @@ class ShopCartController extends AbstractController
         }
 
         $view = new View('Shop', 'Cart/cart');
-        $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'asideCartContent' => $asideCartContent, 'itemsVariantes' => $itemsVariantes, 'appliedDiscounts' => $appliedDiscounts]);
+        $view->addVariableList(['showPublicStock' => $showPublicStock, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'asideCartContent' => $asideCartContent, 'itemsVariantes' => $itemsVariantes, 'appliedDiscounts' => $appliedDiscounts]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }

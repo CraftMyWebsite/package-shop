@@ -14,6 +14,7 @@ $description = '';
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $maintenance */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $maintenanceMessage */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $autoValidateVirtual */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $showPublicStock */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var CMW\Interface\Shop\IGlobalConfig[] $globalConfigMethod */
@@ -79,7 +80,11 @@ $description = '';
                 <div class="toggle-slider"></div>
                 <p class="toggle-label" title="Si cette option est désactivé, les paniers qui ne contienne que des articles virtuel sont taité automatiquement comm terminé et validé, sinon, vous devrez les valider vous même avant que les action lié à l'article ne s'applique. ex (Une carte cadeau ne sera pas créer tant que vous n'avez pas validé vous même la commande)">Validation automatique des articles virtuel</p>
             </label>
-
+            <label class="toggle">
+                <input type="checkbox" class="toggle-input" id="showPublicStock" name="showPublicStock" <?= $showPublicStock ? 'checked' : '' ?>>
+                <div class="toggle-slider"></div>
+                <p class="toggle-label">Afficher les stocks publiquement</p>
+            </label>
             <label for="stockAlert">Alerte stock :</label>
             <div class="input-group">
                 <i class="fa-solid fa-percent"></i>
@@ -87,9 +92,6 @@ $description = '';
             </div>
             <small>Recevez une alerte quand les stocks tombent en dessous de XX pourcents</small>
 
-            <p>Todo :</p>
-            <label for="itemPerPage">Articles par page :</label>
-            <input type="number" class="input" id="itemPerPage" name="itemPerPage" value="">
         </div>
     </div>
 </div>
