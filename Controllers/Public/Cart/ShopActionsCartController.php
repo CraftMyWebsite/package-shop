@@ -134,8 +134,8 @@ class ShopActionsCartController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/cart/increase_quantity/:itemId', Link::GET, [], '/shop')]
-    private function publicAddQuantity(int $itemId): void
+    #[Link('/cart/increase_quantity/:itemId/:cartItemId', Link::GET, [], '/shop')]
+    private function publicAddQuantity(int $itemId, int $cartItemId): void
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -147,7 +147,7 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleTotalCartDiscount($userId , $sessionId);
 
-        ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+        ShopCartItemModel::getInstance()->increaseQuantityByCartItemId($cartItemId, true);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -157,8 +157,8 @@ class ShopActionsCartController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/cart/decrease_quantity/:itemId', Link::GET, [], '/shop')]
-    private function publicRemoveQuantity(int $itemId): void
+    #[Link('/cart/decrease_quantity/:itemId/:cartItemId', Link::GET, [], '/shop')]
+    private function publicRemoveQuantity(int $itemId, int $cartItemId): void
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
@@ -167,10 +167,10 @@ class ShopActionsCartController extends AbstractController
 
         $this->handleTotalCartDiscount($userId , $sessionId);
 
-        $currentQuantity = ShopCartItemModel::getInstance()->getQuantity($itemId, $userId, $sessionId);
+        $currentQuantity = ShopCartItemModel::getInstance()->getQuantityByCartItemId($cartItemId);
 
         if ($currentQuantity === 1) {
-            ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+            ShopCartItemModel::getInstance()->removeItemByCartItemId($cartItemId);
             if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
                 Flash::send(Alert::SUCCESS, 'Boutique', 'Article ' . ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getName() . ' enlevé de votre panier (Vos promotions ont été réinitialisées)');
             } else {
@@ -184,7 +184,7 @@ class ShopActionsCartController extends AbstractController
             Redirect::redirectPreviousRoute();
         }
 
-        ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, false);
+        ShopCartItemModel::getInstance()->increaseQuantityByCartItemId($cartItemId, false);
 
         if (!is_null($userId)) {
             ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
@@ -194,15 +194,15 @@ class ShopActionsCartController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/cart/remove/:itemId', Link::GET, [], '/shop')]
-    private function publicRemoveItem(int $itemId): void
+    #[Link('/cart/remove/:carItemId', Link::GET, [], '/shop')]
+    private function publicRemoveItem(int $carItemId): void
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
 
-        ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+        ShopCartItemModel::getInstance()->removeItemByCartItemId($carItemId);
 
         if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
             Flash::send(Alert::SUCCESS, 'Boutique', "Cet article n'est plus dans votre panier (Vos promotions ont été réinitialisées)");
@@ -218,17 +218,53 @@ class ShopActionsCartController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/cart/aside/:itemId', Link::GET, [], '/shop')]
-    private function publicAsideItem(int $itemId): void
+    #[Link('/cart/aside/:cartItemId', Link::GET, [], '/shop')]
+    private function publicAsideItem(int $cartItemId): void
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
 
         $this->handleSessionHealth($sessionId);
 
-        ShopCartItemModel::getInstance()->removeItem($itemId, $userId, $sessionId);
+        ShopCartItemModel::getInstance()->switchCartToAside($cartItemId);
 
-        ShopCartItemModel::getInstance()->addToAsideCart($itemId, $userId, $sessionId);
+        if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
+            Flash::send(Alert::SUCCESS, 'Boutique', "Cet article est mis de côté (Vos promotions ont été réinitialisées)");
+        } else {
+            Flash::send(Alert::SUCCESS, 'Boutique', "Cet article est mis de côté");
+        }
+
+        if (!is_null($userId)) {
+            ShopCommandTunnelModel::getInstance()->clearTunnel($userId);
+        }
+
+        Redirect::redirectPreviousRoute();
+    }
+
+    #[NoReturn]
+    #[Link('/cart/unAside/:cartItemId/:itemId', Link::GET, [], '/shop')]
+    private function publicUnAsideItem(int $cartItemId, int $itemId): void
+    {
+        $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
+        $sessionId = session_id();
+
+        $thisCart = ShopCartItemModel::getInstance()->getShopCartsItemsById($cartItemId);
+
+        $this->handleSessionHealth($sessionId);
+
+        if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId) && empty(ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($thisCart->getId()))) {
+            Flash::send(Alert::INFO, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
+            $itemUrl = ShopItemsModel::getInstance()->getShopItemsById($itemId)?->getItemLink();
+            ShopCartItemModel::getInstance()->removeItemByCartItemId($cartItemId);
+            header('Location:' . $itemUrl);
+            die();
+        }
+
+        $this->handlePriceType($userId, $sessionId, $thisCart->getItem()->getId());
+
+        $this->handleAddToCartVerification($itemId, $userId, $sessionId, $thisCart->getQuantity());
+
+        ShopCartItemModel::getInstance()->switchAsideToCartByCartItemId($cartItemId);
 
         if ($this->handleForceClearAllDiscount($userId, $sessionId)) {
             Flash::send(Alert::SUCCESS, 'Boutique', "Cet article est mis de côté (Vos promotions ont été réinitialisées)");
@@ -271,10 +307,45 @@ class ShopActionsCartController extends AbstractController
                 Flash::send(Alert::SUCCESS, 'Boutique', 'Nouvel article ajouté au panier !');
             }
         } else {
-            // TODO : Si l'article est une variante il faut verifier que l'utilisateur à choisis la même variante, si ce n'est pas le cas il faut ajouter l'article en plus !
-            ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
-            Flash::send(Alert::SUCCESS, 'Boutique',
-                'Vous aviez déjà cet article, nous avons rajouté une quantité pour vous');
+            if (!empty($selectedVariants)) {
+                $itemsVariantes = ShopCartVariantesModel::getInstance();
+                $cartItems = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+
+                $foundMatch = false;
+
+                foreach ($cartItems as $cartItem) {
+                    $existingVariants = [];
+
+                    foreach ($itemsVariantes->getShopItemVariantValueByCartId($cartItem->getId()) as $itemVariant) {
+                        $existingVariants[] = (string)$itemVariant->getVariantValue()->getId();
+                    }
+
+                    $selectedVariants = array_map('strval', $selectedVariants);
+
+                    sort($selectedVariants);
+                    sort($existingVariants);
+
+                    if ($selectedVariants === $existingVariants) {
+                        ShopCartItemModel::getInstance()->increaseQuantityByCartItemId($cartItem->getId(), true);
+                        Flash::send(Alert::SUCCESS, 'Boutique', 'Vous aviez déjà cet article avec les mêmes variantes, nous avons rajouté une quantité pour vous');
+                        $foundMatch = true;
+                        break;
+                    }
+                }
+
+                if (!$foundMatch) {
+                    $cart = ShopCartItemModel::getInstance()->addToCart($itemId, $userId, $sessionId, $quantity);
+                    foreach ($selectedVariants as $selectedVariant) {
+                        ShopCartVariantesModel::getInstance()->setVariantToItemInCart($cart->getId(), $selectedVariant);
+                    }
+                    Flash::send(Alert::SUCCESS, 'Boutique', 'Vous aviez déjà cet article avec des variantes différentes, nous avons quand même ajouté l\'article');
+                }
+            }
+            else {
+                ShopCartItemModel::getInstance()->increaseQuantity($itemId, $userId, $sessionId, true);
+                Flash::send(Alert::SUCCESS, 'Boutique',
+                    'Vous aviez déjà cet article, nous avons rajouté une quantité pour vous');
+            }
         }
     }
 

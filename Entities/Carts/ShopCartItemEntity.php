@@ -402,7 +402,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getIncreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/increase_quantity/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/increase_quantity/$itemId/$this->id";
     }
 
     /**
@@ -411,7 +411,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getDecreaseQuantityLink(): string
     {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/decrease_quantity/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/decrease_quantity/$itemId/$this->id";
     }
 
     /**
@@ -419,8 +419,7 @@ class ShopCartItemEntity extends AbstractEntity
      */
     public function getRemoveLink(): string
     {
-        $itemId = $this->item->getId();
-        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/remove/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/remove/$this->id";
     }
 
     /**
@@ -428,7 +427,15 @@ class ShopCartItemEntity extends AbstractEntity
      */
     public function getAsideLink(): string
     {
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/aside/$this->id";
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnAsideLink(): string
+    {
         $itemId = $this->item->getId();
-        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/aside/$itemId";
+        return Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . "shop/cart/unAside/$this->id/$itemId";
     }
 }

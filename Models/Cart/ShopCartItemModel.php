@@ -213,9 +213,20 @@ class ShopCartItemModel extends AbstractModel
             $cartId = null;
         }
 
-        $data = ['shop_item_id' => $itemId, 'shop_cart_id' => $cartId];
+        $data = ['shop_cart_id' => $cartId, 'shop_item_id' => $itemId];
 
         $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
+
+        $db = DatabaseManager::getInstance();
+
+        return $db->prepare($sql)->execute($data);
+    }
+
+    public function removeItemByCartItemId(int $carItemId): bool
+    {
+        $data = ['shop_cart_item_id' => $carItemId];
+
+        $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_cart_item_id = :shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
 
@@ -337,6 +348,31 @@ class ShopCartItemModel extends AbstractModel
         $db->prepare($sql)->execute($data);
     }
 
+    public function switchAsideToCartByCartItemId(int $cartItemId): void
+    {
+
+        $data = [
+            'shop_cart_item_id' => $cartItemId,
+        ];
+
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 0 WHERE shop_cart_item_id = :shop_cart_item_id';
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
+    }
+
+    public function switchCartToAside(int $cartId): void
+    {
+        $data = [
+            'shop_cart_item_id' => $cartId,
+        ];
+
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_aside = 1 WHERE shop_cart_item_id = :shop_cart_item_id';
+
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute($data);
+    }
+
     public function isAlreadyAside(int $itemId, ?int $userId, string $sessionId): bool
     {
         if (ShopCartModel::getInstance()->cartExist($userId, $sessionId)) {
@@ -405,6 +441,34 @@ class ShopCartItemModel extends AbstractModel
     }
 
     /**
+     * @param int $carItemId
+     * @param int|null $userId
+     * @param string $sessionId
+     * @return int
+     * @desc Get the current quantity of item in cart
+     */
+    public function getQuantityByCartItemId(int $carItemId): int
+    {
+        $data = [
+            'shop_cart_item_id' => $carItemId,
+        ];
+
+        $sql = 'SELECT shop_cart_item_quantity FROM cmw_shops_cart_items WHERE shop_cart_item_id = :shop_cart_item_id';
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+
+        if (!$req->execute($data)) {
+            return 0;
+        }
+        $res = $req->fetch();
+        if (!$res) {
+            return 0;
+        }
+        return $res['shop_cart_item_quantity'] ?? 0;
+    }
+
+    /**
      * @param int $itemId
      * @param int|null $userId
      * @param string $sessionId
@@ -435,6 +499,36 @@ class ShopCartItemModel extends AbstractModel
         ];
 
         $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity WHERE shop_item_id = :shop_item_id AND shop_cart_id = :shop_cart_id';
+
+        $db = DatabaseManager::getInstance();
+        $req = $db->prepare($sql);
+        $req->execute($data);
+    }
+
+    /**
+     * @param int $carItemId
+     * @param int|null $userId
+     * @param string $sessionId
+     * @param bool $increase
+     * @return void
+     * @desc increase the quantity of item
+     */
+    public function increaseQuantityByCartItemId(int $carItemId, bool $increase): void
+    {
+        $quantity = $this->getQuantityByCartItemId($carItemId);
+
+        if ($increase) {
+            ++$quantity;
+        } else {
+            --$quantity;
+        }
+
+        $data = [
+            'shop_cart_item_quantity' => $quantity,
+            'shop_cart_item_id' => $carItemId,
+        ];
+
+        $sql = 'UPDATE cmw_shops_cart_items SET shop_cart_item_quantity = :shop_cart_item_quantity WHERE shop_cart_item_id = :shop_cart_item_id';
 
         $db = DatabaseManager::getInstance();
         $req = $db->prepare($sql);
