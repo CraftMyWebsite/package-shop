@@ -2,6 +2,8 @@
 
 namespace CMW\Controller\Shop\Admin\HistoryOrder;
 
+require_once 'App/Package/Shop/Resources/TCPDF/tcpdf.php';
+
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
@@ -53,6 +55,7 @@ use CMW\Utils\Utils;
 use CMW\Utils\Website;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
+use TCPDF;
 
 /**
  * Class: @ShopHistoryOrdersController
@@ -622,7 +625,7 @@ class ShopHistoryOrdersController extends AbstractController
         $orderNumber = $order->getOrderNumber();
         $orderDate = $order->getCreated();
         $paymentMethod = $paymentHistory->getName();
-        $historyLink = Website::getUrl() . '/shop/history';
+        $historyLink = Website::getUrl() . 'shop/history';
 
         $priceType = '';
         $itemsHtml = '';
@@ -653,6 +656,11 @@ class ShopHistoryOrdersController extends AbstractController
         } else {
             $total = $symbol . $order->getOrderTotal();
         }
+
+        $invoiceOrder = $this->generatePDF($orderNumber, $orderDate, $paymentMethod, $total, $cartContent);
+
+        $invoiceLink = Website::getUrl() . 'shop/orders/download/' . $invoiceOrder;
+        //TODO stocker l'invoice link dans une table !
 
         $htmlTemplate = <<<HTML
             <!DOCTYPE html>
@@ -718,6 +726,8 @@ class ShopHistoryOrdersController extends AbstractController
                         <br>
                         <span class="summary-title">Méthode de paiement :</span> %PAYMENT_METHOD%
                         <a href="%HISTORY_LINK%"><p>Consultez mes commandes sur %WEBSITENAME%</p></a>
+                        <br>
+                        <a href="%INVOICE_LINK%">Télécharger votre facture</a>
                     </div>
                 </div>
                 <div class="footer">
@@ -728,8 +738,8 @@ class ShopHistoryOrdersController extends AbstractController
             </html>
             HTML;
 
-        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%'],
-            [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink], $htmlTemplate);
+        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_LINK%'],
+            [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceLink], $htmlTemplate);
         $object = $websiteName . ' - Récapitulatif de Commande';
 
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
@@ -738,4 +748,122 @@ class ShopHistoryOrdersController extends AbstractController
             Flash::send(Alert::WARNING, 'Commande','Nous n\'avons pas réussi à vous envoyer le mail de recap !');
         }
     }
+
+    /**
+     *
+     * @param string $orderNumber
+     * @param string $orderDate
+     * @param string $paymentMethod
+     * @param string $total
+     * @param array $cartContent
+     * @return string le chemin de telechargement
+     * @throws \Random\RandomException
+     */
+    private function generatePDF(string $orderNumber, string $orderDate, string $paymentMethod, string $total, array $cartContent): string
+    {
+        $websiteName = Website::getWebsiteName();
+        $websiteUrl = Website::getUrl();
+
+        // TODO : option admin :
+        $websiteLogo = 'https://dev.voyza.fr/Public/Themes/Wipe/Config/Default/Img/logo.webp';
+
+        $pdfDir = EnvManager::getInstance()->getValue('DIR') . 'Public/Uploads/Shop/Invoices';
+        if (!file_exists($pdfDir) && !mkdir($pdfDir, 0777, true) && !is_dir($pdfDir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $pdfDir));
+        }
+
+        $randomNumber = $this->generateRandomString();
+
+        $pdfPath = $pdfDir . "/facture_" . $randomNumber . "_" . $orderNumber . ".pdf";
+
+        $pdf = new TCPDF();
+        $pdf->SetCreator($websiteName);
+        $pdf->SetAuthor($websiteName);
+        $pdf->SetTitle("Facture $orderNumber");
+        $pdf->AddPage();
+        $pdf->SetFont('helvetica', '', 13);
+
+        $pdf->Ln(10);
+        if (!is_null($websiteLogo)) {
+            $pdf->Image($websiteLogo, 10, 20, 50);
+            $pdf->Ln(20);
+        }
+
+        $pdf->Write(0, "Facture de commande\n\n");
+        $pdf->Write(0, "Numéro de commande : $orderNumber\nDate : $orderDate\n\n");
+
+        // Largeur totale disponible
+        $totalWidth = 190;
+
+        // Largeurs des colonnes
+        $colWidths = [
+            'Nom' => 100,       // 100 mm pour le nom
+            'Quantité' => 40,   // 40 mm pour la quantité
+            'Prix' => 50,       // 50 mm pour le prix
+        ];
+
+        // En-tête du tableau
+        $pdf->SetFont('helvetica', 'B', 13);
+        $pdf->Cell($colWidths['Nom'], 10, 'Nom', 1, 0, 'C');
+        $pdf->Cell($colWidths['Quantité'], 10, 'Quantité', 1, 0, 'C');
+        $pdf->Cell($colWidths['Prix'], 10, 'Prix', 1, 1, 'C');
+
+        // Contenu du tableau
+        $pdf->SetFont('helvetica', '', 12);
+        foreach ($cartContent as $cartItem) {
+            $itemName = $cartItem->getItem()->getName();
+            $itemQuantity = $cartItem->getQuantity();
+            $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
+
+            $pdf->Cell($colWidths['Nom'], 10, $itemName, 1, 0, 'L');
+            $pdf->Cell($colWidths['Quantité'], 10, $itemQuantity, 1, 0, 'C');
+            $pdf->Cell($colWidths['Prix'], 10, $itemPrice, 1, 1, 'R');
+        }
+
+        $pdf->Ln(10);
+        $pdf->Write(0, "Total : $total\nMéthode de paiement : $paymentMethod\n");
+        $pdf->Output($pdfPath, 'F'); // Sauvegarde du PDF sur le serveur
+
+        return "facture_" . $randomNumber . "_" . $orderNumber;
+    }
+
+    /**
+     * @throws \Random\RandomException
+     */
+    function generateRandomString($minLength = 20, $maxLength = 30): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $length = random_int($minLength, $maxLength); // Longueur aléatoire entre $minLength et $maxLength
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+
+    //TODO move into public controller
+    #[Link('/orders/download/:order', Link::GET, [], '/shop')]
+    private function shopOrdersDownload(string $order): void
+    {
+        $pdfDir = EnvManager::getInstance()->getValue('DIR') . 'Public/Uploads/Shop/Invoices';
+        $pdfPath = $pdfDir . "/$order.pdf";
+
+        if (!file_exists($pdfPath)) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Facture introuvable']);
+            exit;
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="invoice_' . $order . '.pdf"');
+        header('Content-Length: ' . filesize($pdfPath));
+
+        readfile($pdfPath);
+        exit;
+    }
+
 }
