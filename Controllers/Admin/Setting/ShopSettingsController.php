@@ -9,11 +9,13 @@ use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Manager\Security\SecurityManager;
 use CMW\Manager\Views\View;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
@@ -106,26 +108,54 @@ class ShopSettingsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[NoReturn] #[Link('/settings/global', Link::POST, [], '/cmw-admin/shop')]
+    #[NoReturn]
+    #[Link('/settings/global', Link::POST, [], '/cmw-admin/shop', secure: true)]
     private function shopVirtualItemGlobalSettingsPost(): void
     {
+        header('Content-Type: application/json');
+
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config.edit');
 
-        $settings = $_POST;
+        try {
+            $newCsrfTokenId = bin2hex(random_bytes(8));
+            $newCsrfToken = SecurityManager::getInstance()->getCSRFToken($newCsrfTokenId);
 
-        unset($settings['security-csrf-token'], $settings['security-csrf-token-id'], $settings['honeyInput']);
+            $settings = $_POST;
 
-        foreach ($settings as $key => $value) {
-            $key = FilterManager::filterData($key, 50);
-            $value = FilterManager::filterData($value, 255);
+            unset($settings['security-csrf-token'], $settings['security-csrf-token-id'], $settings['honeyInput']);
 
-            if (!ShopSettingsModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
-                Flash::send(Alert::ERROR, 'Erreur', "Impossible de mettre à jour le paramètre $key");
+            $errors = [];
+            $updatedSettings = [];
+
+            foreach ($settings as $key => $value) {
+                $key = FilterManager::filterData($key, 50);
+                $value = FilterManager::filterData($value, 255);
+
+                if (!ShopSettingsModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
+                    $errors[] = "Impossible de mettre à jour le paramètre $key";
+                } else {
+                    $updatedSettings[$key] = $value;
+                }
             }
-        }
 
-        Flash::send(Alert::SUCCESS, 'Succès', 'Les paramètres ont été mis à jour');
-        Redirect::redirectPreviousRoute();
+            // Construire la réponse JSON
+            $response = [
+                'success' => empty($errors),
+                'errors' => $errors,
+                'updated_settings' => $updatedSettings,
+                'new_csrf_token' => $newCsrfToken,
+                'new_csrf_token_id' => $newCsrfTokenId,
+            ];
+
+            echo json_encode($response, JSON_THROW_ON_ERROR);
+            exit;
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], JSON_THROW_ON_ERROR);
+            exit;
+        }
     }
 
     #[NoReturn] #[Link('/settings/reset_default_image', Link::GET, [], '/cmw-admin/shop')]
