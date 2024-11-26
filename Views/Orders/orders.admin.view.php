@@ -57,6 +57,11 @@ $description = '';
                         <?= '(' . $inProgressOrder->getPaymentMethod()->getFeeFormatted() . ')' ?></td>
                     <td><?= $inProgressOrder->getCreated() ?></td>
                     <td class="text-center">
+                        <?php if ($inProgressOrder->getInvoiceLink()): ?>
+                        <a class="mr-2" href="<?= $inProgressOrder->getInvoiceLink() ?>">
+                            <i class="text-info fa-solid fa-file-invoice"></i>
+                        </a>
+                        <?php endif; ?>
                         <a href="orders/manage/<?= $inProgressOrder->getId() ?>">
                             <i class="text-success fa-solid fa-wand-magic-sparkles"></i>
                         </a>
@@ -93,6 +98,11 @@ $description = '';
                     <td><?= $finishedOrder->getAdminStatus() ?></td>
                     <td><?= $finishedOrder->getCreated() ?></td>
                     <td class="text-center">
+                        <?php if ($finishedOrder->getInvoiceLink()): ?>
+                            <a class="mr-2" href="<?= $finishedOrder->getInvoiceLink() ?>">
+                                <i class="text-info fa-solid fa-file-invoice"></i>
+                            </a>
+                        <?php endif; ?>
                         <a href="orders/view/<?= $finishedOrder->getId() ?>">
                             <i class="text-primary fa-solid fa-eye"></i>
                         </a>
@@ -129,6 +139,11 @@ $description = '';
                     <td><?= $errorOrder->getAdminStatus() ?></td>
                     <td><?= $errorOrder->getCreated() ?></td>
                     <td class="text-center">
+                        <?php if ($errorOrder->getInvoiceLink()): ?>
+                            <a class="mr-2" href="<?= $errorOrder->getInvoiceLink() ?>">
+                                <i class="text-info fa-solid fa-file-invoice"></i>
+                            </a>
+                        <?php endif; ?>
                         <a href="orders/view/<?= $errorOrder->getId() ?>">
                             <i class="text-primary fa-solid fa-eye"></i>
                         </a>

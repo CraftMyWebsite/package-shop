@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Manager\Package\AbstractEntity;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersInvoiceModel;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Users\UserEntity;
@@ -271,5 +272,14 @@ class ShopHistoryOrdersEntity extends AbstractEntity
         } else {
             return $symbol . $formattedPrice;
         }
+    }
+
+    public function getInvoiceLink(): ?string
+    {
+        $invoiceModel = ShopHistoryOrdersInvoiceModel::getInstance()->getInvoiceByHistoryOrderId($this->historyOrderId);
+        if (!is_null($invoiceModel)) {
+            return $invoiceModel->getInvoiceLink();
+        }
+        return null;
     }
 }

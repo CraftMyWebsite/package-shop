@@ -512,6 +512,18 @@ CREATE TABLE IF NOT EXISTS cmw_shop_history_order_afterSales_message
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS cmw_shop_history_order_invoice
+(
+    shop_history_order_invoice_id           INT AUTO_INCREMENT PRIMARY KEY,
+    shop_history_order_id                   INT          NOT NULL UNIQUE,
+    shop_history_order_invoice_link         VARCHAR(255) NULL,
+    shop_history_order_invoice_created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cmw_shop_history_order_invoice_history_order_id FOREIGN KEY (shop_history_order_id)
+    REFERENCES cmw_shop_history_order (shop_history_order_id) ON UPDATE CASCADE ON DELETE CASCADE
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS cmw_shops_command_tunnel
 (
     shop_command_tunnel_id         INT AUTO_INCREMENT PRIMARY KEY,

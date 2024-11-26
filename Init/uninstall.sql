@@ -40,3 +40,4 @@ DROP TABLE IF EXISTS `cmw_shop_history_order_items_variantes`;
 DROP TABLE IF EXISTS `cmw_shop_history_order_payment`;
 DROP TABLE IF EXISTS `cmw_shop_history_order_shipping`;
 DROP TABLE IF EXISTS `cmw_shop_history_order_user_address`;
+DROP TABLE IF EXISTS `cmw_shop_history_order_invoice`;

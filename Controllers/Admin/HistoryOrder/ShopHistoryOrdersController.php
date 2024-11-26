@@ -39,6 +39,7 @@ use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Discount\ShopDiscountModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersDiscountModel;
+use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersInvoiceModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsVariantesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
@@ -538,7 +539,12 @@ class ShopHistoryOrdersController extends AbstractController
 
         NotificationManager::notify('Nouvelle commande', $user->getPseudo() . ' viens de passer une commande.', 'shop/orders');
 
-        $this->notifyUser($cartContent, $user, $order, $paymentHistory);
+        $varName = 'invoice';
+        if (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') === "1") {
+            $invoiceLink = $this->createPDF($cartContent, $order, $paymentHistory);
+        }
+
+        $this->notifyUser($cartContent, $user, $order, $paymentHistory, $invoiceLink ?? null);
 
         try {
             Emitter::send(ShopNewOrderEvent::class, $order);
@@ -619,7 +625,7 @@ class ShopHistoryOrdersController extends AbstractController
     /**
      * @param ShopCartItemEntity[] $cartContent
      */
-    private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory): void
+    private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory, ?string $invoiceLink): void
     {
         $websiteName = Website::getWebsiteName();
         $orderNumber = $order->getOrderNumber();
@@ -657,10 +663,7 @@ class ShopHistoryOrdersController extends AbstractController
             $total = $symbol . $order->getOrderTotal();
         }
 
-        $invoiceOrder = $this->generatePDF($orderNumber, $orderDate, $paymentMethod, $total, $cartContent);
-
-        $invoiceLink = Website::getUrl() . 'shop/orders/download/' . $invoiceOrder;
-        //TODO stocker l'invoice link dans une table !
+        //TODO : rendre ceci customizable
 
         $htmlTemplate = <<<HTML
             <!DOCTYPE html>
@@ -726,8 +729,7 @@ class ShopHistoryOrdersController extends AbstractController
                         <br>
                         <span class="summary-title">Méthode de paiement :</span> %PAYMENT_METHOD%
                         <a href="%HISTORY_LINK%"><p>Consultez mes commandes sur %WEBSITENAME%</p></a>
-                        <br>
-                        <a href="%INVOICE_LINK%">Télécharger votre facture</a>
+                        %INVOICE_SECTION%
                     </div>
                 </div>
                 <div class="footer">
@@ -737,9 +739,9 @@ class ShopHistoryOrdersController extends AbstractController
             </body>
             </html>
             HTML;
-
-        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_LINK%'],
-            [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceLink], $htmlTemplate);
+        $invoiceSection = $invoiceLink !== null ? '<br><a href="' . $invoiceLink . '">Télécharger votre facture</a>' : '';
+        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_SECTION%'],
+            [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceSection], $htmlTemplate);
         $object = $websiteName . ' - Récapitulatif de Commande';
 
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
@@ -750,22 +752,83 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     /**
+     * @throws \Random\RandomException
+     */
+    private function createPDF(array $cartContent, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory) : string
+    {
+        $paymentMethod = $paymentHistory->getName();
+        $priceType = '';
+        foreach ($cartContent as $cartItem) {
+            $priceType = $cartItem->getItem()->getPriceType();
+        }
+
+        if ($priceType == 'money') {
+            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        } else {
+            $symbol = ' ' . ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name() . ' ';
+        }
+        $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
+        if ($symbolIsAfter) {
+            $total = $order->getOrderTotal() . $symbol;
+        } else {
+            $total = $symbol . $order->getOrderTotal();
+        }
+
+        $invoiceOrder = $this->generatePDF($order, $paymentMethod, $total, $cartContent);
+        $invoiceLink = Website::getUrl() . 'shop/orders/download/' . $invoiceOrder;
+        ShopHistoryOrdersInvoiceModel::getInstance()->addInvoice($order->getId(), $invoiceLink);
+
+        return $invoiceLink;
+    }
+
+    /**
      *
      * @param string $orderNumber
      * @param string $orderDate
      * @param string $paymentMethod
      * @param string $total
-     * @param array $cartContent
+     * @param ShopCartItemEntity[] $cartContent
      * @return string le chemin de telechargement
      * @throws \Random\RandomException
      */
-    private function generatePDF(string $orderNumber, string $orderDate, string $paymentMethod, string $total, array $cartContent): string
+    private function generatePDF(ShopHistoryOrdersEntity $order, string $paymentMethod, string $total, array $cartContent): string
     {
+        $addressUser = $order->getUserAddressMethod()?->getUserFirstName() . " " . $order->getUserAddressMethod()?->getUserLastName();
+        $address = $order->getUserAddressMethod()?->getUserLine1();
+        $addressPcCity = $order->getUserAddressMethod()?->getUserPostalCode() . " " . $order->getUserAddressMethod()?->getUserCity();
+        $addressCountry = $order->getUserAddressMethod()?->getUserFormattedCountry();
+        $orderNumber = $order->getOrderNumber();
+        $orderDate = $order->getCreated();
         $websiteName = Website::getWebsiteName();
-        $websiteUrl = Website::getUrl();
+        $paymentFee = $order->getPaymentMethod()?->getFeeFormatted() ?? 'N/A';
+        $shippingFee = $order->getShippingMethod()?->getPriceFormatted() ?? 'N/A';
+        $shippingName = $order->getShippingMethod()?->getName() ?? 'N/A';
+        $cartTotalDiscount = $order->getAppliedCartDiscountTotalPriceFormatted() ? '- ' . $order->getAppliedCartDiscountTotalPriceFormatted() : '';
 
-        // TODO : option admin :
-        $websiteLogo = 'https://dev.voyza.fr/Public/Themes/Wipe/Config/Default/Img/logo.webp';
+        $varName = 'invoice';
+        $logo = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo') ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png";
+        $companyAddress = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address') ?? "N/A";
+        $companyAddressPC = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc') ?? "N/A";
+        $companyAddressCity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city') ?? "N/A";
+        $companyAddressCountry = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country') ?? "N/A";
+        $footerText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text') ?? "Merci pour votre commande !";
+
+        $itemsHtml = '';
+        foreach ($cartContent as $cartItem) {
+            $itemName = htmlspecialchars($cartItem->getItem()->getName());
+            $itemQuantity = $cartItem->getQuantity();
+            $itemPrice = $cartItem->getItem()?->getPriceFormatted();
+            $itemDiscount = $cartItem->getDiscountFormatted() ?? '';
+            $itemSubtotal = $cartItem->getItemTotalPriceAfterDiscountFormatted() ?? $cartItem->getItemTotalPriceFormatted();
+
+            $itemsHtml .= "<tr>
+            <td>$itemName</td>
+            <td>$itemQuantity</td>
+            <td>$itemPrice</td>
+            <td>$itemDiscount</td>
+            <td>$itemSubtotal</td>
+        </tr>";
+        }
 
         $pdfDir = EnvManager::getInstance()->getValue('DIR') . 'Public/Uploads/Shop/Invoices';
         if (!file_exists($pdfDir) && !mkdir($pdfDir, 0777, true) && !is_dir($pdfDir)) {
@@ -780,52 +843,175 @@ class ShopHistoryOrdersController extends AbstractController
         $pdf->SetCreator($websiteName);
         $pdf->SetAuthor($websiteName);
         $pdf->SetTitle("Facture $orderNumber");
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
         $pdf->AddPage();
-        $pdf->SetFont('helvetica', '', 13);
 
-        $pdf->Ln(10);
-        if (!is_null($websiteLogo)) {
-            $pdf->Image($websiteLogo, 10, 20, 50);
-            $pdf->Ln(20);
+        $html = '
+<style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        $pdf->Write(0, "Facture de commande\n\n");
-        $pdf->Write(0, "Numéro de commande : $orderNumber\nDate : $orderDate\n\n");
-
-        // Largeur totale disponible
-        $totalWidth = 190;
-
-        // Largeurs des colonnes
-        $colWidths = [
-            'Nom' => 100,       // 100 mm pour le nom
-            'Quantité' => 40,   // 40 mm pour la quantité
-            'Prix' => 50,       // 50 mm pour le prix
-        ];
-
-        // En-tête du tableau
-        $pdf->SetFont('helvetica', 'B', 13);
-        $pdf->Cell($colWidths['Nom'], 10, 'Nom', 1, 0, 'C');
-        $pdf->Cell($colWidths['Quantité'], 10, 'Quantité', 1, 0, 'C');
-        $pdf->Cell($colWidths['Prix'], 10, 'Prix', 1, 1, 'C');
-
-        // Contenu du tableau
-        $pdf->SetFont('helvetica', '', 12);
-        foreach ($cartContent as $cartItem) {
-            $itemName = $cartItem->getItem()->getName();
-            $itemQuantity = $cartItem->getQuantity();
-            $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
-
-            $pdf->Cell($colWidths['Nom'], 10, $itemName, 1, 0, 'L');
-            $pdf->Cell($colWidths['Quantité'], 10, $itemQuantity, 1, 0, 'C');
-            $pdf->Cell($colWidths['Prix'], 10, $itemPrice, 1, 1, 'R');
+        .section {
+            margin-top: 20px;
         }
 
-        $pdf->Ln(10);
-        $pdf->Write(0, "Total : $total\nMéthode de paiement : $paymentMethod\n");
-        $pdf->Output($pdfPath, 'F'); // Sauvegarde du PDF sur le serveur
+        .section h3 {
+            margin: 0 0 10px;
+            font-size: 1.1em;
+        }
+
+        .info-table,
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table td {
+            padding: 5px;
+        }
+
+        .info-table td:nth-child(2) {
+            text-align: right;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: #f9f9f9;
+        }
+
+        .totals {
+            margin-top: 20px;
+            float: right;
+            text-align: right;
+        }
+
+        .totals td {
+            padding: 5px 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+        <div class="facture">
+        <table class="info-table">
+            <tr>
+                <td>
+                    <img class="logo" src="'.$logo.'" width="120px" alt="Logo">
+                    <br>
+                    <span><b>'.$websiteName. '</b><br>
+                    '.$companyAddress.'<br>
+                    '.$companyAddressPC.' '.$companyAddressCity.'<br>
+                    '.$companyAddressCountry.'<br>
+                    </span>
+                </td>
+                <td align="right">
+                    <h2 style="color: #c16374">FACTURE N° ' .$orderNumber.'</h2>
+                    <div class="section">
+                        <h5>Adresse de livraison et de facturation</h5>
+                        <p>
+                            '.$addressUser.'<br>
+                            '.$address.'<br>
+                            '.$addressPcCity.'<br>
+                            '.$addressCountry.'
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+            
+
+            <div class="section">
+                <table class="info-table">
+                <thead>
+                        <tr>
+                            <th>Éxpedition</th>
+                            <th align="center">Date de facturation</th>
+                            <th align="right">Paiement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>'.$shippingName.'</td>
+                            <td align="center">'.$orderDate.'</td>
+                            <td align="right">'.$paymentMethod.'</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th><strong>Désignation</strong></th>
+                            <th><strong>Quantité</strong></th>
+                            <th><strong>PU</strong></th>
+                            <th><strong>Rem. A</strong></th>
+                            <th><strong>Sous total</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        '.$itemsHtml.'
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="totals">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Frais de livraison :</td>
+                            <td>'.$shippingFee.'</td>
+                        </tr>
+                        <tr>
+                            <td>Frais de paiement :</td>
+                            <td>'.$paymentFee.'</td>
+                        </tr>
+                        <tr>
+                            <td>Rem. Total :</td>
+                            <td>'.$cartTotalDiscount.'</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total :</strong></td>
+                            <td><strong>'.$total.'</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="footer">
+                <p>'.$footerText.'</p>
+            </div>
+        </div>';
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        $pdf->Output($pdfPath, 'F');
 
         return "facture_" . $randomNumber . "_" . $orderNumber;
     }
+
 
     /**
      * @throws \Random\RandomException
@@ -842,28 +1028,6 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         return $randomString;
-    }
-
-
-    //TODO move into public controller
-    #[Link('/orders/download/:order', Link::GET, [], '/shop')]
-    private function shopOrdersDownload(string $order): void
-    {
-        $pdfDir = EnvManager::getInstance()->getValue('DIR') . 'Public/Uploads/Shop/Invoices';
-        $pdfPath = $pdfDir . "/$order.pdf";
-
-        if (!file_exists($pdfPath)) {
-            http_response_code(404);
-            echo json_encode(['error' => 'Facture introuvable']);
-            exit;
-        }
-
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="invoice_' . $order . '.pdf"');
-        header('Content-Length: ' . filesize($pdfPath));
-
-        readfile($pdfPath);
-        exit;
     }
 
 }

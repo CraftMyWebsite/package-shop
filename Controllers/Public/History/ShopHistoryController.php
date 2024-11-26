@@ -51,4 +51,24 @@ class ShopHistoryController extends AbstractController
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }
+
+    #[Link('/orders/download/:order', Link::GET, [], '/shop')]
+    private function shopOrdersDownload(string $order): void
+    {
+        $pdfDir = EnvManager::getInstance()->getValue('DIR') . 'Public/Uploads/Shop/Invoices';
+        $pdfPath = $pdfDir . "/$order.pdf";
+
+        if (!file_exists($pdfPath)) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Facture introuvable']);
+            exit;
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="invoice_' . $order . '.pdf"');
+        header('Content-Length: ' . filesize($pdfPath));
+
+        readfile($pdfPath);
+        exit;
+    }
 }
