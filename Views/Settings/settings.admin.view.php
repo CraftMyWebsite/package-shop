@@ -121,6 +121,9 @@ $description = '';
                             </div>
                             <?php $method->includeGlobalConfigWidgets(); ?>
                         </div>
+                        <div class="flex justify-end">
+                            <a class="w-fit btn-warning" href="<?= $method->varName() ?>">RESET</a>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </form>
