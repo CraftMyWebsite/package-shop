@@ -181,11 +181,11 @@ class ShopHistoryOrdersController extends AbstractController
 
         $varName = 'review_reminder';
         $websiteName = Website::getWebsiteName();
-        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? $websiteName . ' - Votre avis nous intéresse !';
-        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Votre avis nous intéresse !';
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous avez récemment commander un article sur notre boutique.";
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail') ?? 'Nous aimerions savoir ce que vous pensez de cet article';
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail') ?? "Rendez-vous sur la boutique pour partager votre avis";
+        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? $websiteName . ' - Votre avis nous intéresse !';
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Votre avis nous intéresse !';
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous avez récemment commander un article sur notre boutique.";
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Nous aimerions savoir ce que vous pensez de cet article';
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique pour partager votre avis";
 
         $htmlTemplate = <<<HTML
             <html>
@@ -234,12 +234,12 @@ class ShopHistoryOrdersController extends AbstractController
             </html>
             HTML;
 
-        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
-        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
-        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
-        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
-        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color', $varName) ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title', $varName) ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%',  '%ITEM_URL%', '%ITEM_NAME%', '%FOOTER_1%', '%FOOTER_2%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
@@ -390,15 +390,15 @@ class ShopHistoryOrdersController extends AbstractController
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $orderPrice = $order->getOrderTotal();
         $user = $order->getUser();
-        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global') ?? Website::getWebsiteName().' - Votre avoir pour la commande') . ' ' . $order->getOrderNumber();
+        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().' - Votre avoir pour la commande') . ' ' . $order->getOrderNumber();
         $code = Utils::generateRandomNumber('6') . '_' . $order->getOrderNumber();
 
-        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail') ?? 'Avoir pour') . ' ' . $order->getOrderNumber();
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail') ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable";
-        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value') ?? "Ce code à une valeur total de") . ' ' . $order->getOrderTotalFormatted();
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail') ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !';
+        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Avoir pour') . ' ' . $order->getOrderNumber();
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable";
+        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? "Ce code à une valeur total de") . ' ' . $order->getOrderTotalFormatted();
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !';
         $shopUrl = Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop';
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail') ?? "Rendez-vous sur la boutique " . Website::getWebsiteName();
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique " . Website::getWebsiteName();
 
         $htmlTemplate = <<<HTML
             <html>
@@ -448,12 +448,12 @@ class ShopHistoryOrdersController extends AbstractController
             </html>
             HTML;
 
-        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color') ?? '#f8f9fa';
-        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title') ?? '#2f2f2f';
-        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p') ?? '#656565';
-        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color') ?? '#007bff';
-        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color') ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color') ?? '#ffffff';
+        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color', $varName) ?? '#f8f9fa';
+        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title', $varName) ?? '#2f2f2f';
+        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
+        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
+        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%VALUE%', '%CODE%', '%FOOTER_1%', '%SHOP_URL%', '%FOOTER_2%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
@@ -540,7 +540,7 @@ class ShopHistoryOrdersController extends AbstractController
         NotificationManager::notify('Nouvelle commande', $user->getPseudo() . ' viens de passer une commande.', 'shop/orders');
 
         $varName = 'invoice';
-        if (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') === "1") {
+        if (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "1") {
             $invoiceLink = $this->createPDF($cartContent, $order, $paymentHistory);
         }
 
@@ -806,12 +806,12 @@ class ShopHistoryOrdersController extends AbstractController
         $cartTotalDiscount = $order->getAppliedCartDiscountTotalPriceFormatted() ? '- ' . $order->getAppliedCartDiscountTotalPriceFormatted() : '';
 
         $varName = 'invoice';
-        $logo = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo') ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png";
-        $companyAddress = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address') ?? "N/A";
-        $companyAddressPC = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc') ?? "N/A";
-        $companyAddressCity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city') ?? "N/A";
-        $companyAddressCountry = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country') ?? "N/A";
-        $footerText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text') ?? "Merci pour votre commande !";
+        $logo = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo', $varName) ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png";
+        $companyAddress = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address', $varName) ?? "N/A";
+        $companyAddressPC = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc', $varName) ?? "N/A";
+        $companyAddressCity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city', $varName) ?? "N/A";
+        $companyAddressCountry = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country', $varName) ?? "N/A";
+        $footerText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !";
 
         $itemsHtml = '';
         foreach ($cartContent as $cartItem) {

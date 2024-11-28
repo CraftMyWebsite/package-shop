@@ -128,13 +128,22 @@ class ShopSettingsController extends AbstractController
             $updatedSettings = [];
 
             foreach ($settings as $key => $value) {
+                if (preg_match('/^methodVarName-(\d+)$/', $key, $matches)) {
+                    // Récupérer la valeur de `methodVarName-X`
+                    $methodVarName = FilterManager::filterData($value, 50);
+                    continue; // Passer à l'itération suivante
+                }
+
+                // Filtrer et associer chaque paramètre à son `methodVarName`
                 $key = FilterManager::filterData($key, 50);
                 $value = FilterManager::filterData($value, 255);
 
-                if (!ShopSettingsModel::getInstance()->updateOrInsertGlobalSetting($key, $value)) {
-                    $errors[] = "Impossible de mettre à jour le paramètre $key";
-                } else {
-                    $updatedSettings[$key] = $value;
+                if (!empty($methodVarName)) {
+                    if (ShopSettingsModel::getInstance()->updateOrInsertGlobalSetting($key, $value, $methodVarName)) {
+                        $updatedSettings[$methodVarName][$key] = $value;
+                    } else {
+                        $errors[] = "Impossible de mettre à jour $key pour $methodVarName";
+                    }
                 }
             }
 
@@ -156,6 +165,22 @@ class ShopSettingsController extends AbstractController
             ], JSON_THROW_ON_ERROR);
             exit;
         }
+    }
+
+    #[NoReturn] #[Link('/settings/reset/:methodVarName', Link::GET, [], '/cmw-admin/shop')]
+    private function shopResetDefaultMethodSettings($methodVarName): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.config.edit');
+
+        $method = ShopItemsController::getInstance()->getGlobalConfigMethodsByVarName($methodVarName);
+
+        if (ShopSettingsModel::getInstance()->resetGlobalSetting($methodVarName)) {
+            Flash::send(Alert::SUCCESS, 'Boutique', 'Paramètre de ' . $method->name() . ' réinitialiser !');
+        } else {
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de réinitialiser ' . $method->name());
+        }
+
+        Redirect::redirectPreviousRoute();
     }
 
     #[NoReturn] #[Link('/settings/reset_default_image', Link::GET, [], '/cmw-admin/shop')]

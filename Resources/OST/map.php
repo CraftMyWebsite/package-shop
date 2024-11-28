@@ -16,7 +16,7 @@ $cartContent = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($user
 $withdrawPoints = ShopShippingModel::getInstance()->getAvailableWithdrawPoint($selectedAddress, $cartContent);
 $varName = 'withdraw_point_map';
 
-$attributs = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_map_style') ?? 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
+$attributs = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_map_style', $varName) ?? 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
 
 switch ($attributs) {
     case 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png':
@@ -64,19 +64,19 @@ switch ($attributs) {
 
     const map = L.map('map').setView([clientLat, clientLng], 12);
 
-    L.tileLayer('<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_map_style') ?? 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png' ?>', {
+    L.tileLayer('<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_map_style', $varName) ?? 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png' ?>', {
         maxZoom: 18,
         attribution: <?= json_encode($attribut) ?>
     }).addTo(map);
 
     const clientMarker = L.marker([clientLat, clientLng], {
         icon: L.divIcon({
-            html: "<i class='<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_icon') ?? 'fa-solid fa-house' ?>' style='color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_color') ?? '#369127' ?>; font-size: 1rem; background: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_background') ?? '#000000' ?>; border-radius: 50%; padding: .4rem'></i>",
+            html: "<i class='<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_icon', $varName) ?? 'fa-solid fa-house' ?>' style='color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_color', $varName) ?? '#369127' ?>; font-size: 1rem; background: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_background', $varName) ?? '#000000' ?>; border-radius: 50%; padding: .4rem'></i>",
             className: 'custom-icon',
             iconSize: [30, 30],
             popupAnchor: [0, -8]
         })
-    }).addTo(map).bindPopup("<b><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_address') ?? 'Votre adresse' ?></b>").openPopup();
+    }).addTo(map).bindPopup("<b><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_address', $varName) ?? 'Votre adresse' ?></b>").openPopup();
 
     const withdrawPoints = [
         <?php foreach ($withdrawPoints as $withdrawPoint): ?>
@@ -98,7 +98,7 @@ switch ($attributs) {
     withdrawPoints.forEach(point => {
         const marker = L.marker([point.lat, point.lng], {
             icon: L.divIcon({
-                html: "<i class='<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_icon') ?? 'fa-solid fa-store' ?>' style='color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_color') ?? '#ffffff' ?>; font-size: 1.1rem; background: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_background') ?? '#000000' ?>; border-radius: 50%; padding: .4rem'></i>",
+                html: "<i class='<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_icon', $varName) ?? 'fa-solid fa-store' ?>' style='color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_color', $varName) ?? '#ffffff' ?>; font-size: 1.1rem; background: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_depot_background', $varName) ?? '#000000' ?>; border-radius: 50%; padding: .4rem'></i>",
                 className: 'custom-icon',
                 iconSize: [30, 30],
                 popupAnchor: [0, -8]

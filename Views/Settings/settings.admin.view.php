@@ -113,19 +113,20 @@ $description = '';
         <div id="tab-content-2" class="tab-container border dark:border-gray-600 rounded-lg">
             <form id="virtualGlobal" data-ajax="true">
                 <?php SecurityManager::getInstance()->insertHiddenToken(); ?>
-                <?php foreach ($globalConfigMethod as $method): ?>
+                <?php $i=0; foreach ($globalConfigMethod as $method): ?>
                     <div class="tab-content" id="tab-<?= $method->varName() ?>">
                         <div class="card">
                             <div class="card-title">
                                 <h6><?= $method->name() ?></h6>
+                                <a class="w-fit btn-warning" href="settings/reset/<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></a>
                             </div>
+                            <input type="hidden" name="methodVarName-<?= $i ?>" value="<?= $method->varName() ?>">
                             <?php $method->includeGlobalConfigWidgets(); ?>
                         </div>
                         <div class="flex justify-end">
-                            <a class="w-fit btn-warning" href="<?= $method->varName() ?>">RESET</a>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php $i++; endforeach; ?>
             </form>
         </div>
     </div>

@@ -43,13 +43,13 @@ class ShopSettingsModel extends AbstractModel
      * @param string $key
      * @return string|null
      */
-    public function getGlobalSetting(string $key): ?string
+    public function getGlobalSetting(string $key, string $methodVarName): ?string
     {
         $db = DatabaseManager::getInstance();
         $req = $db->prepare('SELECT shop_global_implement_settings_value FROM cmw_shops_global_implement_settings 
-                                          WHERE shop_global_implement_settings_key = :key');
+                                          WHERE shop_global_implement_settings_key = :key AND shop_global_implement_settings_varName = :shop_global_implement_settings_varName');
 
-        if (!$req->execute(['key' => $key])) {
+        if (!$req->execute(['key' => $key, 'shop_global_implement_settings_varName' => $methodVarName])) {
             return null;
         }
 
@@ -67,13 +67,25 @@ class ShopSettingsModel extends AbstractModel
      * @param string $value
      * @return bool
      */
-    public function updateOrInsertGlobalSetting(string $key, string $value): bool
+    public function updateOrInsertGlobalSetting(string $key, string $value, string $methodVarName): bool
     {
         $sql = 'INSERT INTO cmw_shops_global_implement_settings 
-                            (shop_global_implement_settings_key, shop_global_implement_settings_value) 
-                            VALUES (:key, :value) ON DUPLICATE KEY UPDATE shop_global_implement_settings_value=:value2';
+                            (shop_global_implement_settings_key, shop_global_implement_settings_value, shop_global_implement_settings_varName) 
+                            VALUES (:key, :value, :methodVarName) ON DUPLICATE KEY UPDATE shop_global_implement_settings_value=:value2';
 
         $db = DatabaseManager::getInstance();
-        return $db->prepare($sql)->execute(['key' => $key, 'value' => $value, 'value2' => $value]);
+        return $db->prepare($sql)->execute(['methodVarName' => $methodVarName, 'key' => $key, 'value' => $value, 'value2' => $value]);
+    }
+
+    /**
+     * @param string $methodVarName
+     * @return bool
+     */
+    public function resetGlobalSetting(string $methodVarName): bool
+    {
+        $sql = 'DELETE FROM cmw_shops_global_implement_settings WHERE shop_global_implement_settings_varName = :methodVarName';
+
+        $db = DatabaseManager::getInstance();
+        return $db->prepare($sql)->execute(['methodVarName' => $methodVarName]);
     }
 }

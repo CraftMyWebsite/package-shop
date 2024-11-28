@@ -10,23 +10,23 @@ use CMW\Utils\Website;
     <div>
         <label for="<?= $varName ?>_use">Créer et stocker les factures (PDF)</label>
         <select name="<?= $varName ?>_use" id="<?= $varName ?>_use">
-            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') === "1" ? 'selected' : '' ?> value="1">Oui</option>
-            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') === "0" ? 'selected' : ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') ?? 'selected' ?> value="0">Non</option>
+            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "1" ? 'selected' : '' ?> value="1">Oui</option>
+            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "0" ? 'selected' : ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) ?? 'selected' ?> value="0">Non</option>
         </select>
         <label for="<?= $varName ?>_logo">Logo (url) :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo') ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png" ?>" type="text" name="<?= $varName ?>_logo" id="<?= $varName ?>_logo" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo', $varName) ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png" ?>" type="text" name="<?= $varName ?>_logo" id="<?= $varName ?>_logo" class="input" required>
         <label for="<?= $varName ?>_footer_text">Footer :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text') ?? "Merci pour votre commande !" ?>" type="text" name="<?= $varName ?>_footer_text" id="<?= $varName ?>_footer_text" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !" ?>" type="text" name="<?= $varName ?>_footer_text" id="<?= $varName ?>_footer_text" class="input" required>
 
         <h5>Adresse de l'entreprise :</h5>
         <label for="<?= $varName ?>_address">Adresse</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address') ?? "N/A" ?>" type="text" name="<?= $varName ?>_address" id="<?= $varName ?>_address" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address" id="<?= $varName ?>_address" class="input" required>
         <label for="<?= $varName ?>_address_pc">Code Postal</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc') ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_pc" id="<?= $varName ?>_address_pc" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_pc" id="<?= $varName ?>_address_pc" class="input" required>
         <label for="<?= $varName ?>_address_city">Ville</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city') ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_city" id="<?= $varName ?>_address_city" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_city" id="<?= $varName ?>_address_city" class="input" required>
         <label for="<?= $varName ?>_address_country">Pays</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country') ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_country" id="<?= $varName ?>_address_country" class="input" required>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_country" id="<?= $varName ?>_address_country" class="input" required>
         </div>
     <div class="col-span-2 h-fit">
         <h5 class="text-center">Aperçu de la facture :</h5>
@@ -91,12 +91,12 @@ use CMW\Utils\Website;
                 <table class="info-table">
                     <tr>
                         <td>
-                            <img class="logo" src="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo') ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png" ?>" width="120px" alt="Logo">
+                            <img class="logo" src="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo', $varName) ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png" ?>" width="120px" alt="Logo">
                             <br>
                             <span><b><?= Website::getWebsiteName() ?></b><br>
-                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address') ?? "N/A" ?><br>
-                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc') ?? "N/A" ?> <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city') ?? "N/A" ?><br>
-                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country') ?? "N/A" ?><br>
+                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address', $varName) ?? "N/A" ?><br>
+                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc', $varName) ?? "N/A" ?> <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city', $varName) ?? "N/A" ?><br>
+                    <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country', $varName) ?? "N/A" ?><br>
                     </span>
                         </td>
                         <td align="right">
@@ -187,7 +187,7 @@ use CMW\Utils\Website;
                 </div>
 
                 <div class="footer">
-                    <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text') ?? "Merci pour votre commande !" ?></p>
+                    <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !" ?></p>
                 </div>
             </div>
         </div>

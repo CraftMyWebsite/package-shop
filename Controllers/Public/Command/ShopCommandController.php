@@ -149,7 +149,7 @@ class ShopCommandController extends AbstractController
                         NotificationManager::notify('Adresse introuvable', $selectedAddress->getLine1() . ' ' . $selectedAddress->getCity() . ' ' . $selectedAddress->getPostalCode() . ' ' . $selectedAddress->getFormattedCountry() . ' ne trouve pas de méthode d\'envoie !');
                     }
                     $varName = 'withdraw_point_map';
-                    $useInteractiveMap = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use') ?? '1';
+                    $useInteractiveMap = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) ?? '1';
                     $view = new View('Shop', 'Command/delivery');
                     $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css', 'App/Package/Shop/Resources/OST/leaflet.css');
                     $view->addScriptBefore('App/Package/Shop/Resources/OST/leaflet.js');

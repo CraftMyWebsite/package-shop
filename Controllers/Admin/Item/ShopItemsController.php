@@ -471,4 +471,18 @@ class ShopItemsController extends AbstractController
     {
         return Loader::loadImplementations(IGlobalConfig::class);
     }
+
+    /**
+     * @param string $varName
+     * @return \CMW\Interface\Shop\IGlobalConfig|null
+     */
+    public function getGlobalConfigMethodsByVarName(string $varName): ?IGlobalConfig
+    {
+        foreach ($this->getGlobalConfigMethods() as $globalConfigMethod) {
+            if ($globalConfigMethod->varName() === $varName) {
+                return $globalConfigMethod;
+            }
+        }
+        return null;
+    }
 }
