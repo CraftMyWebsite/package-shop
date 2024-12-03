@@ -4,6 +4,7 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Utils\Website;
@@ -74,7 +75,7 @@ $description = '';
                                     </div>
                                     <div class="modal-footer">
                                         <a href="../../../shop/settings" type="button" class="btn-warning">Non, configurer</a>
-                                        <a href="<?= $order->getId() ?>/reviewReminder/<?= $orderItem->getItem()->getId() ?>/<?= $order->getUser()->getId() ?>" type="button" class="btn-success">Oui, envoyer</a>
+                                        <a href="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>cmw-admin/shop/orders/<?= $order->getId() ?>/reviewReminder/<?= $orderItem->getItem()->getId() ?>/<?= $order->getUser()->getId() ?>" type="button" class="btn-success">Oui, envoyer</a>
                                     </div>
                             </div>
                         </div>

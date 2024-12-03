@@ -66,26 +66,55 @@ use TCPDF;
  */
 class ShopHistoryOrdersController extends AbstractController
 {
-    #[Link('/orders', Link::GET, [], '/cmw-admin/shop')]
-    private function shopOrders(): void
+    #[Link('/orders/inProgress', Link::GET, [], '/cmw-admin/shop')]
+    private function shopCurrentOrders(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order');
 
         $inProgressOrders = ShopHistoryOrdersModel::getInstance()->getInProgressOrders();
-        $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
-        $finishedOrders = ShopHistoryOrdersModel::getInstance()->getFinishedOrders();
-        $orderItemsModel = ShopHistoryOrdersModel::getInstance();
         $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages(), true);
 
-        View::createAdminView('Shop', 'Orders/orders')
+        View::createAdminView('Shop', 'Orders/ordersInProgress')
             ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
             ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
                 'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
-            ->addVariableList(['inProgressOrders' => $inProgressOrders, 'errorOrders' => $errorOrders, 'finishedOrders' => $finishedOrders, 'orderItemsModel' => $orderItemsModel, 'notificationIsRefused' => $notificationIsRefused])
+            ->addVariableList(['inProgressOrders' => $inProgressOrders, 'notificationIsRefused' => $notificationIsRefused])
             ->view();
     }
 
-    #[Link('/orders/manage/:orderId', Link::GET, [], '/cmw-admin/shop')]
+    #[Link('/orders/ended', Link::GET, [], '/cmw-admin/shop')]
+    private function shopEndedOrders(): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order');
+
+        $finishedOrders = ShopHistoryOrdersModel::getInstance()->getFinishedOrders();
+        $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages(), true);
+
+        View::createAdminView('Shop', 'Orders/ordersEnded')
+            ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
+            ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
+                'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
+            ->addVariableList(['finishedOrders' => $finishedOrders, 'notificationIsRefused' => $notificationIsRefused])
+            ->view();
+    }
+
+    #[Link('/orders/canceled', Link::GET, [], '/cmw-admin/shop')]
+    private function shopErrorOrders(): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order');
+
+        $errorOrders = ShopHistoryOrdersModel::getInstance()->getErrorOrders();
+        $notificationIsRefused = in_array('Shop', NotificationModel::getInstance()->getRefusedPackages(), true);
+
+        View::createAdminView('Shop', 'Orders/ordersCanceled')
+            ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
+            ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
+                'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
+            ->addVariableList(['errorOrders' => $errorOrders, 'notificationIsRefused' => $notificationIsRefused])
+            ->view();
+    }
+
+    #[Link('/orders/inProgress/manage/:orderId', Link::GET, [], '/cmw-admin/shop')]
     private function shopManageOrders(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage');
@@ -163,8 +192,36 @@ class ShopHistoryOrdersController extends AbstractController
             ->view();
     }
 
+    #[Link('/orders/canceled/view/:orderId', Link::GET, [], '/cmw-admin/shop')]
+    private function shopViewCanceledOrders(int $orderId): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.passed');
+
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $reviewEnabled = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+
+        View::createAdminView('Shop', 'Orders/view')
+            ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
+            ->view();
+    }
+
+    #[Link('/orders/ended/view/:orderId', Link::GET, [], '/cmw-admin/shop')]
+    private function shopViewEndedOrders(int $orderId): void
+    {
+        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.passed');
+
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
+        $reviewEnabled = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+
+        View::createAdminView('Shop', 'Orders/view')
+            ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
+            ->view();
+    }
+
     #[NoReturn]
-    #[Link('/orders/view/:orderId/reviewReminder/:itemId/:userId', Link::GET, [], '/cmw-admin/shop')]
+    #[Link('/orders/:orderId/reviewReminder/:itemId/:userId', Link::GET, [], '/cmw-admin/shop')]
     private function shopViewOrdersRelanceReviews(int $orderId, int $itemId, int $userId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.passed.rating');
@@ -254,7 +311,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/send/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageSendStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.ready');
@@ -290,7 +347,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/finish/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/finish/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageFinalStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.shipping');
@@ -306,11 +363,11 @@ class ShopHistoryOrdersController extends AbstractController
             error_log('Error while sending ShopSendOrderEvent');
         }
 
-        Redirect::redirect('cmw-admin/shop/orders');
+        Redirect::redirect('cmw-admin/shop/orders/inProgress');
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/end/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/end/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageEndStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endSuccess');
@@ -338,11 +395,11 @@ class ShopHistoryOrdersController extends AbstractController
             error_log('Error while sending ShopEndOrderEvent');
         }
 
-        Redirect::redirect('cmw-admin/shop/orders');
+        Redirect::redirect('cmw-admin/shop/orders/inProgress');
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/cancel/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/cancel/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageCancelStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.unrealizable');
@@ -361,7 +418,7 @@ class ShopHistoryOrdersController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/endFailed/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/endFailed/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageEndFailedStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endFailed');
@@ -374,11 +431,11 @@ class ShopHistoryOrdersController extends AbstractController
             error_log('Error while sending ShopRefundedSelfOrderEvent');
         }
 
-        Redirect::redirect('cmw-admin/shop/orders');
+        Redirect::redirect('cmw-admin/shop/orders/inProgress');
     }
 
     #[NoReturn]
-    #[Link('/orders/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
+    #[Link('/orders/inProgress/manage/refunded/:orderId', Link::POST, [], '/cmw-admin/shop')]
     private function shopManageRefundStep(int $orderId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.refund');
@@ -477,7 +534,7 @@ class ShopHistoryOrdersController extends AbstractController
             error_log('Error while sending ShopRefundedCreditOrderEvent');
         }
 
-        Redirect::redirect('cmw-admin/shop/orders');
+        Redirect::redirect('cmw-admin/shop/orders/inProgress');
     }
 
     public function handleCreateOrder(UserEntity $user): void
