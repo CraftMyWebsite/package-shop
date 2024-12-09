@@ -630,7 +630,7 @@ VALUES ('currency', 'EUR'),
        ('maintenanceMessage', 'La boutique est en cours de maintenance.'),
        ('autoValidateVirtual', '0'),
        ('topBestBuyer', '3'),
-       ('showPublicStock', '1'),;
+       ('showPublicStock', '1');
 
 
 INSERT INTO cmw_shops_images (`shop_image_name`, `shop_default_image`)
