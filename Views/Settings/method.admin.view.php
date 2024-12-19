@@ -29,7 +29,25 @@ $description = '';
                         <div class="card">
                             <div class="card-title">
                                 <h6><?= $method->name() ?></h6>
-                                <a class="w-fit btn-warning" href="methods/reset/<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></a>
+                                <button type="button" class="w-fit btn-warning" data-modal-toggle="modal-<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></button>
+                                <!--MODAL-->
+                                <div id="modal-<?= $method->varName() ?>" class="modal-container">
+                                    <div class="modal">
+                                        <div class="modal-header-warning">
+                                            <h6>Vous allez réinitialiser <?= $method->name() ?>.</h6>
+                                            <button type="button" data-modal-hide="modal-<?= $method->varName() ?>"><i class="fa-solid fa-xmark"></i></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                                Êtes-vous sûr de vouloir faire ceci ?
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="w-fit btn-warning" href="methods/reset/<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></a>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                             <input type="hidden" name="methodVarName-<?= $i ?>" value="<?= $method->varName() ?>">
                             <?php $method->includeGlobalConfigWidgets(); ?>

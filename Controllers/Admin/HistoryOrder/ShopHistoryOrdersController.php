@@ -684,11 +684,25 @@ class ShopHistoryOrdersController extends AbstractController
      */
     private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory, ?string $invoiceLink): void
     {
+        $varName = "order_summary";
         $websiteName = Website::getWebsiteName();
         $orderNumber = $order->getOrderNumber();
         $orderDate = $order->getCreated();
         $paymentMethod = $paymentHistory->getName();
         $historyLink = Website::getUrl() . 'shop/history';
+
+        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_object', $varName) ?? Website::getWebsiteName() . ' - Récapitulatif de Commande';
+        $titleMail = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Votre commande sur ' . Website::getWebsiteName();
+        $commandNumber = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_command_number', $varName) ?? "Numéro de commande :";
+        $date = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_date', $varName) ?? 'Date de la commande :';
+        $item = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_item', $varName) ?? "Article";
+        $quantity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_quantity', $varName) ?? "Quantité";
+        $price = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_price', $varName) ?? "Prix";
+        $pay = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_payment', $varName) ?? 'Méthode de paiement :';
+        $history = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_history', $varName) ?? 'Consultez mes commandes sur ' .Website::getWebsiteName();
+        $invoice = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_invoice', $varName) ?? 'Télécharger votre facture';
+        $footer = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer', $varName) ?? "Merci pour votre achat !";
+        $color = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_head_color', $varName) ?? '#214e7e';
 
         $priceType = '';
         $itemsHtml = '';
@@ -699,11 +713,11 @@ class ShopHistoryOrdersController extends AbstractController
             $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
             $itemsHtml .= <<<HTML
                     <div class="summary-item">
-                        <span class="summary-title">Article :</span> $itemName
+                        <span class="summary-title">%ITEM% :</span> $itemName
                         <br>
-                        <span class="summary-title">Quantité :</span> $itemQuantity
+                        <span class="summary-title">%QUANTITY% :</span> $itemQuantity
                         <br>
-                        <span class="summary-title">Prix :</span> $itemPrice
+                        <span class="summary-title">%PRICE% :</span> $itemPrice
                     </div>
                 HTML;
         }
@@ -730,13 +744,8 @@ class ShopHistoryOrdersController extends AbstractController
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Récapitulatif de Commande</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #d2d2d2;
-                }
-                .container {
+                .container-recap {
+                    font-family: Helvetica, serif;
                     width: 600px;
                     margin: 20px auto;
                     background: white;
@@ -744,24 +753,24 @@ class ShopHistoryOrdersController extends AbstractController
                     border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                 }
-                .header {
-                    background-color: #214e7e;
+                .header-recap {
+                    background-color: %COLOR%;
                     color: white;
                     padding: 10px;
                     text-align: center;
                     border-radius: 5px 5px 0 0;
                 }
-                .summary-item {
+                .summary-item-recap {
                     border-bottom: 1px solid #eee;
                     padding: 10px 0;
                 }
-                .summary-item:last-child {
+                .summary-item:last-child-recap {
                     border-bottom: none;
                 }
-                .summary-title {
+                .summary-title-recap {
                     font-weight: bold;
                 }
-                .footer {
+                .footer-recap {
                     text-align: center;
                     margin-top: 20px;
                     color: #777;
@@ -769,37 +778,36 @@ class ShopHistoryOrdersController extends AbstractController
             </style>
             </head>
             <body>
-            <div class="container">
-                <div class="header">
-                    <h2>Votre commande sur %WEBSITENAME%</h2>
+            <div class="container-recap">
+                <div class="header-recap">
+                    <h2>%TITLE_MAIL%</h2>
                 </div>
-                <div class="summary">
-                    <div class="summary-item">
-                        <span class="summary-title">Numéro de commande :</span> %ORDER%
+                <div class="summary-recap">
+                    <div class="summary-item-recap">
+                        <span class="summary-title-recap">%COMMAND_NUMBER%</span> %ORDER%
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-title">Date de la commande :</span> %DATE%
+                    <div class="summary-item-recap">
+                        <span class="summary-title-recap">%DATE_FORMAT%</span> %DATE%
                     </div>
                     $itemsHtml
-                    <div class="summary-item">
-                        <span class="summary-title">Total :</span> <b>%TOTAL%</b>
+                    <div class="summary-item-recap">
+                        <span class="summary-title-recap">Total :</span> <b>%TOTAL%</b>
                         <br>
-                        <span class="summary-title">Méthode de paiement :</span> %PAYMENT_METHOD%
-                        <a href="%HISTORY_LINK%"><p>Consultez mes commandes sur %WEBSITENAME%</p></a>
+                        <span class="summary-title-recap">%PAY%</span> %PAYMENT_METHOD%
+                        <a href="%HISTORY_LINK%"><p>%HISTORY%</p></a>
                         %INVOICE_SECTION%
                     </div>
                 </div>
-                <div class="footer">
-                    Merci pour votre achat !
+                <div class="footer-recap">
+                    %FOOTER%
                 </div>
             </div>
             </body>
             </html>
             HTML;
-        $invoiceSection = $invoiceLink !== null ? '<br><a href="' . $invoiceLink . '">Télécharger votre facture</a>' : '';
-        $body = str_replace(['%WEBSITENAME%', '%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_SECTION%'],
-            [$websiteName, $orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceSection], $htmlTemplate);
-        $object = $websiteName . ' - Récapitulatif de Commande';
+        $invoiceSection = $invoiceLink !== null ? '<br><a href="' . $invoiceLink . '">%INVOICE%</a>' : '';
+        $body = str_replace(['%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_SECTION%', '%TITLE_MAIL%', '%COMMAND_NUMBER%', '%DATE_FORMAT%', '%PAY%', '%HISTORY%', '%FOOTER%', '%COLOR%', '%INVOICE%', '%ITEM%', '%QUANTITY%', '%PRICE%'],
+            [$orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceSection, $titleMail, $commandNumber, $date, $pay, $history, $footer, $color, $invoice, $item, $quantity, $price], $htmlTemplate);
 
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
             MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
