@@ -33,6 +33,7 @@ class ShopSettingsMethodController extends AbstractController
 
         View::createAdminView('Shop', 'Settings/method')
             ->addVariableList(['globalConfigMethod' => $globalConfigMethod])
+            ->addScriptBefore('Admin/Resources/Vendors/Tinymce/tinymce.min.js', 'Admin/Resources/Vendors/Tinymce/Config/full.js')
             ->view();
     }
 

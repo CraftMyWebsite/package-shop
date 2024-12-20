@@ -1,8 +1,9 @@
 <?php
 
 use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
-use CMW\Manager\Security\SecurityManager;
+use CMW\Manager\Security\SecurityManager;use CMW\Model\Core\MailModel;
 
 $title = 'Configuration';
 $description = '';
@@ -14,6 +15,15 @@ $description = '';
     <h3><i class="fa-solid fa-gears"></i> Configuration des méthodes</h3>
     <button id="submitVirtualGlobal" type="button" class="btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
 </div>
+
+<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
+    <div class="alert-danger">
+        <b>Important : Configuration des e-mails requise</b>
+        <p>Les e-mails ne sont pas configurés sur votre site. Une configuration correcte est essentielle pour assurer le bon fonctionnement du package Shop.<br>
+            Les notifications importantes, telles que les confirmations de commandes, les informations de suivi ..., dépendent d'un système d'e-mails fonctionnel.</p>
+        <p>Veuillez <a class="link" href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/mail/configuration">configurer les paramètres d'e-mails</a> dès que possible.</p>
+    </div>
+<?php endif;?>
 
     <div class="tab-vertical-container mt-6">
         <div class="tab-vertical" data-tabs-toggle="#tab-content-2">

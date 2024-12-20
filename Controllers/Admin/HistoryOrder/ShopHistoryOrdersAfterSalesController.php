@@ -2,8 +2,10 @@
 
 namespace CMW\Controller\Shop\Admin\HistoryOrder;
 
+use CMW\Controller\Shop\Admin\Notify\ShopNotifyController;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Lang\LangManager;
@@ -14,6 +16,7 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersAfterSalesMessagesModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersAfterSalesModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
+use CMW\Utils\Website;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
@@ -71,10 +74,19 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
             Redirect::redirectPreviousRoute();
         }
 
-        // TODO : Notifier l'utilisateur
-
         ShopHistoryOrdersAfterSalesMessagesModel::getInstance()->addResponse($afterSalesId, $message, $author->getId());
         ShopHistoryOrdersAfterSalesModel::getInstance()->changeStatus($afterSalesId, 1);
+
+        $afterSale = ShopHistoryOrdersAfterSalesModel::getInstance()->getHistoryOrdersAfterSalesById($afterSalesId);
+        $url = Website::getUrl() . EnvManager::getInstance()->getValue("PATH_SUBFOLDER") . 'shop/history/afterSales/request/' . $afterSale->getOrder()->getOrderNumber();
+        $htmlMessage =<<<HTML
+            <p>Vous avez reçu une réponse à votre demande de S.A.V !</p>
+            <p><b>Réponse : </b> %MESSAGE%</p>
+            <p>Pour apporter une réponse, <a href="%URL%">cliquez ici !</a></p>
+        HTML;
+        $finalMessage = str_replace(['%MESSAGE%', '%URL%'],
+            [$message, $url], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($afterSale->getAuthor()->getMail(), "Services après-ventes", "Services après-ventes", $finalMessage);
 
         Flash::send(Alert::SUCCESS, 'S.A.V', 'Réponse apporté.');
 
@@ -88,7 +100,13 @@ class ShopHistoryOrdersAfterSalesController extends AbstractController
 
         ShopHistoryOrdersAfterSalesModel::getInstance()->changeStatus($afterSalesId, 2);
 
-        // TODO : Notifier l'utilisateur
+        $afterSale = ShopHistoryOrdersAfterSalesModel::getInstance()->getHistoryOrdersAfterSalesById($afterSalesId);
+        $htmlMessage =<<<HTML
+            <p>Votre demande de S.A.V est désormais close</p>
+            <p>Demande faite pour la commande N°<b>%NUMBER%</b></p>
+        HTML;
+        $finalMessage = str_replace(['%NUMBER%'], [$afterSale->getOrder()->getOrderNumber()], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($afterSale->getAuthor()->getMail(), "Services après-ventes", "Services après-ventes", $finalMessage);
 
         Redirect::redirect('cmw-admin/shop/afterSales');
     }

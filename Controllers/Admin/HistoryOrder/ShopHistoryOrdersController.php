@@ -5,6 +5,7 @@ namespace CMW\Controller\Shop\Admin\HistoryOrder;
 require_once 'App/Package/Shop/Resources/TCPDF/tcpdf.php';
 
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
+use CMW\Controller\Shop\Admin\Notify\ShopNotifyController;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Controller\Users\UsersController;
@@ -158,8 +159,16 @@ class ShopHistoryOrdersController extends AbstractController
                 } catch (Exception) {
                     error_log('Error while sending ShopEndOrderEvent');
                 }
-                // TODO Notify
-                Redirect::redirect('cmw-admin/shop/orders');
+
+                $htmlMessage =<<<HTML
+                <p>Le traitement de votre commande est terminé.</p>
+                <p>Commande N°<b>%NUMBER%</b></p>
+                <p>Retrouvez l'historique de vos commandes en <a href="%LINK%">cliquant ici.</a></p>
+                HTML;
+                $finalMessage = str_replace(['%NUMBER%', '%LINK%'], [$order->getOrderNumber(), Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/history'], $htmlMessage);
+                ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Commande terminé", "Commande terminé", $finalMessage);
+
+                Redirect::redirect('cmw-admin/shop/orders/inProgress');
             } else {
                 View::createAdminView('Shop', 'Orders/Manage/send')
                     ->addVariableList(['reviewEnabled' => $reviewEnabled, 'order' => $order, 'defaultImage' => $defaultImage])
@@ -355,7 +364,26 @@ class ShopHistoryOrdersController extends AbstractController
         [$shippingLink] = Utils::filterInput('shipping_link');
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === '' ? null : $shippingLink));
 
-        // TODO : Notifier l'utilisateur
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $orderAddress = ShopHistoryOrdersUserAddressModel::getInstance()->getHistoryOrdersUserAddressByHistoryOrderId($orderId);
+        $receiver = $orderAddress->getUserFirstName() . ' ' . $orderAddress->getUserLastName();
+        $line = $orderAddress->getUserLine1();
+        $PC = $orderAddress->getUserPostalCode();
+        $city = $orderAddress->getUserCity();
+        $country = $orderAddress->getUserFormattedCountry();
+        $shipping = $shippingLink !== '' ? '<h3><a href="' . $shippingLink . '">Suivre le colis</a></h3>' : '';
+
+
+        $htmlMessage =<<<HTML
+                <p>Votre commande N°<b>%NUMBER%</b> vient d'être expediée !</p>
+                <p>Vous la recevrez dans quelque jours à l'adresse :</p>
+                <h2>%RECEIVER% <br> %LINE% <br> %PC% %CITY% <br> %COUNTRY%</h2>
+                %SHIPPING%
+                <p>Retrouvez l'historique de vos commandes en <a href="%LINK%">cliquant ici.</a></p>
+                HTML;
+        $finalMessage = str_replace(['%NUMBER%', '%LINK%', '%LINE%', '%PC%', '%CITY%', '%COUNTRY%', '%RECEIVER%', '%SHIPPING%'],
+            [$order->getOrderNumber(), Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/history', $line, $PC, $city, $country, $receiver, $shipping], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Commande en chemin !", "Commande en chemin !", $finalMessage);
 
         try {
             Emitter::send(ShopFinishedOrderEvent::class, $orderId);
@@ -374,8 +402,6 @@ class ShopHistoryOrdersController extends AbstractController
 
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
 
-        // TODO : Notifier l'utilisateur
-
         // ExecVirtualNeeds :
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
@@ -388,6 +414,14 @@ class ShopHistoryOrdersController extends AbstractController
                 }
             }
         }
+
+        $htmlMessage =<<<HTML
+        <p>Le traitement de votre commande est terminé.</p>
+        <p>Commande N°<b>%NUMBER%</b></p>
+        <p>Retrouvez l'historique de vos commandes en <a href="%LINK%">cliquant ici.</a></p>
+        HTML;
+        $finalMessage = str_replace(['%NUMBER%', '%LINK%'], [$order->getOrderNumber(), Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/history'], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Commande terminé", "Commande terminé", $finalMessage);
 
         try {
             Emitter::send(ShopEndOrderEvent::class, $order);
@@ -406,7 +440,14 @@ class ShopHistoryOrdersController extends AbstractController
 
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
 
-        // TODO : Notifier l'utilisateur
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $htmlMessage =<<<HTML
+        <p>La commande N°<b>%NUMBER%</b> est irréalisable.</p>
+        <p>Vous recevrez un remboursement ou un avoir dans les prochains jours</p>
+        <p>Retrouvez l'historique de vos commandes en <a href="%LINK%">cliquant ici.</a></p>
+        HTML;
+        $finalMessage = str_replace(['%NUMBER%', '%LINK%'], [$order->getOrderNumber(), Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/history'], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Commande irréalisable", "Commande irréalisable", $finalMessage);
 
         try {
             Emitter::send(ShopCanceledOrderEvent::class, $orderId);
@@ -424,6 +465,16 @@ class ShopHistoryOrdersController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endFailed');
 
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+
+        $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $htmlMessage =<<<HTML
+        <p>La commande N°<b>%NUMBER%</b> irréalisable est traité.</p>
+        <p>Vous avez reçu votre remboursement</p>
+        <p>Veuillez nous excusez pour la gêne occasionné.</p>
+        <p>Retrouvez l'historique de vos commandes en <a href="%LINK%">cliquant ici.</a></p>
+        HTML;
+        $finalMessage = str_replace(['%NUMBER%', '%LINK%'], [$order->getOrderNumber(), Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/history'], $htmlMessage);
+        ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Commande irréalisable traité", "Commande irréalisable traité", $finalMessage);
 
         try {
             Emitter::send(ShopRefundedSelfOrderEvent::class, $orderId);
@@ -684,25 +735,10 @@ class ShopHistoryOrdersController extends AbstractController
      */
     private function notifyUser(array $cartContent, UserEntity $user, ShopHistoryOrdersEntity $order, ShopHistoryOrdersPaymentEntity $paymentHistory, ?string $invoiceLink): void
     {
-        $varName = "order_summary";
-        $websiteName = Website::getWebsiteName();
         $orderNumber = $order->getOrderNumber();
         $orderDate = $order->getCreated();
         $paymentMethod = $paymentHistory->getName();
         $historyLink = Website::getUrl() . 'shop/history';
-
-        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_object', $varName) ?? Website::getWebsiteName() . ' - Récapitulatif de Commande';
-        $titleMail = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Votre commande sur ' . Website::getWebsiteName();
-        $commandNumber = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_command_number', $varName) ?? "Numéro de commande :";
-        $date = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_date', $varName) ?? 'Date de la commande :';
-        $item = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_item', $varName) ?? "Article";
-        $quantity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_quantity', $varName) ?? "Quantité";
-        $price = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_price', $varName) ?? "Prix";
-        $pay = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_payment', $varName) ?? 'Méthode de paiement :';
-        $history = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_history', $varName) ?? 'Consultez mes commandes sur ' .Website::getWebsiteName();
-        $invoice = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_invoice', $varName) ?? 'Télécharger votre facture';
-        $footer = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer', $varName) ?? "Merci pour votre achat !";
-        $color = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_head_color', $varName) ?? '#214e7e';
 
         $priceType = '';
         $itemsHtml = '';
@@ -713,11 +749,11 @@ class ShopHistoryOrdersController extends AbstractController
             $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
             $itemsHtml .= <<<HTML
                     <div class="summary-item">
-                        <span class="summary-title">%ITEM% :</span> $itemName
+                        <span class="summary-title">Article :</span> $itemName
                         <br>
-                        <span class="summary-title">%QUANTITY% :</span> $itemQuantity
+                        <span class="summary-title">Quantité :</span> $itemQuantity
                         <br>
-                        <span class="summary-title">%PRICE% :</span> $itemPrice
+                        <span class="summary-title">Prix :</span> $itemPrice
                     </div>
                 HTML;
         }
@@ -734,86 +770,27 @@ class ShopHistoryOrdersController extends AbstractController
             $total = $symbol . $order->getOrderTotal();
         }
 
-        //TODO : rendre ceci customizable
-
         $htmlTemplate = <<<HTML
-            <!DOCTYPE html>
-            <html lang="fr">
-            <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Récapitulatif de Commande</title>
-            <style>
-                .container-recap {
-                    font-family: Helvetica, serif;
-                    width: 600px;
-                    margin: 20px auto;
-                    background: white;
-                    padding: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                }
-                .header-recap {
-                    background-color: %COLOR%;
-                    color: white;
-                    padding: 10px;
-                    text-align: center;
-                    border-radius: 5px 5px 0 0;
-                }
-                .summary-item-recap {
-                    border-bottom: 1px solid #eee;
-                    padding: 10px 0;
-                }
-                .summary-item:last-child-recap {
-                    border-bottom: none;
-                }
-                .summary-title-recap {
-                    font-weight: bold;
-                }
-                .footer-recap {
-                    text-align: center;
-                    margin-top: 20px;
-                    color: #777;
-                }
-            </style>
-            </head>
-            <body>
-            <div class="container-recap">
-                <div class="header-recap">
-                    <h2>%TITLE_MAIL%</h2>
-                </div>
-                <div class="summary-recap">
                     <div class="summary-item-recap">
-                        <span class="summary-title-recap">%COMMAND_NUMBER%</span> %ORDER%
+                        <span class="summary-title-recap">Numéro de commande :</span> %ORDER%
                     </div>
                     <div class="summary-item-recap">
-                        <span class="summary-title-recap">%DATE_FORMAT%</span> %DATE%
+                        <span class="summary-title-recap">Date de la commande :</span> %DATE%
                     </div>
                     $itemsHtml
                     <div class="summary-item-recap">
                         <span class="summary-title-recap">Total :</span> <b>%TOTAL%</b>
                         <br>
-                        <span class="summary-title-recap">%PAY%</span> %PAYMENT_METHOD%
-                        <a href="%HISTORY_LINK%"><p>%HISTORY%</p></a>
+                        <span class="summary-title-recap">Méthode de paiement :</span> %PAYMENT_METHOD%
+                        <a href="%HISTORY_LINK%"><p>Consultez mes commandes</p></a>
                         %INVOICE_SECTION%
                     </div>
-                </div>
-                <div class="footer-recap">
-                    %FOOTER%
-                </div>
-            </div>
-            </body>
-            </html>
             HTML;
-        $invoiceSection = $invoiceLink !== null ? '<br><a href="' . $invoiceLink . '">%INVOICE%</a>' : '';
-        $body = str_replace(['%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_SECTION%', '%TITLE_MAIL%', '%COMMAND_NUMBER%', '%DATE_FORMAT%', '%PAY%', '%HISTORY%', '%FOOTER%', '%COLOR%', '%INVOICE%', '%ITEM%', '%QUANTITY%', '%PRICE%'],
-            [$orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceSection, $titleMail, $commandNumber, $date, $pay, $history, $footer, $color, $invoice, $item, $quantity, $price], $htmlTemplate);
+        $invoiceSection = $invoiceLink !== null ? '<br><a href="' . $invoiceLink . '">Télécharger votre facture</a>' : '';
+        $body = str_replace(['%ORDER%', '%DATE%', '%TOTAL%', '%PAYMENT_METHOD%', '%HISTORY_LINK%', '%INVOICE_SECTION%'],
+            [$orderNumber, $orderDate, $total, $paymentMethod, $historyLink, $invoiceSection], $htmlTemplate);
 
-        if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
-            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
-        } else {
-            Flash::send(Alert::WARNING, 'Commande','Nous n\'avons pas réussi à vous envoyer le mail de recap !');
-        }
+        ShopNotifyController::getInstance()->notifyUser($order->getUser()->getMail(), "Récapitulatif de Commande", "Récapitulatif de Commande", $body);
     }
 
     /**

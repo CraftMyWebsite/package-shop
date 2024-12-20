@@ -9,16 +9,16 @@ use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
 
-class ShopGlobalConfigOrderSummaryImplementations implements IGlobalConfig
+class ShopGlobalConfigMailNotificationImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Récap de commandes';
+        return 'Notification utilisateur';
     }
 
     public function varName(): string
     {
-        return 'order_summary';
+        return 'mail_notification';
     }
 
     public function includeGlobalConfigWidgets(): void

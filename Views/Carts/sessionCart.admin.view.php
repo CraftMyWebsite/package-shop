@@ -2,12 +2,24 @@
 
 /* @var \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $carts */
 
+use CMW\Manager\Env\EnvManager;
+use CMW\Model\Core\MailModel;
+
 $title = 'Paniers de ' . $sessionId;
 $description = '';
 
 ?>
 
 <h4>Panier de <?= $sessionId ?></h4>
+
+<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
+    <div class="alert-danger">
+        <b>Important : Configuration des e-mails requise</b>
+        <p>Les e-mails ne sont pas configurés sur votre site. Une configuration correcte est essentielle pour assurer le bon fonctionnement du package Shop.<br>
+            Les notifications importantes, telles que les confirmations de commandes, les informations de suivi ..., dépendent d'un système d'e-mails fonctionnel.</p>
+        <p>Veuillez <a class="link" href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/mail/configuration">configurer les paramètres d'e-mails</a> dès que possible.</p>
+    </div>
+<?php endif;?>
 
 <div class="table-container table-container-striped">
 
