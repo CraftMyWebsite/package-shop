@@ -9,6 +9,7 @@ use CMW\Utils\Website;
 /* @var CMW\Model\Shop\Cart\ShopCartVariantesModel $itemsVariantes */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var \CMW\Entity\Shop\Carts\ShopCartDiscountEntity[] $appliedDiscounts */
+/* @var bool $showPublicStock */
 
 Website::setTitle('Boutique - Panier');
 Website::setDescription('Votre panier');
@@ -101,7 +102,8 @@ Website::setDescription('Votre panier');
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="<?= $cart->getRemoveLink() ?>" class="font-medium text-red-600"><i
+                                    <a href="<?= $cart->getAsideLink() ?>" class="font-medium text-blue-500"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
+                                    <a href="<?= $cart->getRemoveLink() ?>" class="ml-4 font-medium text-red-600"><i
                                             class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -194,9 +196,11 @@ Website::setDescription('Votre panier');
                             <th class="text-center py-3 px-6">
                                 Produit
                             </th>
+                            <?php if ($showPublicStock): ?>
                             <th class="text-center py-3 px-6">
                                 Stock restant
                             </th>
+                            <?php endif ?>
                             <th class="text-center py-3 px-6">
                                 Prix
                             </th>
@@ -212,19 +216,24 @@ Website::setDescription('Votre panier');
                                     <?php if ($asideCart->getFirstImageItemUrl() !== '/Public/Uploads/Shop/0'): ?>
                                         <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
                                              src="<?= $asideCart->getFirstImageItemUrl() ?>" alt="Panier">
+                                    <?php else: ?>
+                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                             src="<?= $defaultImage ?>" alt="Panier">
                                     <?php endif; ?>
                                 </td>
                                 <td class="py-4 px-6 font-semibold text-gray-900">
                                     <?= $asideCart->getItem()->getName() ?>
                                 </td>
+                                <?php if ($showPublicStock): ?>
                                 <td class="py-4 px-6 text-center">
-                                    <?= $asideCart->getItem()->getCurrentStock() ?>
+                                    <?= $asideCart->getItem()->getPublicFormattedStock() ?>
                                 </td>
+                                <?php endif ?>
                                 <td class="py-4 px-6 text-gray-900">
                                     <?= $asideCart->getItem()->getPriceFormatted() ?>
                                 </td>
                                 <td>
-                                    <a href="<?= $asideCart->getItem()->getAddToCartLink() ?>" class="mr-4 font-medium text-blue-700">
+                                    <a href="<?= $asideCart->getUnAsideLink() ?>" class="mr-4 font-medium text-blue-700">
                                         <i class="fa-solid fa-cart-arrow-down"></i></a>
                                     <a href="<?= $asideCart->getRemoveLink() ?>" class="font-medium ml-4 text-red-600"><i
                                             class="fa-solid fa-trash"></i></a>

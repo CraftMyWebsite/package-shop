@@ -2,6 +2,7 @@
 
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\ThemeModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
 /* @var CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartContent */
@@ -9,7 +10,7 @@ use CMW\Utils\Website;
 /* @var CMW\Entity\Shop\Shippings\ShopShippingEntity $shippingMethod */
 /* @var \CMW\Interface\Shop\IPaymentMethod[] $paymentMethods */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
-/* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity[] $giftCodes */
+/* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $appliedCartDiscounts*/
 
 Website::setTitle("Boutique - Tunnel de commande");
 Website::setDescription("Méthode de paiement");
@@ -74,7 +75,7 @@ Website::setDescription("Méthode de paiement");
                                         </label>
                                     </div>
                                     <div>
-                                        <b>Frais <?= $paymentMethod->getFeesFormatted() ?></b>
+                                        <b>Frais <span id="fee_<?= $paymentMethod->varName() ?>"><?= $paymentMethod->getFeesFormatted() ?></span></b>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +91,7 @@ Website::setDescription("Méthode de paiement");
                         <button type="submit"  class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Précedent</button>
                     </form>
 
-                    <button form="payment" type="submit"
+                    <button id="payment-button" form="payment" type="submit"
                             class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
                         Payer
                     </button>
@@ -135,12 +136,12 @@ Website::setDescription("Méthode de paiement");
                     </div>
                 <?php endforeach; ?>
 
-                <?php if (!empty($giftCodes)): ?>
-                    <h4 class="text-center mt-4">Carte cadeau :</h4>
-                    <?php foreach ($giftCodes as $giftCode): ?>
+                <?php if (!empty($appliedCartDiscounts)): ?>
+                    <h4 class="text-center mt-4">Réduction :</h4>
+                    <?php foreach ($appliedCartDiscounts as $appliedCartDiscount): ?>
                     <div class="flex flex-wrap justify-between">
-                        <span><?= $giftCode->getCode() ?></span>
-                        <span><b>-<?= $giftCode->getPriceFormatted() ?></b></span>
+                        <span><?= $appliedCartDiscount->getCode() ?></span>
+                        <span><b>-<?= $appliedCartDiscount->getPriceFormatted() ?></b></span>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -153,9 +154,54 @@ Website::setDescription("Méthode de paiement");
                 </div>
                 <?php endif; ?>
                 <h4 class="text-center mt-4">Total</h4>
-                <h4 class="text-center font-bold"><?= $cart->getTotalPriceCompleteFormatted() ?></h4>
+                <h4 class="text-center font-bold" id="total"><?= $cart->getTotalPriceCompleteFormatted() ?></h4>
             </div>
         </div>
     </div>
 </section>
 
+<script>
+    document.getElementById("payment").addEventListener("submit", function(event) {
+        const button = document.getElementById("payment-button");
+        button.disabled = true;
+        button.innerHTML = `
+        <i style="margin-right: 10px" class="fa-solid fa-sack-dollar fa-bounce"></i> Paiement en cours...
+    `;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentMethods = document.querySelectorAll('input[name="paymentName"]');
+        const totalElement = document.getElementById('total');
+        const originalTotal = parseFloat("<?= str_replace(',', '.', $cart->getTotalPriceCompleteFormatted()) ?>");
+
+        const currencySymbol = "<?= ShopSettingsModel::getInstance()->getSettingValue('symbol') ?>";
+        const symbolIsAfter = <?= ShopSettingsModel::getInstance()->getSettingValue('after') ? 'true' : 'false' ?>;
+
+        function formatPrice(price) {
+            if (symbolIsAfter) {
+                return price.toFixed(2) + currencySymbol;
+            } else {
+                return currencySymbol  + price.toFixed(2);
+            }
+        }
+
+        function updateTotal() {
+            let selectedPaymentMethod = document.querySelector('input[name="paymentName"]:checked');
+            if (selectedPaymentMethod) {
+                const methodId = selectedPaymentMethod.value;
+                const feeElement = document.getElementById(`fee_${methodId}`);
+                if (feeElement) {
+                    const fee = parseFloat(feeElement.textContent.replace(/[^\d.]/g, ''));
+                    const newTotal = originalTotal + (fee || 0);
+                    totalElement.textContent = formatPrice(newTotal);
+                }
+            }
+        }
+
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', updateTotal);
+        });
+    });
+</script>

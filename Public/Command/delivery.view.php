@@ -9,6 +9,8 @@ use CMW\Utils\Website;
 /* @var CMW\Entity\Shop\Shippings\ShopShippingEntity[] $shippings */
 /* @var CMW\Entity\Shop\Shippings\ShopShippingEntity[] $withdrawPoints */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $appliedCartDiscounts*/
+/* @var bool $useInteractiveMap */
 
 Website::setTitle("Boutique - Tunnel de commande");
 Website::setDescription("Méthode de livraison");
@@ -66,7 +68,7 @@ Website::setDescription("Méthode de livraison");
                             <div class="flex flex-wrap justify-between">
                                 <div>
                                     <label>
-                                    <input name="shippingId" type="checkbox" value="<?= $shipping->getId() ?>"> <?= $shipping->getName() ?>
+                                    <input name="shippingId" type="radio" value="<?= $shipping->getId() ?>"> <?= $shipping->getName() ?>
                                     </label>
                                 </div>
                                 <div>
@@ -78,24 +80,32 @@ Website::setDescription("Méthode de livraison");
                     <hr>
                     <?php endif; ?>
                     <?php if (!empty($withdrawPoints)): ?>
-                    <h4>Point de retrait</h4>
-                    <small>Venez chercher votre colis dans nos points de distribution</small>
-                    <p>Todo MAP + Calcul distance</p>
-                    <?php foreach ($withdrawPoints as $withdrawPoint): ?>
-                        <div class="bg-gray-100 rounded-lg p-3 mb-2">
-                            <div class="flex flex-wrap justify-between">
-                                <div>
-                                    <label>
-                                        <input name="shippingId" type="checkbox" value="<?= $withdrawPoint->getId() ?>"> <?= $withdrawPoint->getName() ?>
-                                    </label>
-                                    <div class="withdrawPointMap"></div>
+                        <h4>Point de retrait</h4>
+                        <small>Venez chercher votre colis dans nos points de distribution</small>
+                    <div class="<?= $useInteractiveMap ? 'lg:grid grid-cols-3 gap-4' : '' ?>">
+                        <div>
+                            <?php foreach ($withdrawPoints as $withdrawPoint): ?>
+                                <div class="bg-gray-100 rounded-lg p-3 mb-2">
+                                    <div class="flex flex-wrap justify-between">
+                                        <div>
+                                            <label>
+                                                <input name="shippingId" type="radio" value="<?= $withdrawPoint->getId() ?>" data-id="<?= $withdrawPoint->getId() ?>" class="withdraw-radio"> <?= $withdrawPoint->getName() ?>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <b><?= $withdrawPoint->getPriceFormatted() ?></b>
+                                        </div>
+                                    </div>
+                                    Distance du point : <b><?= $withdrawPoint->getDistance($selectedAddress->getLatitude(), $selectedAddress->getLongitude()) ?> km</b>
                                 </div>
-                                <div>
-                                    <b><?= $withdrawPoint->getPrice() ?> TODO formatted price!</b>
-                                </div>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                        <?php if ($useInteractiveMap): ?>
+                        <div class="col-span-2">
+                            <div id="map" style="height: 400px; border: 1px solid #cdc9c9; border-radius: 12px"></div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                     <?php endif; ?>
                 </form>
             </div>
@@ -144,12 +154,12 @@ Website::setDescription("Méthode de livraison");
                         </div>
                     </div>
                 <?php endforeach; ?>
-                <?php if (!empty($giftCodes)): ?>
-                    <h4 class="text-center mt-4">Carte cadeau :</h4>
-                    <?php foreach ($giftCodes as $giftCode): ?>
+                <?php if (!empty($appliedCartDiscounts)): ?>
+                    <h4 class="text-center mt-4">Réduction :</h4>
+                    <?php foreach ($appliedCartDiscounts as $appliedCartDiscount): ?>
                         <div class="flex flex-wrap justify-between">
-                            <span><?= $giftCode->getCode() ?></span>
-                            <span><b>-<?= $giftCode->getPriceFormatted() ?></b></span>
+                            <span><?= $appliedCartDiscount->getCode() ?></span>
+                            <span><b>-<?= $appliedCartDiscount->getPriceFormatted() ?></b></span>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

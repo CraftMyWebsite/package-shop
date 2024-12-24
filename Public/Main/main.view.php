@@ -1,10 +1,11 @@
 <?php
 
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
-/* @var CMW\Entity\Shop\Categories\ShopCategoryEntity[] $categories */
+/* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
@@ -15,52 +16,51 @@ Website::setTitle('Boutique');
 Website::setDescription('Découvrez la boutique !');
 
 ?>
+
 <?php if (\CMW\Controller\Users\UsersController::isAdminLogged()): ?>
     <div style="background-color: orange; padding: 6px; margin-bottom: 10px">
         <span>Votre thème ne gère pas cette page !</span>
         <br>
         <small>Seuls les administrateurs voient ce message !</small>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
-<section style="width: 80%; margin: 25px auto auto;">
-    <div style="display:flex; justify-content: space-between">
-        <select onchange="location = this.value;" style="display: block; border: 1px solid #a29292; border-radius: 9px">
-            <option selected value="<?= Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop' ?>" >Catégorie : Tout afficher</option>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= $category->getCatLink() ?>">Catégorie : <?= $category->getName() ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div style="position: relative; width: 17rem">
-            <input type="search" id="search-dropdown"
-                   class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-100 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                   placeholder="Rechercher" required>
-            <button type="submit"
-                    class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-</section>
-
-
-<section class="bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-60">
+<section style="width: 80%; margin: auto; padding-bottom: 6rem">
     <div class="container p-4">
 
-        <div class="flex flex-wrap justify-between border-t border-b py-2">
+        <div style="display: flex; justify-content: space-between">
             <div>
-
+                <select onchange="location = this.value;" style="display: block; padding: 0rem .6rem 0rem .6rem; font-size: small; background: white; border-radius: 9px; color: black">
+                    <option selected value="<?= Website::getProtocol() . '://' . $_SERVER['SERVER_NAME'] . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop' ?>" >Catégorie : Tout afficher</option>
+                    <?php foreach ($categoryModel->getShopCategories() as $category): ?>
+                    <option value="<?= $category->getCatLink() ?>">Catégorie : <?= $category->getName() ?></option>
+                        <?php foreach ($categoryModel->getSubsCat($category->getId()) as $subCategory): ?>
+                            <option value="<?= $subCategory->getSubCategory()->getCatLink() ?>"> <?php echo str_repeat("\u{00A0}\u{00A0}", $subCategory->getDepth()) . ' Sous-Cat :  ' . $subCategory->getSubCategory()->getName() ?></option>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </select>
             </div>
-            <div class="flex hidden xl:block">
-
+            <div class="flex">
+                <form action="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>shop/search" method="post">
+                    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
+                    <div class="relative w-full lg:w-96">
+                        <input name="for" type="search" id="search-dropdown"
+                               class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-100 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Rechercher" required>
+                        <button type="submit"
+                                class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <div class="py-4 flex flex-wrap">
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
             <?php foreach ($items as $item): ?>
                 <div class="relative w-full xl:w-1/2 2xl:w-1/4 mt-4 mb-5 2xl:mb-0 px-4 hover:scale-105 transition">
                     <?php if ($item->getDiscountImpactDefaultApplied()): ?>
@@ -163,33 +163,6 @@ Website::setDescription('Découvrez la boutique !');
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
-
-        <div class="flex flex-col items-center border-t pt-2">
-            <span class="text-sm text-gray-700 dark:text-gray-400">Affiche
-                <span class="font-semibold text-gray-900 dark:text-white">1</span> à <span
-                        class="font-semibold text-gray-900 dark:text-white">10</span> sur <span
-                        class="font-semibold text-gray-900 dark:text-white">100</span> éléments
-  </span>
-            <!-- Buttons -->
-            <div class="inline-flex mt-2 xs:mt-0">
-                <button class="px-4 py-2 text-sm font-medium bg-gray-50 border-l border-t border-b border-gray-300 rounded-l hover:bg-gray-200">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                              clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-                <button class="px-4 py-2 text-sm font-medium bg-gray-50 border border-gray-300 rounded-r hover:bg-gray-200">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-            </div>
         </div>
     </div>
 </section>
