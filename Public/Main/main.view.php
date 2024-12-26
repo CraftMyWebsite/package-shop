@@ -68,11 +68,13 @@ Website::setDescription('Découvrez la boutique !');
     }
 
     .shop-scale-hover-5987548 {
+        display: flex;
+        flex-direction: column;
         transition: transform 0.3s ease;
         position: relative;
         background: transparent;
         border-radius: 9px;
-        border: 1px solid #d8d8d8;
+        border: 1px solid #1f2937;
     }
 
     .shop-link-container-45754 {
@@ -80,7 +82,7 @@ Website::setDescription('Découvrez la boutique !');
     }
 
     .shop-scale-hover-5987548:hover {
-        transform: scale(1.09);
+        transform: scale(1.07);
     }
 
     .shop-discount-badge-45787 {
@@ -208,6 +210,14 @@ Website::setDescription('Découvrez la boutique !');
         left: 50%
     }
 
+    .shop-price-section-457854 {
+        display: flex;
+        justify-content: space-around;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+        border-top: 1px solid #1f2937;
+    }
+
 </style>
 
 
@@ -264,9 +274,7 @@ Website::setDescription('Découvrez la boutique !');
                         <?php if ($v !== 1): ?>
                             <div id="indicators-carousel-<?= $uniqueId ?>" class="shop-carousel-568945"
                                  data-carousel="static">
-                                <!-- Carousel wrapper -->
                                 <div class="shop-carousel-wrapper-48721565">
-                                    <!-- Items -->
                                     <?php $x = 0;
                                     foreach ($getImagesItem as $imagesUrl): ?>
                                         <div class="shop-carousel-item-698757845 <?= $x === 0 ? 'active' : '' ?>"
@@ -289,7 +297,6 @@ Website::setDescription('Découvrez la boutique !');
                                         <?php $i++;
                                     endforeach; ?>
                                 </div>
-                                <!-- Controls -->
                                 <button type="button"
                                         class="shop-carousel-control-3588745 prev group"
                                         data-carousel-prev>
@@ -321,39 +328,46 @@ Website::setDescription('Découvrez la boutique !');
                             </div>
                         <?php else: ?>
                             <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
-                                <img alt="shop product" class="shop-solo-img-5678451" src="<?= $imageUrl->getImageUrl() ?>">
+                                <img alt="shop product" class="shop-solo-img-5678451"
+                                     src="<?= $imageUrl->getImageUrl() ?>">
                             <?php endforeach; ?>
                         <?php endif; ?>
                     <?php else: ?>
-                        <img class="shop-solo-img-5678451" src="<?= $defaultImage ?>">
+                        <img alt="items image" class="shop-solo-img-5678451" src="<?= $defaultImage ?>">
                     <?php endif; ?>
-                    <a style="all: inherit" href="<?= $item->getItemLink() ?>">
+                    <a style="all: inherit; cursor: pointer" href="<?= $item->getItemLink() ?>">
                         <div class="shop-link-container-45754">
                             <h4 style="text-align: center"><?= $item->getName() ?></h4>
                             <?php if ($allowReviews): ?>
-                                <div class="flex justify-center items-center">
-                                    <?= $review->getStars($item->getId()) ?>
-                                    <span class="mx-1 "></span>
-                                    <p class="text-sm font-medium text-gray-900 underline"><?= $review->countTotalRatingByItemId($item->getId()) ?>
+                                <div
+                                    style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+                                    <div>
+                                        <?= $review->getStars($item->getId()) ?>
+                                    </div>
+                                    <p style="font-weight: bold"><?= $review->countTotalRatingByItemId($item->getId()) ?>
                                         avis</p>
                                 </div>
                             <?php endif; ?>
-                            <p><?= $item->getShortDescription() ?></p>
-                            <p class="text-xs text-center hover:text-blue-600">Lire la suite</p>
+                            <p style="margin-top: .4rem"><?= mb_strimwidth($item->getShortDescription(), 0, 106, '...') ?></p>
                         </div>
                     </a>
                 </div>
-                <div class="grid grid-cols-2 border rounded-b py-2">
-                    <?php if ($item->getPriceDiscountDefaultApplied()): ?>
-                        <p class="text-center"><s><?= $item->getPriceFormatted() ?></s> <b
-                                class="text-xl"><?= $item->getPriceDiscountDefaultAppliedFormatted() ?></b></p>
-                    <?php else: ?>
-                        <p class="text-center text-xl"><?= $item->getPriceFormatted() ?></p>
-                    <?php endif; ?>
-
-                    <a href="<?= $item->getAddToCartLink() ?>"
-                       class="border-l text-center text-2xl hover:text-blue-600"><i
-                            class="fa-solid fa-cart-plus"></i></a>
+                <div style="margin-top: auto">
+                    <a href="<?= $item->getItemLink() ?>">
+                        <div style="display: flex; justify-content: end">
+                            <p style="margin: 0 .8rem .4rem .4rem; font-size: small">Voir l'article en détails</p>
+                        </div>
+                    </a>
+                    <div class="shop-price-section-457854">
+                        <?php if ($item->getPriceDiscountDefaultApplied()): ?>
+                            <p><s style="font-size: small"><?= $item->getPriceFormatted() ?></s> <span style="font-size: larger"><?= $item->getPriceDiscountDefaultAppliedFormatted() ?></span></p>
+                        <?php else: ?>
+                            <p style="font-size: larger"><?= $item->getPriceFormatted() ?></p>
+                        <?php endif; ?>
+                        <a style="font-size: larger" href="<?= $item->getAddToCartLink() ?>">
+                            <i class="fa-solid fa-cart-plus"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
