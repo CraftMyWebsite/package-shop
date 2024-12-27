@@ -1,20 +1,22 @@
 <?php
 
+use CMW\Entity\Core\MailConfigEntity;
+use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
-use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Core\MailModel;
+use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = 'Boutique';
-$description = '';
+Website::setTitle("Boutique - Gestion des articles");
+Website::setDescription("Gestion des articles de la boutique");
 
-/* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
+/* @var ShopItemEntity [] $items */
 /* @var CMW\Model\Shop\Image\ShopImagesModel $imagesItem */
-/* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
+/* @var ShopImagesModel $defaultImage */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
-/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
+/* @var ShopSettingsModel $allowReviews */
+/* @var ?MailConfigEntity $mailConfig */
 
 ?>
 <div class="page-title">
@@ -25,14 +27,18 @@ $description = '';
     </div>
 </div>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
+<?php if ($mailConfig === null || !$mailConfig->isEnable()): ?>
     <div class="alert-danger">
         <b>Important : Configuration des e-mails requise</b>
-        <p>Les e-mails ne sont pas configurés sur votre site. Une configuration correcte est essentielle pour assurer le bon fonctionnement du package Shop.<br>
-            Les notifications importantes, telles que les confirmations de commandes, les informations de suivi ..., dépendent d'un système d'e-mails fonctionnel.</p>
-        <p>Veuillez <a class="link" href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/mail/configuration">configurer les paramètres d'e-mails</a> dès que possible.</p>
+        <p>Les e-mails ne sont pas configurés sur votre site. Une configuration correcte est essentielle pour assurer le
+            bon fonctionnement du package Shop.<br>
+            Les notifications importantes, telles que les confirmations de commandes, les informations de suivi ...,
+            dépendent d'un système d'e-mails fonctionnel.</p>
+        <p>Veuillez <a class="link"
+                       href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/mail/configuration">configurer
+                les paramètres d'e-mails</a> dès que possible.</p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
 <div class="table-container">
     <table id="table1" data-load-per-page="10">
@@ -55,17 +61,20 @@ $description = '';
         <?php foreach ($items as $item): ?>
             <tr>
                 <td class="text-center" style="width: 6rem; height: 6rem;">
-                    <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
+                    <?php
+                    $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
+                    //TODO Improve that.
                     $v = 0;
                     foreach ($getImagesItem as $countImage) {
                         $v++;
-                    } ?>
+                    }
+                    ?>
                     <?php if ($getImagesItem): ?>
                         <?php if ($v !== 1): ?>
                             <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="80px">
-                            <?php foreach ($getImagesItem as $imagesUrl): ?>
-                                <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">
-                            <?php endforeach; ?>
+                                <?php foreach ($getImagesItem as $imagesUrl): ?>
+                                    <img src="<?= $imagesUrl->getImageUrl() ?>" alt="..">
+                                <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
@@ -83,7 +92,8 @@ $description = '';
                 <td style="width: fit-content;">
                     <h6><?= mb_strimwidth($item->getName(), 0, 30, '...') ?></h6>
                     <?php if ($item->isDraft()): ?>
-                        <small class="cursor-pointer" data-tooltip-target="tooltip-top" data-tooltip-placement="top"><i class="fa-solid fa-circle-info"></i> Brouillon</small>
+                        <small class="cursor-pointer" data-tooltip-target="tooltip-top" data-tooltip-placement="top"><i
+                                class="fa-solid fa-circle-info"></i> Brouillon</small>
                         <div id="tooltip-top" role="tooltip" class="tooltip-content">
                             Visible uniquement par les administrateurs
                         </div>
@@ -101,7 +111,8 @@ $description = '';
                     <?= mb_strimwidth($item->getShortDescription(), 0, 60, '...') ?>
                 </td>
                 <td style="width: fit-content;">
-                    <a class="link" data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank" href="<?= $item->getCategory()->getCatLink() ?>"><?= $item->getCategory()->getName() ?></a>
+                    <a class="link" data-bs-toggle="tooltip" title="Consulter cette catégorie" target="_blank"
+                       href="<?= $item->getCategory()->getCatLink() ?>"><?= $item->getCategory()->getName() ?></a>
                 </td>
                 <td>
                     <b><?= $item->getPriceFormatted() ?></b>
@@ -114,7 +125,8 @@ $description = '';
                 </td>
                 <td class="text-center space-x-2">
                     <a href="<?= $item->getItemLink() ?>" target="_blank">
-                        <i data-bs-toggle="tooltip" title="Voir le rendue" class="text-success me-3 fa-solid fa-up-right-from-square"></i>
+                        <i data-bs-toggle="tooltip" title="Voir le rendue"
+                           class="text-success me-3 fa-solid fa-up-right-from-square"></i>
                     </a>
                     <a href="items/edit/<?= $item->getId() ?>">
                         <i data-bs-toggle="tooltip" title="Éditer" class="text-info me-3 fa-solid fa-edit"></i>
@@ -131,7 +143,8 @@ $description = '';
                 <div class="modal">
                     <div class="modal-header-danger">
                         <h6>Suppression de : <?= $item->getName() ?></h6>
-                        <button type="button" data-modal-hide="modal-delete-<?= $item->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
+                        <button type="button" data-modal-hide="modal-delete-<?= $item->getId() ?>"><i
+                                class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="modal-body">
                         <p>Cette supression est définitive<br><br>

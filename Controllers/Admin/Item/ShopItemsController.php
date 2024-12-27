@@ -17,9 +17,9 @@ use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
 use CMW\Manager\Views\View;
+use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
-use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersItemsModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
@@ -32,7 +32,8 @@ use CMW\Model\Shop\Review\ShopReviewsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
-use function array_filter;
+use JetBrains\PhpStorm\NoReturn;
+use function is_null;
 
 /**
  * Class: @ShopItemsController
@@ -53,9 +54,11 @@ class ShopItemsController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $review = ShopReviewsModel::getInstance();
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+        $mailConfig = MailModel::getInstance()->getConfig();
 
         View::createAdminView('Shop', 'Items/manage')
-            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
+                'review' => $review, 'allowReviews' => $allowReviews, 'mailConfig' => $mailConfig])
             ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
             ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
                 'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
@@ -74,7 +77,8 @@ class ShopItemsController extends AbstractController
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
 
         View::createAdminView('Shop', 'Items/archived')
-            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
+                'review' => $review, 'allowReviews' => $allowReviews])
             ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
             ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
                 'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
@@ -93,12 +97,13 @@ class ShopItemsController extends AbstractController
         $review = ShopReviewsModel::getInstance();
 
         View::createAdminView('Shop', 'Items/review')
-            ->addVariableList(['categoryModel' => $categoryModel, 'item' => $item, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'review' => $review])
+            ->addVariableList(['categoryModel' => $categoryModel, 'item' => $item, 'imagesItem' => $imagesItem,
+                'defaultImage' => $defaultImage, 'review' => $review])
             ->view();
     }
 
-    #[Link('/items/review/:id/delete/:reviewId', Link::GET, [], '/cmw-admin/shop')]
-    private function shopItemsDeleteReviews(int $id, int $reviewId): void
+    #[NoReturn] #[Link('/items/review/delete/:reviewId', Link::GET, [], '/cmw-admin/shop')]
+    private function shopItemsDeleteReviews(int $reviewId): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.deleteRating');
 
@@ -118,7 +123,8 @@ class ShopItemsController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
         View::createAdminView('Shop', 'Items/filterCat')
-            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'thisCat' => $thisCat])
+            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' =>
+                $defaultImage, 'thisCat' => $thisCat])
             ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
             ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
                 'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
@@ -134,7 +140,9 @@ class ShopItemsController extends AbstractController
             $categoryModel = ShopCategoriesModel::getInstance();
 
             View::createAdminView('Shop', 'Items/add')
-                ->addVariableList(['categoryModel' => $categoryModel, 'virtualMethods' => $this->getVirtualItemsMethods(), 'priceTypeMethods' => $this->getPriceTypeMethods()])
+                ->addVariableList(['categoryModel' => $categoryModel,
+                    'virtualMethods' => $this->getVirtualItemsMethods(),
+                    'priceTypeMethods' => $this->getPriceTypeMethods()])
                 ->addScriptBefore('Admin/Resources/Vendors/Tinymce/tinymce.min.js',
                     'Admin/Resources/Vendors/Tinymce/Config/full.js')
                 ->view();
@@ -143,14 +151,35 @@ class ShopItemsController extends AbstractController
         }
     }
 
-    #[Link('/items/add', Link::POST, [], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/items/add', Link::POST, [], '/cmw-admin/shop')]
     private function adminAddShopItemPost(): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
+        //TODO FilterManager
         [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
 
-        $itemId = ShopItemsModel::getInstance()->createShopItem($name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit), ($draft === null ? 0 : 1));
+        $stock = empty($stock) ? null : $stock;
+        $price = empty($price) ? 0 : $price;
+        $byOrderLimit = empty($byOrderLimit) ? null : $byOrderLimit;
+        $globalLimit = empty($globalLimit) ? null : $globalLimit;
+        $userLimit = empty($userLimit) ? null : $userLimit;
+        $draft = is_null($draft) ? 0 : 1;
+
+        $itemId = ShopItemsModel::getInstance()->createShopItem(
+            $name,
+            $shortDesc,
+            $category,
+            $description,
+            $type,
+            $stock,
+            $price,
+            $priceType,
+            $byOrderLimit,
+            $globalLimit,
+            $userLimit,
+            $draft,
+        );
 
         // Variantes
         $variantNames = $_POST['shop_item_variant_name'] ?? [];
@@ -161,14 +190,15 @@ class ShopItemsController extends AbstractController
                 $variantId = ShopItemVariantModel::getInstance()->createVariant($variantName, $itemId);
 
                 foreach ($variantValues[$parentIndex] as $variantValue) {
-                    if ($variantValue === '') {
+                    if (empty($variantValue)) {
                         continue;
                     }
-                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId->getId() ?? null);
+                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId?->getId());
                 }
             }
         }
 
+        //TODO FilterManager
         [$numberOfImage] = Utils::filterInput('numberOfImage');
         if ($numberOfImage !== '') {
             for ($i = 0; $i < $numberOfImage; $i++) {
@@ -177,12 +207,13 @@ class ShopItemsController extends AbstractController
 
                 if (isset($_FILES[$imageKey]) && $_FILES[$imageKey]['error'] === UPLOAD_ERR_OK) {
                     $image = $_FILES[$imageKey];
-                    $order = isset($_POST[$orderKey]) ? intval($_POST[$orderKey]) : 0;
+                    $order = isset($_POST[$orderKey]) ? (int)$_POST[$orderKey] : 0;
                     ShopImagesModel::getInstance()->addShopItemImage($image, $itemId, $order);
                 }
             }
         }
 
+        //TODO Proper type ??
         if ($type == '0') {
             [$weight, $length, $width, $height] = Utils::filterInput('shop_item_weight', 'shop_item_length', 'shop_item_width', 'shop_item_height');
             $length = is_null($length) ? 0 : (float)$length;
@@ -196,6 +227,11 @@ class ShopItemsController extends AbstractController
             if (!empty($varName)) {
                 $validPrefixes = Utils::filterInput('shop_item_virtual_prefix');
                 $virtualMethod = ShopItemsVirtualMethodModel::getInstance()->insertMethod($varName, $itemId);
+
+                if (is_null($virtualMethod)) {
+                    //TODO Throw an error ?
+                }
+
                 $virtualMethodId = $virtualMethod->getId();
 
                 foreach ($_POST as $key => $value) {
@@ -204,7 +240,7 @@ class ShopItemsController extends AbstractController
                         if (str_starts_with($key, $prefix)) {
                             $widgetKey = FilterManager::filterData($key, 50);
                             $widgetValue = FilterManager::filterData($value, 255);
-                            if ($widgetKey != $widgetValue) {
+                            if ($widgetKey !== $widgetValue) {
                                 if (!ShopItemsVirtualRequirementModel::getInstance()->insertSetting($virtualMethodId, $key . $itemId, $value)) {
                                     Flash::send(Alert::ERROR, 'Erreur',
                                         "Impossible de mettre à jour le paramètre $widgetKey.");
@@ -239,22 +275,47 @@ class ShopItemsController extends AbstractController
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
 
         View::createAdminView('Shop', 'Items/edit')
-            ->addVariableList(['categoryModel' => $categoryModel, 'item' => $item, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'physicalInfo' => $physicalInfo, 'virtualMethods' => $this->getVirtualItemsMethods(), 'priceTypeMethods' => $this->getPriceTypeMethods(), 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel])
+            ->addVariableList(['categoryModel' => $categoryModel, 'item' => $item, 'imagesItem' => $imagesItem,
+                'defaultImage' => $defaultImage, 'physicalInfo' => $physicalInfo,
+                'virtualMethods' => $this->getVirtualItemsMethods(), 'priceTypeMethods' => $this->getPriceTypeMethods(),
+                'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel])
             ->addScriptBefore('Admin/Resources/Vendors/Tinymce/tinymce.min.js',
                 'Admin/Resources/Vendors/Tinymce/Config/full.js')
             ->view();
     }
 
-    #[Link('/items/edit/:id', Link::POST, [], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/items/edit/:id', Link::POST, [], '/cmw-admin/shop')]
     private function adminEditShopItemPost(int $id): void
     {
         $backupItemInfo = ShopItemsModel::getInstance()->getShopItemsById($id);
 
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.edit');
 
+        //TODO FilterManager
         [$name, $shortDesc, $category, $description, $type, $stock, $price, $priceType, $byOrderLimit, $globalLimit, $userLimit, $draft] = Utils::filterInput('shop_item_name', 'shop_item_short_desc', 'shop_category_id', 'shop_item_description', 'shop_item_type', 'shop_item_default_stock', 'shop_item_price', 'shop_item_price_type', 'shop_item_by_order_limit', 'shop_item_global_limit', 'shop_item_user_limit', 'shop_item_draft');
 
-        ShopItemsModel::getInstance()->editShopItem($id, $name, $shortDesc, $category, $description, $type, ($stock === '' ? null : $stock), ($price === '' ? 0 : $price), $priceType, ($byOrderLimit === '' ? null : $byOrderLimit), ($globalLimit === '' ? null : $globalLimit), ($userLimit === '' ? null : $userLimit), ($draft === null ? 0 : 1));
+        $stock = empty($stock) ? null : $stock;
+        $price = empty($price) ? 0 : $price;
+        $byOrderLimit = empty($byOrderLimit) ? null : $byOrderLimit;
+        $globalLimit = empty($globalLimit) ? null : $globalLimit;
+        $userLimit = empty($userLimit) ? null : $userLimit;
+        $draft = is_null($draft) ? 0 : 1;
+
+        ShopItemsModel::getInstance()->editShopItem(
+            $id,
+            $name,
+            $shortDesc,
+            $category,
+            $description,
+            $type,
+            $stock,
+            $price,
+            $priceType,
+            $byOrderLimit,
+            $globalLimit,
+            $userLimit,
+            $draft,
+        );
 
         // Variantes
         $variantNames = $_POST['shop_item_variant_name'] ?? [];
@@ -267,10 +328,12 @@ class ShopItemsController extends AbstractController
             foreach ($variantNames as $parentIndex => $variantName) {
                 $variantId = ShopItemVariantModel::getInstance()->createVariant($variantName, $id);
                 foreach ($variantValues[$parentIndex] as $variantValue) {
-                    if ($variantValue === '') {
+
+                    if (empty($variantValue)) {
                         continue;
                     }
-                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId->getId() ?? null);
+
+                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId?->getId());
                 }
             }
         } elseif (ShopItemVariantModel::getInstance()->itemHasVariant($id)) {
@@ -281,9 +344,10 @@ class ShopItemsController extends AbstractController
 
         ShopImagesModel::getInstance()->clearImages($id);
 
+        //TODO FilterManager
         [$numberOfImage] = Utils::filterInput('numberOfImage');
 
-        if ($numberOfImage !== '') {
+        if (!empty($numberOfImage)) {
             for ($i = 0; $i < $numberOfImage; $i++) {
                 $imageKey = 'image-' . $i;
                 $existingImageKey = 'image-existing-' . $i;
@@ -291,22 +355,23 @@ class ShopItemsController extends AbstractController
 
                 if (isset($_FILES[$imageKey]) && $_FILES[$imageKey]['error'] === UPLOAD_ERR_OK) {
                     $image = $_FILES[$imageKey];
-                    $order = isset($_POST[$orderKey]) ? intval($_POST[$orderKey]) : 0;
+                    $order = isset($_POST[$orderKey]) ? (int)$_POST[$orderKey] : 0;
                     ShopImagesModel::getInstance()->addShopItemImage($image, $id, $order);
                 } elseif (isset($_POST[$existingImageKey])) {
                     $image = $_POST[$existingImageKey];
-                    $order = isset($_POST[$orderKey]) ? intval($_POST[$orderKey]) : 0;
+                    $order = isset($_POST[$orderKey]) ? (int)$_POST[$orderKey] : 0;
                     ShopImagesModel::getInstance()->addReuseShopItemImage($image, $id, $order);
                 }
             }
         }
 
+        //TODO Proper type
         if ($type == '0') {
             [$weight, $length, $width, $height] = Utils::filterInput('shop_item_weight', 'shop_item_length', 'shop_item_width', 'shop_item_height');
             $length = is_null($length) ? 0 : (float)$length;
             $width = is_null($width) ? 0 : (float)$width;
             $height = is_null($height) ? 0 : (float)$height;
-            if ($backupItemInfo->getType() === 0) {
+            if ($backupItemInfo?->getType() === 0) {
                 ShopItemsPhysicalRequirementModel::getInstance()->updatePhysicalRequirement($id, $weight, $length, $width, $height);
             } else {
                 ShopItemsVirtualMethodModel::getInstance()->clearMethod($id);  // This model also clear setting automatically
@@ -320,7 +385,7 @@ class ShopItemsController extends AbstractController
             [$varName] = Utils::filterInput('shop_item_virtual_method_var_name');
             if (!empty($varName)) {
                 $validPrefixes = Utils::filterInput('shop_item_virtual_prefix');
-                if ($backupItemInfo->getType() === 1) {
+                if ($backupItemInfo?->getType() === 1) {
                     $updatedVirtualMethod = ShopItemsVirtualMethodModel::getInstance()->updateMethod($varName, $id);
                     $updatedVirtualMethodId = $updatedVirtualMethod->getId();
                     ShopItemsVirtualRequirementModel::getInstance()->clearSetting($updatedVirtualMethodId);
@@ -330,7 +395,7 @@ class ShopItemsController extends AbstractController
                             if (str_starts_with($key, $prefix)) {
                                 $widgetKey = FilterManager::filterData($key, 50);
                                 $widgetValue = FilterManager::filterData($value, 255);
-                                if ($widgetKey != $widgetValue) {
+                                if ($widgetKey !== $widgetValue) {
                                     if (!ShopItemsVirtualRequirementModel::getInstance()->insertSetting($updatedVirtualMethodId, $key . $id, $value)) {
                                         Flash::send(Alert::ERROR, 'Erreur',
                                             "Impossible de mettre à jour le paramètre $widgetKey.");
@@ -344,14 +409,14 @@ class ShopItemsController extends AbstractController
                 } else {
                     ShopItemsPhysicalRequirementModel::getInstance()->clearPhysicalRequirement($id);
                     $virtualMethod = ShopItemsVirtualMethodModel::getInstance()->insertMethod($varName, $id);
-                    $virtualMethodId = $virtualMethod->getId();
+                    $virtualMethodId = $virtualMethod?->getId();
                     foreach ($_POST as $key => $value) {
                         foreach ($validPrefixes as $prefix) {
                             // Vérifiez si la clé commence par un des préfixes valides
                             if (str_starts_with($key, $prefix)) {
                                 $widgetKey = FilterManager::filterData($key, 50);
                                 $widgetValue = FilterManager::filterData($value, 255);
-                                if ($widgetKey != $widgetValue) {
+                                if ($widgetKey !== $widgetValue) {
                                     if (!ShopItemsVirtualRequirementModel::getInstance()->insertSetting($virtualMethodId, $key . $id, $value)) {
                                         Flash::send(Alert::ERROR, 'Erreur',
                                             "Impossible de mettre à jour le paramètre $widgetKey.");
@@ -377,7 +442,7 @@ class ShopItemsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/items/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/items/delete/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminDeleteShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.delete');
@@ -404,13 +469,14 @@ class ShopItemsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/items/activate/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
+    #[NoReturn] #[Link('/items/activate/:id', Link::GET, ['[0-9]+'], '/cmw-admin/shop')]
     private function adminActivateShopItem(int $id): void
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
-        $thisItem = ShopItemsModel::getInstance()->getShopItemsById($id);
-        if ($thisItem->getCategory()) {
+        $item = ShopItemsModel::getInstance()->getShopItemsById($id);
+
+        if ($item?->getCategory()) {
             ShopItemsModel::getInstance()->unarchivedItem($id);
             Flash::send(Alert::SUCCESS, 'Boutique', "L'article est à nouveau disponible");
             Redirect::redirect('cmw-admin/shop/items');
@@ -421,7 +487,7 @@ class ShopItemsController extends AbstractController
     }
 
     /**
-     * @return \CMW\Interface\Shop\IVirtualItems[]
+     * @return IVirtualItems[]
      */
     public function getVirtualItemsMethods(): array
     {
@@ -430,7 +496,7 @@ class ShopItemsController extends AbstractController
 
     /**
      * @param string $varName
-     * @return \CMW\Interface\Shop\IVirtualItems|null
+     * @return IVirtualItems|null
      */
     public function getVirtualItemsMethodsByVarName(string $varName): ?IVirtualItems
     {
@@ -443,7 +509,7 @@ class ShopItemsController extends AbstractController
     }
 
     /**
-     * @return \CMW\Interface\Shop\IPriceTypeMethod[]
+     * @return IPriceTypeMethod[]
      */
     public function getPriceTypeMethods(): array
     {
@@ -452,7 +518,7 @@ class ShopItemsController extends AbstractController
 
     /**
      * @param string $varName
-     * @return \CMW\Interface\Shop\IPriceTypeMethod|null
+     * @return IPriceTypeMethod|null
      */
     public function getPriceTypeMethodsByVarName(string $varName): ?IPriceTypeMethod
     {
@@ -465,7 +531,7 @@ class ShopItemsController extends AbstractController
     }
 
     /**
-     * @return \CMW\Interface\Shop\IGlobalConfig[]
+     * @return IGlobalConfig[]
      */
     public function getGlobalConfigMethods(): array
     {
@@ -474,7 +540,7 @@ class ShopItemsController extends AbstractController
 
     /**
      * @param string $varName
-     * @return \CMW\Interface\Shop\IGlobalConfig|null
+     * @return IGlobalConfig|null
      */
     public function getGlobalConfigMethodsByVarName(string $varName): ?IGlobalConfig
     {
