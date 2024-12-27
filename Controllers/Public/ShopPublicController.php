@@ -221,7 +221,7 @@ class ShopPublicController extends AbstractController
     {
         [$for] = Utils::filterInput('for');
 
-        $results = ShopItemsModel::getInstance()->getItemByResearch($for);
+        $items = ShopItemsModel::getInstance()->getItemByResearch($for);
 
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
@@ -229,8 +229,8 @@ class ShopPublicController extends AbstractController
         $review = ShopReviewsModel::getInstance();
         $categoryModel = ShopCategoriesModel::getInstance();
 
-        View::createPublicView('Shop', 'Main/search')
-            ->addVariableList(['for' => $for, 'results' => $results
+        View::createPublicView('Shop', 'Main/main')
+            ->addVariableList(['items' => $items
                 , 'imagesItem' => $imagesItem
                 , 'defaultImage' => $defaultImage
                 , 'allowReviews' => $allowReviews
