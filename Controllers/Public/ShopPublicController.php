@@ -94,7 +94,7 @@ class ShopPublicController extends AbstractController
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
-        $view = new View('Shop', 'Main/cat');
+        $view = new View('Shop', 'Main/main');
         $view->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categoryModel' => $categoryModel, 'review' => $review, 'allowReviews' => $allowReviews]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
