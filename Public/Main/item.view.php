@@ -22,26 +22,18 @@ Website::setDescription("Venez découvrir l'article !");
 
 ?>
 
-<section class="bg-gray-800 relative text-white">
-    <img src="<?= ThemeModel::getInstance()->fetchImageLink('hero_img_bg') ?>" class="absolute h-full inset-0 object-center object-cover w-full" alt="Vous devez upload bg.webp depuis votre panel !" width="1080" height="720"/>
-    <div class="container mx-auto px-4 py-12 relative">
-        <div class="flex flex-wrap -mx-4">
-            <div class="mx-auto px-4 text-center w-full lg:w-8/12">
-                <h1 class="font-extrabold mb-4 text-2xl md:text-6xl">Boutique</h1>
-            </div>
-        </div>
-    </div>
-</section>
+<link rel="stylesheet"
+      href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/style.css">
 
-<section class="relative bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-72">
+<section style="position: relative" class="shop-section-45875487">
     <?php if ($item->getDiscountImpactDefaultApplied()): ?>
-        <div style="z-index: 5000; position: absolute; top: 0; left: 0; transform: translate(5%, 10%) rotate(-10deg); background-color: #f44336; color: white; padding: 8px 16px; border-radius: 0 16px 0 16px;">
+        <div class="shop-discount-badge-45787">
             <p class="text-center text-xl"><?= $item->getDiscountImpactDefaultApplied() ?></p>
         </div>
     <?php endif; ?>
-    <div class="container p-4">
-        <div class="xl:grid grid-cols-6 gap-6">
-            <div class="col-span-2 h-fit">
+    <div>
+        <div class="shop-grid-item-596587">
+            <div style="height: fit-content" class="shop-col-span-2-668745">
                 <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
                 $v = 0;
                 foreach ($getImagesItem as $countImage) {
@@ -49,84 +41,85 @@ Website::setDescription("Venez découvrir l'article !");
                 } ?>
                 <?php if ($getImagesItem): ?>
                     <?php if ($v !== 1): ?>
-                        <div id="indicators-carousel" class="relative w-full" data-carousel="static">
-                            <!-- Carousel wrapper -->
-                            <div class="relative h-56 overflow-hidden rounded-lg md:h-48">
-                                <!-- Item 1 -->
+                        <div id="indicators-carousel-<?= $uniqueId ?>" class="shop-carousel-568945"
+                             data-carousel="static">
+                            <div class="shop-carousel-wrapper-48721565">
                                 <?php $x = 0;
                                 foreach ($getImagesItem as $imagesUrl): ?>
-                                    <div class="hidden duration-700 ease-in-out" data-carousel-item="<?php if ($x === 0): ?>active<?php endif; ?>">
-                                        <img src="<?= $imagesUrl->getImageUrl() ?>"
-                                             class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                                             alt="...">
+                                    <div class="shop-carousel-item-698757845 <?= $x === 0 ? 'active' : '' ?>"
+                                         data-carousel-item>
+                                        <img style="all: inherit" src="<?= $imagesUrl->getImageUrl() ?>"
+                                             class="shop-carousel-img-548754" alt="Image <?= $x ?>">
                                     </div>
                                     <?php $x++;
                                 endforeach; ?>
                             </div>
-                            <!-- Slider indicators -->
-                            <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2">
+                            <!-- Indicators -->
+                            <div class="shop-carousel-indicators-6478454">
                                 <?php $i = 0;
                                 foreach ($getImagesItem as $imageId): ?>
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="<?php if ($i === 0): ?>true<?php endif; ?>"
-                                            aria-label="Slide 1" data-carousel-slide-to="<?= $i ?>"></button>
+                                    <button type="button"
+                                            class="shop-carousel-indicator-9675487 <?= $i === 0 ? 'active' : '' ?>"
+                                            aria-current="<?= $i === 0 ? 'true' : 'false' ?>"
+                                            aria-label="Slide <?= $i + 1 ?>"
+                                            data-carousel-slide-to="<?= $i ?>"></button>
                                     <?php $i++;
                                 endforeach; ?>
                             </div>
-                            <!-- Slider controls -->
                             <button type="button"
-                                    class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                                    class="shop-carousel-control-3588745 prev group"
                                     data-carousel-prev>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-4 h-4 text-white dark:text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                 fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M5 1 1 5l4 4"/>
-            </svg>
-            <span class="sr-only">Previous</span>
-        </span>
+                                        <span class="shop-carousel-indicator-span-9675487">
+                                            <svg style="width: 1rem; height: 1rem; color: white"
+                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                 viewBox="0 0 6 10">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                      stroke-linejoin="round" stroke-width="2"
+                                                      d="M5 1 1 5l4 4"/>
+                                            </svg>
+                                            <span class="sr-only">Previous</span>
+                                        </span>
                             </button>
                             <button type="button"
-                                    class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                                    class="shop-carousel-control-3588745 next group"
                                     data-carousel-next>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-4 h-4 text-white dark:text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                 fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m1 9 4-4-4-4"/>
-            </svg>
-            <span class="sr-only">Next</span>
-        </span>
+                                        <span class="shop-carousel-indicator-span-9675487">
+                                            <svg style="width: 1rem; height: 1rem; color: white"
+                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                 viewBox="0 0 6 10">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                      stroke-linejoin="round" stroke-width="2"
+                                                      d="m1 9 4-4-4-4"/>
+                                            </svg>
+                                            <span class="sr-only">Next</span>
+                                        </span>
                             </button>
                         </div>
-
                     <?php else: ?>
                         <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
-                            <img class="mx-auto h-48"
+                            <img alt="shop product" class="shop-solo-img-5678451"
                                  src="<?= $imageUrl->getImageUrl() ?>">
                         <?php endforeach; ?>
                     <?php endif; ?>
                 <?php else: ?>
-                    <img class="mx-auto h-48"
+                    <img alt="shop product" class="shop-solo-img-5678451"
                          src="<?= $defaultImage ?>">
                 <?php endif; ?>
             </div>
-            <div class="col-span-4 h-fit">
-                <h2 class="font-medium"><?= $item->getName() ?></h2>
-
+            <div style="height: fit-content" class="shop-col-span-4-157875">
+                <h2 style="font-weight: bold"><?= $item->getName() ?></h2>
                 <?php if ($allowReviews): ?>
-                <div class="flex items-center">
-                    <?= $review->getStars($item->getId()) ?>
-                    <span class="mx-1 "></span>
-                    <p class="text-sm font-medium text-gray-900 underline"><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
-                </div>
+                    <div style="display: flex; gap: .3rem">
+                        <div><?= $review->getStars($item->getId()) ?></div>
+                        <p style="font-weight: bold"><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
+                    </div>
                 <?php endif; ?>
-
                 <?php if ($showPublicStock): ?>
                 <b>Stock :</b> <?= $item->getPublicFormattedStock() ?>
                 <?php endif; ?>
 
                 <?php if ($item->getPriceDiscountDefaultApplied()): ?>
-                    <h3><s class="text-xl"><?= $item->getPriceFormatted() ?></s> <?= $item->getPriceDiscountDefaultAppliedFormatted() ?></h3>
+                    <h3><s style="font-size: large"><?= $item->getPriceFormatted() ?></s> <?= $item->getPriceDiscountDefaultAppliedFormatted() ?></h3>
                 <?php else: ?>
                     <h3><?= $item->getPriceFormatted() ?></h3>
                 <?php endif; ?>
@@ -134,13 +127,13 @@ Website::setDescription("Venez découvrir l'article !");
 
                 <form method="post">
                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                    <div class="flex flex-wrap">
+                    <div style="display: flex;">
                         <?php foreach ($itemVariants as $itemVariant): ?>
-                            <div class="mr-2">
-                                <div class="my-2">
+                            <div style="margin-right: .6rem">
+                                <div style="margin-right: .3rem">
                                     <?= $itemVariant->getName() ?> :
                                 </div>
-                                <select name="selected_variantes[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1">
+                                <select name="selected_variantes[]" class="shop-select-5872154">
                                     <?php foreach ($variantValuesModel->getShopItemVariantValueByVariantId($itemVariant->getId()) as $variantValue): ?>
                                         <option value="<?= $variantValue->getId() ?>"><?= $variantValue->getValue() ?></option>
                                     <?php endforeach; ?>
@@ -148,20 +141,21 @@ Website::setDescription("Venez découvrir l'article !");
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <div class="flex items-center my-2">
-                        <input type="number" value="1" name="quantity" class="text-center w-14 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
-                        <button type="submit" class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                            Ajouter au panier
-                        </button>
+                    <div style="display: flex; align-items: center; margin-top: .5rem">
+                        <div style="position: relative; width: 12rem">
+                            <input value="1" name="quantity" type="number" class="shop-input-number-587254"
+                                   placeholder="Rechercher" required>
+                            <button type="submit" class="shop-button-number-565787">
+                                Ajouter au panier
+                            </button>
+                        </div>
                     </div>
                 </form>
-                <p>Catégorie : <a href="<?= $parentCat->getCatLink() ?>" class="text-blue-600 hover:text-blue-400"><?= $parentCat->getName() ?></a></p>
+                <div style="margin-top: .5rem">
+                    <p>Catégorie : <a href="<?= $parentCat->getCatLink() ?>" class="text-blue-600 hover:text-blue-400"><?= $parentCat->getName() ?></a></p>
+                </div>
             </div>
         </div>
-
-
-
-
 
         <div class="mb-4 border-b border-gray-200">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent" role="tablist">
@@ -262,3 +256,6 @@ Website::setDescription("Venez découvrir l'article !");
 
     </div>
 </section>
+
+<script
+    src="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/carousel.js"></script>

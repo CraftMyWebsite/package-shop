@@ -142,13 +142,9 @@ Website::setDescription('Découvrez la boutique !');
                             <div class="shop-link-container-45754">
                                 <h4 style="text-align: center"><?= $item->getName() ?></h4>
                                 <?php if ($allowReviews): ?>
-                                    <div
-                                        style="display: flex; flex-direction: column; justify-content: center; align-items: center">
-                                        <div>
-                                            <?= $review->getStars($item->getId()) ?>
-                                        </div>
-                                        <p style="font-weight: bold"><?= $review->countTotalRatingByItemId($item->getId()) ?>
-                                            avis</p>
+                                    <div class="shop-review-4578211">
+                                        <div><?= $review->getStars($item->getId()) ?></div>
+                                        <p style="font-weight: bold"><?= $review->countTotalRatingByItemId($item->getId()) ?>  avis</p>
                                     </div>
                                 <?php endif; ?>
                                 <p style="margin-top: .4rem"><?= mb_strimwidth($item->getShortDescription(), 0, 106, '...') ?></p>
