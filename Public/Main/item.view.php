@@ -157,105 +157,105 @@ Website::setDescription("Venez découvrir l'article !");
             </div>
         </div>
 
-        <div class="mb-4 border-b border-gray-200">
-            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent" role="tablist">
-                <li class="mr-2" role="presentation">
-                    <button class="inline-block p-4 rounded-t-lg border-b-2" id="description-tab" data-tabs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="false">Description</button>
-                </li>
+        <div class="shop-tabs-457854">
+            <nav class="shop-tabs-nav-698554">
+                <button class="shop-tab-link-487721 active" data-tab="tab1">Description</button>
                 <?php if (!empty($physicalInfo)): ?>
-                <li class="mr-2" role="presentation">
-                    <button class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="info-tab" data-tabs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="false">Informations sur le produit</button>
-                </li>
+                <button class="shop-tab-link-487721" data-tab="tab2">Informations sur le produit</button>
                 <?php endif; ?>
                 <?php if ($allowReviews): ?>
-                <li class="mr-2" role="presentation">
-                    <button class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="reviews-tab" data-tabs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Avis</button>
-                </li>
+                <button class="shop-tab-link-487721" data-tab="tab3">Avis</button>
                 <?php endif; ?>
-            </ul>
-        </div>
-        <div id="myTabContent">
-            <div class="hidden p-4 bg-gray-50 rounded-lg" id="description" role="tabpanel" aria-labelledby="description-tab">
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    <?= $item->getDescription() ?>
-                </p>
-            </div>
-            <?php if ($allowReviews): ?>
-            <div class="hidden p-4 bg-gray-50 rounded-lg" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                <div class="xl:grid grid-cols-3">
-                    <div>
-                        <div class="flex items-center">
-                            <?= $review->getStars($item->getId()) ?>
-                            <span class="mx-1 "></span>
-                            <p class="ml-2 text-sm font-medium text-gray-900 dark:text-white"><?= $review->getAverageRatingByItemId($item->getId()) ?> sur 5</p>
-                        </div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400"><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
-                        <?php foreach ($review->getRatingsPercentageByItemId($item->getId()) as $rating): ?>
-                        <div class="flex items-center mt-4">
-                            <span class="text-sm font-medium text-blue-600 dark:text-blue-500"><?= $rating->getRating() ?> étoiles</span>
-                            <div class="w-2/4 h-5 mx-4 bg-gray-200 rounded dark:bg-gray-700">
-                                <div class="h-5 rounded" style="background-color: #FFD700; width: <?= $rating->getPercentage() ?>%"></div>
+            </nav>
+            <div class="">
+                <div class="shop-tab-pane-697154 active" id="tab1"><?= $item->getDescription() ?></div>
+                <?php if (!empty($physicalInfo)): ?>
+                <div class="shop-tab-pane-697154" id="tab2">
+                    <p>
+                        Poids : <?= $physicalInfo->getWeight() ?> grammes<br>
+                        Longueur : <?= $physicalInfo->getLength() ?> cm<br>
+                        Largeur : <?= $physicalInfo->getWidth() ?> cm<br>
+                        Hauteur : <?= $physicalInfo->getHeight() ?> cm<br>
+                    </p>
+                </div>
+                <?php endif; ?>
+                <?php if ($allowReviews): ?>
+                <div class="shop-tab-pane-697154" id="tab3">
+                    <div class="shop-grid-reviews-596587">
+                        <div>
+                            <div style="display: flex; justify-items: center; align-items: center">
+                                <?= $review->getStars($item->getId()) ?>
+                                <p style="margin-left: 1rem; font-size: .9rem"><?= $review->getAverageRatingByItemId($item->getId()) ?> sur 5</p>
                             </div>
-                            <span class="text-sm font-medium text-blue-600 dark:text-blue-500"><?= $rating->getPercentage() ?>%</span>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="col-span-2">
-
-                        <?php foreach ($review->getShopReviewByItemId($item->getId()) as $reviewed): ?>
-                        <article class="rounded-lg bg-white p-4 mb-4">
-                            <div class="flex items-center mb-4 space-x-4">
-                                <img class="w-10 h-10 rounded-full" src="<?= $reviewed->getUser()->getUserPicture()->getImage() ?>" alt="">
-                                <div class="space-y-1 font-medium dark:text-white">
-                                    <p><?= $reviewed->getUser()->getPseudo() ?> <span class="block text-sm text-gray-500"><?= $reviewed->getCreated() ?></span></p>
+                            <p style="font-size: .8rem; font-weight: bolder"><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
+                            <?php foreach ($review->getRatingsPercentageByItemId($item->getId()) as $rating): ?>
+                                <div style="display: flex; align-items: center; margin-top: 1rem; gap: .5rem">
+                                    <span style="font-size: 1rem; font-weight: bolder; color: #307ae6"><?= $rating->getRating() ?> étoiles</span>
+                                    <div style="width: 50%; height: 1.25rem; background: #a7aaac; border-radius: 9px">
+                                        <div style="height: 1.25rem; border-radius: 8px; background-color: #FFD700; width: <?= $rating->getPercentage() ?>%"></div>
+                                    </div>
+                                    <span style="font-size: 1rem; font-weight: bolder; color: #307ae6"><?= $rating->getPercentage() ?>%</span>
                                 </div>
-                            </div>
-                            <div class="flex items-center mb-1">
-                                <?= $reviewed->getStarsReview() ?>
-                                <h3 class="ml-2 text-sm font-semibold text-gray-900"><?= $reviewed->getReviewRating() ?> sur 5</h3>
-                            </div>
-                            <h3 class="text-sm font-semibold text-gray-900"><?= $reviewed->getReviewTitle() ?></h3>
-                            <p class="mb-2 font-light text-gray-500"><?= $reviewed->getReviewText() ?></p>
-                        </article>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="shop-col-span-2-668745">
+                            <?php foreach ($review->getShopReviewByItemId($item->getId()) as $reviewed): ?>
+                                <article style="margin-bottom: .8rem; border: 1px solid #ddd; border-radius: 9px; padding: .3rem">
+                                    <div style="display: flex; align-items: center; margin-bottom: .2rem">
+                                        <img style="width: 2.5rem; height: 2.5rem; border-radius: 100%; margin-right: .5rem" src="<?= $reviewed->getUser()->getUserPicture()->getImage() ?>" alt="">
+                                        <div>
+                                            <p>
+                                                <?= $reviewed->getUser()->getPseudo() ?>
+                                                <span style="display: block; font-size: small"><?= $reviewed->getCreated() ?></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: .2rem">
+                                        <?= $reviewed->getStarsReview() ?>
+                                        <p style="margin-left: .2rem; font-size: small; font-weight: bolder"><?= $reviewed->getReviewRating() ?> sur 5</p>
+                                    </div>
+                                    <p style="font-weight: bolder"><?= $reviewed->getReviewTitle() ?></p>
+                                    <p><?= $reviewed->getReviewText() ?></p>
+                                </article>
+                            <?php endforeach; ?>
 
-                        <div class="rounded-lg bg-white p-4 mb-4">
-                            <form method="post" action="<?= $item->getSlug() ?>/addReview" class="">
-                                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                                <h3 class="text-base font-semibold text-gray-900 mb-2">Donner votre avis.</h3>
-                                <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Note</label>
-                                <?= $review->getInputStars() ?>
-                                <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Titre</label>
-                                <input type="text" name="title" id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" required>
-                                <label for="content" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Contenue :</label>
-                                <textarea minlength="20" name="content" id="content" rows="4" class="tinymce block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 " placeholder="Bonjour," required></textarea>
-                                <div class="text-center mt-4">
-                                    <?php if (UsersController::isUserLogged()): ?>
-                                        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-4 py-2 md:px-5 md:py-2.5 mr-1 md:mr-2 focus:outline-none">Envoyer <i class="fa-solid fa-paper-plane"></i></button>
-                                    <?php else: ?>
-                                        <a href="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>login" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-4 py-2 md:px-5 md:py-2.5 mr-1 md:mr-2 focus:outline-none">Connectez-vous <i class="fa-solid fa-paper-plane"></i></a>
-                                    <?php endif; ?>
-                                </div>
-                            </form>
+                            <div style="margin-bottom: .8rem; border: 1px solid #ddd; border-radius: 9px; padding: .3rem">
+                                <form method="post" action="<?= $item->getSlug() ?>/addReview" class="">
+                                    <?php SecurityManager::getInstance()->insertHiddenToken() ?>
+                                    <p style="font-size: 1.5rem">Donner votre avis.</p>
+                                    <label for="title">Note</label>
+                                    <?= $review->getInputStars() ?>
+                                    <label for="title">Titre</label>
+                                    <input type="text" name="title" id="title" style="width: 100%; padding: 0 .3rem; border-radius: 9px" required>
+                                    <label for="content" >Contenue :</label>
+                                    <textarea minlength="20" name="content" id="content" rows="4" style="width: 100%; padding: 0 .3rem; border-radius: 9px" required></textarea>
+                                    <div class="text-center mt-4">
+                                        <?php if (UsersController::isUserLogged()): ?>
+                                            <button type="submit" class="shop-btn-4875421">Envoyer <i class="fa-solid fa-paper-plane"></i></button>
+                                        <?php else: ?>
+                                            <a href="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>login" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-4 py-2 md:px-5 md:py-2.5 mr-1 md:mr-2 focus:outline-none">Connectez-vous <i class="fa-solid fa-paper-plane"></i></a>
+                                        <?php endif; ?>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
-            <?php if (!empty($physicalInfo)): ?>
-            <div class="hidden p-4 bg-gray-50 rounded-lg" id="info" role="tabpanel" aria-labelledby="info-tab">
-                <p>
-                    Poids : <?= $physicalInfo->getWeight() ?> grammes<br>
-                    Longueur : <?= $physicalInfo->getLength() ?> cm<br>
-                    Largeur : <?= $physicalInfo->getWidth() ?> cm<br>
-                    Hauteur : <?= $physicalInfo->getHeight() ?> cm<br>
-                </p>
-            </div>
-            <?php endif; ?>
         </div>
-
     </div>
 </section>
 
 <script
     src="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/carousel.js"></script>
+<script>
+    document.querySelectorAll('.shop-tab-link-487721').forEach((tab) => {
+        tab.addEventListener('click', function () {
+            document.querySelectorAll('.shop-tab-link-487721').forEach((btn) => btn.classList.remove('active'));
+            document.querySelectorAll('.shop-tab-pane-697154').forEach((pane) => pane.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.tab).classList.add('active');
+        });
+    });
+</script>
