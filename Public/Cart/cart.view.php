@@ -1,5 +1,6 @@
 <?php
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
@@ -14,97 +15,83 @@ use CMW\Utils\Website;
 Website::setTitle('Boutique - Panier');
 Website::setDescription('Votre panier');
 ?>
+<link rel="stylesheet"
+      href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/style.css">
 
-<section class="bg-gray-800 relative text-white">
-    <img src="<?= ThemeModel::getInstance()->fetchImageLink('hero_img_bg') ?>"
-         class="absolute h-full inset-0 object-center object-cover w-full"
-         alt="Vous devez upload bg.webp depuis votre panel !" width="1080" height="720"/>
-    <div class="container mx-auto px-4 py-12 relative">
-        <div class="flex flex-wrap -mx-4">
-            <div class="mx-auto px-4 text-center w-full lg:w-8/12">
-                <h1 class="font-extrabold mb-4 text-2xl md:text-6xl">Panier</h1>
-            </div>
-        </div>
-    </div>
-</section>
+<section class="shop-section-45875487">
+    <h3 style="text-align: center">Panier</h3>
+        <div class="shop-grid-main-5548754">
+            <div class="shop-col-span-3-157655">
 
-
-<section class="bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-72">
-    <div class="container p-4">
-
-        <div class="xl:grid grid-cols-4 gap-6">
-
-            <div class="col-span-3">
-                <div class="overflow-x-auto relative shadow-md sm:rounded-lg h-fit">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div style="overflow-x: auto; position: relative; height: fit-content">
+                    <table style="width: 100%; text-align: left; font-size: .9rem">
+                        <thead style="font-weight: bold">
                         <tr>
-                            <th class="py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem">
                             </th>
-                            <th class="text-center py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem; text-align: center">
                                 Produit
                             </th>
-                            <th class="text-center py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem; text-align: center">
                                 Quantité
                             </th>
-                            <th class="text-center py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem; text-align: center">
                                 Prix
                             </th>
                             <th></th>
-                            <th class="text-center py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem; text-align: center">
                                 Sous total
                             </th>
-                            <th class="py-3 px-6">
+                            <th style="padding: 0.75rem 1.25rem">
 
                             </th>
                         </tr>
                         </thead>
-                        <tbody class="text-center">
+                        <tbody style="text-align: center">
                         <?php foreach ($cartContent as $cart): ?>
-                            <tr class="bg-white border-b text-center">
-                                <td class="py-2">
+                            <tr>
+                                <td style="padding: 0.75rem 1.25rem">
                                     <?php if ($cart->getFirstImageItemUrl() !== '/Public/Uploads/Shop/0'): ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover; margin: auto"
                                              src="<?= $cart->getFirstImageItemUrl() ?>" alt="Panier">
                                     <?php else: ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover; margin: auto"
                                              src="<?= $defaultImage ?>" alt="Panier">
                                     <?php endif; ?>
                                 </td>
-                                <td class="py-4 px-6 text-gray-900">
-                                    <span class="font-semibold"><a class="text-blue-500" href="<?= $cart->getItem()->getItemLink() ?>"><?= $cart->getItem()->getName() ?></a></span><br>
+                                <td style="padding: 0.75rem 1.25rem">
+                                    <span style="font-weight: bold"><a style="color: #0A58CA" href="<?= $cart->getItem()->getItemLink() ?>"><?= $cart->getItem()->getName() ?></a></span><br>
                                     <small>
                                         <?php foreach ($itemsVariantes->getShopItemVariantValueByCartId($cart->getId()) as $itemVariant): ?>
                                             <?= $itemVariant->getVariantValue()->getVariant()->getName() ?> : <?= $itemVariant->getVariantValue()->getValue() ?><br>
                                         <?php endforeach; ?>
                                     </small>
                                 </td>
-                                <td class="py-4 px-6 text-center">
-                                    <div class="flex justify-center">
+                                <td style="padding: 0.75rem 1.25rem">
+                                    <div style="display: flex; justify-content: center; align-items: center; gap: .2rem">
                                         <a href="<?= $cart->getDecreaseQuantityLink() ?>"><i
-                                                class="fa-solid fa-minus mr-1"></i> </a>
-                                        <b><?= $cart->getQuantity() ?></b> <a
+                                                class="fa-solid fa-minus"></i> </a>
+                                        <b style="font-size: 1rem"><?= $cart->getQuantity() ?></b> <a
                                             href="<?= $cart->getIncreaseQuantityLink() ?>"><i
-                                                class="ml-1 fa-solid fa-plus"></i></a>
+                                                class="fa-solid fa-plus"></i></a>
                                     </div>
                                 </td>
-                                <td class="py-4 px-6 text-gray-900">
+                                <td style="padding: 0.75rem 1.25rem">
                                     <?= $cart->getItem()->getPriceFormatted() ?>
                                 </td>
-                                <td class="font-semibold py-4 px-6 text-gray-900">
+                                <td style="padding: 0.75rem 1.25rem; font-weight: bold">
                                     <?= $cart->getDiscountFormatted() ?> <?= $cart->getItem()->getDiscountImpactDefaultApplied() ?>
                                 </td>
-                                <td class="text-black py-4 px-6">
+                                <td style="padding: 0.75rem 1.25rem">
                                     <?php if ($cart->getDiscount()): ?>
-                                        <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span class="font-semibold"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
+                                        <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span style="font-weight: bold"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
                                     <?php else: ?>
-                                        <span class="font-semibold"><?= $cart->getItemTotalPriceFormatted() ?></span>
+                                        <span style="font-weight: bold"><?= $cart->getItemTotalPriceFormatted() ?></span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
-                                    <a href="<?= $cart->getAsideLink() ?>" class="font-medium text-blue-500"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
-                                    <a href="<?= $cart->getRemoveLink() ?>" class="ml-4 font-medium text-red-600"><i
-                                            class="fa-solid fa-trash"></i></a>
+                                <td style="text-align: center">
+                                    <a href="<?= $cart->getAsideLink() ?>" style="color: #5c5ce8"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
+                                    <a href="<?= $cart->getRemoveLink() ?>" style="color: #c31a1a; margin-left: 1rem"><i class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -112,16 +99,16 @@ Website::setDescription('Votre panier');
                     </table>
                 </div>
 
-                <div class="flex flex-wrap justify-end mt-4">
+                <div style="display: flex; justify-content: end; margin-top: 1rem">
                     <div style="width: 30%">
-                        <div class="flex">
-                            <div class="relative w-full">
+                        <div style="display: flex">
+                            <div style="position: relative; width: 100%">
                                 <form action="cart/discount/apply" method="post">
                                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                     <input type="text" autocomplete="off" name="code"
-                                       class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-100 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                       class="shop-input-search-587254"
                                        placeholder="Code promo / Carte cadeau">
-                                    <button type="submit" class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                                    <button type="submit" class="shop-button-search-565787">
                                         Appliquer
                                     </button>
                                 </form>
@@ -132,9 +119,9 @@ Website::setDescription('Votre panier');
             </div>
 
 
-            <div class="h-fit rounded-lg shadow-md mt-4 lg:mt-0">
-                <div class="font-medium text-sm rounded-t-lg bg-gray-50 py-3 px-2">
-                    <h5 class="text-black">Total panier</h5>
+            <div style="height: fit-content; margin-top: 1rem">
+                <div style="font-weight: bold; font-size: 1.15rem; text-align: center" >
+                    <h5>Total panier</h5>
                 </div>
                 <div class="grid grid-cols-2 bg-white">
                     <div class="font-medium text-center">
@@ -180,13 +167,12 @@ Website::setDescription('Votre panier');
                 </a>
             </div>
         </div>
-    </div>
-</section>
 
-<?php if ($asideCartContent !== []): ?>
-<section class="bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-72">
-    <div class="container p-4">
-        <h4 class="text-center mb-2">Article mis de côté</h4>
+
+    <?php if ($asideCartContent !== []): ?>
+        <section class="bg-white rounded-lg shadow my-8 sm:mx-12 lg:mx-72">
+            <div class="container p-4">
+                <h4 class="text-center mb-2">Article mis de côté</h4>
                 <div class="overflow-x-auto relative shadow-md sm:rounded-lg h-fit">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="font-medium text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -197,9 +183,9 @@ Website::setDescription('Votre panier');
                                 Produit
                             </th>
                             <?php if ($showPublicStock): ?>
-                            <th class="text-center py-3 px-6">
-                                Stock restant
-                            </th>
+                                <th class="text-center py-3 px-6">
+                                    Stock restant
+                                </th>
                             <?php endif ?>
                             <th class="text-center py-3 px-6">
                                 Prix
@@ -225,9 +211,9 @@ Website::setDescription('Votre panier');
                                     <?= $asideCart->getItem()->getName() ?>
                                 </td>
                                 <?php if ($showPublicStock): ?>
-                                <td class="py-4 px-6 text-center">
-                                    <?= $asideCart->getItem()->getPublicFormattedStock() ?>
-                                </td>
+                                    <td class="py-4 px-6 text-center">
+                                        <?= $asideCart->getItem()->getPublicFormattedStock() ?>
+                                    </td>
                                 <?php endif ?>
                                 <td class="py-4 px-6 text-gray-900">
                                     <?= $asideCart->getItem()->getPriceFormatted() ?>
@@ -244,6 +230,7 @@ Website::setDescription('Votre panier');
                     </table>
                 </div>
             </div>
+        </section>
+    <?php endif; ?>
 </section>
-<?php endif; ?>
 

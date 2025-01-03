@@ -9,6 +9,62 @@
     justify-content: space-between
 }
 
+/* -----------------
+--------GRID--------
+-------------------*/
+.shop-grid-main-5548754 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.6rem;
+}
+
+.shop-grid-item-596587 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.6rem;
+}
+
+.shop-grid-reviews-596587 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.6rem;
+}
+
+@media (max-width: 1024px) {
+    .shop-grid-main-5548754 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-grid-main-5548754 {
+        grid-template-columns: 1fr;
+    }
+
+    .shop-grid-item-596587 {
+        grid-template-columns: 1fr;
+    }
+
+    .shop-grid-reviews-596587 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.shop-col-span-2-668745 {
+    grid-column: span 2;
+}
+
+.shop-col-span-3-157655 {
+    grid-column: span 3;
+}
+
+.shop-col-span-4-157875 {
+    grid-column: span 4;
+}
+
 .shop-select-5872154 {
     display: block;
     padding: 0 .6rem 0 .6rem;
@@ -60,55 +116,6 @@
     background: #0a58ca;
     color: white;
     border-radius: 0 9px 9px 0
-}
-
-.shop-grid-main-5548754 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    margin-top: 1.6rem;
-}
-
-.shop-grid-item-596587 {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1.5rem;
-    margin-top: 1.6rem;
-}
-
-.shop-grid-reviews-596587 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-top: 1.6rem;
-}
-
-@media (max-width: 1024px) {
-    .shop-grid-main-5548754 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .shop-grid-main-5548754 {
-        grid-template-columns: 1fr;
-    }
-
-    .shop-grid-item-596587 {
-        grid-template-columns: 1fr;
-    }
-
-    .shop-grid-reviews-596587 {
-        grid-template-columns: 1fr;
-    }
-}
-
-.shop-col-span-2-668745 {
-    grid-column: span 2;
-}
-
-.shop-col-span-4-157875 {
-    grid-column: span 4;
 }
 
 .shop-scale-hover-5987548 {

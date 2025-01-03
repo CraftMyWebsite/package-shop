@@ -152,7 +152,7 @@ Website::setDescription("Venez découvrir l'article !");
                     </div>
                 </form>
                 <div style="margin-top: .5rem">
-                    <p>Catégorie : <a href="<?= $parentCat->getCatLink() ?>" class="text-blue-600 hover:text-blue-400"><?= $parentCat->getName() ?></a></p>
+                    <p>Catégorie : <a href="<?= $parentCat->getCatLink() ?>" style="color: #0A58CA"><?= $parentCat->getName() ?></a></p>
                 </div>
             </div>
         </div>
