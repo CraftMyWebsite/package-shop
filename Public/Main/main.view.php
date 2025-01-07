@@ -2,7 +2,6 @@
 
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
