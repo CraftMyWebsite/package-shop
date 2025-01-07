@@ -375,10 +375,24 @@
 
 .shop-radio-delivery-45854 {
     border-radius: .7rem;
-    box-shadow: 0 1px 15px 0 rgba(184, 167, 167, 0.1), 0 6px 15px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px 0 rgba(184, 167, 167, 0.1), 0 0 15px -1px rgba(0, 0, 0, 0.1);
     padding: .6rem;
 }
 
 .shop-blue-542154 {
     color: #0a58ca;
+}
+
+.shop-link-48725 {
+    color: #0a58ca;
+}
+
+.shop-link-48725:hover {
+    color: #2671dd;
+}
+
+.shop-item-ordered-456744 {
+    border-radius: .2rem;
+    box-shadow: 0 1px 5px 0 rgba(184, 167, 167, 0.1), 0 6px 5px -1px rgba(0, 0, 0, 0.1);
+    padding: .2rem;
 }

@@ -151,7 +151,7 @@ Website::setDescription('Votre panier');
 
 
     <?php if ($asideCartContent !== []): ?>
-    <h3 style="text-align: center; margin-top: 3rem">Article mis de côté</h4>
+    <h3 style="text-align: center; margin-top: 3rem">Article mis de côté</h3>
         <section class="shop-cart-card-45854">
                 <div style="overflow-x: auto; position: relative; height: fit-content">
                     <table style="width: 100%; text-align: left; font-size: .9rem">
