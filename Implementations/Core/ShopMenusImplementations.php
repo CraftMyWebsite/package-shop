@@ -14,6 +14,8 @@ class ShopMenusImplementations implements IMenus
 
         $catSlug['Panier'] = 'shop/cart';
 
+        $catSlug['Historique'] = 'shop/history';
+
         $catSlug['Paramètres'] = 'shop/settings';
 
         foreach ((new ShopCategoriesModel())->getShopCategories() as $cat) {
