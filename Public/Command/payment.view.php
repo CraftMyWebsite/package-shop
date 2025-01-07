@@ -1,7 +1,7 @@
 <?php
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Core\ThemeModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
@@ -17,61 +17,26 @@ Website::setDescription("Méthode de paiement");
 
 ?>
 
-<section class="bg-gray-800 relative text-white">
-    <img src="<?= ThemeModel::getInstance()->fetchImageLink("hero_img_bg") ?>"
-         class="absolute h-full inset-0 object-center object-cover w-full"
-         alt="Vous devez upload bg.webp depuis votre panel !" width="1080" height="720"/>
-    <div class="container mx-auto px-4 py-12 relative">
-        <div class="flex flex-wrap -mx-4">
-            <div class="mx-auto px-4 text-center w-full lg:w-8/12">
-                <h1 class="font-extrabold mb-4 text-2xl md:text-6xl">Commander</h1>
-            </div>
-        </div>
-    </div>
-</section>
+<link rel="stylesheet"
+      href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/style.css">
 
-<section class="px-2 md:px-24 xl:px-48 2xl:px-72 py-6">
-    <div class="lg:grid lg:grid-cols-3 gap-6">
-        <div class="col-span-2 mt-4 lg:mt-0">
-                <div class="container mx-auto rounded-md shadow-lg p-4 h-fit">
-                    <div class="flex flex-no-wrap justify-center items-center py-4">
-                        <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                        <div class="px-10 w-auto">
-                            <h2 class="font-semibold text-2xl uppercase">Adresse de livraison / facturation</h2>
-                        </div>
-                        <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                    </div>
-                    <div class="flex flex-wrap justify-center">
-                        <div class="shadow p-2 w-1/2 text-center">
-                            <?= $selectedAddress->getLabel() ?><br>
-                            <b><?= $selectedAddress->getFirstName() . " " . $selectedAddress->getLastName() ?></b> <?= $selectedAddress->getPhone() ?>
-                            <br>
-                            <?= $selectedAddress->getLine1() ?><br>
-                            <?= $selectedAddress->getLine2() ?>
-                            <?= $selectedAddress->getPostalCode() . " " . $selectedAddress->getCity() ?><br>
-                            <?= $selectedAddress->getFormattedCountry() ?>
-                        </div>
-                    </div>
-                </div>
+<section class="shop-section-45875487">
+    <h3 style="text-align: center">Commander</h3>
+    <div class="shop-grid-reviews-596587">
+        <div class="shop-col-span-2-668745">
                 <form id="payment" action="command/finalize" method="post">
                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                    <div class="container mx-auto rounded-md shadow-lg p-4 h-fit mt-4">
-                        <div class="flex flex-no-wrap justify-center items-center py-4">
-                            <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                            <div class="px-10 w-auto">
-                                <h2 class="font-semibold text-2xl uppercase">Méthode de paiement</h2>
-                            </div>
-                            <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                        </div>
+                    <div class="shop-cart-card-45854">
+                        <h4 style="font-weight: bold; font-size: 1.15rem; text-align: center">Méthode de paiement</h4>
                         <?php if (!empty($paymentMethods)): ?>
                         <?php foreach ($paymentMethods as $paymentMethod): ?>
-                            <div class="bg-gray-100 rounded-lg p-3 mb-2">
-                                <div class="flex flex-wrap justify-between">
+                            <div class="shop-radio-delivery-45854" style="margin-top: 1rem">
+                                <div style="display: flex; justify-content: space-between">
                                     <div>
                                         <label>
                                             <input name="paymentName" id="paymentName" type="radio"
                                                    value="<?= $paymentMethod->varName() ?>" required>
-                                            <?= $paymentMethod->faIcon("fa-xl text-blue-600") ?> <?= $paymentMethod->name() ?>
+                                            <?= $paymentMethod->faIcon("fa-xl shop-blue-542154") ?> <?= $paymentMethod->name() ?>
                                         </label>
                                     </div>
                                     <div>
@@ -88,11 +53,9 @@ Website::setDescription("Méthode de paiement");
                 <div class="flex justify-between mt-4">
                     <form action="command/toShipping" method="post">
                         <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                        <button type="submit"  class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Précedent</button>
+                        <button type="submit"  class="shop-button-48751">Précedent</button>
                     </form>
-
-                    <button id="payment-button" form="payment" type="submit"
-                            class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                    <button id="payment-button" form="payment" type="submit" class="shop-button-48751">
                         Payer
                     </button>
                 </div>
@@ -100,61 +63,72 @@ Website::setDescription("Méthode de paiement");
         </div>
 
         <div>
-            <div class="container mx-auto rounded-md shadow-lg p-4 h-fit">
-                <div class="flex flex-no-wrap justify-center items-center py-4">
-                    <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                    <div class="px-10 w-auto">
-                        <h2 class="font-semibold text-2xl uppercase">Vos articles</h2>
+            <div class="shop-cart-card-45854" style="height: fit-content; margin-bottom: 1rem">
+                <h4 style="font-weight: bold; font-size: 1.15rem; text-align: center">Adresse de livraison</h4>
+                <div>
+                    <div>
+                        <b><?= $selectedAddress->getLabel() ?></b><br>
+                        <b><?= $selectedAddress->getFirstName() . ' ' . $selectedAddress->getLastName() ?></b> <?= $selectedAddress->getPhone() ?><br>
+                        <?= $selectedAddress->getLine1() ?><br>
+                        <?= $selectedAddress->getLine2() ?>
+                        <?= $selectedAddress->getPostalCode() . ' ' . $selectedAddress->getCity() ?><br>
+                        <?= $selectedAddress->getFormattedCountry() ?>
                     </div>
-                    <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
+                </div>
+            </div>
+            <div class="shop-cart-card-45854" style="height: fit-content">
+                <div>
+                    <h4 style="font-weight: bold; font-size: 1.15rem; text-align: center">Vos articles</h4>
                 </div>
                 <?php foreach ($cartContent as $cart): ?>
-                    <div class="flex flex-wrap justify-between items-center">
+                    <div style="display: flex; justify-content: space-between; align-items: center">
                         <div>
                             <table>
-                                <td class="py-2">
+                                <td>
                                     <?php if ($cart->getFirstImageItemUrl() !== "/Public/Uploads/Shop/0"): ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover"
                                              src="<?= $cart->getFirstImageItemUrl() ?>" alt="Panier">
                                     <?php else: ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover"
                                              src="<?= $defaultImage ?>" alt="Panier">
                                     <?php endif; ?>
                                 </td>
-                                <td class="py-4 px-6 font-semibold text-gray-900">
+                                <td>
                                     <?= $cart->getQuantity() ?> <?= $cart->getItem()->getName() ?>
                                 </td>
                             </table>
                         </div>
                         <div>
                             <?php if ($cart->getDiscount()): ?>
-                                <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span class="font-semibold"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
+                                <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span style="font-weight: bolder"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
                             <?php else: ?>
-                                <span class="font-semibold"><?= $cart->getItemTotalPriceFormatted() ?></span>
+                                <span style="font-weight: bolder"><?= $cart->getItemTotalPriceFormatted() ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
 
                 <?php if (!empty($appliedCartDiscounts)): ?>
-                    <h4 class="text-center mt-4">Réduction :</h4>
+                    <p style="font-weight: bolder; margin-top: 1rem">Réduction total :</p>
                     <?php foreach ($appliedCartDiscounts as $appliedCartDiscount): ?>
-                    <div class="flex flex-wrap justify-between">
-                        <span><?= $appliedCartDiscount->getCode() ?></span>
-                        <span><b>-<?= $appliedCartDiscount->getPriceFormatted() ?></b></span>
-                    </div>
+                        <div style="display: flex; justify-content: space-between">
+                            <span><?= $appliedCartDiscount->getCode() ?></span>
+                            <span><b>-<?= $appliedCartDiscount->getPriceFormatted() ?></b></span>
+                        </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
 
                 <?php if (!is_null($shippingMethod)): ?>
-                <h4 class="text-center mt-4">Livraison</h4>
-                <div class="flex flex-wrap justify-between">
+                    <p style="font-weight: bolder; margin-top: 1rem">Livraison</p>
+                <div style="display: flex; justify-content: space-between">
                     <span><?= $shippingMethod->getName() ?></span>
                     <span><b><?= $shippingMethod->getPriceFormatted() ?></b></span>
                 </div>
                 <?php endif; ?>
-                <h4 class="text-center mt-4">Total</h4>
-                <h4 class="text-center font-bold" id="total"><?= $cart->getTotalPriceCompleteFormatted() ?></h4>
+                <div style="margin-top: 1.6rem; text-align: center">
+                    <p style="font-weight: bolder; font-size: 1.3rem">Total</p>
+                    <p style="font-weight: bolder; font-size: 1.8rem" id="total"><?= $cart->getTotalCartPriceAfterDiscountFormatted() ?></p>
+                </div>
             </div>
         </div>
     </div>

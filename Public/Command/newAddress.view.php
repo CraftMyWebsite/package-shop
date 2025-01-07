@@ -1,9 +1,10 @@
 <?php
 
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Security\SecurityManager;
-use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
+/* @var array $storedData */
 /* @var CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartContent */
 /* @var CMW\Entity\Shop\Country\ShopCountryEntity[] $country */
 /* @var CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity[] $userAddresses */
@@ -15,72 +16,61 @@ Website::setDescription('Adresse de facturation et livraison');
 
 ?>
 
-<section class="bg-gray-800 relative text-white">
-    <img src="<?= ThemeModel::getInstance()->fetchImageLink('hero_img_bg') ?>" class="absolute h-full inset-0 object-center object-cover w-full" alt="Vous devez upload bg.webp depuis votre panel !" width="1080" height="720"/>
-    <div class="container mx-auto px-4 py-12 relative">
-        <div class="flex flex-wrap -mx-4">
-            <div class="mx-auto px-4 text-center w-full lg:w-8/12">
-                <h1 class="font-extrabold mb-4 text-2xl md:text-6xl">Commander</h1>
-            </div>
-        </div>
-    </div>
-</section>
+<link rel="stylesheet"
+      href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/style.css">
 
-<section class="px-2 md:px-24 xl:px-48 2xl:px-72 py-6">
-    <div class="lg:grid lg:grid-cols-3 gap-6">
-            <div class="col-span-2 mt-4 lg:mt-0">
+<section class="shop-section-45875487">
+    <h3 style="text-align: center">Commander</h3>
+    <div class="shop-grid-reviews-596587">
+            <div class="shop-col-span-2-668745">
                 <form action="command/createAddress" method="post">
                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                    <div class="container mx-auto rounded-md shadow-lg p-4 h-fit">
-                        <div class="flex flex-no-wrap justify-center items-center py-4">
-                            <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                            <div class="px-10 w-auto">
-                                <h2 class="font-semibold text-2xl uppercase">Adresses</h2>
-                            </div>
-                            <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                        </div>
-                        <div class="bg-gray-100 rounded-lg p-3">
+                    <div class="shop-cart-card-45854">
+                        <h4 style="font-weight: bold; font-size: 1.15rem; text-align: center">Nouvelle adresse</h4>
+                        <div>
                             <div>
-                                <label for="address_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom de l'adresse <small>(Optionnel)</small> :</label>
-                                <input name="address_label" id="address_label" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Domicile">
+                                <label for="address_label" class="shop-label-478541">Nom de l'adresse <small>(Optionnel)</small> :</label>
+                                <input value="<?= $storedData['address_label'] ?? '' ?>" name="address_label" id="address_label" type="text" class="shop-input-45753" placeholder="Domicile">
                             </div>
-                            <div class="grid gap-6 mb-4 md:grid-cols-3 mt-4">
+                            <div class="shop-grid-3-command-input-47875">
                                 <div>
-                                    <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prénom<span class="text-red-500">*</span> :</label>
-                                    <input name="first_name" id="first_name" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Jean" required>
+                                    <label for="first_name" class="shop-label-478541">Prénom<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['first_name'] ?? '' ?>" name="first_name" id="first_name" type="text" class="shop-input-45753" placeholder="Jean" required>
                                 </div>
                                 <div>
-                                    <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom<span class="text-red-500">*</span> :</label>
-                                    <input name="last_name" type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Dupont">
+                                    <label for="last_name" class="shop-label-478541">Nom<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['last_name'] ?? '' ?>" name="last_name" type="text" id="last_name" class="shop-input-45753" placeholder="Dupont">
                                 </div>
                                 <div>
-                                    <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Téléphone<span class="text-red-500">*</span> :</label>
-                                    <input name="phone" type="text" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="+33 601020304">
+                                    <label for="phone" class="shop-label-478541">Téléphone<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['phone'] ?? '' ?>" name="phone" type="text" id="phone" class="shop-input-45753" placeholder="+33 601020304">
                                 </div>
                             </div>
-                            <div>
-                                <label for="line_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse<span class="text-red-500">*</span> :</label>
-                                <input name="line_1" id="line_1" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="12 avenue du paradis" required>
-                            </div>
-                            <div class="mt-2">
-                                <label for="line_2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Complément d'adresse <small>(Optionnel)</small> :</label>
-                                <input name="line_2" id="line_2" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Bâtiment D" >
-                            </div>
-                            <div class="grid gap-6 mb-4 md:grid-cols-3 mt-4">
+                            <div class="shop-grid-2-command-input-47875">
                                 <div>
-                                    <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ville<span class="text-red-500">*</span> :</label>
-                                    <input name="city" id="city" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Paradis" required>
+                                    <label for="line_1" class="shop-label-478541">Adresse<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['line_1'] ?? '' ?>" name="line_1" id="line_1" type="text" class="shop-input-45753" placeholder="12 avenue du paradis" required>
                                 </div>
                                 <div>
-                                    <label for="postal_code" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code postale<span class="text-red-500">*</span> :</label>
-                                    <input name="postal_code" type="text" id="postal_code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="00001">
+                                    <label for="line_2" class="shop-label-478541">Complément d'adresse <small>(Optionnel)</small> :</label>
+                                    <input value="<?= $storedData['line_2'] ?? '' ?>" name="line_2" id="line_2" type="text" class="shop-input-45753" placeholder="Bâtiment, Lieu Dit" >
+                                </div>
+                            </div>
+                            <div class="shop-grid-3-command-input-47875">
+                                <div>
+                                    <label for="city" class="shop-label-478541">Ville<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['city'] ?? '' ?>" name="city" id="city" type="text" class="shop-input-45753" placeholder="Paradis" required>
                                 </div>
                                 <div>
-                                    <label for="country" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pays<span class="text-red-500">*</span> :</label>
-                                    <select name="country" id="country"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    <label for="postal_code" class="shop-label-478541">Code postale<span style="color: red">*</span> :</label>
+                                    <input value="<?= $storedData['postal_code'] ?? '' ?>" name="postal_code" type="text" id="postal_code" class="shop-input-45753" placeholder="00001">
+                                </div>
+                                <div>
+                                    <label for="country" class="shop-label-478541">Pays<span style="color: red">*</span> :</label>
+                                    <select name="country" id="country" class="shop-input-45753">
                                         <?php foreach ($country as $countryEntity) : ?>
-                                            <option value="<?= $countryEntity->getCode() ?>">
+                                            <option value="<?= $countryEntity->getCode() ?>"
+                                                <?= $storedData['country'] === $countryEntity->getCode() ? 'selected' : '' ?>>
                                                 <?= $countryEntity->getName() ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -89,59 +79,57 @@ Website::setDescription('Adresse de facturation et livraison');
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-end mt-4">
-                        <button type="submit"  class="inline-flex items-center py-2 px-3 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">Suivant</button>
+                    <div style="display: flex; justify-content: end;">
+                        <button type="submit" class="shop-button-48751">Suivant</button>
                     </div>
                 </form>
             </div>
 
         <div>
-            <div class="container mx-auto rounded-md shadow-lg p-4 h-fit">
-                <div class="flex flex-no-wrap justify-center items-center py-4">
-                    <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
-                    <div class="px-10 w-auto">
-                        <h2 class="font-semibold text-2xl uppercase">Vos articles</h2>
-                    </div>
-                    <div class="bg-gray-500 flex-grow h-px max-w-sm"></div>
+            <div class="shop-cart-card-45854" style="height: fit-content">
+                <div>
+                    <h4 style="font-weight: bold; font-size: 1.15rem; text-align: center">Vos articles</h4>
                 </div>
                 <?php foreach ($cartContent as $cart): ?>
-                    <div class="flex flex-wrap justify-between items-center">
+                    <div style="display: flex; justify-content: space-between; align-items: center">
                         <div>
                             <table>
-                                <td class="py-2">
+                                <td>
                                     <?php if ($cart->getFirstImageItemUrl() !== '/Public/Uploads/Shop/0'): ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover"
                                              src="<?= $cart->getFirstImageItemUrl() ?>" alt="Panier">
                                     <?php else: ?>
-                                        <img class="mx-auto" style="width: 3rem; height: 3rem; object-fit: cover"
+                                        <img style="width: 3rem; height: 3rem; object-fit: cover"
                                              src="<?= $defaultImage ?>" alt="Panier">
                                     <?php endif; ?>
                                 </td>
-                                <td class="py-4 px-6 font-semibold text-gray-900">
-                                    <?= $cart->getQuantity() ?> <?= $cart->getItem()->getName() ?>
+                                <td>
+                                    <b><?= $cart->getQuantity() ?></b> <?= $cart->getItem()->getName() ?>
                                 </td>
                             </table>
                         </div>
                         <div>
                             <?php if ($cart->getDiscount()): ?>
-                                <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span class="font-semibold"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
+                                <s><?= $cart->getItemTotalPriceFormatted() ?></s> <span style="font-weight: bolder"><?= $cart->getItemTotalPriceAfterDiscountFormatted() ?></span>
                             <?php else: ?>
-                                <span class="font-semibold"><?= $cart->getItemTotalPriceFormatted() ?></span>
+                                <span style="font-weight: bolder"><?= $cart->getItemTotalPriceFormatted() ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
                 <?php if (!empty($appliedCartDiscounts)): ?>
-                    <h4 class="text-center mt-4">Réduction :</h4>
+                    <p style="font-weight: bolder; margin-top: 1rem">Réduction total :</p>
                     <?php foreach ($appliedCartDiscounts as $appliedCartDiscount): ?>
-                        <div class="flex flex-wrap justify-between">
+                        <div style="display: flex; justify-content: space-between">
                             <span><?= $appliedCartDiscount->getCode() ?></span>
                             <span><b>-<?= $appliedCartDiscount->getPriceFormatted() ?></b></span>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
-                <h4 class="text-center mt-4">Total</h4>
-                <h4 class="text-center font-bold"><?= $cart->getTotalCartPriceAfterDiscountFormatted() ?></h4>
+                <div style="margin-top: 1.6rem; text-align: center">
+                    <p style="font-weight: bolder; font-size: 1.3rem">Total</p>
+                    <p style="font-weight: bolder; font-size: 1.8rem"><?= $cart->getTotalCartPriceAfterDiscountFormatted() ?></p>
+                </div>
             </div>
         </div>
     </div>
