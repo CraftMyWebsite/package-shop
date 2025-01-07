@@ -170,7 +170,7 @@ class ShopDeliveryUserAddressModel extends AbstractModel
                 return $this->getShopDeliveryUserAddressById($id);
             }
         } else {
-            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
+            Flash::send(Alert::WARNING, 'Boutique', 'Votre adresse est introuvable, Veuillez réessayer');
         }
 
         return null;
@@ -249,7 +249,7 @@ class ShopDeliveryUserAddressModel extends AbstractModel
                 return $this->getShopDeliveryUserAddressById($addressId);
             }
         } else {
-            Flash::send(Alert::WARNING, 'Boutique', 'Impossible de trouver les coordonnées géographique de votre adresse ! Veuillez réessayer');
+            Flash::send(Alert::WARNING, 'Boutique', 'Votre adresse est introuvable, Veuillez réessayer');
         }
 
         return null;

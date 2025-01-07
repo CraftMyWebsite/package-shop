@@ -44,9 +44,10 @@ class ShopSettingController extends AbstractController
         }
         $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
         $country = ShopCountryModel::getInstance()->getCountry();
+        $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
 
         $view = new View('Shop', 'Users/settings');
-        $view->addVariableList(['userAddresses' => $userAddresses, 'country' => $country]);
+        $view->addVariableList(['userAddresses' => $userAddresses, 'country' => $country, 'storedData' => $storedData]);
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();
     }

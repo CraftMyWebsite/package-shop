@@ -4,6 +4,7 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
+/* @var array $storedData */
 /* @var CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity[] $userAddresses */
 /* @var CMW\Entity\Shop\Country\ShopCountryEntity[] $country */
 
@@ -78,45 +79,45 @@ Website::setDescription('Gérer vos paramètres de boutique');
                 </div>
                 <div>
                     <label for="address_label" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom de l'adresse <small>(Optionnel)</small> :</label>
-                    <input name="address_label" id="address_label" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Domicile">
+                    <input value="<?= $storedData['address_label'] ?? '' ?>" name="address_label" id="address_label" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Domicile">
                 </div>
                 <div class="grid gap-6 mb-4 md:grid-cols-3 mt-4">
                     <div>
                         <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prénom<span class="text-red-500">*</span> :</label>
-                        <input name="first_name" id="first_name" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Jean" required>
+                        <input value="<?= $storedData['first_name'] ?? '' ?>" name="first_name" id="first_name" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Jean" required>
                     </div>
                     <div>
                         <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom<span class="text-red-500">*</span> :</label>
-                        <input name="last_name" type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Dupont">
+                        <input value="<?= $storedData['last_name'] ?? '' ?>" name="last_name" type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Dupont">
                     </div>
                     <div>
                         <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Téléphone<span class="text-red-500">*</span> :</label>
-                        <input name="phone" type="text" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="+33 601020304">
+                        <input value="<?= $storedData['phone'] ?? '' ?>" name="phone" type="text" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="+33 601020304">
                     </div>
                 </div>
                 <div>
                     <label for="line_1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse<span class="text-red-500">*</span> :</label>
-                    <input name="line_1" id="line_1" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="12 avenue du paradis" required>
+                    <input value="<?= $storedData['line_1'] ?? '' ?>" name="line_1" id="line_1" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="12 avenue du paradis" required>
                 </div>
                 <div class="mt-2">
                     <label for="line_2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Complément d'adresse <small>(Optionnel)</small> :</label>
-                    <input name="line_2" id="line_2" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Bâtiment D" >
+                    <input value="<?= $storedData['line_2'] ?? '' ?>" name="line_2" id="line_2" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Bâtiment, Lieu Dit" >
                 </div>
                 <div class="grid gap-6 mb-4 md:grid-cols-3 mt-4">
                     <div>
                         <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ville<span class="text-red-500">*</span> :</label>
-                        <input name="city" id="city" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Paradis" required>
+                        <input value="<?= $storedData['city'] ?? '' ?>" name="city" id="city" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Paradis" required>
                     </div>
                     <div>
                         <label for="postal_code" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Code postale<span class="text-red-500">*</span> :</label>
-                        <input name="postal_code" type="text" id="postal_code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="00001">
+                        <input value="<?= $storedData['postal_code'] ?? '' ?>" name="postal_code" type="text" id="postal_code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="00001">
                     </div>
                     <div>
                         <label for="country" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pays<span class="text-red-500">*</span> :</label>
                         <select name="country" id="country"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                             <?php foreach ($country as $countryEntity) : ?>
-                                <option value="<?= $countryEntity->getCode() ?>">
+                                <option <?= $storedData['country'] === $countryEntity->getCode() ? 'selected' : '' ?> value="<?= $countryEntity->getCode() ?>">
                                     <?= $countryEntity->getName() ?>
                                 </option>
                             <?php endforeach; ?>

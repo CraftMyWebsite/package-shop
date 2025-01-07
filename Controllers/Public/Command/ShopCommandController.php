@@ -115,18 +115,20 @@ class ShopCommandController extends AbstractController
         }
 
         if (empty($userAddresses)) {
+            $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
             $country = ShopCountryModel::getInstance()->getCountry();
             $view = new View('Shop', 'Command/newAddress');
-            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts]);
+            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData]);
             $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
             $view->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
+                $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
                 $country = ShopCountryModel::getInstance()->getCountry();
                 $view = new View('Shop', 'Command/address');
-                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts]);
+                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData]);
                 $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
                 $view->view();
             }
@@ -204,9 +206,29 @@ class ShopCommandController extends AbstractController
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
+        //Store data in case of error
+        $_SESSION['cmw_shop_add_new_address'] = [
+            'address_label' => $_POST['address_label'] ?? null,
+            'first_name' => $_POST['first_name'] ?? null,
+            'last_name' => $_POST['last_name'] ?? null,
+            'phone' => $_POST['phone'] ?? null,
+            'line_1' => $_POST['line_1'] ?? null,
+            'line_2' => $_POST['line_2'] ?? null,
+            'city' => $_POST['city'] ?? null,
+            'postal_code' => $_POST['postal_code'] ?? null,
+            'country' => $_POST['country'] ?? null,
+        ];
+
+        if (!isset($_POST['first_name'], $_POST['last_name'], $_POST['phone'], $_POST['line_1'], $_POST['city'], $_POST['postal_code'], $_POST['country'])) {
+            Flash::send(Alert::ERROR, "Erreur", "Merci de remplir tous les champs obligatoir !");
+            Redirect::redirectPreviousRoute();
+        }
+
         [$label, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        if (ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, 1, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country)) {
+            unset($_SESSION['cmw_shop_add_new_address']);
+        }
 
         Redirect::redirectPreviousRoute();
     }
@@ -216,11 +238,31 @@ class ShopCommandController extends AbstractController
     {
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
 
+        //Store data in case of error
+        $_SESSION['cmw_shop_add_new_address'] = [
+            'address_label' => $_POST['address_label'] ?? null,
+            'first_name' => $_POST['first_name'] ?? null,
+            'last_name' => $_POST['last_name'] ?? null,
+            'phone' => $_POST['phone'] ?? null,
+            'line_1' => $_POST['line_1'] ?? null,
+            'line_2' => $_POST['line_2'] ?? null,
+            'city' => $_POST['city'] ?? null,
+            'postal_code' => $_POST['postal_code'] ?? null,
+            'country' => $_POST['country'] ?? null,
+        ];
+
+        if (!isset($_POST['first_name'], $_POST['last_name'], $_POST['phone'], $_POST['line_1'], $_POST['city'], $_POST['postal_code'], $_POST['country'])) {
+            Flash::send(Alert::ERROR, "Erreur", "Merci de remplir tous les champs obligatoir !");
+            Redirect::redirectPreviousRoute();
+        }
+
         [$label, $fav, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country] = Utils::filterInput('address_label', 'fav', 'first_name', 'last_name', 'phone', 'line_1', 'line_2', 'city', 'postal_code', 'country');
 
         $fav = is_null($fav) ? 0 : 1;
 
-        ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
+        if (ShopDeliveryUserAddressModel::getInstance()->createDeliveryUserAddress($label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country)) {
+            unset($_SESSION['cmw_shop_add_new_address']);
+        }
 
         Redirect::redirectPreviousRoute();
     }
