@@ -87,11 +87,11 @@ class ShopSettingController extends AbstractController
 
         $fav = is_null($fav) ? 0 : 1;
 
-        ShopDeliveryUserAddressModel::getInstance()->editDeliveryUserAddress($addressId, $label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country);
-
-        Flash::send(Alert::SUCCESS, 'Boutique', 'Adresse mises à jour !');
-
-        Redirect::redirect('shop/settings');
+        if (ShopDeliveryUserAddressModel::getInstance()->editDeliveryUserAddress($addressId, $label, $fav, $userId, $firstName, $lastName, $phone, $line1, $line2, $city, $postalCode, $country)) {
+            Flash::send(Alert::SUCCESS, 'Boutique', 'Adresse mises à jour !');
+            Redirect::redirect('shop/settings');
+        }
+        Redirect::redirectPreviousRoute();
     }
 
     #[NoReturn] #[Link('/settings/deleteAddress/:id', Link::GET, ['.*?'], '/shop')]

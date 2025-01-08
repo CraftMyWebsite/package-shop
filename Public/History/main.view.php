@@ -1,7 +1,6 @@
 <?php
 
 use CMW\Manager\Env\EnvManager;
-use CMW\Model\Core\ThemeModel;
 use CMW\Utils\Website;
 
 /* @var CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity[] $historyOrders */
@@ -20,19 +19,19 @@ Website::setDescription('Consultation de vos achats');
         <?php foreach ($historyOrders as $order): ?>
         <div class="shop-cart-card-45854" style="margin-bottom: 1.6rem">
                 <div>
-                    <div style="display: flex; justify-content: space-between">
+                    <div class="shop-flex-45127" style="justify-content: space-between">
                         <div>
                             <h4 style="font-weight: bolder; font-size: 1.6rem">N°<?= $order->getOrderNumber() ?></h4>
                         </div>
-                        <div>Commandé le : <span style="color: #5a8cde"><?= $order->getCreated() ?></span></div>
+                        <div><span class="shop-hide-mobile">Commandé le : </span><span style="color: #5a8cde"><?= $order->getCreated() ?></span></div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="shop-flex-45127" style="justify-content: space-between; align-items: center;">
                         <div>
-                            <p>Statut : <b><?= $order->getPublicStatus() ?></b></p>
+                            <p><span class="shop-hide-mobile">Statut :</span> <b><?= $order->getPublicStatus() ?></b></p>
                             <?php if ($order->getShippingMethod()): ?>
-                                <p>Éxpédition : <?= $order->getShippingMethod()->getName() ?> (<?= $order->getShippingMethod()->getPriceFormatted() ?>)</p>
+                                <p><span class="shop-hide-mobile">Éxpédition : </span><?= $order->getShippingMethod()->getName() ?> (<?= $order->getShippingMethod()->getPriceFormatted() ?>)</p>
                             <?php endif; ?>
-                            <p>Total : <b><?= $order->getOrderTotalFormatted() ?></b> payé avec <?= $order->getPaymentMethod()->getName() ?> (<?= $order->getPaymentMethod()->getFeeFormatted() ?>)</p>
+                            <p>Total : <b><?= $order->getOrderTotalFormatted() ?></b> <span class="shop-hide-mobile">payé avec <?= $order->getPaymentMethod()->getName() ?> (<?= $order->getPaymentMethod()->getFeeFormatted() ?>)</span></p>
                             <?php if ($order->getAppliedCartDiscount()): ?>
                                     <p>Réduction appliquée : <b>-<?= $order->getAppliedCartDiscountTotalPriceFormatted() ?></b></p>
                             <?php endif; ?>
@@ -48,7 +47,7 @@ Website::setDescription('Consultation de vos achats');
                                     <a href="<?= $order->getInvoiceLink() ?>" target="_blank" class="shop-link-48725">Télécharger ma facture</a>
                                 </div>
                             <?php endif; ?>
-                            <div style="text-align: end">
+                            <div class="shop-no-end-mobile">
                                 <a class="shop-link-48725" href="history/afterSales/request/<?= $order->getOrderNumber() ?>">Service après vente</a>
                             </div>
                         </div>
@@ -56,7 +55,7 @@ Website::setDescription('Consultation de vos achats');
                     <div style="margin-top: 1rem">
                         <?php foreach ($order->getOrderedItems() as $orderItem): ?>
                         <div style="display: flex; margin-bottom: 1rem" class="shop-item-ordered-456744">
-                                <div style="width: 10%">
+                                <div class="shop-order-img-width">
                                     <?php if ($orderItem->getFirstImg() !== '/Public/Uploads/Shop/0'): ?>
                                         <img class="mx-auto" style="width: 8rem; height: 8rem; object-fit: cover" src="<?= $orderItem->getFirstImg() ?>" alt="Image de l'article">
                                     <?php else: ?>
