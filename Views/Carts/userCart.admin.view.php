@@ -3,22 +3,22 @@
 /* @var \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $carts */
 /* @var \CMW\Entity\Users\UserEntity $user */
 
-use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\MailModel;
 
-$title = 'Paniers de ' . $user->getPseudo();
+$title = LangManager::translate('shop.views.carts.viewCart.title', ['session_name' => $user->getPseudo()]);
 $description = '';
 
 ?>
 
-<h3>Panier de <?= $user->getPseudo() ?></h3>
+<h3><?= LangManager::translate('shop.views.carts.viewCart.title', ['session_name' => $user->getPseudo()]) ?></h3>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
     <div class="alert-danger">
-        <b>Important : Configuration des e-mails requise</b>
-        <p>Les e-mails ne sont pas configurés sur votre site. Une configuration correcte est essentielle pour assurer le bon fonctionnement du package Shop.<br>
-            Les notifications importantes, telles que les confirmations de commandes, les informations de suivi ..., dépendent d'un système d'e-mails fonctionnel.</p>
-        <p>Veuillez <a class="link" href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>cmw-admin/mail/configuration">configurer les paramètres d'e-mails</a> dès que possible.</p>
+        <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
+        <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
+            <?= LangManager::translate('shop.alert.mail.notify') ?></p>
+        <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
 <?php endif;?>
 
@@ -26,11 +26,11 @@ $description = '';
         <table id="table1">
             <thead>
             <tr>
-                <th>Article</th>
-                <th>Quantité</th>
-                <th>Prix unitaire</th>
-                <th>Prix total</th>
-                <th>Date d'ajout</th>
+                <th><?= LangManager::translate('shop.views.carts.viewCart.item') ?></th>
+                <th><?= LangManager::translate('shop.views.carts.viewCart.quantity') ?></th>
+                <th><?= LangManager::translate('shop.views.carts.viewCart.pu') ?></th>
+                <th><?= LangManager::translate('shop.views.carts.viewCart.pt') ?></th>
+                <th><?= LangManager::translate('shop.views.carts.viewCart.date') ?></th>
             </tr>
             </thead>
             <tbody>
