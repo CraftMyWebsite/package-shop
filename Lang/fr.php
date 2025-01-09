@@ -2,10 +2,6 @@
 
 use CMW\Manager\Env\EnvManager;
 
-//  LangManager::translate('shop.alert.mail.title')
-/*  <?= LangManager::translate('shop.alert.mail.config') ?> */
-/*  <?= LangManager::translate('shop.views.carts.carts.modal.titleSession', ['session_name' => $var]) ?> */
-
 return [
     /*MENUS : */
     'menus' => [
@@ -78,15 +74,43 @@ return [
                 'date' => 'Date d\'ajout',
             ],
         ],
+        //  LangManager::translate('shop.views.cat.title')
+        /*  <?= LangManager::translate('shop.views.cat.config') ?> */
+        /*  <?= LangManager::translate('shop.views.cat.manage.modalDelete.title', ['cat_name' => $var]) ?> */
         'cat' => [
             'addSubCat' => [
-                '' => '',
+                'title' => 'Ajout d\'une sous-catégorie dans %cat_name%',
+                'name' => 'Nom',
+                'placeholderName' => 'Pantalon',
+                'icon' => 'Icon : <small>(Optionnel)</small>',
+                'iconPlaceholder' => 'Sélectionner un icon',
+                'desc' => 'Description : <small>(Optionnel)</small>',
+                'descPlaceholder' => 'Des vêtements',
             ],
             'edit' => [
-                '' => '',
+                'title' => 'Édition de %cat_name%',
+                'move' => 'Déplacer vers :',
+                'to' => 'Catégorie principale',
             ],
             'manage' => [
-                '' => '',
+                'cat' => 'Catégories',
+                'create' => 'Créer une catégorie',
+                'items' => 'articles',
+                'modalDelete' => [
+                    'title' => 'Suppression de : %cat_name%',
+                    'text' => 'Cette suppression est définitive.',
+                ],
+                'createBefore' => 'Merci de créer une catégorie pour commencer à utiliser la Boutique',
+                'modalAdd' => [
+                    'title' => 'Nouvelle catégorie',
+                ],
+                'tooltip' => [
+                    'items' => 'Voir les articles lié',
+                    'render' => 'Voir le rendue',
+                    'subCat' => 'Ajouter une sous catégorie',
+                    'edit' => 'Modifier la catégorie',
+                    'delete' => 'Supprimer',
+                ],
             ],
         ],
         'discount' => [

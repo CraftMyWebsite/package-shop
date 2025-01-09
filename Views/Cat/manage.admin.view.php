@@ -1,20 +1,18 @@
 <?php
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
-use CMW\Utils\Website;
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 
-$title = '';
+$title = LangManager::translate('shop.views.cat.manage.cat');
 $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-layer-group"></i> Catégories</h3>
-    <button data-modal-toggle="modal-add-cat" class="btn-primary" type="button">Créer une catégorie</button>
+    <h3><i class="fa-solid fa-layer-group"></i> <?= LangManager::translate('shop.views.cat.manage.cat') ?></h3>
+    <button data-modal-toggle="modal-add-cat" class="btn-primary" type="button"><?= LangManager::translate('shop.views.cat.manage.create') ?></button>
 </div>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
@@ -33,26 +31,26 @@ $description = '';
     <div class="flex justify-between">
         <p>
             <small><i class="text-secondary fa-solid fa-circle-dot"></i></small>
-            <?= $category->getFontAwesomeIcon() ?> <b><?= $category->getName() ?></b> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> articles)
+            <?= $category->getFontAwesomeIcon() ?> <b><?= $category->getName() ?></b> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> <?= LangManager::translate('shop.views.cat.manage.items') ?>)
         </p>
         <div class="space-x-2">
             <a href="items/cat/<?= $category->getId() ?>"><i data-bs-toggle="tooltip"
-                                                             title="Voir les articles lié"
+                                                             title="<?= LangManager::translate('shop.views.cat.manage.tooltip.items') ?>"
                                                              class="me-3 fa-solid fa-eye"></i></a>
             <a target="_blank"
                href="<?= $category->getCatLink() ?>"><i data-bs-toggle="tooltip"
-                                                        title="Voir le rendue"
+                                                        title="<?= LangManager::translate('shop.views.cat.manage.tooltip.render') ?>"
                                                         class="me-3 fa-solid fa-up-right-from-square"></i></a>
             <a href="cat/addSubCat/<?= $category->getId() ?>">
-                <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
+                <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.subCat') ?>"
                    class="text-success me-3 fa-solid fa-circle-plus"></i>
             </a>
             <a href="cat/edit/<?= $category->getId() ?>">
-                <i data-bs-toggle="tooltip" title="Modifier la catégorie"
+                <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.edit') ?>"
                    class="text-info me-3 fas fa-edit"></i>
             </a>
             <button type="button" data-modal-toggle="modal-delete-<?= $category->getId() ?>">
-                <i data-bs-toggle="tooltip" title="Supprimé"
+                <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.delete') ?>"
                    class="text-danger fas fa-trash-alt"></i>
             </button>
 
@@ -64,26 +62,26 @@ $description = '';
                 class="text-bold-500">
                 <small><i
                         class="text-secondary fa-solid fa-turn-up fa-rotate-90"></i></small>
-                <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <b><?= $subCategory->getSubCategory()->getName() ?></b> <?= $subCategory->getSubCategory()->getDescription() ?> (<?= $subCategory->getSubCategory()->countItemsInCat() ?> articles)
+                <?= $subCategory->getSubCategory()->getFontAwesomeIcon() ?> <b><?= $subCategory->getSubCategory()->getName() ?></b> <?= $subCategory->getSubCategory()->getDescription() ?> (<?= $subCategory->getSubCategory()->countItemsInCat() ?> <?= LangManager::translate('shop.views.cat.manage.items') ?>)
             </p>
             <div class="space-x-2">
                 <a href="items/cat/<?= $subCategory->getSubCategory()->getId() ?>"><i
-                        data-bs-toggle="tooltip" title="Voir les articles lié"
+                        data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.items') ?>"
                         class="me-3 fa-solid fa-eye"></i></a>
                 <a target="_blank"
                    href="<?= $subCategory->getSubCategory()->getCatLink() ?>"><i
-                        data-bs-toggle="tooltip" title="Voir le rendue"
+                        data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.render') ?>"
                         class="me-3 fa-solid fa-up-right-from-square"></i></a>
                 <a href="cat/addSubCat/<?= $subCategory->getSubCategory()->getId() ?>">
-                    <i data-bs-toggle="tooltip" title="Ajouter une sous catégorie"
+                    <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.subCat') ?>"
                        class="text-success me-3 fas fa-circle-plus"></i>
                 </a>
                 <a href="cat/edit/<?= $subCategory->getSubCategory()->getId() ?>">
-                    <i data-bs-toggle="tooltip" title="Modifier la catégorie"
+                    <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.edit') ?>"
                        class="text-info me-3 fas fa-edit"></i>
                 </a>
                 <button type="button" data-modal-toggle="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>">
-                    <i data-bs-toggle="tooltip" title="Supprimé"
+                    <i data-bs-toggle="tooltip" title="<?= LangManager::translate('shop.views.cat.manage.tooltip.delete') ?>"
                        class="text-danger fas fa-trash-alt"></i>
                 </button>
             </div>
@@ -94,11 +92,11 @@ $description = '';
         <div id="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>" class="modal-container">
             <div class="modal">
                 <div class="modal-header-danger">
-                    <h6>Suppression de : <?= $subCategory->getSubCategory()->getName() ?></h6>
+                    <h6><?= LangManager::translate('shop.views.cat.manage.modalDelete.title', ['cat_name' => $subCategory->getSubCategory()->getName()]) ?></h6>
                     <button type="button" data-modal-hide="modal-deletee-<?= $subCategory->getSubCategory()->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
-                    <p>Cette suppression est définitive.</p>
+                    <p><?= LangManager::translate('shop.views.cat.manage.modalDelete.text') ?></p>
                 </div>
                 <div class="modal-footer">
                     <a type="button" href="cat/delete/<?= $subCategory->getSubCategory()->getId() ?>"
@@ -115,11 +113,11 @@ $description = '';
         <div id="modal-delete-<?= $category->getId() ?>" class="modal-container">
             <div class="modal">
                 <div class="modal-header-danger">
-                    <h6>Suppression de : <?= $category->getName() ?></h6>
+                    <h6><?= LangManager::translate('shop.views.cat.manage.modalDelete.title', ['cat_name' => $category->getName()]) ?></h6>
                     <button type="button" data-modal-hide="modal-delete-<?= $category->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
-                    <p>Cette suppression est définitive.</p>
+                    <p><?= LangManager::translate('shop.views.cat.manage.modalDelete.text') ?></p>
                 </div>
                 <div class="modal-footer">
                     <a type="button" href="cat/delete/<?= $category->getId() ?>"
@@ -131,7 +129,7 @@ $description = '';
 <?php endforeach; ?>
 <?php else: ?>
 <div class="card p-4">
-    <div class="alert alert-info">Merci de créer une catégorie pour commencer à utiliser la Boutique
+    <div class="alert alert-info"><?= LangManager::translate('shop.views.cat.manage.createBefore') ?>
     </div>
 </div>
 <?php endif ?>
@@ -142,23 +140,23 @@ $description = '';
 <div id="modal-add-cat" class="modal-container">
     <div class="modal">
         <div class="modal-header">
-            <h6>Nouvelle catégorie</h6>
+            <h6><?= LangManager::translate('shop.views.cat.manage.modalAdd.title') ?></h6>
             <button type="button" data-modal-hide="modal-add-cat"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form method="post" action="cat/add">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
-                <label for="name">Nom<span style="color: red">*</span> :</label>
+                <label for="name"><?= LangManager::translate('shop.views.cat.addSubCat.name') ?><span style="color: red">*</span> :</label>
                 <div class="input-group">
                     <i class="fa-solid fa-heading"></i>
-                    <input type="text" id="name" name="name" placeholder="Pantalon">
+                    <input type="text" id="name" name="name" placeholder="<?= LangManager::translate('shop.views.cat.addSubCat.placeholderName') ?>">
                 </div>
-                <label>Icon : <small>(Optionnel)</small></label>
-                <div class="icon-picker" data-id="icon" data-name="icon" data-label="" data-placeholder="Sélectionner un icon" data-value=""></div>
-                <label for="description">Description : <small>(Optionnel)</small></label>
+                <label><?= LangManager::translate('shop.views.cat.addSubCat.icon') ?></label>
+                <div class="icon-picker" data-id="icon" data-name="icon" data-label="" data-placeholder="<?= LangManager::translate('shop.views.cat.addSubCat.iconPlaceholder') ?>" data-value=""></div>
+                <label for="description"><?= LangManager::translate('shop.views.cat.addSubCat.desc') ?></label>
                 <div class="input-group">
                     <i class="fa-solid fa-paragraph"></i>
-                    <input type="text" id="description" name="description" placeholder="Des vêtements">
+                    <input type="text" id="description" name="description" placeholder="<?= LangManager::translate('shop.views.cat.addSubCat.descPlaceholder') ?>">
                 </div>
             </div>
             <div class="modal-footer">

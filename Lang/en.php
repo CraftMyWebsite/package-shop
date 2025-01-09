@@ -76,13 +76,38 @@ return [
         ],
         'cat' => [
             'addSubCat' => [
-                '' => '',
+                'title' => 'Add a sub-category in %cat_name%',
+                'name' => 'Name',
+                'placeholderName' => 'Pants',
+                'icon' => 'Icon: <small>(Optional)</small>',
+                'iconPlaceholder' => 'Select an icon',
+                'desc' => 'Description: <small>(Optional)</small>',
+                'descPlaceholder' => 'Clothing',
             ],
             'edit' => [
-                '' => '',
+                'title' => 'Editing %cat_name%',
+                'move' => 'Move to:',
+                'to' => 'Main Category',
             ],
             'manage' => [
-                '' => '',
+                'cat' => 'Categories',
+                'create' => 'Create a category',
+                'items' => 'items',
+                'modalDelete' => [
+                    'title' => 'Deleting: %cat_name%',
+                    'text' => 'This deletion is permanent.',
+                ],
+                'createBefore' => 'Please create a category to start using the Shop',
+                'modalAdd' => [
+                    'title' => 'New Category',
+                ],
+                'tooltip' => [
+                    'items' => 'View related items',
+                    'render' => 'View the render',
+                    'subCat' => 'Add a sub-category',
+                    'edit' => 'Edit category',
+                    'delete' => 'Delete',
+                ],
             ],
         ],
         'discount' => [
