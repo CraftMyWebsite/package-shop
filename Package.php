@@ -2,6 +2,7 @@
 
 namespace CMW\Package\Shop;
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\IPackageConfig;
 use CMW\Manager\Package\PackageMenuType;
 use CMW\Manager\Package\PackageSubMenuType;
@@ -43,110 +44,110 @@ class Package implements IPackageConfig
                 permission: null,
                 subMenus: [
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-sliders mr-2"></i> Réglages',
+                        title: '<i class="fa-solid fa-sliders mr-2"></i> '. LangManager::translate('shop.menus.settings.setting'),
                         permission: 'shop.config',
                         url: null,
                         subMenus: [
                             new PackageSubMenuType(
-                                title: 'Globaux',
+                                title: LangManager::translate('shop.menus.settings.global'),
                                 permission: 'shop.config',
                                 url: 'shop/settings/global',
                             ),
                             new PackageSubMenuType(
-                                title: 'Méthodes',
+                                title: LangManager::translate('shop.menus.settings.method'),
                                 permission: 'shop.config',
                                 url: 'shop/settings/methods',
                             ),
                             new PackageSubMenuType(
-                                title: 'Livraisons',
+                                title: LangManager::translate('shop.menus.settings.shipping'),
                                 permission: 'shop.shipping',
                                 url: 'shop/shipping',
                             ),
                             new PackageSubMenuType(
-                                title: 'Paiements',
+                                title: LangManager::translate('shop.menus.settings.payment'),
                                 permission: 'shop.payment',
                                 url: 'shop/payments',
                             ),
                         ]
                     ),
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-boxes-stacked mr-2"></i> Articles & Catégories',
+                        title: '<i class="fa-solid fa-boxes-stacked mr-2"></i> '. LangManager::translate('shop.menus.items.item'),
                         permission: 'shop.items',
                         url: null,
                         subMenus: [
                             new PackageSubMenuType(
-                                title: 'Articles',
+                                title: LangManager::translate('shop.menus.items.items'),
                                 permission: 'shop.items',
                                 url: 'shop/items',
                             ),
                             new PackageSubMenuType(
-                                title: 'Catégories',
+                                title: LangManager::translate('shop.menus.items.cats'),
                                 permission: 'shop.cat',
                                 url: 'shop/cat',
                             ),
                         ]
                     ),
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-ticket mr-2"></i> Avantages Client',
+                        title: '<i class="fa-solid fa-ticket mr-2"></i> '. LangManager::translate('shop.menus.discounts.discount'),
                         permission: 'shop.discount',
                         url: null,
                         subMenus: [
                             new PackageSubMenuType(
-                                title: 'Promotions',
+                                title: LangManager::translate('shop.menus.discounts.discounts'),
                                 permission: 'shop.discount',
                                 url: 'shop/discounts',
                             ),
                             new PackageSubMenuType(
-                                title: 'Avoirs / Credits',
+                                title: LangManager::translate('shop.menus.discounts.credit'),
                                 permission: 'shop.credit',
                                 url: 'shop/credits',
                             ),
                             new PackageSubMenuType(
-                                title: 'Carte cadeau',
+                                title: LangManager::translate('shop.menus.discounts.gift'),
                                 permission: 'shop.gift',
                                 url: 'shop/giftCard',
                             ),
                         ]
                     ),
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-cash-register mr-2"></i> Commandes',
+                        title: '<i class="fa-solid fa-cash-register mr-2"></i> '. LangManager::translate('shop.menus.orders.order'),
                         permission: 'shop.order',
                         url: null,
                         subMenus: [
                             new PackageSubMenuType(
-                                title: 'En cours',
+                                title: LangManager::translate('shop.menus.orders.inProgress'),
                                 permission: 'shop.order',
                                 url: 'shop/orders/inProgress',
                             ),
                             new PackageSubMenuType(
-                                title: 'Terminé',
+                                title: LangManager::translate('shop.menus.orders.ended'),
                                 permission: 'shop.order',
                                 url: 'shop/orders/ended',
                             ),
                             new PackageSubMenuType(
-                                title: 'Annulé',
+                                title: LangManager::translate('shop.menus.orders.canceled'),
                                 permission: 'shop.order',
                                 url: 'shop/orders/canceled',
                             ),
                         ]
                     ),
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-headset mr-3"></i> S.A.V',
+                        title: '<i class="fa-solid fa-headset mr-3"></i> ' . LangManager::translate('shop.menus.sav'),
                         permission: 'shop.afterSales',
                         url: 'shop/afterSales',
                     ),
                     new PackageSubMenuType(
-                        title: '<i class="fa-solid fa-chart-line mr-2"></i> Stats',
+                        title: '<i class="fa-solid fa-chart-line mr-2"></i> ' . LangManager::translate('shop.menus.stats.stat'),
                         permission: 'shop.stats',
                         url: null,
                         subMenus: [
                             new PackageSubMenuType(
-                                title: 'Statistiques global',
+                                title: LangManager::translate('shop.menus.stats.global'),
                                 permission: 'shop.stats',
                                 url: 'shop/statistics',
                             ),
                             new PackageSubMenuType(
-                                title: 'Paniers',
+                                title: LangManager::translate('shop.menus.stats.cart'),
                                 permission: 'shop.cart',
                                 url: 'shop/carts',
                             ),
