@@ -143,7 +143,7 @@ Website::setDescription('Votre panier');
                     <p style="font-weight: bolder; font-size: 1.2rem">Total</p>
                     <p style="font-weight: bolder; font-size: 1.2rem"><?= isset($cart) ? $cart->getTotalCartPriceAfterDiscountFormatted() : 0 ?></p>
                 </div>
-                <div style="display: flex; justify-content: center">
+                <div style="display: flex; justify-content: center; margin-top: 1rem">
                     <a class="shop-button-48751" href="command">Commander</a>
                 </div>
             </div>

@@ -329,10 +329,10 @@ class ShopHistoryOrdersController extends AbstractController
 
         $orderOnlyVirtual = $this->handleOrderTypeContent($thisOrder->getOrderedItems());
         if (!$orderOnlyVirtual) {
-            $shippingMethodVarName = $thisOrder->getShippingMethod()->getShipping()->getShippingMethod()->varName();
+            $shippingMethodVarName = $thisOrder->getShippingMethod()?->getShipping()?->getShippingMethod()?->varName();
             $items = $thisOrder->getOrderedItems();
             $userEntity = $thisOrder->getUser();
-            ShopShippingController::getInstance()->getShippingMethodsByVarName($shippingMethodVarName)->execAfterCommandValidatedByAdmin($shippingMethodVarName,$items,$userEntity, $thisOrder);
+            ShopShippingController::getInstance()->getShippingMethodsByVarName($shippingMethodVarName)?->execAfterCommandValidatedByAdmin($shippingMethodVarName,$items,$userEntity, $thisOrder);
         }
 
 

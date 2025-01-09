@@ -77,7 +77,7 @@ Website::setDescription("Méthode de livraison");
                     <?php endif; ?>
                 </form>
             </div>
-            <div style="display: flex; justify-content: space-between">
+            <div style="display: flex; justify-content: space-between; margin-top: 1rem">
                 <form action="command/toAddress" method="post">
                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                     <button type="submit"  class="shop-button-48751">Précedent</button>

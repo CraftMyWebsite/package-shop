@@ -42,7 +42,7 @@ Website::setDescription("Adresse de facturation et livraison");
                                 <?php endforeach; ?>
                         </div>
                 </div>
-                <div style="display: flex; justify-content: end;">
+                <div style="display: flex; justify-content: end; margin-top: 1rem">
                     <button type="submit"  class="shop-button-48751">Suivant</button>
                 </div>
             </form>

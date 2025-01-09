@@ -127,7 +127,7 @@ Website::setDescription("Méthode de paiement");
                 <?php endif; ?>
                 <div style="margin-top: 1.6rem; text-align: center">
                     <p style="font-weight: bolder; font-size: 1.3rem">Total</p>
-                    <p style="font-weight: bolder; font-size: 1.8rem" id="total"><?= $cart->getTotalCartPriceAfterDiscountFormatted() ?></p>
+                    <p style="font-weight: bolder; font-size: 1.8rem" id="total"><?= $cart->getTotalPriceCompleteFormatted() ?></p>
                 </div>
             </div>
         </div>
