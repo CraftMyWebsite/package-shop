@@ -204,9 +204,6 @@ return [
                 'warnItems' => 'Cette promotion s\'applique à un ou plusieurs articles.<br>Ceci n\'est pas modifiable, supprimer et recréer la promotion pour changer ceci<br>Voici la liste des articles pris en charge par cette promotion :',
                 'warnCats' => 'Cette promotion s\'applique à une ou plusieurs catégories.<br>Ceci n\'est pas modifiable, supprimer et recréer la promotion pour changer ceci<br>Voici la liste des catégories prise en charge par cette promotion :',
             ],
-            //  LangManager::translate('shop.views.discount.giftCard.')
-            /*  <?= LangManager::translate('shop.views.discount.giftCard.') ?> */
-            /*  <?= LangManager::translate('shop.views.discount.giftCard.', ['cat_name' => $var]) ?> */
             'giftCard' => [
                 'title' => 'Carte cadeau',
                 'generateBtn' => 'Générer une carte',
@@ -246,14 +243,19 @@ return [
                 ],
             ],
             'payments' => [
+                'save' => 'Sauvegarder',
+                'fee' => 'Frais :',
                 'coinbase' => [
-                    '' => '',
+                    'key' => 'Clé Secrète :',
                 ],
                 'paypal' => [
-                    '' => '',
+                    'client' => 'ClientID :',
+                    'key' => 'Client Secret :',
                 ],
                 'stripe' => [
-                    '' => '',
+                    'info1' => 'Gérez les méthodes de paiement que vous voulez autoriser directement dans stripe, tous les paiements actif et configuré correctement seront transmis automatiquement, votre client pourra ainsi choisir la méthode qu\'il préfère.',
+                    'info2' => '<a target="_blank" class="link" href="https://dashboard.stripe.com/settings/payment_methods?config_id=pmc_1NQztq2b9x8tnST4GWwYqyWt">Gérer mes moyens de paiement Stripe</a>',
+                    'key' => 'Clé Secrète :',
                 ],
             ],
             'shipping' => [
@@ -271,7 +273,11 @@ return [
                 ],
             ],
             'dashboard' => [
-                '' => '',
+                'shop' => 'Boutique',
+                'inProgress' => 'Commandes à traité',
+                'gainMonth' => 'Gains ce mois',
+                'gainTotal' => 'Gains total',
+                'sell' => 'Articles en vente',
             ],
         ],
         'items' => [
@@ -348,8 +354,19 @@ return [
                 '' => '',
             ],
         ],
+        //  LangManager::translate('shop.views.payments.')
+        /*  <?= LangManager::translate('shop.views.payments.') ?> */
+        /*  <?= LangManager::translate('shop.views.payments.', ['cat_name' => $var]) ?> */
         'payments' => [
-            '' => '',
+            'title' => 'Moyens de paiements',
+            'actif' => 'Paiement atif.',
+            'inactif' => 'Paiement inactif.',
+            'warn' => 'Vous ne pouvez pas modifier cette méthode de paiement, car elle est obligatoire pour la vente d\'articles gratuits. <br> Ne vous inquiétez pas, cette méthode de paiement est entièrement automatique et ne sera disponible que si la totalité du contenu du panier est à 0.',
+            'config' => 'Configuration des paiements avec %name%',
+            'disable' => 'Désactiver %name%',
+            'enable' => 'Activer %name%',
+            'panel' => 'Panel %name%',
+            'docs' => 'Documentations',
         ],
     ],
 ];

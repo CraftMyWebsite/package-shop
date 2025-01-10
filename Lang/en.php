@@ -243,14 +243,19 @@ return [
                 ],
             ],
             'payments' => [
+                'save' => 'Save',
+                'fee' => 'Fees:',
                 'coinbase' => [
-                    '' => '',
+                    'key' => 'Secret Key:',
                 ],
                 'paypal' => [
-                    '' => '',
+                    'client' => 'ClientID:',
+                    'key' => 'Client Secret:',
                 ],
                 'stripe' => [
-                    '' => '',
+                    'info1' => 'Manage the payment methods you want to authorize directly in Stripe. All active and properly configured payments will be automatically transmitted, allowing your client to choose their preferred method.',
+                    'info2' => '<a target="_blank" class="link" href="https://dashboard.stripe.com/settings/payment_methods?config_id=pmc_1NQztq2b9x8tnST4GWwYqyWt">Manage my Stripe payment methods</a>',
+                    'key' => 'Secret Key:',
                 ],
             ],
             'shipping' => [
@@ -268,7 +273,11 @@ return [
                 ],
             ],
             'dashboard' => [
-                '' => '',
+                'shop' => 'Shop',
+                'inProgress' => 'Orders to Process',
+                'gainMonth' => 'Earnings This Month',
+                'gainTotal' => 'Total Earnings',
+                'sell' => 'Items for Sale',
             ],
         ],
         'items' => [
@@ -346,7 +355,15 @@ return [
             ],
         ],
         'payments' => [
-            '' => '',
+            'title' => 'Payment Methods',
+            'actif' => 'Active Payment.',
+            'inactif' => 'Inactive Payment.',
+            'warn' => 'You cannot modify this payment method because it is mandatory for selling free items. <br> Don’t worry, this payment method is fully automatic and will only be available if the entire cart content is free.',
+            'config' => 'Payment configuration with %name%',
+            'disable' => 'Disable %name%',
+            'enable' => 'Enable %name%',
+            'panel' => '%name% Panel',
+            'docs' => 'Documentation',
         ],
     ],
 ];

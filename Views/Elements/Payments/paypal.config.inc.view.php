@@ -1,5 +1,6 @@
 <?php
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
@@ -14,7 +15,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
     <div class="col-span-4">
         <div class="grid-2">
             <div>
-                <label for="<?= $varName ?>_client_id">ClientID :</label>
+                <label for="<?= $varName ?>_client_id"><?= LangManager::translate('shop.views.elements.payments.paypal.client') ?></label>
                 <input value="<?= ShopPaymentMethodSettingsModel::getInstance()->getSetting($varName . '_client_id') ?>"
                        placeholder="CLIENT_ID"
                        type="text"
@@ -24,7 +25,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
                        required>
             </div>
             <div>
-                <label for="<?= $varName ?>_client_secret">Client Secret :</label>
+                <label for="<?= $varName ?>_client_secret"><?= LangManager::translate('shop.views.elements.payments.paypal.key') ?></label>
                 <input value="<?= ShopPaymentMethodSettingsModel::getInstance()->getSetting($varName . '_client_secret') ?>"
                        placeholder="CLIENT_SECRET"
                        type="text"
@@ -37,7 +38,7 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
     </div>
     <div>
         <div>
-            <label for="<?= $varName ?>_fee">Frais :</label>
+            <label for="<?= $varName ?>_fee"><?= LangManager::translate('shop.views.elements.payments.fee') ?></label>
             <div class="input-group">
                 <i><?= ShopSettingsModel::getInstance()->getSettingValue('symbol') ?></i>
                 <input type="text" oninput="validateNumberInput(this)" required id="<?= $varName ?>_fee" name="<?= $varName ?>_fee" placeholder="5.00" value="<?= ShopPaymentMethodSettingsModel::getInstance()->getSetting($varName . '_fee') ?? 0 ?>">
@@ -45,5 +46,5 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
         </div>
     </div>
 </div>
-    <button type="submit" class="btn-center btn-primary">Sauvegarder</button>
+    <button type="submit" class="btn-center btn-primary"><?= LangManager::translate('shop.views.elements.payments.save') ?></button>
 </form>
