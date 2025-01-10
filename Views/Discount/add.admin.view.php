@@ -1,6 +1,7 @@
 <?php
 
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
@@ -9,18 +10,18 @@ use CMW\Model\Shop\Setting\ShopSettingsModel;
 /* @var \CMW\Entity\Shop\Categories\ShopCategoryEntity [] $categories */
 /* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
 $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
-$title = '';
+$title = LangManager::translate('shop.views.discount.add.title');
 $description = '';
 
 ?>
 
 <div class="page-title">
     <div>
-        <h3><i class="fa-solid fa-tag"></i> Nouvelle promotion</h3>
-        <small>Seuls les articles en <?= $symbol ?> et supérieur à 0 sont applicables.</small>
+        <h3><i class="fa-solid fa-tag"></i> <?= LangManager::translate('shop.views.discount.add.title') ?></h3>
+        <small><?= LangManager::translate('shop.views.discount.add.infoTitle', ['symbol' => $symbol]) ?></small>
     </div>
 
-    <button form="addDiscount" type="submit" class="btn-primary">Ajouter</button>
+    <button form="addDiscount" type="submit" class="btn-primary"><?= LangManager::translate('shop.views.discount.add.add') ?></button>
 </div>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
@@ -33,8 +34,8 @@ $description = '';
 <?php endif;?>
 
 <div class="alert-info">
-        <p><i class="fa-solid fa-circle-info"></i> N'oubliez pas qu'aucune promotion n'est cumulable. <br>
-            par ex, une promotion appliquée automatiquement sur un groupe d'article sera prioritaire sur une promotion par CODE sur ces mêmes articles.</p>
+        <p><i class="fa-solid fa-circle-info"></i> <?= LangManager::translate('shop.views.discount.add.warn1') ?> <br>
+            <?= LangManager::translate('shop.views.discount.add.warn2') ?></p>
 </div>
 
 <form id="addDiscount" method="post" class="space-y-6">
@@ -42,9 +43,9 @@ $description = '';
 
     <div class="grid-2">
         <div class="card">
-            <h6>Informations</h6>
+            <h6><?= LangManager::translate('shop.views.discount.add.info') ?></h6>
                 <div>
-                    <label for="name">Nom<span class="text-danger">*</span> :</label>
+                    <label for="name"><?= LangManager::translate('shop.views.discount.add.name') ?><span class="text-danger">*</span> :</label>
                     <div class="input-group">
                         <i class="fa-solid fa-heading"></i>
                         <input type="text" id="name" name="name" required>
@@ -53,19 +54,19 @@ $description = '';
         </div>
         <div class="card">
             <div class="flex gap-2">
-                <h6>Durée</h6>
-                <small>Non obligatoire !</small>
+                <h6><?= LangManager::translate('shop.views.discount.add.duration') ?></h6>
+                <small><?= LangManager::translate('shop.views.discount.add.optional') ?></small>
             </div>
             <div class="grid-2">
                 <div>
-                    <label for="startDate">Date de début :</label>
+                    <label for="startDate"><?= LangManager::translate('shop.views.discount.add.start') ?></label>
                     <div class="input-group">
                         <i class="fa-regular fa-clock"></i>
                         <input type="datetime-local" step="1" id="startDate" name="startDate" value="">
                     </div>
                 </div>
                 <div>
-                    <label for="endDate">Date de fin :</label>
+                    <label for="endDate"><?= LangManager::translate('shop.views.discount.add.end') ?></label>
                     <div class="input-group">
                         <i class="fa-regular fa-clock"></i>
                         <input type="datetime-local" step="1" id="endDate" name="endDate" value="">
@@ -78,35 +79,53 @@ $description = '';
     <div class="grid-2">
         <div class="card">
             <div class="flex gap-2">
-                <h6>Limites</h6>
-                <small>Non obligatoire !</small>
+                <h6><?= LangManager::translate('shop.views.discount.add.limit') ?></h6>
+                <small><?= LangManager::translate('shop.views.discount.add.optional') ?></small>
             </div>
             <div>
                 <label class="toggle">
                     <input type="checkbox" class="toggle-input" name="multiplePerUsers">
                     <div class="toggle-slider"></div>
                     <p class="toggle-label"
-                       title="Le client peut utiliser le code sur plusieurs commandes différentes si cet option est active">
-                        Utilisation multiple par clients</p>
+                       title="<?= LangManager::translate('shop.views.discount.add.tooltipUse') ?>">
+                        <?= LangManager::translate('shop.views.discount.add.use') ?></p>
                 </label>
             </div>
             <div>
-                <label for="maxUses">Limite global d'utilisation / stock :</label>
+                <label for="maxUses"><?= LangManager::translate('shop.views.discount.add.globalLimit') ?></label>
                 <div class="input-group">
                     <i class="fa-solid fa-ban"></i>
-                    <input type="number" id="maxUses" name="maxUses" placeholder="Pas de limites">
+                    <input type="number" id="maxUses" name="maxUses" placeholder="<?= LangManager::translate('shop.views.discount.add.noLimit') ?>">
                 </div>
             </div>
         </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <div class="grid-2">
             <div class="card">
-                <h6>Impacte<span class="text-danger">*</span></h6>
+                <h6><?= LangManager::translate('shop.views.discount.add.impact') ?><span class="text-danger">*</span></h6>
                 <div class="space-y-4">
                     <div>
                         <select id="impact" name="impact">
-                            <option value="0"><?= $symbol ?> - Monétaire</option>
-                            <option value="1">% - Pourcentage</option>
+                            <option value="0"><?= $symbol ?> - <?= LangManager::translate('shop.views.discount.add.money') ?></option>
+                            <option value="1">% - <?= LangManager::translate('shop.views.discount.add.percent') ?></option>
                         </select>
                     </div>
                     <div>
@@ -123,19 +142,19 @@ $description = '';
 
             </div>
             <div class="card">
-                <h6>Code</h6>
+                <h6><?= LangManager::translate('shop.views.discount.add.code') ?></h6>
                 <div>
                     <div>
                         <label class="toggle">
                             <input type="checkbox" class="toggle-input" name="defaultActive" id="defaultActive">
                             <div class="toggle-slider"></div>
                             <p class="toggle-label"
-                               title="Vos clients n'ont pas à rentrer de code si cet option est active">
-                                S'applique automatiquement</p>
+                               title="<?= LangManager::translate('shop.views.discount.add.tooltipAuto') ?>">
+                                <?= LangManager::translate('shop.views.discount.add.auto') ?></p>
                         </label>
                     </div>
                     <div id="code-group">
-                        <label for="code" title="Le CODE que vos clients doivent taper pour appliquer la réduction">Code
+                        <label for="code" title="<?= LangManager::translate('shop.views.discount.add.tooltipCode') ?>"><?= LangManager::translate('shop.views.discount.add.code') ?>
                             :</label>
                         <div class="input-group">
                             <i class="fa-solid fa-rocket"></i>
@@ -149,14 +168,14 @@ $description = '';
 
     <div class="grid-2">
         <div class="card">
-            <h6>Réglages</h6>
+            <h6><?= LangManager::translate('shop.views.discount.add.settings') ?></h6>
             <div>
                 <label class="toggle">
                     <input type="checkbox" class="toggle-input" name="test">
                     <div class="toggle-slider"></div>
                     <p class="toggle-label"
-                       title="Ceci permet de tester vos promotions avant qu'elle ne sois utilisable par vos clients si cet option est active">
-                        Mode test</p>
+                       title="<?= LangManager::translate('shop.views.discount.add.tooltipTest') ?>">
+                        <?= LangManager::translate('shop.views.discount.add.test') ?></p>
                 </label>
             </div>
             <div>
@@ -164,8 +183,8 @@ $description = '';
                     <input type="checkbox" class="toggle-input" name="needPurchase">
                     <div class="toggle-slider"></div>
                     <p class="toggle-label"
-                       title="Vos clients ont déjà passer une commande avant de pouvoir bénéficier de ce code si cet option est active">
-                        Doit avoir déjà acheté</p>
+                       title="<?= LangManager::translate('shop.views.discount.add.tooltipBeforeBuy') ?>">
+                        <?= LangManager::translate('shop.views.discount.add.beforeBuy') ?></p>
                 </label>
             </div>
             <div>
@@ -173,23 +192,24 @@ $description = '';
                     <input type="checkbox" class="toggle-input" name="applyQuantity">
                     <div class="toggle-slider"></div>
                     <p class="toggle-label"
-                       title="La réduction s'applique sur la quantité dans le panier si cet option est active">Appliquer sur la
-                        quantité</p>
+                       title="<?= LangManager::translate('shop.views.discount.add.tooltipQuantity') ?>">
+                        <?= LangManager::translate('shop.views.discount.add.quantity') ?>
+                    </p>
                 </label>
             </div>
         </div>
         <div class="card">
             <div class="space-y-2">
                 <div>
-                    <label for="link"><h6>Lié à<span class="text-danger">*</span> </h6></label>
+                    <label for="link"><h6><?= LangManager::translate('shop.views.discount.add.linked') ?><span class="text-danger">*</span> </h6></label>
                     <select id="link" name="link">
-                        <option value="0">Tout les articles</option>
-                        <option value="1">Un ou Des article(s)</option>
-                        <option value="2">Une ou Des catégorie(s)</option>
+                        <option value="0"><?= LangManager::translate('shop.views.discount.add.allItems') ?></option>
+                        <option value="1"><?= LangManager::translate('shop.views.discount.add.items') ?></option>
+                        <option value="2"><?= LangManager::translate('shop.views.discount.add.cats') ?></option>
                     </select>
                 </div>
                 <div id="linkedItems-group">
-                    <label for="linkedItems">Article(s) lié(s)<span class="text-danger">*</span> :</label>
+                    <label for="linkedItems"><?= LangManager::translate('shop.views.discount.add.itemsLinked') ?><span class="text-danger">*</span> :</label>
                     <select id="linkedItems" name="linkedItems[]" class="choices" multiple>
                         <?php foreach ($items as $item): ?>
                         <?php if ($item->getPriceType() == 'money' && $item->getPrice() > 0): ?>
@@ -199,7 +219,7 @@ $description = '';
                     </select>
                 </div>
                 <div id="linkedCats-group">
-                    <label for="linkedCats">Catégorie(s) lié(s)<span class="text-danger">*</span> :</label>
+                    <label for="linkedCats"><?= LangManager::translate('shop.views.discount.add.catsLinked') ?><span class="text-danger">*</span> :</label>
                     <select id="linkedCats" name="linkedCats[]" class="choices" multiple>
                         <?php foreach ($categories as $category): ?>
                             <?php
@@ -227,19 +247,19 @@ $description = '';
     document.addEventListener('DOMContentLoaded', function () {
         const impactSelect = document.getElementById('impact');
         const priceGroup = document.getElementById('price-group');
-        const priceInput = document.getElementById('price'); // Assurez-vous que cet élément existe
+        const priceInput = document.getElementById('price');
         const percentGroup = document.getElementById('percent-group');
-        const percentInput = document.getElementById('percent'); // Assurez-vous que cet élément existe
+        const percentInput = document.getElementById('percent');
 
         function toggleInputFields() {
             if (impactSelect.value === '0') {
-                priceGroup.classList.remove('hidden');
-                percentGroup.classList.add('hidden');
+                priceGroup.style.display = 'flex';
+                percentGroup.style.display = 'none';
                 priceInput.setAttribute('required', 'required');
                 percentInput.removeAttribute('required');
             } else {
-                priceGroup.classList.add('hidden');
-                percentGroup.classList.remove('hidden');
+                priceGroup.style.display = 'none';
+                percentGroup.style.display = 'flex';
                 percentInput.setAttribute('required', 'required');
                 priceInput.removeAttribute('required');
             }
@@ -247,7 +267,6 @@ $description = '';
 
         impactSelect.addEventListener('change', toggleInputFields);
 
-        // Initial call to set the correct fields on page load
         toggleInputFields();
     });
 </script>
@@ -338,7 +357,7 @@ $description = '';
                     messageSize: '14',
                     icon: 'fa-solid fa-xmark',
                     title  : "Erreur",
-                    message: "Les nombres à virgule ne sont pas autorisé !",
+                    message: "<?= LangManager::translate('shop.views.discount.add.warnVirg') ?>",
                     color: "#41435F",
                     iconColor: '#DE2B59',
                     titleColor: '#DE2B59',
@@ -368,7 +387,7 @@ $description = '';
                     messageSize: '14',
                     icon: 'fa-solid fa-xmark',
                     title  : "Erreur",
-                    message: "Vous ne pouvez pas dépasser 99% !",
+                    message: "<?= LangManager::translate('shop.views.discount.add.warn99') ?>",
                     color: "#41435F",
                     iconColor: '#DE2B59',
                     titleColor: '#DE2B59',
@@ -402,7 +421,7 @@ $description = '';
                     messageSize: '14',
                     icon: 'fa-solid fa-xmark',
                     title  : "Erreur",
-                    message: "La date de fin ne peut pas être inférieure à la date actuelle.",
+                    message: "<?= LangManager::translate('shop.views.discount.add.warnEndDate') ?>",
                     color: "#41435F",
                     iconColor: '#DE2B59',
                     titleColor: '#DE2B59',
@@ -428,7 +447,7 @@ $description = '';
                         messageSize: '14',
                         icon: 'fa-solid fa-xmark',
                         title  : "Erreur",
-                        message: "La date de début doit être antérieure à la date de fin.",
+                        message: "<?= LangManager::translate('shop.views.discount.add.warnStartDate') ?>",
                         color: "#41435F",
                         iconColor: '#DE2B59',
                         titleColor: '#DE2B59',

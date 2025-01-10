@@ -1,12 +1,11 @@
 <?php
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-$title = '';
+$title = LangManager::translate('shop.views.discount.discount.title');
 $description = '';
 
 /* @var \CMW\Entity\Shop\Discounts\ShopDiscountEntity [] $ongoingDiscounts */
@@ -16,8 +15,8 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-tag"></i> Promotions</h3>
-    <a href="discounts/add" type="button" class="btn-primary">Nouvelle promotion</a>
+    <h3><i class="fa-solid fa-tag"></i> <?= LangManager::translate('shop.views.discount.discount.title') ?></h3>
+    <a href="discounts/add" type="button" class="btn-primary"><?= LangManager::translate('shop.views.discount.discount.new') ?></a>
 </div>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
@@ -30,26 +29,26 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 <?php endif;?>
 
 <div class="card">
-        <h6>Promotions en cours</h6>
+        <h6><?= LangManager::translate('shop.views.discount.discount.inProgress') ?></h6>
     <div class="table-container">
         <table class="table" id="table1">
             <thead>
             <tr>
-                <th>Nom</th>
-                <th>CODE</th>
-                <th>Lié à</th>
-                <th>Impacte</th>
-                <th>Début</th>
-                <th>Fin</th>
-                <th>Utilisation</th>
-                <th class="text-center">Gérer</th>
+                <th><?= LangManager::translate('shop.views.discount.discount.name') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.code') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.linked') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.impact') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.start') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.end') ?></th>
+                <th><?= LangManager::translate('shop.views.discount.discount.uses') ?></th>
+                <th class="text-center"><?= LangManager::translate('shop.views.discount.discount.manage') ?></th>
             </tr>
             </thead>
             <tbody>
             <?php foreach ($ongoingDiscounts as $discount): ?>
                 <tr>
                     <td><?= $discount->getName() ?></td>
-                    <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
+                    <td><?= !empty($discount->getCode()) ? $discount->getCode() : LangManager::translate('shop.views.discount.discount.autoApply') ?></td>
                     <td><?= $discount->getLinkedFormatted() ?></td>
                     <td>
                         <?php if ($discount->getPrice()): ?>
@@ -78,7 +77,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                         <div id="modal-report-<?= $discount->getId() ?>" class="modal-container">
                             <div class="modal">
                                 <div class="modal-header-warning">
-                                    <h6>Report de <?= $discount->getName() ?></h6>
+                                    <h6><?= LangManager::translate('shop.views.discount.discount.report', ['name' => $discount->getName()]) ?></h6>
                                     <button type="button" data-modal-hide="modal-report-<?= $discount->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                                 <form action="discounts/report" method="post">
@@ -86,7 +85,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                                 <div class="modal-body">
                                     <div>
                                         <input hidden="" name="id" value="<?= $discount->getId() ?>">
-                                        <label for="startDate">Date de début :</label>
+                                        <label for="startDate"><?= LangManager::translate('shop.views.discount.discount.startDate') ?></label>
                                         <div class="input-group">
                                             <i class="fa-regular fa-clock"></i>
                                             <input type="datetime-local" id="startDate" step="1" name="startDate" value="" required>
@@ -94,7 +93,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn-warning">Reporter</button>
+                                    <button type="submit" class="btn-warning"><?= LangManager::translate('shop.views.discount.discount.reportBtn') ?></button>
                                 </div>
                                 </form>
                             </div>
@@ -103,14 +102,14 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                         <div id="modal-disable-<?= $discount->getId() ?>" class="modal-container">
                             <div class="modal">
                                 <div class="modal-header-warning">
-                                    <h6>Désactivation de <?= $discount->getName() ?></h6>
+                                    <h6><?= LangManager::translate('shop.views.discount.discount.disable', ['name' => $discount->getName()]) ?></h6>
                                     <button type="button" data-modal-hide="modal-disable-<?= $discount->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    Une fois désactivé, vous ne pourrez plus utiliser cette promotion. voyez la comme une suppression archivée.
+                                    <?= LangManager::translate('shop.views.discount.discount.disableText') ?>
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="discounts/stop/<?= $discount->getId() ?>" type="button" class="btn-warning">Désactiver</a>
+                                    <a href="discounts/stop/<?= $discount->getId() ?>" type="button" class="btn-warning"><?= LangManager::translate('shop.views.discount.discount.disableBtn') ?></a>
                                 </div>
                             </div>
                         </div>
@@ -118,14 +117,14 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                         <div id="modal-delete-<?= $discount->getId() ?>" class="modal-container">
                             <div class="modal">
                                 <div class="modal-header-danger">
-                                    <h6>Suppression de <?= $discount->getName() ?></h6>
+                                    <h6><?= LangManager::translate('shop.views.discount.discount.delete', ['name' => $discount->getName()]) ?></h6>
                                     <button type="button" data-modal-hide="modal-delete-<?= $discount->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                                 <div class="modal-body">
-                                    Cette suppression est definitive.
+                                    <?= LangManager::translate('shop.views.discount.discount.deleteText') ?>
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="discounts/delete/<?= $discount->getId() ?>" type="button" class="btn-danger">Supprimer</a>
+                                    <a href="discounts/delete/<?= $discount->getId() ?>" type="button" class="btn-danger"><?= LangManager::translate('shop.views.discount.discount.deleteBtn') ?></a>
                                 </div>
                             </div>
                         </div>
@@ -139,16 +138,16 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 
 <div class="grid-2 mt-6">
     <div class="card">
-            <h6>Promotions à venir</h6>
+            <h6><?= LangManager::translate('shop.views.discount.discount.inComing') ?></h6>
         <div class="table-container">
             <table class="table" id="table2">
                 <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>CODE</th>
-                    <th>Impacte</th>
-                    <th>Lié à</th>
-                    <th>Commence dans</th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.name') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.code') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.impact') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.linked') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.startIn') ?></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -156,7 +155,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                 <?php foreach ($upcomingDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
-                        <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
+                        <td><?= !empty($discount->getCode()) ? $discount->getCode() : LangManager::translate('shop.views.discount.discount.autoApply') ?></td>
                         <td>
                             <?php if ($discount->getPrice()): ?>
                                 <?= $discount->getPrice() ?> <?= $symbol ?>
@@ -177,14 +176,14 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                             <div id="modal-delete-<?= $discount->getId() ?>" class="modal-container">
                                 <div class="modal">
                                     <div class="modal-header-danger">
-                                        <h6>Suppression de <?= $discount->getName() ?></h6>
+                                        <h6><?= LangManager::translate('shop.views.discount.discount.delete', ['name' => $discount->getName()]) ?></h6>
                                         <button type="button" data-modal-hide="modal-delete-<?= $discount->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
                                     <div class="modal-body">
-                                        Cette suppression est definitive.
+                                        <?= LangManager::translate('shop.views.discount.discount.deleteText') ?>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="discounts/delete/<?= $discount->getId() ?>" type="button" class="btn-danger">Supprimer</a>
+                                        <a href="discounts/delete/<?= $discount->getId() ?>" type="button" class="btn-danger"><?= LangManager::translate('shop.views.discount.discount.deleteBtn') ?></a>
                                     </div>
                                 </div>
                             </div>
@@ -196,16 +195,16 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         </div>
     </div>
     <div class="card">
-        <h6>Promotions passées</h6>
+        <h6><?= LangManager::translate('shop.views.discount.discount.passed') ?></h6>
         <div class="table-container">
             <table class="table" id="table3">
                 <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>CODE</th>
-                    <th>Impacte</th>
-                    <th>Lié à</th>
-                    <th>Utilisation</th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.name') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.code') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.impact') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.linked') ?></th>
+                    <th><?= LangManager::translate('shop.views.discount.discount.uses') ?></th>
                     <th></th>
                 </tr>
                 </thead>
@@ -213,7 +212,7 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
                 <?php foreach ($pastDiscounts as $discount): ?>
                     <tr>
                         <td><?= $discount->getName() ?></td>
-                        <td><?= !empty($discount->getCode()) ? $discount->getCode() : "S'applique automatiquement" ?></td>
+                        <td><?= !empty($discount->getCode()) ? $discount->getCode() : LangManager::translate('shop.views.discount.discount.autoApply') ?></td>
                         <td>
                             <?php if ($discount->getPrice()): ?>
                                 <?= $discount->getPrice() ?> <?= $symbol ?>
