@@ -8,12 +8,13 @@ use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IShippingMethod;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopShippingWithdrawPointImplementations implements IShippingMethod
 {
     public function name(): string
     {
-        return 'Notification retrait possible';
+        return LangManager::translate('shop.views.elements.shipping.withdraw_point.title');
     }
 
     public function varName(): string

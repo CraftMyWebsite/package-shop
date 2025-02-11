@@ -6,13 +6,14 @@ use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Manager\Lang\LangManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
 class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
 {
     public function name(): string
     {
-        return 'Commande offerte';
+        return LangManager::translate('shop.views.elements.payments.free.title');
     }
 
     public function varName(): string

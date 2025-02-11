@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Admin\Item\Shipping;
 
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Mail\MailManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Shipping\ShopShippingRequirementModel;
@@ -31,14 +32,14 @@ class ShopShippingNotifyWithdrawController extends AbstractController
     {
         $requirement = ShopShippingRequirementModel::getInstance();
 
-        $globalName = $requirement->getSetting($varName . '_global') ?? 'Colis en attente de retrait';
+        $globalName = $requirement->getSetting($varName . '_global') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.waiting_title');
 
         $withdrawPoint = $order->getShippingMethod()->getShipping()->getWithdrawPoint();
 
-        $titre = $requirement->getSetting($varName . '_title_mail') ?? 'Retrait en attente';
-        $message = $requirement->getSetting($varName . '_text_mail') ?? "Votre commande est prête à être récupérer dans notre centre !";
-        $use = $requirement->getSetting($varName . '_use_mail') ?? 'Présenter ce mail pour retirer votre colis !';
-        $address = $requirement->getSetting($varName . '_address') ?? 'Adresse du centre :';
+        $titre = $requirement->getSetting($varName . '_title_mail') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.waiting');
+        $message = $requirement->getSetting($varName . '_text_mail') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.ready_to_withdraw');
+        $use = $requirement->getSetting($varName . '_use_mail') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.show_this');
+        $address = $requirement->getSetting($varName . '_address') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.center');
 
         $htmlTemplate = <<<HTML
             <html>

@@ -39,7 +39,7 @@ class Package implements IPackageConfig
         return [
             new PackageMenuType(
                 icon: 'fas fa-shop',
-                title: 'Boutique',
+                title: LangManager::translate('shop.menus.shop'),
                 url: null,
                 permission: null,
                 subMenus: [

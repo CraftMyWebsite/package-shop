@@ -1,11 +1,10 @@
 <?php
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\MailModel;
 
-$title = 'Paiements';
-$description = 'Gérez les méthodes de paiements';
+$title = LangManager::translate('shop.views.payments.title');
+$description = '';
 
 /* @var $methods \CMW\Interface\Shop\IPaymentMethod[] */
 

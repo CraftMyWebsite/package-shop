@@ -5,6 +5,7 @@ use CMW\Manager\Env\EnvManager;
 return [
     /*MENUS : */
     'menus' => [
+        'shop' => 'Shop',
         'settings' => [
             'setting' => 'Settings',
             'global' => 'Global',
@@ -245,6 +246,9 @@ return [
             'payments' => [
                 'save' => 'Save',
                 'fee' => 'Fees:',
+                'free' => [
+                    'title' => 'Free order',
+                ],
                 'coinbase' => [
                     'key' => 'Secret Key:',
                 ],
@@ -261,8 +265,31 @@ return [
             'shipping' => [
                 'global' => [
                     'withdraw' => [
-                        '' => '',
+                        'object' => 'Mail subject:',
+                        'mail_setting' => 'Mail settings:',
+                        'title' => 'Title:',
+                        'message' => 'Message:',
+                        'footer_message' => 'Footer message:',
+                        'address' => 'Address:',
+                        'preview' => 'Mail preview:',
+                        'style' => 'Appearance:',
+                        'background' => 'Background color',
+                        'card' => 'Frame background color',
+                        'background_code' => 'Code background color',
+                        'code' => 'Code color',
+                        'text' => 'Text color',
+                        'title_color' => 'Title color',
+                        'placeholder' => [
+                            'waiting_title' => 'Package awaiting pickup',
+                            'waiting' => 'Pending pickup',
+                            'ready_to_withdraw' => 'Your order is ready to be picked up at our center!',
+                            'show_this' => 'Show this email to collect your package!',
+                            'center' => 'Center address:',
+                        ],
                     ],
+                ],
+                'withdraw_point' => [
+                    'title' => 'Possible withdrawal notification',
                 ],
             ],
             'virtual' => [
@@ -346,7 +373,45 @@ return [
         ],
         'shipping' => [
             'main' => [
-                '' => '',
+                'title' => 'Shipping',
+                'shipping_method' => 'Shipping method',
+                'withdraw_method' => 'Withdrawal method',
+                'add_shipping_method' => 'Add a shipping method',
+                'name' => 'Name',
+                'action' => 'Action zone',
+                'price' => 'Price',
+                'min' => 'Min',
+                'max' => 'Max',
+                'weight_max' => 'Max weight',
+                'action_btn' => 'Action',
+                'delete' => 'Delete',
+                'sure' => 'Are you sure?',
+                'edit' => 'Editing ',
+                'method' => 'Method:',
+                'conditions' => 'Trigger condition:',
+                'weight_max_g' => 'Max weight (g)',
+                'mini_cart' => 'MINI cart cost',
+                'maxi_cart' => 'MAXI cart cost',
+                'warning_cart' => 'Cart cost and weight are triggering conditions, allowing you to have the same shipping method with different prices based on the customer\'s cart. For example: you have a shipping method at 5 %symbol% when the cart total does not exceed 10 %symbol%, then you set the same shipping method at 0 %symbol% if the cart exceeds 10 %symbol%',
+                'edit_btn' => 'Edit',
+                'add_withdraw_method' => 'Add a withdrawal method',
+                'deposit' => 'Deposits',
+                'settings' => 'Settings',
+                'deposit_address' => 'Deposit address',
+                'add' => 'Add',
+                'max_dist_allowed' => 'Max allowed distance:',
+                'max_dist_km' => 'Max distance (km)',
+                'warn_dist' => 'Determines the display distance of this withdrawal point in relation to the customer\'s address',
+                'address' => 'Address',
+                'city' => 'City',
+                'cp' => 'Postal code',
+                'country' => 'Country',
+                'all_the_world' => 'Worldwide',
+                'zone' => 'Served zone',
+                'method_settings' => 'Method settings',
+                'add_zone' => 'Add a Zone',
+                'add_depot' => 'Add a Depot',
+                'add_shipping_withdraw' => 'Add a Withdrawal Method',
             ],
         ],
         'statistics' => [

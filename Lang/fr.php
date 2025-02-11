@@ -5,6 +5,7 @@ use CMW\Manager\Env\EnvManager;
 return [
     /*MENUS : */
     'menus' => [
+        'shop' => 'Boutique',
         'settings' => [
             'setting' => 'Réglages',
             'global' => 'Globaux',
@@ -245,6 +246,9 @@ return [
             'payments' => [
                 'save' => 'Sauvegarder',
                 'fee' => 'Frais :',
+                'free' => [
+                    'title' => 'Commande offerte',
+                ],
                 'coinbase' => [
                     'key' => 'Clé Secrète :',
                 ],
@@ -261,8 +265,34 @@ return [
             'shipping' => [
                 'global' => [
                     'withdraw' => [
-                        '' => '',
+                        'object' => 'Objet du mail :',
+                        'mail_setting' => 'Paramétrage du mail :',
+                        'title' => 'Titre :',
+                        'message' => 'Message :',
+                        'footer_message' => 'Message footer :',
+                        'address' => 'Adresse :',
+                        'preview' => 'Aperçu du mail :',
+                        'style' => 'Apparences :',
+                        'background' => 'Couleur du fond',
+                        'card' => 'Couleur du fond du cadre',
+                        'background_code' => 'Couleur de fond du code',
+                        'code' => 'Couleur du code',
+                        'text' => 'Couleur des textes',
+                        'title_color' => 'Couleur du titre',
+                        //  LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.')
+                        /*  <?= LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.') ?> */
+                        /*  <?= LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.', ['cat_name' => $var]) ?> */
+                        'placeholder' => [
+                            'waiting_title' => 'Colis en attente de retrait',
+                            'waiting' => 'Retrait en attente',
+                            'ready_to_withdraw' => 'Votre commande est prête à être récupérer dans notre centre !',
+                            'show_this' => 'Présenter ce mail pour retirer votre colis !',
+                            'center' => 'Adresse du centre :',
+                        ],
                     ],
+                ],
+                'withdraw_point' => [
+                    'title' => 'Notification retrait possible',
                 ],
             ],
             'virtual' => [
@@ -346,7 +376,45 @@ return [
         ],
         'shipping' => [
             'main' => [
-                '' => '',
+                'title' => 'Livraisons',
+                'shipping_method' => 'Méthode de livraison',
+                'withdraw_method' => 'Méthode de retrait',
+                'add_shipping_method' => 'Ajouter une méthode de livraison',
+                'name' => 'Nom',
+                'action' => 'Zone d\'action',
+                'price' => 'Prix',
+                'min' => 'Min',
+                'max' => 'Max',
+                'weight_max' => 'Max Poids',
+                'action_btn' => 'Action',
+                'delete' => 'Supprimer',
+                'sure' => 'Êtes vous sûr ?',
+                'edit' => 'Édition de ',
+                'method' => 'Méthode :',
+                'conditions' => 'Condition de déclenchement :',
+                'weight_max_g' => 'Poids max (g)',
+                'mini_cart' => 'Coût panier MINI',
+                'maxi_cart' => 'Coût panier MAXI',
+                'warning_cart' => 'Coût panier et poids sont des conditions de déclenchement ce qui vous permet d\'avoir la même méthode de livraison avec plusieurs prix different par rapport au panier du client, par exemple : vous avez une méthode de livraison à 5 %symbol% quand le total du panier ne dépasse pas 10 %symbol%, vous faites ensuite la même méthode de livraison à 0 %symbol% si le panier dépasse 10 %symbol%',
+                'edit_btn' => 'Modifier',
+                'add_withdraw_method' => 'Ajouter une méthode de retrait',
+                'deposit' => 'Dépôts',
+                'settings' => 'Réglages',
+                'deposit_address' => 'Adresse des dépôts',
+                'add' => 'Ajouter',
+                'max_dist_allowed' => 'Distance max autorisée :',
+                'max_dist_km' => 'Distance max (km)',
+                'warn_dist' => 'Détermine la distance d\'affichage de ce point de retrait par rapport à l\'adresse du client',
+                'address' => 'Adresse',
+                'city' => 'Ville',
+                'cp' => 'Code postal',
+                'country' => 'Pays',
+                'all_the_world' => 'Toute la terre',
+                'zone' => 'Zone desservie',
+                'method_settings' => 'Réglages des méthodes',
+                'add_zone' => 'Ajout d\'une Zone',
+                'add_depot' => 'Ajout d\'un Dépôt',
+                'add_shipping_withdraw' => 'Ajout d\'une Méthode de retrait',
             ],
         ],
         'statistics' => [
@@ -354,9 +422,6 @@ return [
                 '' => '',
             ],
         ],
-        //  LangManager::translate('shop.views.payments.')
-        /*  <?= LangManager::translate('shop.views.payments.') ?> */
-        /*  <?= LangManager::translate('shop.views.payments.', ['cat_name' => $var]) ?> */
         'payments' => [
             'title' => 'Moyens de paiements',
             'actif' => 'Paiement atif.',
