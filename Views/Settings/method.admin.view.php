@@ -5,14 +5,14 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;use CMW\Model\Core\MailModel;
 
-$title = 'Configuration';
+$title = LangManager::translate('shop.views.settings.method.title');
 $description = '';
 
 /* @var CMW\Interface\Shop\IGlobalConfig[] $globalConfigMethod */
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-gears"></i> Configuration des méthodes</h3>
+    <h3><i class="fa-solid fa-gears"></i> <?= LangManager::translate('shop.views.settings.method.title') ?></h3>
     <button id="submitVirtualGlobal" type="button" class="btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
 </div>
 
@@ -39,21 +39,21 @@ $description = '';
                         <div class="card">
                             <div class="card-title">
                                 <h6><?= $method->name() ?></h6>
-                                <button type="button" class="w-fit btn-warning" data-modal-toggle="modal-<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></button>
+                                <button type="button" class="w-fit btn-warning" data-modal-toggle="modal-<?= $method->varName() ?>"><?= LangManager::translate('shop.views.settings.method.reset') ?><?= $method->name() ?></button>
                                 <!--MODAL-->
                                 <div id="modal-<?= $method->varName() ?>" class="modal-container">
                                     <div class="modal">
                                         <div class="modal-header-warning">
-                                            <h6>Vous allez réinitialiser <?= $method->name() ?>.</h6>
+                                            <h6><?= LangManager::translate('shop.views.settings.method.reset_title') ?> <?= $method->name() ?>.</h6>
                                             <button type="button" data-modal-hide="modal-<?= $method->varName() ?>"><i class="fa-solid fa-xmark"></i></button>
                                         </div>
                                         <div class="modal-body">
                                             <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                                                Êtes-vous sûr de vouloir faire ceci ?
+                                                <?= LangManager::translate('shop.views.settings.method.reset_message') ?>
                                             </p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a class="w-fit btn-warning" href="methods/reset/<?= $method->varName() ?>">Réinitialiser : <?= $method->name() ?></a>
+                                            <a class="w-fit btn-warning" href="methods/reset/<?= $method->varName() ?>"><?= LangManager::translate('shop.views.settings.method.reset') ?><?= $method->name() ?></a>
                                         </div>
                                     </div>
                                 </div>

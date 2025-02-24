@@ -31,13 +31,12 @@
 /* @var string $averageOrderProcessingTime*/
 /* @var float $averageOrderValue*/
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 
-$title = 'Statistiques';
-$description = 'Stats stats stats';
+$title = LangManager::translate('shop.views.statistics.main.title');
+$description = '';
 
 ?>
 
@@ -58,7 +57,7 @@ $description = 'Stats stats stats';
 
 </style>
 
-<h3><i class="fa-solid fa-chart-pie"></i> Statistiques</h3>
+<h3><i class="fa-solid fa-chart-pie"></i> <?= LangManager::translate('shop.views.statistics.main.title') ?></h3>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
     <div class="alert-danger">
@@ -71,32 +70,32 @@ $description = 'Stats stats stats';
 
 <div class="grid-2">
     <div class="card">
-        <h6>Gain et pertes par mois</h6>
-        <small>Sur année -1</small>
+        <h6><?= LangManager::translate('shop.views.statistics.main.gain_and_loses') ?></h6>
+        <small><?= LangManager::translate('shop.views.statistics.main.n-1') ?></small>
         <div id="chartGainLoss"></div>
     </div>
     <div class="card">
-        <h6>Commandes par mois</h6>
-        <small>Sur année -1</small>
+        <h6><?= LangManager::translate('shop.views.statistics.main.command_month') ?></h6>
+        <small><?= LangManager::translate('shop.views.statistics.main.n-1') ?></small>
         <div id="chartCommands"></div>
     </div>
 </div>
 
 <hr>
 
-<h5>Performance</h5>
+<h5> <?= LangManager::translate('shop.views.statistics.main.perf') ?></h5>
 <div class="flex gap-6">
     <div class="card text-center">
         <div style="background: #3398cf" class="icon-background mx-auto">
             <i class="fa-solid fa-file-invoice-dollar"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Commandes</b><br>
-            <small>Par rapport au mois dernier</small>
+            <b class="text-muted font-semibold"> <?= LangManager::translate('shop.views.statistics.main.command') ?></b><br>
+            <small> <?= LangManager::translate('shop.views.statistics.main.last_month') ?></small>
             <h5 class="font-extrabold mb-0" style="color: <?= $perfOrderPercent >= 0 ? 'green' : 'red' ?>">
                 <?= $perfOrderPercent > 0 ? '+' : '' ?> <?= $perfOrderPercent ?> %
             </h5>
-            <p><?= $perfOrderDiff > 0 ? '+' : '' ?> <?= $perfOrderDiff ?> commande(s)</p>
+            <p><?= $perfOrderDiff > 0 ? '+' : '' ?> <?= $perfOrderDiff ?> <?= LangManager::translate('shop.views.statistics.main.commands') ?></p>
         </div>
     </div>
     <div class="card text-center">
@@ -104,8 +103,8 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-arrow-trend-up"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Revenues</b><br>
-            <small>Par rapport au mois dernier</small>
+            <b class="text-muted font-semibold"> <?= LangManager::translate('shop.views.statistics.main.revenus') ?></b><br>
+            <small> <?= LangManager::translate('shop.views.statistics.main.last_month') ?></small>
             <h5 class="font-extrabold mb-0" style="color: <?= $perfRevenuePercent >= 0 ? 'green' : 'red' ?>">
                 <?= $perfRevenuePercent > 0 ? '+' : '' ?> <?= $perfRevenuePercent ?> %</h5>
             <p><?= $perfRevenuePercent > 0 ? '+' : '' ?> <?= $symbolIsAfter ? $perfRevenueDiff . ' ' . $symbol : $symbol . ' ' . $perfRevenueDiff?></p>
@@ -116,8 +115,8 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Taux de remboursement </b><br>
-            <small>Nombre de commandes remboursées par rapport au nombre total de commandes passé. (Garder cette valeur la plus basse possible !)</small>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.refunded') ?></b><br>
+            <small><?= LangManager::translate('shop.views.statistics.main.refunded_info') ?></small>
             <h5 class="font-extrabold mb-0" style="color: <?= $refundRate > 0 ? 'red' : 'green' ?>"><?= $refundRate ?> %</h5>
         </div>
     </div>
@@ -128,8 +127,8 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Temp de traitement moyen</b><br>
-            <small>Du moment où l'utilisateur commande jusqu'à ce que la commande soit entièrement finalisé</small>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.duration') ?></b><br>
+            <small><?= LangManager::translate('shop.views.statistics.main.duration_info') ?></small>
             <h5 class="font-extrabold mb-0">
                 <?= $averageOrderProcessingTime ?>
             </h5>
@@ -140,22 +139,22 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-scale-balanced"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Revenues moyen</b><br>
-            <small>Par commandes</small>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.revenus_average') ?></b><br>
+            <small><?= LangManager::translate('shop.views.statistics.main.by_commands') ?></small>
             <h5 class="font-extrabold mb-0"><?= $symbolIsAfter ? $averageOrderValue . ' ' . $symbol : $symbol . ' ' . $averageOrderValue?></h5>
         </div>
     </div>
 </div>
 <hr>
 
-<h5>Depuis l'ouverture du Shop</h5>
+<h5><?= LangManager::translate('shop.views.statistics.main.from_start') ?></h5>
 <div class="flex gap-6">
     <div class="card text-center">
         <div style="background: #3398cf" class="icon-background mx-auto">
             <i class="fa-solid fa-file-invoice-dollar"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Commandes total</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.total_command') ?></b>
             <h5 class="font-extrabold mb-0"><?= $totalOrders ?></h5>
         </div>
     </div>
@@ -164,7 +163,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Commandes remboursées</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.refunded_command') ?></b>
             <h5 class="font-extrabold mb-0"><?= $refundedOrder ?></h5>
         </div>
     </div>
@@ -173,7 +172,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-arrow-trend-up"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Gains total</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.total_gains') ?></b>
             <h5 style="color: green" class="font-extrabold mb-0">+ <?= $symbolIsAfter ? $gainTotal . ' ' . $symbol : $symbol . ' ' . $gainTotal?></h5>
         </div>
     </div>
@@ -182,7 +181,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-arrow-trend-down"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Perte total</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.total_loss') ?></b>
             <h5 style="color: red" class="font-extrabold mb-0">- <?= $symbolIsAfter ? $lostTotal . ' ' . $symbol : $symbol . ' ' . $lostTotal?></h5>
         </div>
     </div>
@@ -190,14 +189,14 @@ $description = 'Stats stats stats';
 
 <hr>
 
-<h5>Articles</h5>
+<h5><?= LangManager::translate('shop.views.statistics.main.items') ?></h5>
 <div class="flex gap-6">
     <div class="card">
         <div style="background: #34b527" class="icon-background mx-auto">
             <i class="fa-solid fa-cart-plus"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Articles dans des paniers</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.items_in_cart') ?></b>
             <h5 class="font-extrabold mb-0"><?= $itemInCart ?></h5>
         </div>
     </div>
@@ -206,7 +205,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-shop"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Articles en vente</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.items_sell') ?></b>
             <h5 class="font-extrabold mb-0"><?= $activeItems ?></h5>
         </div>
     </div>
@@ -215,7 +214,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-box-archive"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Articles archivés</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.items_archived') ?></b>
             <h5 class="font-extrabold mb-0"><?= $archivedItems ?></h5>
         </div>
     </div>
@@ -224,7 +223,7 @@ $description = 'Stats stats stats';
             <i class="fa-solid fa-compass-drafting"></i>
         </div>
         <div class="text-center">
-            <b class="text-muted font-semibold">Article en brouillon</b>
+            <b class="text-muted font-semibold"><?= LangManager::translate('shop.views.statistics.main.items_draft') ?></b>
             <h5 class="font-extrabold mb-0"><?= $draftItems ?></h5>
         </div>
     </div>
@@ -233,23 +232,23 @@ $description = 'Stats stats stats';
 <hr>
 
 <div class="card mt-6">
-    <h5>Les 5 meilleures ventes</h5>
-    <small>Inclus les articles archivés !</small>
+    <h5><?= LangManager::translate('shop.views.statistics.main.best_seller') ?></h5>
+    <small><?= LangManager::translate('shop.views.statistics.main.best_seller_message') ?></small>
     <div class="table-container">
         <table>
             <thead>
             <tr>
-                <th style="max-width: 4rem;" class="text-center">Ventes</th>
-                <th>Images</th>
-                <th>Nom</th>
+                <th style="max-width: 4rem;" class="text-center"><?= LangManager::translate('shop.views.statistics.main.sell') ?></th>
+                <th><?= LangManager::translate('shop.views.statistics.main.image') ?></th>
+                <th><?= LangManager::translate('shop.views.statistics.main.name') ?></th>
                 <?php if ($allowReviews): ?>
-                    <th class="text-center">Avis</th>
+                    <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.reviews') ?></th>
                 <?php endif; ?>
-                <th>Description</th>
-                <th>Catégorie</th>
-                <th>Prix</th>
-                <th>Stock</th>
-                <th class="text-center">En panier</th>
+                <th><?= LangManager::translate('shop.views.statistics.main.desc') ?></th>
+                <th><?= LangManager::translate('shop.views.statistics.main.cat') ?></th>
+                <th><?= LangManager::translate('shop.views.statistics.main.price') ?></th>
+                <th><?= LangManager::translate('shop.views.statistics.main.stock') ?></th>
+                <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.in_cart') ?></th>
             </tr>
             </thead>
             <tbody>
@@ -288,7 +287,7 @@ $description = 'Stats stats stats';
                     <?php if ($allowReviews): ?>
                         <td class="text-center">
                             <a href="items/review/<?= $bestSeller->getItem()->getId() ?>">
-                                <?= $review->countTotalRatingByItemId($bestSeller->getItem()->getId()) ?> avis<br>
+                                <?= $review->countTotalRatingByItemId($bestSeller->getItem()->getId()) ?> <?= LangManager::translate('shop.views.statistics.main.reviews') ?><br>
                                 <?= $review->getStars($bestSeller->getItem()->getId()) ?>
                             </a>
                         </td>
@@ -319,25 +318,24 @@ $description = 'Stats stats stats';
 
 <div class="card mt-6">
     <div class="flex justify-between">
-        <h5>Top <?= $limit ?> des meilleur acheteur</h5>
-        <button data-modal-toggle="modal" class="btn-primary-sm" type="button">Changer le nombre de top</button>
+        <h5><?= LangManager::translate('shop.views.statistics.main.top_buyer', ['limit' => $limit]) ?></h5>
+        <button data-modal-toggle="modal" class="btn-primary-sm" type="button"><?= LangManager::translate('shop.views.statistics.main.top_edit_btn') ?></button>
     </div>
         <!--MODAL-->
         <div id="modal" class="modal-container">
             <div class="modal">
                 <div class="modal-header">
-                    <h6>Changer le nombre de top</h6>
+                    <h6><?= LangManager::translate('shop.views.statistics.main.top_edit_btn') ?></h6>
                     <button type="button" data-modal-hide="modal"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <form method="post">
                     <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                     <div class="modal-body">
-                        <label for="default-input">Nombre affiché :</label>
+                        <label for="default-input"><?= LangManager::translate('shop.views.statistics.main.top_number') ?></label>
                         <input value="<?= $limit ?>" name="limit" type="number" required id="default-input" class="input" placeholder="3">
                     </div>
                     <div class="modal-footer">
-                        <button data-modal-hide="modal" type="button" class="btn-danger">Fermer</button>
-                        <button type="submit" class="btn-primary">Sauvegarder</button>
+                        <button type="submit" class="btn-primary"><?= LangManager::translate('shop.views.statistics.main.save') ?></button>
                     </div>
                 </form>
 
@@ -346,14 +344,14 @@ $description = 'Stats stats stats';
 
      <div class="grid-2">
          <div>
-             <h6>Top depuis la création</h6>
+             <h6><?= LangManager::translate('shop.views.statistics.main.top_from_start') ?></h6>
              <div class="table-container">
                  <table>
                      <thead>
                      <tr>
-                         <th class="text-center">Rang</th>
-                         <th>Utilisateur</th>
-                         <th class="text-center">Montant</th>
+                         <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.rank') ?></th>
+                         <th><?= LangManager::translate('shop.views.statistics.main.user') ?></th>
+                         <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.amount') ?></th>
                      </tr>
                      </thead>
                      <tbody>
@@ -376,14 +374,14 @@ $description = 'Stats stats stats';
              </div>
          </div>
          <div>
-             <h6>Top du mois</h6>
+             <h6><?= LangManager::translate('shop.views.statistics.main.top_month') ?></h6>
              <div class="table-container">
                  <table>
                      <thead>
                      <tr>
-                         <th class="text-center">Rang</th>
-                         <th>Utilisateur</th>
-                         <th class="text-center">Montant</th>
+                         <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.rank') ?></th>
+                         <th><?= LangManager::translate('shop.views.statistics.main.user') ?></th>
+                         <th class="text-center"><?= LangManager::translate('shop.views.statistics.main.amount') ?></th>
                      </tr>
                      </thead>
                      <tbody>
@@ -436,11 +434,11 @@ $description = 'Stats stats stats';
         },
         series: [
             {
-                name: <?php if ($symbolIsAfter): ?>'Gains (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Gains'<?php endif; ?>,
+                name: <?php if ($symbolIsAfter): ?>'<?= LangManager::translate('shop.views.statistics.main.gains') ?> (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) <?= LangManager::translate('shop.views.statistics.main.gains') ?>'<?php endif; ?>,
                 data: gains
             },
             {
-                name: <?php if ($symbolIsAfter): ?>'Pertes (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Pertes'<?php endif; ?>,
+                name: <?php if ($symbolIsAfter): ?>'<?= LangManager::translate('shop.views.statistics.main.loses') ?> (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) <?= LangManager::translate('shop.views.statistics.main.loses') ?>'<?php endif; ?>,
                 data: losses
             }
         ],
@@ -449,7 +447,7 @@ $description = 'Stats stats stats';
         },
         yaxis: {
             title: {
-                text: <?php if ($symbolIsAfter): ?>'Montant (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) Montant'<?php endif; ?>
+                text: <?php if ($symbolIsAfter): ?>'<?= LangManager::translate('shop.views.statistics.main.amount') ?> (<?= $symbol ?>)' <?php else: ?>'(<?= $symbol ?>) <?= LangManager::translate('shop.views.statistics.main.amount') ?>'<?php endif; ?>
             },
             labels: {
                 formatter: function(value) {
@@ -482,15 +480,15 @@ $description = 'Stats stats stats';
         },
         series: [
             {
-                name: 'Commandes Complétées',
+                name: '<?= LangManager::translate('shop.views.statistics.main.completed') ?>',
                 data: completed
             },
             {
-                name: 'Commandes en Cours',
+                name: '<?= LangManager::translate('shop.views.statistics.main.progress') ?>',
                 data: current
             },
             {
-                name: 'Commandes Perdues',
+                name: '<?= LangManager::translate('shop.views.statistics.main.lost') ?>',
                 data: commandsLosses
             }
         ],
@@ -499,7 +497,7 @@ $description = 'Stats stats stats';
         },
         yaxis: {
             title: {
-                text: 'Nombre de Commandes'
+                text: '<?= LangManager::translate('shop.views.statistics.main.count_command') ?>'
             },
             labels: {
                 formatter: function(value) {
