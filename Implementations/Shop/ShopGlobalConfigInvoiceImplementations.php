@@ -4,12 +4,13 @@ namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopGlobalConfigInvoiceImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Facture';
+        return LangManager::translate('shop.views.elements.global.invoice.name');
     }
 
     public function varName(): string

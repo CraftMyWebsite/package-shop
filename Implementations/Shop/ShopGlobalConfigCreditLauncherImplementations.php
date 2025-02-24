@@ -8,12 +8,13 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopGlobalConfigCreditLauncherImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Création d\'avoir';
+        return LangManager::translate('shop.views.elements.global.creditLauncher.name');
     }
 
     public function varName(): string

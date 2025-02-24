@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Admin\Item\Virtual;
 
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Mail\MailManager;
 use CMW\Model\Core\MailModel;
 use CMW\Utils\Date;
@@ -33,7 +34,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $giftCodePrefix = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_prefix', $varName) ?? 'GC_';
         $code = $this->createCode($giftCodePrefix);
         $websiteName = Website::getWebsiteName();
-        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? 'Carte cadeau';
+        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.title-default');
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
@@ -54,10 +55,10 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
-        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Félicitations !';
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous avez reçu une carte cadeau d'une valeur de";
-        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail', $varName) ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
-        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail', $varName) ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.mail-default');
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.message-default');
+        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.footer-default');
+        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.time-default') . ' ' . $formattedEndDate;
         $url = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_url_mail', $varName) ?? Website::getUrl() . 'shop';
 
         $htmlTemplate = <<<HTML
@@ -94,7 +95,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
               }
             </style>
             </head>
-            <body style="background-color: %MAINBG%">
+            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem;">
 
             <div class="gift-card">
               <h1>%TITRE%</h1>
@@ -112,7 +113,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
         $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
         $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
@@ -133,7 +134,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $giftCodePrefix = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_prefix', $varName) ?? 'GC_';
         $code = $this->createCode($giftCodePrefix);
         $websiteName = Website::getWebsiteName();
-        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? 'Carte cadeau';
+        $globalName = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.title-default');
         $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
@@ -154,10 +155,10 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         }
 
         $formattedEndDate = Date::formatDate($endDateTime);
-        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Félicitations !';
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous avez reçu une carte cadeau d'une valeur de";
-        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail', $varName) ?? 'Utilisez ou partager ce code lors de votre prochain achat sur';
-        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail', $varName) ?? "Ce code est valable jusqu'au" . ' ' . $formattedEndDate;
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.mail-default');
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.message-default');
+        $use = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.footer-default');
+        $timeLeft = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_time_mail', $varName) ?? LangManager::translate('shop.views.elements.global.giftCode.time-default') . ' ' . $formattedEndDate;
         $url = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_url_mail', $varName) ?? Website::getUrl() . 'shop';
 
         $htmlTemplate = <<<HTML
@@ -194,7 +195,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
               }
             </style>
             </head>
-            <body style="background-color: %MAINBG%">
+            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem;">
 
             <div class="gift-card">
               <h1>%TITRE%</h1>
@@ -212,7 +213,7 @@ class ShopVirtualItemsGiftCodeController extends AbstractController
         $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
         $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
         $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%AMOUNT%', '%CODE%', '%URL%', '%WEBSITENAME%', '%USE%', '%TIME_LEFT%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],

@@ -1,6 +1,7 @@
 <?php
 /* @var string $varName */
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
@@ -27,26 +28,26 @@ use CMW\Utils\Website;
 </style>
 
 <section>
-    <label for="<?= $varName ?>_global">Objet du mail :</label>
-    <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().' - Votre avoir pour la commande ' ?>" type="text" name="<?= $varName ?>_global" id="<?= $varName ?>_global" class="input" required>
-    <small>Le numéro de commande sera toujours afficher dans l'objet du mail !</small>
+    <label for="<?= $varName ?>_global"><?= LangManager::translate('shop.views.elements.global.creditLauncher.object') ?></label>
+    <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().LangManager::translate('shop.views.elements.global.creditLauncher.object-default') ?>" type="text" name="<?= $varName ?>_global" id="<?= $varName ?>_global" class="input" required>
+    <small><?= LangManager::translate('shop.views.elements.global.creditLauncher.object-info') ?></small>
 </section>
 <section class="grid-3">
     <div>
-        <h5 class="text-center">Paramétrage du mail :</h5>
-        <label for="<?= $varName ?>_title_mail">Titre :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Avoir pour ' ?>" type="text" name="<?= $varName ?>_title_mail" id="<?= $varName ?>_title_mail" class="input" required>
-        <label for="<?= $varName ?>_text_mail">Message :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable" ?>" type="text" name="<?= $varName ?>_text_mail" id="<?= $varName ?>_text_mail" class="input" required>
-        <label for="<?= $varName ?>_text_mail_value">Message valeur :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? "Ce code à une valeur total de " ?>" type="text" name="<?= $varName ?>_text_mail_value" id="<?= $varName ?>_text_mail_value" class="input" required>
-        <label for="<?= $varName ?>_footer_1_mail">Message footer 1 :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !' ?>" type="text" name="<?= $varName ?>_footer_1_mail" id="<?= $varName ?>_footer_1_mail" class="input" required>
-        <label for="<?= $varName ?>_footer_2_mail">Message footer 2 :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique " . Website::getWebsiteName() ?>" type="text" name="<?= $varName ?>_footer_2_mail" id="<?= $varName ?>_footer_2_mail" class="input" required>
+        <h5 class="text-center"><?= LangManager::translate('shop.views.elements.global.creditLauncher.mail-setting') ?></h5>
+        <label for="<?= $varName ?>_title_mail"><?= LangManager::translate('shop.views.elements.global.creditLauncher.title') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.title-default') ?>" type="text" name="<?= $varName ?>_title_mail" id="<?= $varName ?>_title_mail" class="input" required>
+        <label for="<?= $varName ?>_text_mail"><?= LangManager::translate('shop.views.elements.global.creditLauncher.message') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-default') ?>" type="text" name="<?= $varName ?>_text_mail" id="<?= $varName ?>_text_mail" class="input" required>
+        <label for="<?= $varName ?>_text_mail_value"><?= LangManager::translate('shop.views.elements.global.creditLauncher.message-value') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-value-default') ?>" type="text" name="<?= $varName ?>_text_mail_value" id="<?= $varName ?>_text_mail_value" class="input" required>
+        <label for="<?= $varName ?>_footer_1_mail"><?= LangManager::translate('shop.views.elements.global.creditLauncher.footer-1') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-1-default') ?>" type="text" name="<?= $varName ?>_footer_1_mail" id="<?= $varName ?>_footer_1_mail" class="input" required>
+        <label for="<?= $varName ?>_footer_2_mail"><?= LangManager::translate('shop.views.elements.global.creditLauncher.footer-2') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-2-default') . Website::getWebsiteName() ?>" type="text" name="<?= $varName ?>_footer_2_mail" id="<?= $varName ?>_footer_2_mail" class="input" required>
     </div>
     <div class="col-span-2">
-        <h5 class="text-center">Aperçu du mail :</h5>
+        <h5 class="text-center"><?= LangManager::translate('shop.views.elements.global.creditLauncher.preview') ?></h5>
         <div class="border dark:border-gray-700">
             <style>
                 .my-gift-card-scope .gift-card {
@@ -79,15 +80,15 @@ use CMW\Utils\Website;
                 }
             </style>
 
-            <div style="background-color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff' ?>">
+            <div style="background-color: <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e' ?>">
                 <div class="my-gift-card-scope p-4">
                     <div class="gift-card">
-                        <h2><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Avoir pour ' ?> XXXXXXX</h2>
-                        <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable" ?></p>
-                        <p><strong><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? "Ce code à une valeur total de " ?> XX.XX€</strong></p>
+                        <h2><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.title-default') ?> XXXXXXX</h2>
+                        <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-default') ?></p>
+                        <p><strong><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-value-default') ?> XX.XX€</strong></p>
                         <div class="code">XXXXXXXXX</div><br>
-                        <a href="#"><p style="font-size: 0.8rem"><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !' ?><br>
-                            <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique " . Website::getWebsiteName() ?></p></a>
+                        <a href="#"><p style="font-size: 0.8rem"><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-1-default') ?><br>
+                            <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-2-default') . Website::getWebsiteName() ?></p></a>
                     </div>
                 </div>
             </div>
@@ -96,31 +97,31 @@ use CMW\Utils\Website;
     </div>
 </section>
 <section class="mt-4">
-    <h5>Apparences :</h5>
+    <h5><?= LangManager::translate('shop.views.elements.global.creditLauncher.appearances') ?></h5>
     <div class="grid-3">
         <div class="flex items-center">
-            <input type="color" id="<?= $varName ?>_body_color" name="<?= $varName ?>_body_color" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_body_color">Couleur du fond</label>
+            <input type="color" id="<?= $varName ?>_body_color" name="<?= $varName ?>_body_color" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e' ?>">
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_body_color"><?= LangManager::translate('shop.views.elements.global.creditLauncher.back') ?></label>
         </div>
         <div class="flex items-center">
             <input type="color" id="<?= $varName ?>_card_color" name="<?= $varName ?>_card_color" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color', $varName) ?? '#f8f9fa' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_card_color">Couleur du fond du cadre</label>
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_card_color"><?= LangManager::translate('shop.views.elements.global.creditLauncher.card') ?></label>
         </div>
         <div class="flex items-center">
             <input type="color" id="<?= $varName ?>_code_bg_color" name="<?= $varName ?>_code_bg_color" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_code_bg_color">Couleur de fond du code</label>
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_code_bg_color"><?= LangManager::translate('shop.views.elements.global.creditLauncher.code') ?></label>
         </div>
         <div class="flex items-center">
             <input type="color" id="<?= $varName ?>_code_color" name="<?= $varName ?>_code_color" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_code_color">Couleur du code</label>
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_code_color"><?= LangManager::translate('shop.views.elements.global.creditLauncher.code-color') ?></label>
         </div>
         <div class="flex items-center">
             <input type="color" id="<?= $varName ?>_color_p" name="<?= $varName ?>_color_p" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_color_p">Couleur des textes</label>
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_color_p"><?= LangManager::translate('shop.views.elements.global.creditLauncher.text') ?></label>
         </div>
         <div class="flex items-center">
             <input type="color" id="<?= $varName ?>_color_title" name="<?= $varName ?>_color_title" value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title', $varName) ?? '#2f2f2f' ?>">
-            <label style="margin-left: 0.5rem" for="<?= $varName ?>_color_title">Couleur du titre</label>
+            <label style="margin-left: 0.5rem" for="<?= $varName ?>_color_title"><?= LangManager::translate('shop.views.elements.global.creditLauncher.title-color') ?></label>
         </div>
     </div>
 </section>

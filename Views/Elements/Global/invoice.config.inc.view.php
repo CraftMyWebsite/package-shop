@@ -1,6 +1,7 @@
 <?php
 /* @var string $varName */
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
@@ -8,28 +9,28 @@ use CMW\Utils\Website;
 
 <section class="grid-3">
     <div>
-        <label for="<?= $varName ?>_use">Créer et stocker les factures (PDF)</label>
+        <label for="<?= $varName ?>_use"><?= LangManager::translate('shop.views.elements.global.invoice.create') ?></label>
         <select name="<?= $varName ?>_use" id="<?= $varName ?>_use">
-            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "1" ? 'selected' : '' ?> value="1">Oui</option>
-            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "0" ? 'selected' : ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) ?? 'selected' ?> value="0">Non</option>
+            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "1" ? 'selected' : '' ?> value="1"><?= LangManager::translate('shop.views.elements.global.invoice.yes') ?></option>
+            <option <?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) === "0" ? 'selected' : ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) ?? 'selected' ?> value="0"><?= LangManager::translate('shop.views.elements.global.invoice.no') ?></option>
         </select>
-        <label for="<?= $varName ?>_logo">Logo (url) :</label>
+        <label for="<?= $varName ?>_logo"><?= LangManager::translate('shop.views.elements.global.invoice.logo') ?></label>
         <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_logo', $varName) ?? Website::getUrl()."App/Package/Shop/Views/Settings/Images/default.png" ?>" type="text" name="<?= $varName ?>_logo" id="<?= $varName ?>_logo" class="input" required>
-        <label for="<?= $varName ?>_footer_text">Footer :</label>
-        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !" ?>" type="text" name="<?= $varName ?>_footer_text" id="<?= $varName ?>_footer_text" class="input" required>
+        <label for="<?= $varName ?>_footer_text"><?= LangManager::translate('shop.views.elements.global.invoice.footer') ?></label>
+        <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? LangManager::translate('shop.views.elements.global.invoice.footer-default') ?>" type="text" name="<?= $varName ?>_footer_text" id="<?= $varName ?>_footer_text" class="input" required>
 
-        <h5>Adresse de l'entreprise :</h5>
-        <label for="<?= $varName ?>_address">Adresse</label>
+        <h5><?= LangManager::translate('shop.views.elements.global.invoice.building-address') ?></h5>
+        <label for="<?= $varName ?>_address"><?= LangManager::translate('shop.views.elements.global.invoice.address') ?></label>
         <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address" id="<?= $varName ?>_address" class="input" required>
-        <label for="<?= $varName ?>_address_pc">Code Postal</label>
+        <label for="<?= $varName ?>_address_pc"><?= LangManager::translate('shop.views.elements.global.invoice.cp') ?></label>
         <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_pc" id="<?= $varName ?>_address_pc" class="input" required>
-        <label for="<?= $varName ?>_address_city">Ville</label>
+        <label for="<?= $varName ?>_address_city"><?= LangManager::translate('shop.views.elements.global.invoice.city') ?></label>
         <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_city" id="<?= $varName ?>_address_city" class="input" required>
-        <label for="<?= $varName ?>_address_country">Pays</label>
+        <label for="<?= $varName ?>_address_country"><?= LangManager::translate('shop.views.elements.global.invoice.country') ?></label>
         <input value="<?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country', $varName) ?? "N/A" ?>" type="text" name="<?= $varName ?>_address_country" id="<?= $varName ?>_address_country" class="input" required>
         </div>
     <div class="col-span-2 h-fit">
-        <h5 class="text-center">Aperçu de la facture :</h5>
+        <h5 class="text-center"><?= LangManager::translate('shop.views.elements.global.invoice.preview') ?></h5>
         <div class="border dark:border-gray-700">
 
 
@@ -100,9 +101,9 @@ use CMW\Utils\Website;
                     </span>
                         </td>
                         <td align="right">
-                            <h5 style="color: #c16374">FACTURE N° XXXXXXXXX</h5>
+                            <h5 style="color: #c16374"><?= LangManager::translate('shop.views.elements.global.invoice.title') ?> N° XXXXXXXXX</h5>
                             <div class="section">
-                                <b>Adresse de livraison et de facturation</b>
+                                <b><?= LangManager::translate('shop.views.elements.global.invoice.address-invoice') ?></b>
                                 <p>
                                     XXXXXXXXX<br>
                                     XXXXXXXXX<br>
@@ -119,9 +120,9 @@ use CMW\Utils\Website;
                     <table class="info-table">
                         <thead>
                         <tr>
-                            <th>Éxpedition</th>
-                            <th align="center">Date de facturation</th>
-                            <th align="right">Paiement</th>
+                            <th><?= LangManager::translate('shop.views.elements.global.invoice.shipping-invoice') ?></th>
+                            <th align="center"><?= LangManager::translate('shop.views.elements.global.invoice.date-invoice') ?></th>
+                            <th align="right"><?= LangManager::translate('shop.views.elements.global.invoice.payment-invoice') ?></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -138,11 +139,11 @@ use CMW\Utils\Website;
                     <table class="items-table">
                         <thead>
                         <tr>
-                            <th><strong>Désignation</strong></th>
-                            <th><strong>Quantité</strong></th>
-                            <th><strong>PU</strong></th>
-                            <th><strong>Rem. A</strong></th>
-                            <th><strong>Sous total</strong></th>
+                            <th><strong><?= LangManager::translate('shop.views.elements.global.invoice.item-invoice') ?></strong></th>
+                            <th><strong><?= LangManager::translate('shop.views.elements.global.invoice.quantity-invoice') ?></strong></th>
+                            <th><strong><?= LangManager::translate('shop.views.elements.global.invoice.unit-price-invoice') ?></strong></th>
+                            <th><strong><?= LangManager::translate('shop.views.elements.global.invoice.item-discount-invoice') ?></strong></th>
+                            <th><strong><?= LangManager::translate('shop.views.elements.global.invoice.st-invoice') ?></strong></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -167,19 +168,19 @@ use CMW\Utils\Website;
                         </thead>
                         <tbody>
                         <tr>
-                            <td>Frais de livraison :</td>
+                            <td><?= LangManager::translate('shop.views.elements.global.invoice.shipping-cost-invoice') ?></td>
                             <td>XXXXXXXXX</td>
                         </tr>
                         <tr>
-                            <td>Frais de paiement :</td>
+                            <td><?= LangManager::translate('shop.views.elements.global.invoice.payment-fee-invoice') ?></td>
                             <td>XXXXXXXXX</td>
                         </tr>
                         <tr>
-                            <td>Rem. Total :</td>
+                            <td><?= LangManager::translate('shop.views.elements.global.invoice.total-discount-invoice') ?></td>
                             <td>XXXXXXXXX</td>
                         </tr>
                         <tr>
-                            <td><strong>Total :</strong></td>
+                            <td><strong><?= LangManager::translate('shop.views.elements.global.invoice.total-invoice') ?></strong></td>
                             <td><strong>XXXXXXXXX</strong></td>
                         </tr>
                         </tbody>
@@ -187,7 +188,7 @@ use CMW\Utils\Website;
                 </div>
 
                 <div class="footer">
-                    <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !" ?></p>
+                    <p><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? LangManager::translate('shop.views.elements.global.invoice.footer-default') ?></p>
                 </div>
             </div>
         </div>

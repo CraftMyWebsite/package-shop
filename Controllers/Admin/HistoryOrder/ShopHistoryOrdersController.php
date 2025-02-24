@@ -25,6 +25,7 @@ use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Events\Emitter;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Mail\MailManager;
 use CMW\Manager\Notification\NotificationManager;
 use CMW\Manager\Notification\NotificationModel;
@@ -498,15 +499,15 @@ class ShopHistoryOrdersController extends AbstractController
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $orderPrice = $order->getOrderTotal();
         $user = $order->getUser();
-        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().' - Votre avoir pour la commande') . ' ' . $order->getOrderNumber();
+        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().LangManager::translate('shop.views.elements.global.creditLauncher.object-default')) . ' ' . $order->getOrderNumber();
         $code = Utils::generateRandomNumber('6') . '_' . $order->getOrderNumber();
 
-        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Avoir pour') . ' ' . $order->getOrderNumber();
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous venez de recevoir un avoir suite à l'annulation d'une commande non réalisable";
-        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? "Ce code à une valeur total de") . ' ' . $order->getOrderTotalFormatted();
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Vous pouvez utiliser cet avoir sur toute la boutique !';
+        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.title-default')) . ' ' . $order->getOrderNumber();
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-default');
+        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-value-default')) . ' ' . $order->getOrderTotalFormatted();
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-1-default');
         $shopUrl = Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop';
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique " . Website::getWebsiteName();
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-2-default') . Website::getWebsiteName();
 
         $htmlTemplate = <<<HTML
             <html>
@@ -542,7 +543,7 @@ class ShopHistoryOrdersController extends AbstractController
               }
             </style>
             </head>
-            <body style="background-color: %MAINBG%">
+            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem;">
 
             <div class="gift-card">
               <h1>%TITRE%</h1>
@@ -561,7 +562,7 @@ class ShopHistoryOrdersController extends AbstractController
         $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
         $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
         $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%', '%VALUE%', '%CODE%', '%FOOTER_1%', '%SHOP_URL%', '%FOOTER_2%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
@@ -853,7 +854,7 @@ class ShopHistoryOrdersController extends AbstractController
         $companyAddressPC = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_pc', $varName) ?? "N/A";
         $companyAddressCity = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_city', $varName) ?? "N/A";
         $companyAddressCountry = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_address_country', $varName) ?? "N/A";
-        $footerText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? "Merci pour votre commande !";
+        $footerText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_text', $varName) ?? LangManager::translate('shop.views.elements.global.invoice.footer-default');
 
         $itemsHtml = '';
         foreach ($cartContent as $cartItem) {
@@ -884,7 +885,7 @@ class ShopHistoryOrdersController extends AbstractController
         $pdf = new TCPDF();
         $pdf->SetCreator($websiteName);
         $pdf->SetAuthor($websiteName);
-        $pdf->SetTitle("Facture $orderNumber");
+        $pdf->SetTitle( LangManager::translate('shop.views.elements.global.invoice.name') . " $orderNumber");
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -962,9 +963,9 @@ class ShopHistoryOrdersController extends AbstractController
                     </span>
                 </td>
                 <td align="right">
-                    <h2 style="color: #c16374">FACTURE N° ' .$orderNumber.'</h2>
+                    <h2 style="color: #c16374">'. LangManager::translate('shop.views.elements.global.invoice.title') .' N° ' .$orderNumber.'</h2>
                     <div class="section">
-                        <h5>Adresse de livraison et de facturation</h5>
+                        <h5>'. LangManager::translate('shop.views.elements.global.invoice.address-invoice') .'</h5>
                         <p>
                             '.$addressUser.'<br>
                             '.$address.'<br>
@@ -981,9 +982,9 @@ class ShopHistoryOrdersController extends AbstractController
                 <table class="info-table">
                 <thead>
                         <tr>
-                            <th>Éxpedition</th>
-                            <th align="center">Date de facturation</th>
-                            <th align="right">Paiement</th>
+                            <th>'. LangManager::translate('shop.views.elements.global.invoice.shipping-invoice') .'</th>
+                            <th align="center">'. LangManager::translate('shop.views.elements.global.invoice.date-invoice') .'</th>
+                            <th align="right">'. LangManager::translate('shop.views.elements.global.invoice.payment-invoice') .'</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1000,11 +1001,11 @@ class ShopHistoryOrdersController extends AbstractController
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th><strong>Désignation</strong></th>
-                            <th><strong>Quantité</strong></th>
-                            <th><strong>PU</strong></th>
-                            <th><strong>Rem. A</strong></th>
-                            <th><strong>Sous total</strong></th>
+                            <th><strong>'. LangManager::translate('shop.views.elements.global.invoice.item-invoice') .'</strong></th>
+                            <th><strong>'. LangManager::translate('shop.views.elements.global.invoice.quantity-invoice') .'</strong></th>
+                            <th><strong>'. LangManager::translate('shop.views.elements.global.invoice.unit-price-invoice') .'</strong></th>
+                            <th><strong>'. LangManager::translate('shop.views.elements.global.invoice.item-discount-invoice') .'</strong></th>
+                            <th><strong>'. LangManager::translate('shop.views.elements.global.invoice.st-invoice') .'</strong></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1023,19 +1024,19 @@ class ShopHistoryOrdersController extends AbstractController
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Frais de livraison :</td>
+                            <td>'. LangManager::translate('shop.views.elements.global.invoice.shipping-cost-invoice') .'</td>
                             <td>'.$shippingFee.'</td>
                         </tr>
                         <tr>
-                            <td>Frais de paiement :</td>
+                            <td>'. LangManager::translate('shop.views.elements.global.invoice.payment-fee-invoice') .'</td>
                             <td>'.$paymentFee.'</td>
                         </tr>
                         <tr>
-                            <td>Rem. Total :</td>
+                            <td>'. LangManager::translate('shop.views.elements.global.invoice.total-discount-invoice') .'</td>
                             <td>'.$cartTotalDiscount.'</td>
                         </tr>
                         <tr>
-                            <td><strong>Total :</strong></td>
+                            <td><strong>'. LangManager::translate('shop.views.elements.global.invoice.total-invoice') .'</strong></td>
                             <td><strong>'.$total.'</strong></td>
                         </tr>
                     </tbody>
