@@ -7,7 +7,7 @@ use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = 'Boutique';
+$title = LangManager::translate('shop.views.items.add.title');
 $description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
@@ -16,7 +16,7 @@ $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-cart-plus"></i> Nouvel article</h3>
+    <h3><i class="fa-solid fa-cart-plus"></i> <?= LangManager::translate('shop.views.items.add.title') ?></h3>
     <button form="addItem" type="submit" class="btn-primary"><?= LangManager::translate('core.btn.add') ?></button>
 </div>
 
@@ -36,16 +36,16 @@ $description = '';
         <div class="card">
             <div class="grid-2">
                 <div>
-                    <label for="shop_item_name">Nom<span style="color: red">*</span> :</label>
+                    <label for="shop_item_name"><?= LangManager::translate('shop.views.items.add.name') ?><span style="color: red">*</span> :</label>
                     <input type="text" class="input" id="shop_item_name" name="shop_item_name" maxlength="50" required>
                 </div>
                 <div>
-                    <label for="shop_item_short_desc">Déscription courte<span style="color: red">*</span> :</label>
+                    <label for="shop_item_short_desc"><?= LangManager::translate('shop.views.items.add.short-desc') ?><span style="color: red">*</span> :</label>
                     <input type="text" id="shop_item_short_desc" class="input" name="shop_item_short_desc" required>
                 </div>
             </div>
             <div>
-                <label for="shop_item_description">Déscription détailler<span style="color: red">*</span> :</label>
+                <label for="shop_item_description"><?= LangManager::translate('shop.views.items.add.desc') ?><span style="color: red">*</span> :</label>
                 <textarea id="shop_item_description" data-tiny-height="500px" class="tinymce" name="shop_item_description"></textarea>
             </div>
         </div>
@@ -53,37 +53,37 @@ $description = '';
         <div class="card mt-6">
             <div class="card-body">
                 <div id="typePhysique" style="display:none;">
-                    <label>Caractéristique physique du produit :
+                    <label><?= LangManager::translate('shop.views.items.add.physical-char') ?>
                         <button type="button"  data-tooltip-target="tooltip-top-physical" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
                         <div id="tooltip-top-physical" role="tooltip" class="tooltip-content">
-                            Changer le type d'articles pour passer en contenue virtuel
+                            <?= LangManager::translate('shop.views.items.add.physical-char-tooltip') ?>
                         </div>
                     </label>
                     <div class="grid-4">
                         <div>
-                            <label>Poids<span style='color: red'>*</span> : <small>(en gramme)</small></label>
+                            <label><?= LangManager::translate('shop.views.items.add.weight') ?></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_weight" required>
                         </div>
                         <div>
-                            <label>Longueur : <small>(en cm)</small></label>
+                            <label><?= LangManager::translate('shop.views.items.add.length') ?></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_length">
                         </div>
                         <div>
-                            <label>Largeur : <small>(en cm)</small></label>
+                            <label><?= LangManager::translate('shop.views.items.add.width') ?></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_width">
                         </div>
                         <div>
-                            <label>Hauteur : <small>(en cm)</small></label>
+                            <label><?= LangManager::translate('shop.views.items.add.height') ?></label>
                             <input type="text" class="input" placeholder="150.00" name="shop_item_height">
                         </div>
                     </div>
                 </div>
                 <div id="typeVirtuel" style="display:none;">
                         <div class="mb-4">
-                            <label>Contenue virtuel<span style="color: red">*</span> :
+                            <label><?= LangManager::translate('shop.views.items.add.virtual-content') ?><span style="color: red">*</span> :
                                 <button type="button"  data-tooltip-target="tooltip-top-virtual" data-tooltip-placement="top"><i class="fa-solid fa-circle-question"></i></button>
                                 <div id="tooltip-top-virtual" role="tooltip" class="tooltip-content">
-                                    Changer le type d'articles pour passer en contenue physique
+                                    <?= LangManager::translate('shop.views.items.add.virtual-tooltip') ?>
                                 </div>
                             </label>
                             <select class="form-select" name="shop_item_virtual_prefix" id="virtual_type_selected" required>
@@ -97,7 +97,7 @@ $description = '';
                             foreach ($virtualMethods as $virtualMethod): ?>
                                 <div class="virtual-method" id="method-<?= $virtualMethod->varName() ?>">
                                     <?php if ($virtualMethod->documentationURL()): ?>
-                                        <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm">Documentations</a><br>
+                                        <a href="<?= $virtualMethod->documentationURL() ?>" target="_blank" class="btn btn-primary btn-sm"><?= LangManager::translate('shop.views.items.add.docs') ?></a><br>
                                     <?php endif; ?>
                                     <p><?= $virtualMethod->description() ?></p>
                                     <input hidden="hidden" name="shop_item_virtual_method_var_name" value="<?= $virtualMethod->varName() ?>">
@@ -112,12 +112,12 @@ $description = '';
 
         <div class="card mt-6">
                 <div class="flex justify-between">
-                    <div><label>Variantes (optionnel) : </label></div>
+                    <div><label><?= LangManager::translate('shop.views.items.add.variants') ?> </label></div>
                     <div class="buttons">
-                        <button class="btn btn-primary" type="button" onclick="ajouterVariante()">Ajouter une variante</button>
+                        <button class="btn btn-primary" type="button" onclick="ajouterVariante()"><?= LangManager::translate('core.btn.add') ?></button>
                     </div>
                 </div>
-                <p>Les variantes sont assez pratique quand vous souhaitez ajouter un article qui peut avoir plusieurs configurations disponnible sans pour autant créer autant d'article que vous avez de variantes de celui-ci, à vous de créer autant de variantes que vous le souhaiter. (Couleur,Taille,Poids ...)<br> Cependant, noter bien que si vous utilisez les variantes celle-ci devienne obligatoire pour vos consommateurs.</p>
+                <p><?= LangManager::translate('shop.views.items.add.variants-tooltip') ?></p>
                 <div id="variantsContainer"></div>
         </div>
     </div>
@@ -126,12 +126,12 @@ $description = '';
                     <div>
                         <div class="checkbox mb-4">
                             <input id="checkbox" name="shop_item_draft" type="checkbox">
-                            <label data-tooltip-target="tooltip-top" data-tooltip-placement="top" for="checkbox">Publié en tant que brouillon / test</label>
-                            <div id="tooltip-top" role="tooltip" class="tooltip-content">
-                                L'article ne s'affichera que pour les administrateurs
+                            <label data-tooltip-target="tooltip-top-draft" data-tooltip-placement="top" for="checkbox"><?= LangManager::translate('shop.views.items.add.draft') ?></label>
+                            <div id="tooltip-top-draft" role="tooltip" class="tooltip-content">
+                                <?= LangManager::translate('shop.views.items.add.draft-tooltip') ?>
                             </div>
                         </div>
-                        <label>Catégorie<span style="color: red">*</span> :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.cat') ?><span style="color: red">*</span> :</label>
                         <select name="shop_category_id" class="form-select">
                             <?php foreach ($categoryModel->getShopCategories() as $cat): ?>
                                 <option value="<?= $cat->getId() ?>"> <?= $cat->getName() ?> </option>
@@ -142,11 +142,11 @@ $description = '';
                         </select>
                     </div>
                     <div>
-                        <label>Tags :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.teg') ?></label>
                         <input type="text" class="input" name="">
                     </div>
                     <div>
-                        <label>Prix :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.price') ?></label>
                         <div class="flex justify-between">
                             <input type="text" class="input" name="shop_item_price" placeholder="19.99">
                             <span>
@@ -160,10 +160,10 @@ $description = '';
                         </div>
                     </div>
                     <div>
-                        <label>Type<span style="color: red">*</span> :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.type') ?><span style="color: red">*</span> :</label>
                         <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                            <option selected value="1">Virtuel</option>
-                            <option value="0">Physique</option>
+                            <option selected value="1"><?= LangManager::translate('shop.views.items.add.virtual') ?></option>
+                            <option value="0"><?= LangManager::translate('shop.views.items.add.physical') ?></option>
                         </select>
                     </div>
         </div>
@@ -171,24 +171,24 @@ $description = '';
             <div class="card-body">
                 <div class="row">
                     <div class="col-12 mt-2">
-                        <label>Stock :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.stock') ?></label>
                         <input type="number" class="input" name="shop_item_default_stock"
-                               placeholder="Pas de limites">
+                               placeholder="<?= LangManager::translate('shop.views.items.add.no-limit') ?>">
                     </div>
                     <div class="col-12 mt-2">
-                        <label>Limite d'achat global :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.global-limit') ?></label>
                         <input type="number" class="input" name="shop_item_global_limit"
-                               placeholder="Pas de limites">
+                               placeholder="<?= LangManager::translate('shop.views.items.add.no-limit') ?>">
                     </div>
                     <div class="col-12 mt-2">
-                        <label>Limite d'achat par utilisateur :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.user-limit') ?></label>
                         <input type="number" class="input" name="shop_item_user_limit"
-                               placeholder="Pas de limites">
+                               placeholder="<?= LangManager::translate('shop.views.items.add.no-limit') ?>">
                     </div>
                     <div class="col-12 mt-2">
-                        <label>Limite d'achat par commande :</label>
+                        <label><?= LangManager::translate('shop.views.items.add.order-limit') ?></label>
                         <input type="number" class="input" name="shop_item_by_order_limit"
-                               placeholder="Pas de limites">
+                               placeholder="<?= LangManager::translate('shop.views.items.add.no-limit') ?>">
                     </div>
                 </div>
             </div>
@@ -197,14 +197,14 @@ $description = '';
 </div>
     <div class="card mt-6">
         <div class="card-header">
-            <h4>Galerie</h4>
+            <h4><?= LangManager::translate('shop.views.items.add.gallery') ?></h4>
         </div>
         <div class="card-body">
 
             <div onclick="addImg();" class="card-in-card mb-4" style="cursor: pointer">
                 <div class="text-center border-dashed border-4 rounded-lg dark:border-gray-700" style="padding-top: 1rem">
                     <h2><i class="text-success fa-solid fa-circle-plus fa-xl"></i></h2>
-                    <p class="mt-2">Ajouter une image</p>
+                    <p class="mt-2"><?= LangManager::translate('shop.views.items.add.add-img') ?></p>
                 </div>
             </div>
 
@@ -222,15 +222,15 @@ $description = '';
         let inputNom = document.createElement("input");
         inputNom.type = "text";
         inputNom.className = "input";
-        inputNom.placeholder = "Couleur, Taille, etc";
+        inputNom.placeholder = "<?= LangManager::translate('shop.views.items.add.color') ?>";
         inputNom.name = "shop_item_variant_name[" + index + "]";
         inputNom.required = true;
         let labelNom = document.createElement("label");
-        labelNom.innerHTML = "Nom<span style='color: red'>*</span> : ";
+        labelNom.innerHTML = "<?= LangManager::translate('shop.views.items.add.name') ?><span style='color: red'>*</span> : ";
 
         // Créer un bouton de suppression
         let boutonSupprimer = document.createElement("a");
-        boutonSupprimer.textContent = "Supprimer la variante";
+        boutonSupprimer.textContent = "<?= LangManager::translate('shop.views.items.add.remove') ?>";
         boutonSupprimer.className = "btn-center btn-danger text-center";
         boutonSupprimer.style.cursor = "pointer";
         boutonSupprimer.onclick = function() {
@@ -241,18 +241,18 @@ $description = '';
         let inputValeur = document.createElement("input");
         inputValeur.className = "input";
         inputValeur.name = "shop_item_variant_value[" + index + "][]";
-        inputValeur.placeholder = "Rouge";
+        inputValeur.placeholder = "<?= LangManager::translate('shop.views.items.add.red') ?>";
         inputValeur.required = true;
 
         let labelValeurDiv = document.createElement("div")
         labelValeurDiv.className = "flex justify-between";
 
         let labelValeur = document.createElement("label");
-        labelValeur.innerHTML = "Valeur<span style='color: red'>*</span> : ";
+        labelValeur.innerHTML = "<?= LangManager::translate('shop.views.items.add.value') ?><span style='color: red'>*</span> : ";
 
         // Ajouter un bouton "Ajouter une valeur"
         let boutonAjouterValeur = document.createElement("a");
-        boutonAjouterValeur.textContent = "+ Ajouter une valeur";
+        boutonAjouterValeur.textContent = "+ <?= LangManager::translate('shop.views.items.add.add-value') ?>";
         boutonAjouterValeur.className = "text-success font-bold";
         boutonAjouterValeur.type = "button";
         boutonAjouterValeur.onclick = function() {
@@ -295,7 +295,7 @@ $description = '';
             let inputValeur = document.createElement("input");
             inputValeur.className = "input";
             inputValeur.name = "shop_item_variant_value[" + parentIndex + "][]";
-            inputValeur.placeholder = "Vert";
+            inputValeur.placeholder = "<?= LangManager::translate('shop.views.items.add.green') ?>";
             inputValeur.required = true;
 
             let boutonSupprimerValeur = document.createElement("button");

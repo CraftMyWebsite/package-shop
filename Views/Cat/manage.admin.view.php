@@ -34,9 +34,6 @@ $description = '';
             <?= $category->getFontAwesomeIcon() ?> <b><?= $category->getName() ?></b> <?= $category->getDescription() ?> (<?= $category->countItemsInCat() ?> <?= LangManager::translate('shop.views.cat.manage.items') ?>)
         </p>
         <div class="space-x-2">
-            <a href="items/cat/<?= $category->getId() ?>"><i data-bs-toggle="tooltip"
-                                                             title="<?= LangManager::translate('shop.views.cat.manage.tooltip.items') ?>"
-                                                             class="me-3 fa-solid fa-eye"></i></a>
             <a target="_blank"
                href="<?= $category->getCatLink() ?>"><i data-bs-toggle="tooltip"
                                                         title="<?= LangManager::translate('shop.views.cat.manage.tooltip.render') ?>"

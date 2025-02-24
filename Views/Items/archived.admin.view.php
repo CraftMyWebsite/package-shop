@@ -7,7 +7,7 @@ use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Website;
 
-$title = 'Boutique';
+$title = LangManager::translate('shop.views.items.archived.title');
 $description = '';
 
 /* @var CMW\Entity\Shop\Categories\ShopCategoryEntity[] $categories */
@@ -19,8 +19,8 @@ $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-cubes-stacked"></i> Articles archivés</h3>
-    <a href="../items" type="submit" class="btn-primary">Retourner au articles</a>
+    <h3><i class="fa-solid fa-cubes-stacked"></i> <?= LangManager::translate('shop.views.items.archived.title') ?></h3>
+    <a href="../items" type="submit" class="btn-primary"><?= LangManager::translate('shop.views.items.archived.back') ?></a>
 </div>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
@@ -32,20 +32,20 @@ $description = '';
     </div>
 <?php endif;?>
 
-<div class="alert alert-warning my-4">Les articles archivés sont souvent des articles qui ont déjà était commandé, vous en gardez une trace pour le suivie des commandes client, facture ...<br>Vous pouvez les réactiver, mais cette action est fortement déconseiller</div>
+<div class="alert alert-warning my-4"><?= LangManager::translate('shop.views.items.archived.info') ?></div>
 
 <div class="table-container">
     <table id="table1" data-load-per-page="10">
         <thead>
         <tr>
-            <th>Images</th>
-            <th>Nom</th>
+            <th><?= LangManager::translate('shop.views.items.archived.img') ?></th>
+            <th><?= LangManager::translate('shop.views.items.archived.name') ?></th>
             <?php if ($allowReviews): ?>
-                <th class="text-center">Avis</th>
+                <th class="text-center"><?= LangManager::translate('shop.views.items.archived.reviews') ?></th>
             <?php endif; ?>
-            <th>Raison d'archivage</th>
-            <th>Prix</th>
-            <th>Stock</th>
+            <th><?= LangManager::translate('shop.views.items.archived.reason') ?></th>
+            <th><?= LangManager::translate('shop.views.items.archived.price') ?></th>
+            <th><?= LangManager::translate('shop.views.items.archived.stock') ?></th>
             <th class="text-center"></th>
         </tr>
         </thead>
@@ -110,16 +110,16 @@ $description = '';
             <div id="modal-push-<?= $item->getId() ?>" class="modal-container">
                 <div class="modal">
                     <div class="modal-header">
-                        <h6>Désarchivage : <?= $item->getName() ?></h6>
+                        <h6><?= LangManager::translate('shop.views.items.archived.unarchive') ?> <?= $item->getName() ?></h6>
                         <button type="button" data-modal-hide="modal-push-<?= $item->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="modal-body">
-                        <p>Vos clients pourront à nouveau acheter cet article !</p>
+                        <p><?= LangManager::translate('shop.views.items.archived.unarchive-warn') ?></p>
                     </div>
                     <div class="modal-footer">
                         <a href="activate/<?= $item->getId() ?>"
                            class="btn-primary">
-                            Confirmer
+                            <?= LangManager::translate('shop.views.items.archived.confirm') ?>
                         </a>
                     </div>
                 </div>

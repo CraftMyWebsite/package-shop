@@ -112,25 +112,6 @@ class ShopItemsController extends AbstractController
         Redirect::redirectPreviousRoute();
     }
 
-    #[Link('/items/cat/:catId', Link::GET, ['.*?'], '/cmw-admin/shop')]
-    private function shopItemsByCat(string $catId): void
-    {
-        UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items');
-
-        $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById($catId);
-        $items = ShopItemsModel::getInstance()->getAdminShopItemByCat($catId);
-        $imagesItem = ShopImagesModel::getInstance();
-        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-
-        View::createAdminView('Shop', 'Items/filterCat')
-            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' =>
-                $defaultImage, 'thisCat' => $thisCat])
-            ->addStyle('Admin/Resources/Assets/Css/simple-datatables.css')
-            ->addScriptAfter('Admin/Resources/Vendors/Simple-datatables/simple-datatables.js',
-                'Admin/Resources/Vendors/Simple-datatables/config-datatables.js')
-            ->view();
-    }
-
     #[Link('/items/add', Link::GET, [], '/cmw-admin/shop')]
     private function adminAddShopItem(): void
     {

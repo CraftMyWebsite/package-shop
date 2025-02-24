@@ -6,7 +6,7 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Utils\Website;
 
-$title = 'Boutique';
+$title = LangManager::translate('shop.views.items.review.title', ['name' => $item->getName()]);
 $description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
@@ -16,7 +16,7 @@ $description = '';
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
 
 ?>
-<h3><i class="fa-solid fa-star"></i> Avis de <?= $item->getName() ?></h3>
+<h3><i class="fa-solid fa-star"></i> <?= LangManager::translate('shop.views.items.review.title', ['name' => $item->getName()]) ?></h3>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
     <div class="alert-danger">
@@ -54,9 +54,9 @@ $description = '';
                  src="<?= $defaultImage ?>" class="p-2 d-block"
                  alt="..."/>
         <?php endif; ?>
-        <h6>Nom:</h6>
+        <h6><?= LangManager::translate('shop.views.items.review.name') ?>:</h6>
         <p><?= $item->getName() ?></p>
-        <h6>Déscription :</h6>
+        <h6><?= LangManager::translate('shop.views.items.review.desc') ?> :</h6>
         <p><?= $item->getShortDescription() ?></p>
     </div>
     <div class="col-span-3">
@@ -76,21 +76,21 @@ $description = '';
                     <p class="mb-2 font-light text-gray-500"><?= $reviewed->getReviewText() ?></p>
                     <hr>
                     <div class="text-center mt-2">
-                        <button class="btn btn-danger" type="button" data-modal-toggle="modal-delete-<?= $reviewed->getId() ?>">Supprimé</button>
+                        <button class="btn btn-danger" type="button" data-modal-toggle="modal-delete-<?= $reviewed->getId() ?>"><?= LangManager::translate('core.btn.delete') ?></button>
                     </div>
 
                     <div id="modal-delete-<?= $reviewed->getId() ?>" class="modal-container">
                         <div class="modal">
                             <div class="modal-header-danger">
-                                <h6>Suppression de l'avis ?</h6>
+                                <h6><?= LangManager::translate('shop.views.items.review.remove') ?></h6>
                                 <button type="button" data-modal-hide="modal-delete-<?= $reviewed->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                             <div class="modal-body">
-                                <p>Ne supprimez pas d'avis négatif pour améliorer vos notes !<br>Vos clients ont le droit de ne pas être satisfait.<br>Et ils ont aussi le droit de le faire savoir.</p>
+                                <p><?= LangManager::translate('shop.views.items.review.remove-text') ?></p>
                             </div>
                             <div class="modal-footer">
                                 <a href="<?= $item->getId() ?>/delete/<?= $reviewed->getId() ?>" class="btn btn-danger">
-                                    <span class="">Supprimer</span>
+                                    <span class=""><?= LangManager::translate('core.btn.delete') ?></span>
                                 </a>
                             </div>
                         </div>
@@ -102,12 +102,12 @@ $description = '';
         <div class="flex items-center">
             <?= $review->getStars($item->getId()) ?>
             <span class="mx-1 "></span>
-            <span><?= $review->getAverageRatingByItemId($item->getId()) ?> sur 5</span>
+            <span><?= $review->getAverageRatingByItemId($item->getId()) ?> <?= LangManager::translate('shop.views.items.review.5') ?></span>
         </div>
-        <p><?= $review->countTotalRatingByItemId($item->getId()) ?> avis</p>
+        <p><?= $review->countTotalRatingByItemId($item->getId()) ?> <?= LangManager::translate('shop.views.items.review.reviews') ?></p>
         <?php foreach ($review->getRatingsPercentageByItemId($item->getId()) as $rating): ?>
             <div class="flex items-center mb-2">
-                <span class="text-sm font-medium"><?= $rating->getRating() ?> étoiles</span>
+                <span class="text-sm font-medium"><?= $rating->getRating() ?> <?= LangManager::translate('shop.views.items.review.stars') ?></span>
                 <div style="background-color: #b7abab; width: 50%" class="w-2/4 h-5 mx-4 bg-gray-200 rounded">
                     <div class="h-5 rounded" style="height: 1.2rem; background-color: #FFD700; width: <?= $rating->getPercentage() ?>%"></div>
                 </div>
