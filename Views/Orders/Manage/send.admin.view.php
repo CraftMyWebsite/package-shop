@@ -4,21 +4,20 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-$title = 'Commandes #' . $order->getOrderNumber();
+$title = LangManager::translate('shop.views.orders.manage.send.title', ['number' => $order->getOrderNumber()]);
 $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
+    <h3><i class="fa-solid fa-list-check"></i> <?= LangManager::translate('shop.views.orders.manage.send.title', ['number' => $order->getOrderNumber()]) ?></h3>
     <div>
-        <a type="button" href="../" class="btn btn-warning">Plus tard ...</a>
-        <button form="finish" type="submit" class="btn btn-primary">Colis en route</button>
+        <a type="button" href="../" class="btn btn-warning"><?= LangManager::translate('shop.views.orders.manage.send.later') ?></a>
+        <button form="finish" type="submit" class="btn btn-primary"><?= LangManager::translate('shop.views.orders.manage.send.road') ?></button>
     </div>
 </div>
 
@@ -33,12 +32,12 @@ $description = '';
 
 <div class="grid-2">
     <div class="card">
-        <h5>Expédition</h5>
+        <h5><?= LangManager::translate('shop.views.orders.manage.send.ship') ?></h5>
         <hr>
-        <h6>Type d'expédition (<?= $order->getShippingMethod()->getShipping()->getFormattedType() ?>) :</h6>
+        <h6><?= LangManager::translate('shop.views.orders.manage.send.ship-type', ['type' => $order->getShippingMethod()->getShipping()->getFormattedType()]) ?></h6>
         <p><?= $order->getShippingMethod()->getName() ?> - <b><?= $order->getShippingMethod()->getPriceFormatted() ?></b></p>
         <hr>
-        <h6>Livrer à :</h6>
+        <h6><?= LangManager::translate('shop.views.orders.manage.send.shipped-to') ?></h6>
         <p>
             <?= $order->getUserAddressMethod()->getUserFirstName() ?>
             <?= $order->getUserAddressMethod()->getUserLastName() ?><br>
@@ -49,25 +48,25 @@ $description = '';
             <?= $order->getUserAddressMethod()->getUserFormattedCountry() ?><br>
         </p>
         <hr>
-        <h6>Informations supplémentaires :</h6>
+        <h6><?= LangManager::translate('shop.views.orders.manage.send.more') ?></h6>
         <p>
-            Téléphone : <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
-            @mail : <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>
+            <?= LangManager::translate('shop.views.orders.manage.send.phone') ?> <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
+            <?= LangManager::translate('shop.views.orders.manage.send.mail') ?> <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>
         </p>
     </div>
 
     <div>
         <div class="card">
-            <h6>Suivie</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.send.follow') ?></h6>
             <form id="finish" action="finish/<?= $order->getId() ?>" method="post">
                 <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                <h6>Lien de suivie colis :</h6>
+                <h6><?= LangManager::translate('shop.views.orders.manage.send.follow-link') ?></h6>
                 <input type="text" class="input" name="shipping_link">
-                <small>Si vous n'êtes pas en mesure de fournir de lien de suivie merci de ne pas remplir ce champ.</small>
+                <small><?= LangManager::translate('shop.views.orders.manage.send.follow-info') ?></small>
             </form>
         </div>
         <div class="card mt-6">
-            <h6>Récap de commande</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.send.review') ?></h6>
             <div>
                 <?php foreach ($order->getOrderedItems() as $orderItem): ?>
                     <div class="flex items-start mb-2">
@@ -80,7 +79,7 @@ $description = '';
                             <?php if ($reviewEnabled): ?>
                             <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?><br>
                     <?php endif; ?>
-                            Quantité : <b><?= $orderItem->getQuantity() ?></b> <br>
+                            <?= LangManager::translate('shop.views.orders.manage.send.quantity') ?> <b><?= $orderItem->getQuantity() ?></b> <br>
                             <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
                                 <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b>
                             <?php endforeach; ?>

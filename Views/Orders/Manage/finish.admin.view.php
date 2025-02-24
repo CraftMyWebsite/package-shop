@@ -4,21 +4,20 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-$title = 'Commandes #' . $order->getOrderNumber();
+$title = LangManager::translate('shop.views.orders.manage.finish.title', ['number' => $order->getOrderNumber()]);
 $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
+    <h3><i class="fa-solid fa-list-check"></i> <?= LangManager::translate('shop.views.orders.manage.finish.title', ['number' => $order->getOrderNumber()]) ?></h3>
     <div>
-        <a href="../" type="button" class="btn btn-warning">Pas pour l'instant</a>
-        <button data-modal-toggle="modal-finish-him" class="btn-success" type="button">Terminé</button>
+        <a href="../" type="button" class="btn btn-warning"><?= LangManager::translate('shop.views.orders.manage.finish.not-now') ?></a>
+        <button data-modal-toggle="modal-finish-him" class="btn-success" type="button"><?= LangManager::translate('shop.views.orders.manage.finish.ended') ?></button>
     </div>
 </div>
 
@@ -35,16 +34,16 @@ $description = '';
 <div id="modal-finish-him" class="modal-container">
     <div class="modal">
         <div class="modal-header-success">
-            <h6>Commande terminé</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.finish.order-ended') ?></h6>
             <button type="button" data-modal-hide="modal-finish-him"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form action="end/<?= $order->getId() ?>" method="post">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
-                Parfait ! bonne vente à vous.
+                <?= LangManager::translate('shop.views.orders.manage.finish.perfect') ?>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-success">Commande terminé</button>
+                <button type="submit" class="btn btn-success"><?= LangManager::translate('shop.views.orders.manage.finish.order-ended') ?></button>
             </div>
         </form>
     </div>
@@ -54,23 +53,23 @@ $description = '';
     <div>
         <div class="card">
             <?php if ($order->getShippingMethod()->getShipping()->getType() === 0): ?>
-                <h6>Commande reçu ?</h6>
-                <p>Si votre client a bien reçu sa commande, il est conseiller de la clôturer pour un meilleur suivi.</p>
+                <h6><?= LangManager::translate('shop.views.orders.manage.finish.received') ?></h6>
+                <p><?= LangManager::translate('shop.views.orders.manage.finish.received-text') ?></p>
                 <?php if (!empty($order->getShippingLink())): ?>
-                    <p>Vous pouvez suivre l'avancée de la livraison ici : <a href="<?= $order->getShippingLink() ?>" target="_blank" class="link">Suivre le colis</a></p>
+                    <p><?= LangManager::translate('shop.views.orders.manage.finish.follow', ['link' => $order->getShippingLink()]) ?></p>
                 <?php endif; ?>
             <?php else: ?>
-                <h6>Commande récupérée ?</h6>
-                <p>Votre client est venu chercher sont colis dans votre centre ? Il est conseiller de la clôturer pour un meilleur suivi.</p>
+                <h6><?= LangManager::translate('shop.views.orders.manage.finish.withdraw') ?></h6>
+                <p><?= LangManager::translate('shop.views.orders.manage.finish.withdraw-text') ?></p>
             <?php endif; ?>
         </div>
         <div class="card mt-4">
-            <h5>Expédition</h5>
+            <h5><?= LangManager::translate('shop.views.orders.manage.finish.shipping') ?></h5>
             <hr>
-            <h6>Type d'expédition (<?= $order->getShippingMethod()->getShipping()->getFormattedType() ?>) :</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.finish.shipping-type', ['type' => $order->getShippingMethod()->getShipping()->getFormattedType()]) ?></h6>
             <p><?= $order->getShippingMethod()->getName() ?> - <b><?= $order->getShippingMethod()->getPriceFormatted() ?></b></p>
             <hr>
-            <h6>Livrer à :</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.finish.shipped-to') ?></h6>
             <p>
                 <?= $order->getUserAddressMethod()->getUserFirstName() ?>
                 <?= $order->getUserAddressMethod()->getUserLastName() ?><br>
@@ -81,15 +80,15 @@ $description = '';
                 <?= $order->getUserAddressMethod()->getUserFormattedCountry() ?><br>
             </p>
             <hr>
-            <h6>Informations supplémentaires :</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.finish.more') ?></h6>
             <p>
-                Téléphone : <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
-                @mail : <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>
+                <?= LangManager::translate('shop.views.orders.manage.finish.phone') ?> <b><?= $order->getUserAddressMethod()->getUserPhone() ?></b><br>
+                <?= LangManager::translate('shop.views.orders.manage.finish.mail') ?> <b><?= $order->getUserAddressMethod()->getUserMail() ?></b>
             </p>
         </div>
     </div>
     <div class="card">
-        <h6>Récap de commande</h6>
+        <h6><?= LangManager::translate('shop.views.orders.manage.finish.review') ?></h6>
         <?php foreach ($order->getOrderedItems() as $orderItem): ?>
             <div class="flex items-start mb-2">
                 <?php if ($orderItem->getFirstImg() !== '/Public/Uploads/Shop/0'): ?>
@@ -101,7 +100,7 @@ $description = '';
                     <?php if ($reviewEnabled): ?>
                         <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?><br>
                     <?php endif; ?>
-                    Quantité : <b><?= $orderItem->getQuantity() ?></b> <br>
+                    <?= LangManager::translate('shop.views.orders.manage.finish.quantity') ?> <b><?= $orderItem->getQuantity() ?></b> <br>
                     <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
                         <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b>
                     <?php endforeach; ?>

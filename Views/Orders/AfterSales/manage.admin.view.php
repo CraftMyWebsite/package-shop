@@ -9,16 +9,16 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 
-$title = 'Services après ventes';
-$description = 'SAV';
+$title = LangManager::translate('shop.views.orders.afterSales.manage.title');
+$description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-headset"></i> Services après-ventes</h3>
+    <h3><i class="fa-solid fa-headset"></i> <?= LangManager::translate('shop.views.orders.afterSales.manage.title') ?></h3>
     <?php if ($afterSale->getStatus() !== 2): ?>
-    <button data-modal-toggle="modal-close" type="button" class="btn-success">Clôturer</button>
+    <button data-modal-toggle="modal-close" type="button" class="btn-success"><?= LangManager::translate('shop.views.orders.afterSales.manage.close') ?></button>
     <?php else: ?>
-        <a href=".." type="button" class="btn-primary">Retour au SAV</a>
+        <a href=".." type="button" class="btn-primary"><?= LangManager::translate('shop.views.orders.afterSales.manage.back') ?></a>
     <?php endif; ?>
 </div>
 
@@ -35,14 +35,14 @@ $description = 'SAV';
 <div id="modal-close" class="modal-container">
     <div class="modal">
         <div class="modal-header">
-            <h6>Clôturer ce S.A.V</h6>
+            <h6><?= LangManager::translate('shop.views.orders.afterSales.manage.close-title') ?></h6>
             <button type="button" data-modal-hide="modal-close"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-            Êtes vous sur ?
+            <?= LangManager::translate('shop.views.orders.afterSales.manage.close-text') ?>
         </div>
         <div class="modal-footer">
-            <a href="../close/<?= $afterSale->getId() ?>" type="button" class="btn-success">Clore</a>
+            <a href="../close/<?= $afterSale->getId() ?>" type="button" class="btn-success"><?= LangManager::translate('shop.views.orders.afterSales.manage.close-btn') ?></a>
         </div>
     </div>
 </div>
@@ -53,10 +53,10 @@ $description = 'SAV';
             <img class="avatar-rounded" src="<?= $afterSale->getAuthor()->getUserPicture()->getImage() ?>">
             <?= $afterSale->getAuthor()->getPseudo() ?>
         </div>
-        <p><b>Status :</b> <?= $afterSale->getFormattedStatus() ?></p>
-        <p><b>Raison :</b> <?= $afterSale->getFormattedReason() ?></p>
-        <p><b>Commande :</b> <a class="link" href="../../orders/view/<?= $afterSale->getOrder()->getId() ?>">#<?= $afterSale->getOrder()->getOrderNumber() ?></a></p>
-        <p><b>Date :</b> <?= $afterSale->getCreated() ?></p>
+        <p><b><?= LangManager::translate('shop.views.orders.afterSales.manage.status') ?> :</b> <?= $afterSale->getFormattedStatus() ?></p>
+        <p><b><?= LangManager::translate('shop.views.orders.afterSales.manage.reason') ?> :</b> <?= $afterSale->getFormattedReason() ?></p>
+        <p><b><?= LangManager::translate('shop.views.orders.afterSales.manage.order') ?> :</b> <a class="link" href="../../orders/view/<?= $afterSale->getOrder()->getId() ?>">#<?= $afterSale->getOrder()->getOrderNumber() ?></a></p>
+        <p><b><?= LangManager::translate('shop.views.orders.afterSales.manage.date') ?> :</b> <?= $afterSale->getCreated() ?></p>
     </div>
     <div class="col-span-3">
         <div class="card">
@@ -68,7 +68,7 @@ $description = 'SAV';
                         <div class="alert">
                             <div class="flex justify-between">
                                 <p><span class="font-bold"><?= $message->getAuthor()->getPseudo() ?></span> <small><?= $message->getCreated() ?></small></p>
-                                <span class="badge ml-12">Client</span>
+                                <span class="badge ml-12"><?= LangManager::translate('shop.views.orders.afterSales.manage.customer') ?></span>
                             </div>
                             <p><?= $message->getMessage() ?></p>
                         </div>
@@ -79,7 +79,7 @@ $description = 'SAV';
                         <div class="max-w-2xl flex gap-2">
                             <div class="alert">
                                 <div class="flex justify-between">
-                                    <span class="badge">S.A.V</span>
+                                    <span class="badge"><?= LangManager::translate('shop.views.orders.afterSales.manage.sav') ?></span>
                                     <p><span class="font-bold"><?= $message->getAuthor()->getPseudo() ?></span> <small><?= $message->getCreated() ?></small></p>
                                 </div>
                                 <p><?= $message->getMessage() ?></p>
@@ -95,9 +95,9 @@ $description = 'SAV';
         <div class="card mt-6">
             <form method="post">
                 <?php SecurityManager::getInstance()->insertHiddenToken() ?>
-                <label for="message">Votre réponse :</label>
+                <label for="message"><?= LangManager::translate('shop.views.orders.afterSales.manage.answer') ?></label>
                 <textarea id="message" name="message" minlength="3" required class="textarea"></textarea>
-                <button type="submit" class="btn-center btn-success mt-4">Envoyer</button>
+                <button type="submit" class="btn-center btn-success mt-4"><?= LangManager::translate('shop.views.orders.afterSales.manage.send') ?></button>
             </form>
         </div>
         <?php endif; ?>

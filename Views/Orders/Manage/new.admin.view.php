@@ -4,23 +4,22 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-$title = 'Commandes #' . $order->getOrderNumber();
+$title = LangManager::translate('shop.views.orders.manage.new.title', ['number' => $order->getOrderNumber()]);
 $description = '';
 
 ?>
 
 <div class="page-title">
-    <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?></h3>
+    <h3><i class="fa-solid fa-list-check"></i> <?= LangManager::translate('shop.views.orders.manage.new.title', ['number' => $order->getOrderNumber()]) ?></h3>
     <div>
-        <button data-modal-toggle="modal-danger" type="button" class="btn btn-danger">Non réalisable</button>
-        <button data-modal-toggle="modal-success" type="button" class="btn btn-primary">Commande prête</button>
+        <button data-modal-toggle="modal-danger" type="button" class="btn btn-danger"><?= LangManager::translate('shop.views.orders.manage.new.unrealizable') ?></button>
+        <button data-modal-toggle="modal-success" type="button" class="btn btn-primary"><?= LangManager::translate('shop.views.orders.manage.new.ready') ?></button>
     </div>
 </div>
 
@@ -36,16 +35,16 @@ $description = '';
 <div id="modal-danger" class="modal-container">
     <div class="modal">
         <div class="modal-header-danger">
-            <h6>Non réalisable</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.new.unrealizable') ?></h6>
             <button type="button" data-modal-hide="modal-danger"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
             <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                Vous devrez rembourser votre client !
+                <?= LangManager::translate('shop.views.orders.manage.new.refund') ?>
             </p>
         </div>
         <div class="modal-footer">
-            <button form="cancel" type="submit" class="btn btn-danger">Cette commande n'est pas réalisable</button>
+            <button form="cancel" type="submit" class="btn btn-danger"><?= LangManager::translate('shop.views.orders.manage.new.unrealizable-btn') ?></button>
         </div>
     </div>
 </div>
@@ -54,23 +53,23 @@ $description = '';
 <div id="modal-success" class="modal-container">
     <div class="modal">
         <div class="modal-header-success">
-            <h6>Tout est dans la boite ?</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.new.inbox') ?></h6>
             <button type="button" data-modal-hide="modal-success"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
             <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <?php if ($order->getShippingMethod()?->getShipping()->getType() === 0): ?>
-                    Tout est prêt à partir ?
+                    <?= LangManager::translate('shop.views.orders.manage.new.ship') ?>
                 <?php elseif($order->getShippingMethod()?->getShipping()->getType() === 1): ?>
-                    La validation permettra au client de venir récupérer son colis, tout est bon ?
+                    <?= LangManager::translate('shop.views.orders.manage.new.withdraw') ?>
                 <?php else: ?>
-                    Tout vos articles virtuels sont prêts ?
+                    <?= LangManager::translate('shop.views.orders.manage.new.virtual') ?>
                 <?php endif; ?>
             </p>
         </div>
         <div class="modal-footer">
-            <button data-modal-hide="modal-success" type="button" class="btn-danger">Fermer</button>
-            <button form="send" type="submit" class="btn btn-success">Tout est prêt !</button>
+            <button data-modal-hide="modal-success" type="button" class="btn-danger"><?= LangManager::translate('core.btn.close') ?></button>
+            <button form="send" type="submit" class="btn btn-success"><?= LangManager::translate('shop.views.orders.manage.new.all-ready') ?></button>
         </div>
     </div>
 </div>
@@ -78,17 +77,17 @@ $description = '';
 
 <div class="alert-info">
     <?php if ($order->getShippingMethod()?->getShipping()->getType() === 0): ?>
-        <p>Cette commande devra être expédiée</p>
+        <p><?= LangManager::translate('shop.views.orders.manage.new.need-to-ship') ?></p>
     <?php elseif ($order->getShippingMethod()?->getShipping()->getType() === 1): ?>
-        <p>Cette commande sera récupérer par le client au dépot :</p>
+        <p><?= LangManager::translate('shop.views.orders.manage.new.need-to-withdraw') ?></p>
         <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressLine() ?></p>
         <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressPostalCode() ?> <?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getAddressCity() ?></p>
         <p><?= $order->getShippingMethod()->getShipping()->getWithdrawPoint()->getFormattedCountry() ?></p>
     <?php else: ?>
-        <p>Cette commande ne contient que des articles virtuels</p>
+        <p><?= LangManager::translate('shop.views.orders.manage.new.only-virtual') ?></p>
     <?php endif; ?>
 </div>
-<h6>Articles à préparer</h6>
+<h6><?= LangManager::translate('shop.views.orders.manage.new.prepare') ?></h6>
 
 <div class="grid-4">
     <?php foreach ($order->getOrderedItems() as $orderItem): ?>
@@ -106,13 +105,13 @@ $description = '';
             <?php endif; ?>
             <?php if ($orderItem->getItem()->getType() == 1):
                 $virtualMethod = ShopItemsVirtualMethodModel::getInstance()?->getVirtualItemMethodByItemId($orderItem->getItem()->getId())->getVirtualMethod()->name(); ?>
-                <p>Article virtuel, Méthode : <?= $virtualMethod ?></p>
+                <p><?= LangManager::translate('shop.views.orders.manage.new.virtual-method', ['method' => $virtualMethod]) ?></p>
             <?php endif; ?>
             <?php if ($orderItem->getItem()->getType() == 0): ?>
-                <p>Article Physique</p>
+                <p><?= LangManager::translate('shop.views.orders.manage.new.physical') ?></p>
             <?php endif; ?>
             <p style="font-size: 1.2rem">
-                - Quantité : <b><?= $orderItem->getQuantity() ?></b><br>
+                - <?= LangManager::translate('shop.views.orders.manage.new.quantity') ?> <b><?= $orderItem->getQuantity() ?></b><br>
                 <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
                     - <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b><br>
                 <?php endforeach; ?>

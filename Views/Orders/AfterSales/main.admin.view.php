@@ -2,16 +2,14 @@
 
 /* @var \CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersAfterSalesEntity [] $afterSales */
 
-use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\MailModel;
 
-$title = 'Services après ventes';
-$description = 'SAV';
+$title = LangManager::translate('shop.views.orders.afterSales.main.title');
+$description = '';
 
 ?>
-<h3><i class="fa-solid fa-headset"></i> Services après-ventes</h3>
+<h3><i class="fa-solid fa-headset"></i> <?= LangManager::translate('shop.views.orders.afterSales.main.title') ?></h3>
 
 <?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
     <div class="alert-danger">
@@ -23,17 +21,17 @@ $description = 'SAV';
 <?php endif;?>
 
     <div class="card">
-        <h6>En cours</h6>
+        <h6><?= LangManager::translate('shop.views.orders.afterSales.main.progress') ?></h6>
         <div class="table-container table-container-striped">
             <table class="table" id="table1">
                 <thead>
                 <tr>
-                    <th>Utilisateur</th>
-                    <th>N° de commande</th>
-                    <th>Raison</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th class="text-center">Gérer</th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.user') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.order') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.reason') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.status') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.date') ?></th>
+                    <th class="text-center"><?= LangManager::translate('shop.views.orders.afterSales.main.manage') ?></th>
                 </tr>
                 </thead>
                 <tbody >
@@ -59,17 +57,17 @@ $description = 'SAV';
     </div>
 
     <div class="card mt-6">
-        <h6>Traité</h6>
+        <h6><?= LangManager::translate('shop.views.orders.afterSales.main.past') ?></h6>
         <div class="table-container table-container-striped">
             <table class="table" id="table1">
                 <thead>
                 <tr>
-                    <th>Utilisateur</th>
-                    <th>N° de commande</th>
-                    <th>Raison</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th class="text-center">Gérer</th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.user') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.order') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.reason') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.status') ?></th>
+                    <th><?= LangManager::translate('shop.views.orders.afterSales.main.date') ?></th>
+                    <th class="text-center"><?= LangManager::translate('shop.views.orders.afterSales.main.manage') ?></th>
                 </tr>
                 </thead>
                 <tbody >

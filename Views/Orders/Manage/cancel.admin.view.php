@@ -4,22 +4,21 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
-use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Review\ShopReviewsModel;
 
-$title = 'Commandes #' . $order->getOrderNumber();
+$title = LangManager::translate('shop.views.orders.manage.cancel.title', ['number' => $order->getOrderNumber()]);
 $description = '';
 
 ?>
 <div class="page-title">
-    <h3><i class="fa-solid fa-list-check"></i> Commandes #<?= $order->getOrderNumber() ?> ANNULÉ</h3>
+    <h3><i class="fa-solid fa-list-check"></i> <?= LangManager::translate('shop.views.orders.manage.cancel.title', ['number' => $order->getOrderNumber()]) ?></h3>
     <div>
-        <a href="../" type="button" class="btn btn-warning">Plus tard ...</a>
-        <button data-modal-toggle="modal-avoir" class="btn-warning" type="button">Créer un avoir</button>
-        <button data-modal-toggle="modal-refunded" class="btn-success" type="button">Remboursée</button>
+        <a href="../" type="button" class="btn btn-warning"><?= LangManager::translate('shop.views.orders.manage.cancel.later') ?></a>
+        <button data-modal-toggle="modal-avoir" class="btn-warning" type="button"><?= LangManager::translate('shop.views.orders.manage.cancel.credit') ?></button>
+        <button data-modal-toggle="modal-refunded" class="btn-success" type="button"><?= LangManager::translate('shop.views.orders.manage.cancel.refunded') ?></button>
     </div>
 </div>
 
@@ -35,21 +34,21 @@ $description = '';
 <div id="modal-avoir" class="modal-container">
     <div class="modal">
         <div class="modal-header-warning">
-            <h6>Créer un avoir</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.cancel.credit') ?></h6>
             <button type="button" data-modal-hide="modal-avoir"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="avoir" action="refunded/<?= $order->getId() ?>" method="post">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
                 <div class="alert-info">
-                    Créer un avoir (code promo) applicable sur toute la boutique du montant total de la commande incluant faire de livraison et frais de paiement si applicable.
+                    <?= LangManager::translate('shop.views.orders.manage.cancel.credit-text') ?>
                 </div>
-                <label for="name">Nom<span style="color: red">*</span> :</label>
+                <label for="name"><?= LangManager::translate('shop.views.orders.manage.cancel.name') ?><span style="color: red">*</span> :</label>
                 <input type="text" id="name" name="name" class="input" placeholder="Credit : Avoir">
-                <small>A titre indicatif pour votre historique</small>
+                <small><?= LangManager::translate('shop.views.orders.manage.cancel.name-info') ?></small>
             </div>
             <div class="modal-footer">
-                <button form="avoir" type="submit" class="btn btn-warning-sm">Créer un avoir</button>
+                <button form="avoir" type="submit" class="btn btn-warning-sm"><?= LangManager::translate('shop.views.orders.manage.cancel.credit') ?></button>
             </div>
         </form>
     </div>
@@ -58,16 +57,16 @@ $description = '';
 <div id="modal-refunded" class="modal-container">
     <div class="modal">
         <div class="modal-header-success">
-            <h6>Commande remboursée</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.cancel.order-refunded') ?></h6>
             <button type="button" data-modal-hide="modal-refunded"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="refunded" action="endFailed/<?= $order->getId() ?>" method="post">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
         <div class="modal-body">
-            Avez-vous remboursé votre client ? cette commande est donc maintenant terminé ?
+            <?= LangManager::translate('shop.views.orders.manage.cancel.refunded-text') ?>
         </div>
         <div class="modal-footer">
-            <button form="refunded" type="submit" class="btn btn-success">Commande remboursée</button>
+            <button form="refunded" type="submit" class="btn btn-success"><?= LangManager::translate('shop.views.orders.manage.cancel.order-refunded') ?></button>
         </div>
         </form>
     </div>
@@ -75,14 +74,11 @@ $description = '';
 
 <div class="grid-2">
     <div class="card">
-        <h6>Remboursement</h6>
-        <p>Votre client a déjà payé l'intégralité de
-            <?= "<b style='color: #6f6fad'>" . $order->getOrderTotalFormatted() . '</b>' ?>
-            avec <?= $order->getPaymentMethod()->getName() ?>.</p>
-        <p>Il ne vous reste plus qu'à le rembourser pour finaliser le traitement de cette commande.</p>
+        <h6><?= LangManager::translate('shop.views.orders.manage.cancel.refund') ?></h6>
+        <p> <?= LangManager::translate('shop.views.orders.manage.cancel.refund-info', ['price' => $order->getOrderTotalFormatted(), 'payment_name' => $order->getPaymentMethod()->getName()]) ?></p>
     </div>
     <div class="card">
-            <h6>Récap de commande</h6>
+            <h6><?= LangManager::translate('shop.views.orders.manage.cancel.review') ?></h6>
             <?php foreach ($order->getOrderedItems() as $orderItem): ?>
                 <div class="flex items-start mb-2">
                     <?php if ($orderItem->getFirstImg() !== '/Public/Uploads/Shop/0'): ?>
@@ -94,7 +90,7 @@ $description = '';
                         <?php if ($reviewEnabled): ?>
                             <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?><br>
                         <?php endif; ?>
-                        Quantité : <b><?= $orderItem->getQuantity() ?></b> <br>
+                        <?= LangManager::translate('shop.views.orders.manage.cancel.quantity') ?> <b><?= $orderItem->getQuantity() ?></b> <br>
                         <?php foreach ($order->getOrderedItemsVariantes($orderItem->getId()) as $itemVariant): ?>
                             <?= $itemVariant->getName() ?> : <b><?= $itemVariant->getValue() ?></b>
                         <?php endforeach; ?>
