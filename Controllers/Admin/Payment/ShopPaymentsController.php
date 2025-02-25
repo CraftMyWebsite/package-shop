@@ -23,8 +23,8 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopPaymentsController
  * @package Shop
- * @author Teyir
- * @version 1.0
+ * @author Zomblard & Teyir
+ * @version 0.0.1
  */
 class ShopPaymentsController extends AbstractController
 {

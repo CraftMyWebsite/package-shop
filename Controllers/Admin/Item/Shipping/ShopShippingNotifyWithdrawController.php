@@ -19,7 +19,7 @@ use DateTime;
  * Class: @ShopShippingNotifyWithdrawController
  * @package Shop
  * @author Zomblard
- * @version 1.0
+ * @version 0.0.1
  */
 class ShopShippingNotifyWithdrawController extends AbstractController
 {

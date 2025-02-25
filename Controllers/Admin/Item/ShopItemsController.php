@@ -39,8 +39,8 @@ use function is_null;
  * Class: @ShopItemsController
  * @desc this controller manages: categories, items requirement, items actions, items tags
  * @package shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopItemsController extends AbstractController
 {

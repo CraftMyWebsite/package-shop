@@ -18,8 +18,8 @@ use CMW\Utils\Utils;
 /**
  * Class: @ShopStatisticsController
  * @package shop
- * @author Zomb
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopStatisticsController extends AbstractController
 {

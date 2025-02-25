@@ -10,7 +10,7 @@ use CMW\Manager\Package\AbstractController;
  * Class: @ShopPaymentMethodFreeController
  * @package Shop
  * @author Zomblard
- * @version 1.0
+ * @version 0.0.1
  */
 class ShopPaymentMethodFreeController extends AbstractController
 {

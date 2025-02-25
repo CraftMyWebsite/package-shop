@@ -24,7 +24,7 @@ use JsonException;
  * Class: @ShopPaymentMethodPayPalController
  * @package Shop
  * @author Zomblard & Teyir
- * @version 1.0
+ * @version 0.0.1
  */
 class ShopPaymentMethodPayPalController extends AbstractController
 {

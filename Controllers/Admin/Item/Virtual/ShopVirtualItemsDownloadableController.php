@@ -12,7 +12,7 @@ use CMW\Model\Shop\Item\ShopItemsVirtualRequirementModel;
  * Class: @ShopVirtualItemsDownloadableController
  * @package Shop
  * @author Zomblard
- * @version 1.0
+ * @version 0.0.1
  */
 class ShopVirtualItemsDownloadableController extends AbstractController
 {

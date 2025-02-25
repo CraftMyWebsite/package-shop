@@ -32,8 +32,8 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopCommandController
  * @package shop
- * @author Zomb
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopCommandController extends AbstractController
 {

@@ -18,7 +18,7 @@ use CMW\Utils\Redirect;
 /**
  * Class: @ShopHistoryController
  * @package shop
- * @author Zomb
+ * @author Zomblard
  * @version 0.0.1
  */
 class ShopHistoryController extends AbstractController

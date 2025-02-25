@@ -23,8 +23,8 @@ use JetBrains\PhpStorm\NoReturn;
  * Class: @ShopItemsController
  * @desc this controller manages: categories, items requirement, items actions, items tags
  * @package shop
- * @author Zomb
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopCatController extends AbstractController
 {

@@ -25,8 +25,8 @@ use CMW\Utils\Website;
 /**
  * Class: @ShopCartController
  * @package shop
- * @author Zomb
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopCartController extends AbstractController
 {

@@ -20,7 +20,7 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopSettingController
  * @package shop
- * @author Zomb
+ * @author Zomblard
  * @version 0.0.1
  */
 class ShopSettingController extends AbstractController

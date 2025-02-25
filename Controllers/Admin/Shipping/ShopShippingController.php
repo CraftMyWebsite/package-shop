@@ -25,8 +25,8 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopShippingController
  * @package shop
- * @author CraftMyWebsite Team <contact@craftmywebsite.fr>
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopShippingController extends AbstractController
 {

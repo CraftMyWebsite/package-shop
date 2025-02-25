@@ -22,7 +22,7 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopHistoryOrdersAfterSalesController
  * @package shop
- * @author Zomb
+ * @author Zomblard
  * @version 0.0.1
  */
 class ShopHistoryOrdersAfterSalesController extends AbstractController

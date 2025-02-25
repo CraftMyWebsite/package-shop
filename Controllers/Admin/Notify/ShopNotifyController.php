@@ -14,6 +14,8 @@ use CMW\Utils\Website;
  * Class: @ShopNotifyHistoryOrderController
  * @package Shop
  * @link https://craftmywebsite.fr/docs/fr/technical/creer-un-package/controllers
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopNotifyController extends AbstractController
 {

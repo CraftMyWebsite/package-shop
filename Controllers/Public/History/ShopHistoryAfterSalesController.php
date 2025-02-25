@@ -24,7 +24,7 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopHistoryAfterSalesController
  * @package shop
- * @author Zomb
+ * @author Zomblard
  * @version 0.0.1
  */
 class ShopHistoryAfterSalesController extends AbstractController

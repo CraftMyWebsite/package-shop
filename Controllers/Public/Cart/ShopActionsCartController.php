@@ -25,8 +25,8 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * Class: @ShopActionsCartController
  * @package shop
- * @author Zomb
- * @version 1.0
+ * @author Zomblard
+ * @version 0.0.1
  */
 class ShopActionsCartController extends AbstractController
 {
