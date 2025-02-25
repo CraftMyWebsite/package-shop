@@ -48,6 +48,77 @@ return [
         ],
     ],
 
+    /*ENTITIES : */
+    'entities' => [
+        'cart' => [
+            'first' => ' sur le 1er article',
+        ],
+        'discount' => [
+            'all' => 'Tout les produits',
+            'items' => 'Un ou Des article(s)',
+            'cats' => 'Une ou Des catégorie(s)',
+            'gift' => 'Carte cadeau',
+            'credit' => 'Avoir',
+            'end' => 'Termine dans ',
+            'ended' => 'Promotion terminée',
+            'progress' => 'En cours, sans date de fin spécifiée',
+            'day' => ' jour(s)',
+            'hours' => ' heure(s)',
+            'minutes' => ' minute(s)',
+            'inactive' => 'Inactive',
+            'active' => 'Active',
+        ],
+        'afterSales' => [
+            'edit' => 'Modification de commande',
+            'error' => 'Erreur de commande',
+            'defective' => 'Produit défectueux',
+            'damaged' => 'Produit endommagé',
+            'missing' => 'Produit manquant',
+            'delay' => 'Retard de livraison',
+            'receipt' => 'Non-réception de la commande',
+            'size' => 'Problème de taille ou de spécifications',
+            'other' => 'Autres',
+            'waiting' => 'Attend une réponse',
+            'response' => 'Réponse apportée',
+            'close' => 'Clos',
+        ],
+        'historyOrder' => [
+            'refunded' => 'Remboursé',
+            'refund-wait' => '<b style=\'color: orangered\'>Annulé !</b><br> <small>Remboursement en attente</small>',
+            'new-command' => '<i style=\'color: orangered\' class=\'fa-solid fa-triangle-exclamation fa-fade\'></i> Nouvelle commande !',
+            'waiting' => '<i style=\'color: orange\' class=\'fa-solid fa-spinner fa-spin-pulse\'></i> En attente de livraison',
+            'shipping' => '<i style=\'color: #517331\' class=\'fa-solid fa-truck-fast\'></i> Livraison en cours',
+            'withdraw' => '<i style=\'color: #517331\' class=\'fa-solid fa-boxes-packing\'></i> En attente de retrait',
+            'ended' => '<i style=\'color: green\' class=\'fa-regular fa-circle-check\'></i> Terminé',
+            'refunded-1' => 'Remboursé',
+            'refund-wait-1' => 'Annulé (Remboursement en cours ...)',
+            'preparing' => 'Commande en préparation',
+            'ready' => 'Commande prête, votre colis sera remis dans un centre de livraison',
+            'ready-withdraw' => 'Commande prête, Vous pouvez venir le retirer dans le centre',
+            'shipping-progress' => 'Livraison en cours',
+            'ended-1' => 'Terminé',
+        ],
+        'item' => [
+            'unlimited' => '<b style=\'color: #0ab312\'>Illimité</b>',
+            'in-stock' => '<b style=\'color: #0ab312\'>En stock !</b>',
+            'sold-out' => '<b style=\'color: red \'>Indisponible !</b>',
+            'out-soon' => ' bientôt épuisé !',
+            'first' => ' sur le 1er',
+            'unarchived' => 'N\'est pas archivé !',
+            'in-cart' => 'Est présent dans des paniers',
+            'commanded' => 'A déjà fait l\'objet d\'une commande',
+        ],
+        'shipping' => [
+            'shipping' => 'Livraison',
+            'withdraw' => 'A emporter',
+        ],
+        //  LangManager::translate('shop.entities.shipping.')
+        /*  <?= LangManager::translate('shop.entities.shipping.') ?> */
+        /*  <?= LangManager::translate('shop.entities.shipping.', ['cat_name' => $var]) ?> */
+        'shippingZone' => [
+            'all' => 'Toute la terre',
+        ],
+    ],
     /*VIEWS : */
     'views' => [
         'carts' => [
@@ -425,9 +496,6 @@ return [
                     'title' => 'Notification retrait possible',
                 ],
             ],
-            //  LangManager::translate('shop.views.elements.virtual.download.')
-            /*  <?= LangManager::translate('shop.views.elements.virtual.download.') ?> */
-            /*  <?= LangManager::translate('shop.views.elements.virtual.download.', ['cat_name' => $var]) ?> */
             'virtual' => [
                 'empty' => [
                     'name' => 'Aucun',

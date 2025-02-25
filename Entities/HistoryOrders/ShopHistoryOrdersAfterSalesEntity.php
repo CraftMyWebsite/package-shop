@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Entity\Users\UserEntity;
@@ -56,31 +57,31 @@ class ShopHistoryOrdersAfterSalesEntity extends AbstractEntity
     public function getFormattedReason(): string
     {
         if ($this->reason === 0) {
-            return 'Modification de commande';
+            return LangManager::translate('shop.entities.afterSales.edit');
         }
         if ($this->reason === 1) {
-            return 'Erreur de commande';
+            return LangManager::translate('shop.entities.afterSales.error');
         }
         if ($this->reason === 2) {
-            return 'Produit défectueux';
+            return LangManager::translate('shop.entities.afterSales.defective');
         }
         if ($this->reason === 3) {
-            return 'Produit endommagé';
+            return LangManager::translate('shop.entities.afterSales.damaged');
         }
         if ($this->reason === 4) {
-            return 'Produit manquant';
+            return LangManager::translate('shop.entities.afterSales.missing');
         }
         if ($this->reason === 5) {
-            return 'Retard de livraison';
+            return LangManager::translate('shop.entities.afterSales.delay');
         }
         if ($this->reason === 6) {
-            return 'Non-réception de la commande';
+            return LangManager::translate('shop.entities.afterSales.receipt');
         }
         if ($this->reason === 7) {
-            return 'Problème de taille ou de spécifications';
+            return LangManager::translate('shop.entities.afterSales.size');
         }
         if ($this->reason === 8) {
-            return 'Autres';
+            return LangManager::translate('shop.entities.afterSales.other');
         }
     }
 
@@ -92,13 +93,13 @@ class ShopHistoryOrdersAfterSalesEntity extends AbstractEntity
     public function getFormattedStatus(): string
     {
         if ($this->status === 0) {
-            return "<i class='fa-solid fa-spinner fa-spin' style='color: #1159d4;'></i>" . ' Attend une réponse';
+            return "<i class='fa-solid fa-spinner fa-spin' style='color: #1159d4;'></i>" . LangManager::translate('shop.entities.afterSales.waiting');
         }
         if ($this->status === 1) {
-            return "<i class='fa-solid fa-spinner fa-spin-pulse' style='color: #1bbba9;'></i>" . ' Réponse apportée';
+            return "<i class='fa-solid fa-spinner fa-spin-pulse' style='color: #1bbba9;'></i>" . LangManager::translate('shop.entities.afterSales.response');
         }
 
-        return "<i class='fa-regular fa-circle-check' style='color: #15d518;'></i>" . ' Clos';
+        return "<i class='fa-regular fa-circle-check' style='color: #15d518;'></i>" . LangManager::translate('shop.entities.afterSales.close');
     }
 
     public function getOrder(): ShopHistoryOrdersEntity

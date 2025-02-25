@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\Discounts;
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Manager\Security\EncryptManager;
 use CMW\Utils\Date;
@@ -90,19 +91,19 @@ class ShopDiscountEntity extends AbstractEntity
     public function getLinkedFormatted(): string
     {
         if ($this->discountLinked == 0) {
-            return 'Tout les produits';
+            return LangManager::translate('shop.entities.discount.all');
         }
         if ($this->discountLinked == 1) {
-            return 'Un ou Des article(s)';
+            return LangManager::translate('shop.entities.discount.items');
         }
         if ($this->discountLinked == 2) {
-            return 'Une ou Des catégorie(s)';
+            return LangManager::translate('shop.entities.discount.cats');
         }
         if ($this->discountLinked == 3) {
-            return 'Carte cadeau';
+            return LangManager::translate('shop.entities.discount.gift');
         }
         if ($this->discountLinked == 4) {
-            return 'Avoir';
+            return LangManager::translate('shop.entities.discount.credit');
         }
     }
 
@@ -143,24 +144,24 @@ class ShopDiscountEntity extends AbstractEntity
         } elseif ($endDate && $now < $endDate) {
             // La promotion est en cours
             $interval = $now->diff($endDate);
-            return 'Termine dans ' . $this->formatInterval($interval);
+            return LangManager::translate('shop.entities.discount.end') . $this->formatInterval($interval);
         } elseif ($endDate && $now >= $endDate) {
             // La promotion est terminée
-            return 'Promotion terminée';
+            return LangManager::translate('shop.entities.discount.ended');
         } else {
             // Pas de date de fin ou statut à 0, considérée comme terminée ou indéfiniment active selon le statut
-            return $status == 0 ? 'Promotion terminée' : 'En cours, sans date de fin spécifiée';
+            return $status == 0 ? LangManager::translate('shop.entities.discount.ended') : LangManager::translate('shop.entities.discount.progress');
         }
     }
 
     private function formatInterval(DateInterval $interval): string
     {
         if ($interval->days >= 1) {
-            return $interval->format('%a jour(s)');
+            return $interval->format('%a' . LangManager::translate('shop.entities.discount.day'));
         } else if ($interval->h > 0) {
-            return $interval->format('%h heure(s)');
+            return $interval->format('%h' . LangManager::translate('shop.entities.discount.hours'));
         } else {
-            return $interval->format('%i minute(s)');
+            return $interval->format('%i' . LangManager::translate('shop.entities.discount.minutes'));
         }
     }
 
@@ -218,10 +219,10 @@ class ShopDiscountEntity extends AbstractEntity
     public function getStatusFormatted(): ?string
     {
         if ($this->discountStatus == 0) {
-            return 'Inactive';
+            return LangManager::translate('shop.entities.discount.inactive');
         }
         if ($this->discountStatus == 1) {
-            return 'Active';
+            return LangManager::translate('shop.entities.discount.active');
         }
     }
 

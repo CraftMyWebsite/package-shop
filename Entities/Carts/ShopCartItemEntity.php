@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Carts;
 
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
@@ -97,13 +98,13 @@ class ShopCartItemEntity extends AbstractEntity
             } else {
                 if ($this->discount->getPrice()) {
                     if ($symbolIsAfter) {
-                        return '- ' . $this->discount->getPrice() . $symbol . ' sur le 1er article';
+                        return '- ' . $this->discount->getPrice() . $symbol . LangManager::translate('shop.entities.cart.first');
                     } else {
-                        return '- ' . $symbol . $this->discount->getPrice() . ' sur le 1er article';
+                        return '- ' . $symbol . $this->discount->getPrice() . LangManager::translate('shop.entities.cart.first');
                     }
                 }
                 if ($this->discount->getPercentage()) {
-                    return '- ' . $this->discount->getPercentage() . '% sur le 1er article';
+                    return '- ' . $this->discount->getPercentage() . '% '. LangManager::translate('shop.entities.cart.first');
                 }
             }
         }

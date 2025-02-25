@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\Shippings;
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Country\ShopCountryModel;
 
@@ -41,7 +42,7 @@ class ShopShippingZoneEntity extends AbstractEntity
     public function getFormattedCountry(): ?string
     {
         if ($this->country === "ALL") {
-            return "Toute la terre";
+            return LangManager::translate('shop.entities.shippingZone.all');
         } else {
             return ShopCountryModel::getInstance()->getCountryByCode($this->country)->getName();
         }

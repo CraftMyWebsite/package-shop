@@ -2,6 +2,7 @@
 
 namespace CMW\Entity\Shop\HistoryOrders;
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersInvoiceModel;
 use CMW\Utils\Date;
@@ -66,56 +67,56 @@ class ShopHistoryOrdersEntity extends AbstractEntity
     public function getAdminStatus(): string
     {
         if ($this->orderStatus == -2) {
-            return 'Remboursé';
+            return LangManager::translate('shop.entities.historyOrder.refunded');
         }
         if ($this->orderStatus == -1) {
-            return "<b style='color: orangered'>Annulé !</b><br> <small>Remboursement en attente</small>";
+            return LangManager::translate('shop.entities.historyOrder.refund-wait');
         }
         if ($this->orderStatus == 0) {
-            return "<i style='color: orangered' class='fa-solid fa-triangle-exclamation fa-fade'></i> Nouvelle commande !";
+            return LangManager::translate('shop.entities.historyOrder.new-command');
         }
         if ($this->orderStatus == 1) {
-            return "<i style='color: orange' class='fa-solid fa-spinner fa-spin-pulse'></i> En attente de livraison";
+            return LangManager::translate('shop.entities.historyOrder.waiting');
         }
         if ($this->orderStatus == 2) {
             if ($this->getShippingMethod()->getShipping()->getType() == 0) {
-                return "<i style='color: #517331' class='fa-solid fa-truck-fast'></i> Livraison en cours";
+                return LangManager::translate('shop.entities.historyOrder.shipping');
             } else {
-                return "<i style='color: #517331' class='fa-solid fa-boxes-packing'></i> En attente de retrait";
+                return LangManager::translate('shop.entities.historyOrder.withdraw');
             }
         }
         if ($this->orderStatus == 3) {
-            return "<i style='color: green' class='fa-regular fa-circle-check'></i> Terminé";
+            return LangManager::translate('shop.entities.historyOrder.ended');
         }
     }
 
     public function getPublicStatus(): string
     {
         if ($this->orderStatus == -2) {
-            return 'Remboursé';
+            return LangManager::translate('shop.entities.historyOrder.refunded-1');
         }
         if ($this->orderStatus == -1) {
-            return 'Annulé (Remboursement en cours ...)';
+            return LangManager::translate('shop.entities.historyOrder.refund-wait-1');
         }
         if ($this->orderStatus == 0) {
-            return 'Commande en préparation';
+            return LangManager::translate('shop.entities.historyOrder.preparing');
         }
         if ($this->orderStatus == 1) {
             if ($this->getShippingMethod()->getShipping()->getType() == 0) {
-                return 'Commande prête, votre colis sera remis dans un centre de livraison';
+                return LangManager::translate('shop.entities.historyOrder.ready');
             } else {
-                return "Commande prête, Vous pouvez venir le retirer dans le centre";
+                return LangManager::translate('shop.entities.historyOrder.ready-withdraw');
             }
         }
         if ($this->orderStatus == 2) {
             if ($this->getShippingMethod()->getShipping()->getType() == 0) {
-                return 'Livraison en cours';
+                return LangManager::translate('shop.entities.historyOrder.shipping-progress');
             } else {
-                return "Commande prête, Vous pouvez venir le retirer dans le centre";
+                return LangManager::translate('shop.entities.historyOrder.ready-withdraw');
             }
         }
         if ($this->orderStatus == 3) {
-            return 'Terminé';
+            return LangManager::translate('shop.entities.historyOrder.ended-1');
         }
     }
 

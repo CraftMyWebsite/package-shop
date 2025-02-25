@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
@@ -149,7 +150,7 @@ class ShopItemEntity extends AbstractEntity
     public function getAdminFormattedStock(): ?string
     {
         if (is_null($this->getDefaultStock())) {
-            return "<b style='color: #0ab312'>Illimité</b>";
+            return LangManager::translate('shop.entities.item.unlimited');
         } else {
             $currentStock = $this->itemCurrentStock;
             $defaultStock = $this->itemDefaultStock;
@@ -172,7 +173,7 @@ class ShopItemEntity extends AbstractEntity
         $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
         if ($showPublicStock) {
             if (is_null($this->getDefaultStock())) {
-                return "<b style='color: #0ab312'>En stock !</b>";
+                return LangManager::translate('shop.entities.item.in-stock');
             }
 
             $currentStock = $this->itemCurrentStock;
@@ -181,10 +182,10 @@ class ShopItemEntity extends AbstractEntity
             $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
 
             if ($currentStock === 0) {
-                return "<b style='color: red '>Indisponible !</b>";
+                return LangManager::translate('shop.entities.item.sold-out');
             }
             if ($percentage <= $stockAlert) {
-                return "<b style='color: red '>{$currentStock}</b> bientôt épuisé !";
+                return "<b style='color: red '>{$currentStock}</b> " . LangManager::translate('shop.entities.item.out-soon');
             }
 
             return "<b style='color: #0ab312'>{$currentStock}</b>";
@@ -424,14 +425,14 @@ class ShopItemEntity extends AbstractEntity
                         if ($allDiscount->getPrice()) {
                             $discount = $allDiscount->getPrice();
                             if ($symbolIsAfter) {
-                                $discountFormatted = '- ' . $allDiscount->getPrice() . $symbol . ' sur le 1er';
+                                $discountFormatted = '- ' . $allDiscount->getPrice() . $symbol . LangManager::translate('shop.entities.item.first');
                             } else {
-                                $discountFormatted = '- ' . $symbol . $allDiscount->getPrice() . ' sur le 1er';
+                                $discountFormatted = '- ' . $symbol . $allDiscount->getPrice() . LangManager::translate('shop.entities.item.first');
                             }
                         }
                         if ($allDiscount->getPercentage()) {
                             $discount = ($basePrice * $allDiscount->getPercentage()) / 100;
-                            $discountFormatted = '-' . $allDiscount->getPercentage() . ' % sur le 1er';
+                            $discountFormatted = '-' . $allDiscount->getPercentage() . ' % ' . LangManager::translate('shop.entities.item.first');
                         }
                     }
                     // prevent negative price
@@ -459,11 +460,11 @@ class ShopItemEntity extends AbstractEntity
                     } else {
                         if ($discountCategory->getDiscount()->getPrice()) {
                             $discount = $discountCategory->getDiscount()->getPrice();
-                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPriceFormatted() . ' sur le 1er';
+                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPriceFormatted() . LangManager::translate('shop.entities.item.first');
                         }
                         if ($discountCategory->getDiscount()->getPercentage()) {
                             $discount = ($basePrice * $discountCategory->getDiscount()->getPercentage()) / 100;
-                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPercentage() . ' % sur le 1er';
+                            $discountFormatted = '-' . $discountCategory->getDiscount()->getPercentage() . ' % ' . LangManager::translate('shop.entities.item.first');
                         }
                     }
                     // prevent negative price
@@ -490,11 +491,11 @@ class ShopItemEntity extends AbstractEntity
                         } else {
                             if ($discountItem->getDiscount()->getPrice()) {
                                 $discount = $discountItem->getDiscount()->getPrice();
-                                $discountFormatted = '-' . $discountItem->getDiscount()->getPriceFormatted() . ' sur le 1er';
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPriceFormatted() . LangManager::translate('shop.entities.item.first');
                             }
                             if ($discountItem->getDiscount()->getPercentage()) {
                                 $discount = ($basePrice * $discountItem->getDiscount()->getPercentage()) / 100;
-                                $discountFormatted = '-' . $discountItem->getDiscount()->getPercentage() . ' % sur le 1er';
+                                $discountFormatted = '-' . $discountItem->getDiscount()->getPercentage() . ' % ' . LangManager::translate('shop.entities.item.first');
                             }
                         }
                     }
@@ -572,13 +573,13 @@ class ShopItemEntity extends AbstractEntity
     public function getArchivedReason(): string
     {
         if ($this->itemArchivedReason == 0) {
-            return "N'est pas archivé !";
+            return LangManager::translate('shop.entities.item.unarchived');
         }
         if ($this->itemArchivedReason == 1) {
-            return 'Est présent dans des paniers';
+            return LangManager::translate('shop.entities.item.in-cart');
         }
         if ($this->itemArchivedReason == 2) {
-            return "A déjà fait l'objet d'une commande";
+            return LangManager::translate('shop.entities.item.commanded');
         }
     }
 

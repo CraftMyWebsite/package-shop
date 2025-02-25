@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Shippings;
 
 use CMW\Interface\Shop\IShippingMethod;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopCoordinatesModel;
@@ -91,10 +92,10 @@ class ShopShippingEntity extends AbstractEntity
     public function getFormattedType(): string
     {
         if ($this->type === 0) {
-            return 'Livraison';
+            return LangManager::translate('shop.entities.shipping.shipping');
         }
         if ($this->type === 1) {
-            return 'A emporter';
+            return LangManager::translate('shop.entities.shipping.withdraw');
         }
         return '';
     }
