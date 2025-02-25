@@ -102,7 +102,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     {
         $accessToken = $this->getPayPalAccessToken();
 
-        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . '/v2/checkout/orders');
+        $curl = curl_init(self::PAYPAL_API_URL . '/v2/checkout/orders');
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
@@ -145,7 +145,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
         $clientId = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_id');
         $clientSecret = ShopPaymentMethodSettingsModel::getInstance()->getSetting('paypal_client_secret');
 
-        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . '/v1/oauth2/token');
+        $curl = curl_init(self::PAYPAL_API_URL . '/v1/oauth2/token');
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
@@ -183,7 +183,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
     {
         $accessToken = $this->getPayPalAccessToken();
 
-        $curl = curl_init(self::PAYPAL_SANDBOX_API_URL . "/v2/checkout/orders/$orderId/capture");
+        $curl = curl_init(self::PAYPAL_API_URL . "/v2/checkout/orders/$orderId/capture");
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
