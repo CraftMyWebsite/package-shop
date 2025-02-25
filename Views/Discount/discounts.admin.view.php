@@ -19,14 +19,14 @@ $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
     <a href="discounts/add" type="button" class="btn-primary"><?= LangManager::translate('shop.views.discount.discount.new') ?></a>
 </div>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
-    <div class="alert-danger">
+<?php $mailConfig = MailModel::getInstance()->getConfig(); if ($mailConfig === null || !$mailConfig->isEnable()): ?>
+    <div class="alert-danger mb-4">
         <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
         <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
             <?= LangManager::translate('shop.alert.mail.notify') ?></p>
         <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
 <div class="card">
         <h6><?= LangManager::translate('shop.views.discount.discount.inProgress') ?></h6>

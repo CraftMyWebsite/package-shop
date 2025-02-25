@@ -14,14 +14,14 @@ $description = '';
 ?>
 <h3><i class="fa-solid fa-cart-shopping"></i> <?= LangManager::translate('shop.views.carts.carts.title') ?></h3>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
-    <div class="alert-danger">
+<?php $mailConfig = MailModel::getInstance()->getConfig(); if ($mailConfig === null || !$mailConfig->isEnable()): ?>
+    <div class="alert-danger mb-4">
         <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
         <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
             <?= LangManager::translate('shop.alert.mail.notify') ?></p>
         <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
 <h6><?= LangManager::translate('shop.views.carts.carts.title2') ?></h6>
 <div class="grid-7">

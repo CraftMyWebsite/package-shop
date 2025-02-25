@@ -16,14 +16,14 @@ $description = '';
     <button id="submitVirtualGlobal" type="button" class="btn-primary"><?= LangManager::translate('core.btn.save') ?></button>
 </div>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
-    <div class="alert-danger">
+<?php $mailConfig = MailModel::getInstance()->getConfig(); if ($mailConfig === null || !$mailConfig->isEnable()): ?>
+    <div class="alert-danger mb-4">
         <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
         <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
             <?= LangManager::translate('shop.alert.mail.notify') ?></p>
         <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
     <div class="tab-vertical-container mt-6">
         <div class="tab-vertical" data-tabs-toggle="#tab-content-2">

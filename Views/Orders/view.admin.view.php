@@ -17,14 +17,14 @@ $description = '';
     <h3><i class="fa-solid fa-list-check"></i> <?= LangManager::translate('shop.views.orders.view.title', ['number' => $order->getOrderNumber()]) ?></h3>
 </div>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
-    <div class="alert-danger">
+<?php $mailConfig = MailModel::getInstance()->getConfig(); if ($mailConfig === null || !$mailConfig->isEnable()): ?>
+    <div class="alert-danger mb-4">
         <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
         <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
             <?= LangManager::translate('shop.alert.mail.notify') ?></p>
         <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
 <div class="alert-info mb-4">
     <h6><?= $order->getAdminStatus() ?></h6>

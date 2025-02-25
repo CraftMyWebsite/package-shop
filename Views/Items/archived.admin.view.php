@@ -23,14 +23,14 @@ $description = '';
     <a href="../items" type="submit" class="btn-primary"><?= LangManager::translate('shop.views.items.archived.back') ?></a>
 </div>
 
-<?php if (!MailModel::getInstance()->getConfig() !== null && !MailModel::getInstance()->getConfig()->isEnable()): ?>
-    <div class="alert-danger">
+<?php $mailConfig = MailModel::getInstance()->getConfig(); if ($mailConfig === null || !$mailConfig->isEnable()): ?>
+    <div class="alert-danger mb-4">
         <b><?= LangManager::translate('shop.alert.mail.title') ?></b>
         <p><?= LangManager::translate('shop.alert.mail.config') ?><br>
             <?= LangManager::translate('shop.alert.mail.notify') ?></p>
         <p><?= LangManager::translate('shop.alert.mail.link') ?></p>
     </div>
-<?php endif;?>
+<?php endif; ?>
 
 <div class="alert alert-warning my-4"><?= LangManager::translate('shop.views.items.archived.info') ?></div>
 
