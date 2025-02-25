@@ -7,12 +7,13 @@ use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return 'Téléchargeable';
+        return LangManager::translate('shop.views.elements.virtual.download.name');
     }
 
     public function varName(): string
@@ -27,7 +28,7 @@ class ShopVirtualItemDownloadableImplementations implements IVirtualItems
 
     public function description(): ?string
     {
-        return 'Permet à vos utilisateurs de télécharger tout type de documents, pour augmenter la taille de transfert des fichiers merci de modifier votre php.ini';
+        return LangManager::translate('shop.views.elements.virtual.download.desc');
     }
 
     public function includeItemConfigWidgets(?int $itemId): void

@@ -5,12 +5,13 @@ namespace CMW\Implementation\Shop\Shop;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IVirtualItems;
+use CMW\Manager\Lang\LangManager;
 
 class ShopVirtualItemEmptyImplementations implements IVirtualItems
 {
     public function name(): string
     {
-        return 'Aucun';
+        return LangManager::translate('shop.views.elements.virtual.empty.name');
     }
 
     public function varName(): string

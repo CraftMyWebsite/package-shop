@@ -75,7 +75,7 @@ class ShopShippingNotifyWithdrawController extends AbstractController
               }
             </style>
             </head>
-            <body style="background-color: %MAINBG%">
+            <body style="background-color: %MAINBG%; padding-bottom: 3rem; padding-top: 3rem">
 
             <div class="gift-card">
               <h1>%TITRE%</h1>
@@ -98,7 +98,7 @@ class ShopShippingNotifyWithdrawController extends AbstractController
         $textColor = $requirement->getSetting($varName . '_color_p') ?? '#656565';
         $codeText = $requirement->getSetting($varName . '_code_color') ?? '#007bff';
         $codeBG = $requirement->getSetting($varName . '_code_bg_color') ?? '#e9ecef';
-        $mainBG = $requirement->getSetting($varName . '_body_color') ?? '#ffffff';
+        $mainBG = $requirement->getSetting($varName . '_body_color') ?? '#214e7e';
 
         $body = str_replace([
             '%TITRE%',

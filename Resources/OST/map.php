@@ -1,6 +1,7 @@
 <?php
 
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Lang\LangManager;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
 use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
@@ -76,7 +77,7 @@ switch ($attributs) {
             iconSize: [30, 30],
             popupAnchor: [0, -8]
         })
-    }).addTo(map).bindPopup("<b><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_address', $varName) ?? 'Votre adresse' ?></b>").openPopup();
+    }).addTo(map).bindPopup("<b><?= ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_client_address', $varName) ?? LangManager::translate('shop.views.elements.global.withdrawPointMap.popup-default') ?></b>").openPopup();
 
     const withdrawPoints = [
         <?php foreach ($withdrawPoints as $withdrawPoint): ?>

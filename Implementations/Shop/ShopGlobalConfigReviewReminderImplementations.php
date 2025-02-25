@@ -8,12 +8,13 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopGlobalConfigReviewReminderImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Relance Avis';
+        return LangManager::translate('shop.views.elements.global.reviewReminder.name');
     }
 
     public function varName(): string

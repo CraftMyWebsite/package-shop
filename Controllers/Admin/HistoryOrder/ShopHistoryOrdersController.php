@@ -248,11 +248,11 @@ class ShopHistoryOrdersController extends AbstractController
 
         $varName = 'review_reminder';
         $websiteName = Website::getWebsiteName();
-        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? $websiteName . ' - Votre avis nous intéresse !';
-        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? 'Votre avis nous intéresse !';
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? "Vous avez récemment commander un article sur notre boutique.";
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? 'Nous aimerions savoir ce que vous pensez de cet article';
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? "Rendez-vous sur la boutique pour partager votre avis";
+        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? $websiteName . LangManager::translate('shop.views.elements.global.reviewReminder.object-default');
+        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.title-default');
+        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.message-default');
+        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.footer-1-default');
+        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.footer-2-default');
 
         $htmlTemplate = <<<HTML
             <html>
@@ -288,7 +288,7 @@ class ShopHistoryOrdersController extends AbstractController
               }
             </style>
             </head>
-            <body style="background-color: %MAINBG%">
+            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem">
 
             <div class="gift-card">
               <h1>%TITRE%</h1>
@@ -306,7 +306,7 @@ class ShopHistoryOrdersController extends AbstractController
         $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
         $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
         $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#ffffff';
+        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
 
         $body = str_replace(['%TITRE%', '%MESSAGE%',  '%ITEM_URL%', '%ITEM_NAME%', '%FOOTER_1%', '%FOOTER_2%',
             '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],

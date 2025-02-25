@@ -78,7 +78,7 @@ $requirement = ShopShippingRequirementModel::getInstance();
                 }
             </style>
 
-            <div style="background-color: <?= $requirement->getSetting($varName . '_body_color') ?? '#ffffff' ?>">
+            <div style="background-color: <?= $requirement->getSetting($varName . '_body_color') ?? '#214e7e' ?>">
                 <div class="my-gift-card-scope p-4">
                     <div class="gift-card">
                         <h2><?= $requirement->getSetting($varName . '_title_mail') ?? LangManager::translate('shop.views.elements.shipping.global.withdraw.placeholder.waiting') ?></h2>
@@ -102,7 +102,7 @@ $requirement = ShopShippingRequirementModel::getInstance();
     <h5><?= LangManager::translate('shop.views.elements.shipping.global.withdraw.style') ?></h5>
     <div class="grid-3">
         <div class="flex items-center">
-            <input type="color" id="<?= $varName ?>_body_color" name="<?= $varName ?>_body_color" value="<?= $requirement->getSetting($varName . '_body_color') ?? '#ffffff' ?>">
+            <input type="color" id="<?= $varName ?>_body_color" name="<?= $varName ?>_body_color" value="<?= $requirement->getSetting($varName . '_body_color') ?? '#214e7e' ?>">
             <label style="margin-left: 0.5rem" for="<?= $varName ?>_body_color"><?= LangManager::translate('shop.views.elements.shipping.global.withdraw.background') ?></label>
         </div>
         <div class="flex items-center">

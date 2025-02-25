@@ -2,6 +2,7 @@
 
 namespace CMW\Controller\Shop\Admin\Notify;
 
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Mail\MailManager;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
@@ -25,7 +26,7 @@ class ShopNotifyController extends AbstractController
             $useBottom = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_bottom', $varName) ?? "0";
             $bottom = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_bottom', $varName);
             $useFooter = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use_footer', $varName) ?? "1";
-            $footer = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer', $varName) ?? Website::getWebsiteName() . " - Merci de votre confiance et à bientôt sur notre site !";
+            $footer = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer', $varName) ?? Website::getWebsiteName() . LangManager::translate('shop.views.elements.global.mailNotification.footer-default');
             $bodyColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
             $font = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_font', $varName) ?? "'Arial', sans-serif";
             $containerColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_container_color', $varName) ?? '#ffffff';

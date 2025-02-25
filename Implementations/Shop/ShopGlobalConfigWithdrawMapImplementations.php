@@ -8,12 +8,13 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopGlobalConfigWithdrawMapImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Carte point retrait';
+        return LangManager::translate('shop.views.elements.global.withdrawPointMap.name');
     }
 
     public function varName(): string

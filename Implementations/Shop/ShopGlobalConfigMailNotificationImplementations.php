@@ -8,12 +8,13 @@ use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IGlobalConfig;
 use CMW\Interface\Shop\IVirtualItems;
 use CMW\Manager\Env\EnvManager;
+use CMW\Manager\Lang\LangManager;
 
 class ShopGlobalConfigMailNotificationImplementations implements IGlobalConfig
 {
     public function name(): string
     {
-        return 'Notification utilisateur';
+        return LangManager::translate('shop.views.elements.global.mailNotification.name');
     }
 
     public function varName(): string
