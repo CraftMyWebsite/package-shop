@@ -54,16 +54,15 @@ class ShopHistoryAfterSalesController extends AbstractController
         if (is_null($afterSales)) {
             View::createPublicView('Shop', 'History/createAfterSales')
                 ->addVariableList(['historyOrder' => $historyOrder, 'defaultImage' => $defaultImage])
+                ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
                 ->view();
         } else {
             $afterSalesMessages = ShopHistoryOrdersAfterSalesMessagesModel::getInstance()->getHistoryOrdersAfterSalesMessageByAfterSalesId($afterSales->getId());
             View::createPublicView('Shop', 'History/afterSales')
                 ->addVariableList(['historyOrder' => $historyOrder, 'afterSales' => $afterSales, 'afterSalesMessages' => $afterSalesMessages, 'defaultImage' => $defaultImage])
+                ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
                 ->view();
         }
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
-
     }
 
     #[NoReturn] #[Link('/history/afterSales/request/:orderNumber/create', Link::POST, [], '/shop')]
