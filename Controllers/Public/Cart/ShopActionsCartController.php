@@ -433,7 +433,13 @@ class ShopActionsCartController extends AbstractController
         $thisItem = ShopItemsModel::getInstance()->getShopItemsById($itemId);
         foreach ($itemsInCart as $itemInCart) {
             if ($thisItem->getPriceType() !== $itemInCart->getItem()->getPriceType()) {
-                Flash::send(Alert::WARNING, 'Boutique', 'Vous ne pouvez pas acheter des articles avec des monnaies différentes.');
+                if (ShopCartItemModel::getInstance()->isAlreadyAside($thisItem->getId(), $userId, $sessionId)) {
+                    Flash::send(Alert::INFO, 'Boutique', 'Vous ne pouvez pas acheter des articles avec des monnaies différentes.');
+                } else {
+                    Flash::send(Alert::INFO, 'Boutique', 'Vous ne pouvez pas acheter des articles avec des monnaies différentes.');
+                    ShopCartItemModel::getInstance()->addToAsideCart($thisItem->getId(), $userId, $sessionId);
+                    Flash::send(Alert::INFO, 'Panier', 'Nous l\'avons ajouté dans votre panier mis de côté.');
+                }
                 Redirect::redirectPreviousRoute();
             }
         }
