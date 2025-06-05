@@ -20,7 +20,6 @@ use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
-use CMW\Utils\Website;
 
 /**
  * Class: @ShopCartController
@@ -87,10 +86,10 @@ class ShopCartController extends AbstractController
             $this->handleDraft($itemCart, $itemId, $userId, $sessionId);
         }
 
-        $view = new View('Shop', 'Cart/cart');
-        $view->addVariableList(['showPublicStock' => $showPublicStock, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'asideCartContent' => $asideCartContent, 'itemsVariantes' => $itemsVariantes, 'appliedDiscounts' => $appliedDiscounts]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Cart/cart')
+            ->addVariableList(['showPublicStock' => $showPublicStock, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'asideCartContent' => $asideCartContent, 'itemsVariantes' => $itemsVariantes, 'appliedDiscounts' => $appliedDiscounts])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     /**

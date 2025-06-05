@@ -117,20 +117,20 @@ class ShopCommandController extends AbstractController
         if (empty($userAddresses)) {
             $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
             $country = ShopCountryModel::getInstance()->getCountry();
-            $view = new View('Shop', 'Command/newAddress');
-            $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData]);
-            $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-            $view->view();
+            View::createPublicView('Shop', 'Command/newAddress')
+                ->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData])
+                ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+                ->view();
         } else {
             $commandTunnelModel = ShopCommandTunnelModel::getInstance()->getShopCommandTunnelByUserId($userId);
             $currentStep = $commandTunnelModel->getStep();
             if ($currentStep === 0) {
                 $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
                 $country = ShopCountryModel::getInstance()->getCountry();
-                $view = new View('Shop', 'Command/address');
-                $view->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData]);
-                $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-                $view->view();
+                View::createPublicView('Shop', 'Command/address')
+                    ->addVariableList(['country' => $country, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'userAddresses' => $userAddresses, 'appliedCartDiscounts' => $appliedCartDiscounts, 'storedData' => $storedData])
+                    ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+                    ->view();
             }
             if ($currentStep === 1) {
                 if ($cartOnlyVirtual) {
@@ -152,12 +152,12 @@ class ShopCommandController extends AbstractController
                     }
                     $varName = 'withdraw_point_map';
                     $useInteractiveMap = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_use', $varName) ?? '1';
-                    $view = new View('Shop', 'Command/delivery');
-                    $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css', 'App/Package/Shop/Resources/OST/leaflet.css');
-                    $view->addScriptBefore('App/Package/Shop/Resources/OST/leaflet.js');
-                    $view->addVariableList(['useInteractiveMap' => $useInteractiveMap, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'appliedCartDiscounts' => $appliedCartDiscounts]);
-                    $view->addPhpAfter('App/Package/Shop/Resources/OST/map.php');
-                    $view->view();
+                    View::createPublicView('Shop', 'Command/delivery')
+                        ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css', 'App/Package/Shop/Resources/OST/leaflet.css')
+                        ->addScriptBefore('App/Package/Shop/Resources/OST/leaflet.js')
+                        ->addVariableList(['useInteractiveMap' => $useInteractiveMap, 'cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'selectedAddress' => $selectedAddress, 'shippings' => $shippings, 'withdrawPoints' => $withdrawPoints, 'appliedCartDiscounts' => $appliedCartDiscounts])
+                        ->addPhpAfter('App/Package/Shop/Resources/OST/map.php')
+                        ->view();
                 }
             }
             if ($currentStep === 2) {
@@ -191,12 +191,12 @@ class ShopCommandController extends AbstractController
                 } else {
                     $paymentMethods = ShopPaymentsController::getInstance()->getVirtualPaymentByVarNameAsArray($priceType);
                 }
-                $view = new View('Shop', 'Command/payment');
-                $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-                $view->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
-                    'selectedAddress' => $selectedAddress, 'shippingMethod' => $shippingMethod,
-                    'paymentMethods' => $paymentMethods, 'appliedCartDiscounts' => $appliedCartDiscounts]);
-                $view->view();
+                View::createPublicView('Shop', 'Command/payment')
+                    ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+                    ->addVariableList(['cartContent' => $cartContent, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
+                        'selectedAddress' => $selectedAddress, 'shippingMethod' => $shippingMethod,
+                        'paymentMethods' => $paymentMethods, 'appliedCartDiscounts' => $appliedCartDiscounts])
+                    ->view();
             }
         }
     }

@@ -52,12 +52,14 @@ class ShopHistoryAfterSalesController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $afterSales = ShopHistoryOrdersAfterSalesModel::getInstance()?->getHistoryOrdersAfterSalesByOrderId($historyOrder->getId());
         if (is_null($afterSales)) {
-            $view = new View('Shop', 'History/createAfterSales');
-            $view->addVariableList(['historyOrder' => $historyOrder, 'defaultImage' => $defaultImage]);
+            View::createPublicView('Shop', 'History/createAfterSales')
+                ->addVariableList(['historyOrder' => $historyOrder, 'defaultImage' => $defaultImage])
+                ->view();
         } else {
             $afterSalesMessages = ShopHistoryOrdersAfterSalesMessagesModel::getInstance()->getHistoryOrdersAfterSalesMessageByAfterSalesId($afterSales->getId());
-            $view = new View('Shop', 'History/afterSales');
-            $view->addVariableList(['historyOrder' => $historyOrder, 'afterSales' => $afterSales, 'afterSalesMessages' => $afterSalesMessages, 'defaultImage' => $defaultImage]);
+            View::createPublicView('Shop', 'History/afterSales')
+                ->addVariableList(['historyOrder' => $historyOrder, 'afterSales' => $afterSales, 'afterSalesMessages' => $afterSalesMessages, 'defaultImage' => $defaultImage])
+                ->view();
         }
         $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
         $view->view();

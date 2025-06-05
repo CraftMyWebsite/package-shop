@@ -46,10 +46,10 @@ class ShopHistoryController extends AbstractController
 
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
 
-        $view = new View('Shop', 'History/main');
-        $view->addVariableList(['historyOrders' => $historyOrders, 'defaultImage' => $defaultImage]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'History/main')
+            ->addVariableList(['historyOrders' => $historyOrders, 'defaultImage' => $defaultImage])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     #[Link('/orders/download/:order', Link::GET, [], '/shop')]

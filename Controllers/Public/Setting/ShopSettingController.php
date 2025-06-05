@@ -46,10 +46,10 @@ class ShopSettingController extends AbstractController
         $country = ShopCountryModel::getInstance()->getCountry();
         $storedData = $_SESSION['cmw_shop_add_new_address'] ?? [];
 
-        $view = new View('Shop', 'Users/settings');
-        $view->addVariableList(['userAddresses' => $userAddresses, 'country' => $country, 'storedData' => $storedData]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Users/settings')
+            ->addVariableList(['userAddresses' => $userAddresses, 'country' => $country, 'storedData' => $storedData])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     #[Link('/settings/fav/:id', Link::GET, [], '/shop')]
@@ -71,10 +71,10 @@ class ShopSettingController extends AbstractController
         $userAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
         $country = ShopCountryModel::getInstance()->getCountry();
 
-        $view = new View('Shop', 'Users/editAddress');
-        $view->addVariableList(['userAddress' => $userAddress, 'country' => $country]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Users/editAddress')
+            ->addVariableList(['userAddress' => $userAddress, 'country' => $country])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
 

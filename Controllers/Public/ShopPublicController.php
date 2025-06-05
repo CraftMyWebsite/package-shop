@@ -60,11 +60,11 @@ class ShopPublicController extends AbstractController
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
-        $view = new View('Shop', 'Main/main');
-        $view->addVariableList(['categoryModel' => $categoryModel, 'items' => $items, 'imagesItem' =>
-            $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'review' => $review, 'allowReviews' => $allowReviews]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Main/main')
+            ->addVariableList(['categoryModel' => $categoryModel, 'items' => $items, 'imagesItem' =>
+                $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     #[Link('/cat/:catSlug', Link::GET, ['.*?'], '/shop')]
@@ -94,10 +94,10 @@ class ShopPublicController extends AbstractController
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
-        $view = new View('Shop', 'Main/main');
-        $view->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categoryModel' => $categoryModel, 'review' => $review, 'allowReviews' => $allowReviews]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Main/main')
+            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categoryModel' => $categoryModel, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     #[Link('/cat/:catSlug/item/:itemSlug', Link::GET, ['.*?'], '/shop')]
@@ -135,10 +135,10 @@ class ShopPublicController extends AbstractController
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
-        $view = new View('Shop', 'Main/item');
-        $view->addVariableList(['showPublicStock' => $showPublicStock, 'otherItemsInThisCat' => $otherItemsInThisCat, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews]);
-        $view->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css');
-        $view->view();
+        View::createPublicView('Shop', 'Main/item')
+            ->addVariableList(['showPublicStock' => $showPublicStock, 'otherItemsInThisCat' => $otherItemsInThisCat, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
+            ->view();
     }
 
     #[NoReturn] #[Link('/cat/:catSlug/item/:itemSlug/addReview', Link::POST, ['.*?'], '/shop')]
