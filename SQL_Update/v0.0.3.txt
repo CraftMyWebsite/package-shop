@@ -1,0 +1,1 @@
+ALTER TABLE `cmw_shops_shipping` ADD `shops_shipping_always_displayed` INT NULL DEFAULT NULL AFTER `shops_shipping_type`;
