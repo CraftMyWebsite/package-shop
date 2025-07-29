@@ -136,7 +136,13 @@ class ShopShippingModel extends AbstractModel
                 }
             }
         }
-        return $availableShippings;
+        if (empty($availableShippings)) {
+            return [];
+        }
+
+        $minPrice = min(array_map(fn($s) => $s->getPrice(), $availableShippings));
+
+        return array_values(array_filter($availableShippings, fn($s) => abs($s->getPrice() - $minPrice) <= 1));
     }
 
     /**
