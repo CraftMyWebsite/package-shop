@@ -46,6 +46,7 @@ class ShopShippingModel extends AbstractModel
             $res['shops_shipping_price'] ?? null,
             $zone,
             $res['shops_shipping_type'],
+            $res['shops_shipping_always_displayed'],
             $withdrawPoint,
             $shippingMethod,
             $res['shops_shipping_max_total_weight'] ?? null,
@@ -136,13 +137,17 @@ class ShopShippingModel extends AbstractModel
                 }
             }
         }
+
         if (empty($availableShippings)) {
             return [];
         }
 
         $minPrice = min(array_map(fn($s) => $s->getPrice(), $availableShippings));
 
-        return array_values(array_filter($availableShippings, fn($s) => abs($s->getPrice() - $minPrice) <= 1));
+        return array_values(array_filter($availableShippings, function ($s) use ($minPrice) {
+            return $s->getAlwaysDisplayed() || abs($s->getPrice() - $minPrice) <= 1;
+        }));
+
     }
 
     /**
@@ -220,13 +225,14 @@ class ShopShippingModel extends AbstractModel
         return true;  // No max or min price conditions
     }
 
-    public function createShipping(string $name, ?float $price, int $zoneId, int $type, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
+    public function createShipping(string $name, ?float $price, int $zoneId, int $type, ?int $alwaysDisplayed, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
     {
         $data = array(
             'shops_shipping_name' => $name,
             'shops_shipping_price' => $price,
             'shops_shipping_zone_id' => $zoneId,
             'shops_shipping_type' => $type,
+            'shops_shipping_always_displayed' => $alwaysDisplayed,
             'shops_shipping_withdraw_point_id' => $withdrawId,
             'shops_shipping_method_var_name' => $varName,
             'shops_shipping_max_total_weight' => $weight,
@@ -239,12 +245,13 @@ class ShopShippingModel extends AbstractModel
                                shops_shipping_price, 
                                shops_shipping_zone_id, 
                                shops_shipping_type, 
+                               shops_shipping_always_displayed, 
                                shops_shipping_withdraw_point_id, 
                                shops_shipping_method_var_name,
                                shops_shipping_max_total_weight,
                                shops_shipping_min_total_cart_price,
                                shops_shipping_max_total_cart_price)
-                VALUES (:shops_shipping_name, :shops_shipping_price, :shops_shipping_zone_id, :shops_shipping_type, :shops_shipping_withdraw_point_id,
+                VALUES (:shops_shipping_name, :shops_shipping_price, :shops_shipping_zone_id, :shops_shipping_type, :shops_shipping_always_displayed, :shops_shipping_withdraw_point_id,
                         :shops_shipping_method_var_name, :shops_shipping_max_total_weight, :shops_shipping_min_total_cart_price, :shops_shipping_max_total_cart_price);';
 
         $db = DatabaseManager::getInstance();
@@ -258,7 +265,7 @@ class ShopShippingModel extends AbstractModel
         return null;
     }
 
-    public function editShipping(int $shippingId, string $name, ?float $price, int $zoneId, int $type, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
+    public function editShipping(int $shippingId, string $name, ?float $price, int $zoneId, int $type, ?int $alwaysDisplayed, ?int $withdrawId, ?string $varName, ?int $weight, ?float $minPrice, ?float $maxPrice): ?ShopShippingEntity
     {
         $data = array(
             'shops_shipping_id' => $shippingId,
@@ -266,6 +273,7 @@ class ShopShippingModel extends AbstractModel
             'shops_shipping_price' => $price,
             'shops_shipping_zone_id' => $zoneId,
             'shops_shipping_type' => $type,
+            'shops_shipping_always_displayed' => $alwaysDisplayed,
             'shops_shipping_withdraw_point_id' => $withdrawId,
             'shops_shipping_method_var_name' => $varName,
             'shops_shipping_max_total_weight' => $weight,
@@ -278,6 +286,7 @@ class ShopShippingModel extends AbstractModel
                                              shops_shipping_price=:shops_shipping_price,
                                              shops_shipping_zone_id=:shops_shipping_zone_id,
                                              shops_shipping_type =:shops_shipping_type,
+                                             shops_shipping_always_displayed =:shops_shipping_always_displayed,
                                              shops_shipping_withdraw_point_id =:shops_shipping_withdraw_point_id,
                                              shops_shipping_method_var_name =:shops_shipping_method_var_name,
                                              shops_shipping_max_total_weight =:shops_shipping_max_total_weight,

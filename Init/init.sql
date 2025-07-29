@@ -335,6 +335,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_shipping
     shops_shipping_price                FLOAT(10, 2) NULL,
     shops_shipping_zone_id              INT          NOT NULL,
     shops_shipping_type                 INT          NOT NULL,
+    shops_shipping_always_displayed     INT          NULL,
     shops_shipping_withdraw_point_id    INT          NULL,
     shops_shipping_method_var_name      VARCHAR(50)  NULL,
     shops_shipping_max_total_weight     INT          NULL,

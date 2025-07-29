@@ -15,6 +15,7 @@ class ShopShippingEntity extends AbstractEntity
     private ?float $price;
     private ShopShippingZoneEntity $zoneEntity;
     private int $type;
+    private ?int $alwaysDisplayed;
     private ?ShopShippingWithdrawPointEntity $withdrawPointEntity;
     private ?IShippingMethod $shippingMethod;
     private ?int $maxTotalWeight;
@@ -27,19 +28,21 @@ class ShopShippingEntity extends AbstractEntity
      * @param float|null $price
      * @param \CMW\Entity\Shop\Shippings\ShopShippingZoneEntity $zoneEntity
      * @param int $type
+     * @param ?int $alwaysDisplayed
      * @param \CMW\Entity\Shop\Shippings\ShopShippingWithdrawPointEntity|null $withdrawPointEntity
      * @param \CMW\Interface\Shop\IShippingMethod|null $shippingMethod
      * @param int|null $maxTotalWeight
      * @param float|null $minTotalCartPrice
      * @param float|null $maxTotalCartPrice
      */
-    public function __construct(int $id, string $name, ?float $price, ShopShippingZoneEntity $zoneEntity, int $type, ?ShopShippingWithdrawPointEntity $withdrawPointEntity, ?IShippingMethod $shippingMethod, ?int $maxTotalWeight, ?float $minTotalCartPrice, ?float $maxTotalCartPrice)
+    public function __construct(int $id, string $name, ?float $price, ShopShippingZoneEntity $zoneEntity, int $type, ?int $alwaysDisplayed, ?ShopShippingWithdrawPointEntity $withdrawPointEntity, ?IShippingMethod $shippingMethod, ?int $maxTotalWeight, ?float $minTotalCartPrice, ?float $maxTotalCartPrice)
     {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
         $this->zoneEntity = $zoneEntity;
         $this->type = $type;
+        $this->alwaysDisplayed = $alwaysDisplayed;
         $this->withdrawPointEntity = $withdrawPointEntity;
         $this->shippingMethod = $shippingMethod;
         $this->maxTotalWeight = $maxTotalWeight;
@@ -87,6 +90,11 @@ class ShopShippingEntity extends AbstractEntity
     public function getType(): int
     {
         return $this->type;
+    }
+
+    public function getAlwaysDisplayed(): ?int
+    {
+        return $this->alwaysDisplayed;
     }
 
     public function getFormattedType(): string

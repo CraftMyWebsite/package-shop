@@ -163,9 +163,9 @@ class ShopShippingController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.add');
 
-        [$name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
+        [$alwaysDisplayed, $name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'always_displayed', 'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
 
-        if (ShopShippingModel::getInstance()->createShipping($name, ($price === '' ? 0 : $price), $zoneId, 0, null, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
+        if (ShopShippingModel::getInstance()->createShipping($name, ($price === '' ? 0 : $price), $zoneId, 0, $alwaysDisplayed ?? '0', null, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
             Flash::send(Alert::SUCCESS, 'Boutique', 'Méthode de livraison ajouté !');
         } else {
             Flash::send(Alert::WARNING, 'Boutique', 'Impossible d\'ajouter la méthode de livraison !');
@@ -179,7 +179,7 @@ class ShopShippingController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.shipping.edit');
 
-        [$name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
+        [$alwaysDisplayed, $name, $price, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'always_displayed', 'shipping_name', 'shipping_price', 'shipping_zone', 'shipping_method', 'shipping_weight', 'shipping_min_price', 'shipping_max_price');
 
         $commands = ShopHistoryOrdersModel::getInstance()->getInProgressOrders();
         foreach ($commands as $command) {
@@ -189,7 +189,7 @@ class ShopShippingController extends AbstractController
             }
         }
 
-        if (ShopShippingModel::getInstance()->editShipping($shippingId, $name, ($price === '' ? 0 : $price), $zoneId, 0, null, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
+        if (ShopShippingModel::getInstance()->editShipping($shippingId, $name, ($price === '' ? 0 : $price), $zoneId, 0, $alwaysDisplayed ?? '0', null, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
             Flash::send(Alert::SUCCESS, 'Boutique', 'Méthode de livraison mise à jour !');
         } else {
             Flash::send(Alert::WARNING, 'Boutique', 'Impossible de mettre à jour la méthode de livraison !');
@@ -205,7 +205,7 @@ class ShopShippingController extends AbstractController
 
         [$name, $price, $depotId, $zoneId, $methodVarName, $weight, $minPrice, $maxPrice] = Utils::filterInput(  'withdraw_name', 'withdraw_price', 'withdraw_depot', 'withdraw_zone', 'withdraw_method', 'withdraw_weight', 'withdraw_min_price', 'withdraw_max_price');
 
-        if (ShopShippingModel::getInstance()->createShipping($name, ($price === '' ? 0 : $price), $zoneId, 1, $depotId, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
+        if (ShopShippingModel::getInstance()->createShipping($name, ($price === '' ? 0 : $price), $zoneId, 1, '0', $depotId, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
             Flash::send(Alert::SUCCESS, 'Boutique', 'Méthode de retrait ajouté !');
         } else {
             Flash::send(Alert::WARNING, 'Boutique', 'Impossible d\'ajouter la méthode de retrait !');
@@ -229,7 +229,7 @@ class ShopShippingController extends AbstractController
             }
         }
 
-        if (ShopShippingModel::getInstance()->editShipping($shippingId, $name, ($price === '' ? 0 : $price), $zoneId, 1, $depotId, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
+        if (ShopShippingModel::getInstance()->editShipping($shippingId, $name, ($price === '' ? 0 : $price), $zoneId, 1, '0' , $depotId, $methodVarName, ($weight === '' ? null : $weight), ($minPrice === '' ? null : $minPrice), ($maxPrice === '' ? null : $maxPrice))) {
             Flash::send(Alert::SUCCESS, 'Boutique', 'Méthode de livraison mise à jour !');
         } else {
             Flash::send(Alert::WARNING, 'Boutique', 'Impossible de mettre à jour la méthode de livraison !');

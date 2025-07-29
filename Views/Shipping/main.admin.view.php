@@ -63,7 +63,7 @@ $description = '';
                     <?php foreach ($shippings as $shipping): ?>
                         <?php if ($shipping->getType() == 0): ?>
                             <tr>
-                                <td><?= $shipping->getName() ?></td>
+                                <td><?= $shipping->getAlwaysDisplayed() ? '<button data-tooltip-target="tooltip-top" data-tooltip-placement="top"><i class="fa-solid fa-eye text-info"></i></button><div id="tooltip-top" role="tooltip" class="tooltip-content">Toujours affiché</div>' : '' ?> <?= $shipping->getName() ?></td>
                                 <td><?= $shipping->getZone()->getName() ?></td>
                                 <td><?= $shipping->getPriceFormatted() ?></td>
                                 <td><?= $shipping->getMinTotalCartPrice() ? $shipping->getMinTotalCartPrice() .  $symbol : '∞' ?></td>
@@ -102,6 +102,17 @@ $description = '';
                                             <form action="shipping/delivery/edit/<?= $shipping->getId() ?>" method="post">
                                                 <?php SecurityManager::getInstance()->insertHiddenToken() ?>
                                                 <div class="modal-body">
+                                                    <div class="alert-info">
+                                                        <label class="toggle">
+                                                            <p class="toggle-label">Toujours afficher </p>
+                                                            <input name="always_displayed" type="checkbox" <?= $shipping->getAlwaysDisplayed() ? 'checked' : '' ?> class="toggle-input">
+                                                            <div class="toggle-slider"></div>
+                                                        </label>
+                                                        <br>
+                                                        <small>Active cette option pour que cette méthode de livraison soit toujours proposée à l’utilisateur, même si elle n’est pas la moins chère.
+                                                            Elle sera visible tant que les conditions de poids, de prix minimum et maximum sont respectées.
+                                                            Idéal pour mettre en avant une option premium ou un transporteur spécifique.</small>
+                                                    </div>
                                                     <div class="grid-2">
                                                         <div>
                                                             <label for="shipping_name"><?= LangManager::translate('shop.views.shipping.main.name') ?><span style="color: red">*</span></label>
@@ -611,6 +622,17 @@ $description = '';
         <form action="shipping/delivery" method="post">
             <?php SecurityManager::getInstance()->insertHiddenToken() ?>
             <div class="modal-body">
+                <div class="alert-info">
+                    <label class="toggle">
+                        <p class="toggle-label">Toujours afficher </p>
+                        <input name="always_displayed" type="checkbox" class="toggle-input">
+                        <div class="toggle-slider"></div>
+                    </label>
+                    <br>
+                    <small>Active cette option pour que cette méthode de livraison soit toujours proposée à l’utilisateur, même si elle n’est pas la moins chère.
+                        Elle sera visible tant que les conditions de poids, de prix minimum et maximum sont respectées.
+                        Idéal pour mettre en avant une option premium ou un transporteur spécifique.</small>
+                </div>
                 <div class="grid-2">
                     <div>
                         <label for="shipping_name"><?= LangManager::translate('shop.views.shipping.main.name') ?><span style="color: red">*</span></label>
