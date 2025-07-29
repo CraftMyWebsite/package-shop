@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Cart;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
@@ -29,6 +30,10 @@ class ShopHandlerDiscountController extends AbstractController
     #[NoReturn]
     public function discountMasterHandler(?int $userId, string $sessionId, string $code): void
     {
+        if (!UsersController::isUserLogged()) {
+            Flash::send(Alert::WARNING, 'Boutique', 'Veuillez vous connecter pou faire ceci !');
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'login');
+        }
         $this->healthCode($code);
 
         $encryptedCode = EncryptManager::encrypt($code);

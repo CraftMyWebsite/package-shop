@@ -133,4 +133,21 @@ class ShopHistoryOrdersAfterSalesModel extends AbstractModel
 
         return null;
     }
+
+    public function countActiveAfterSales(): int
+    {
+        $sql = 'SELECT shop_history_order_afterSales_status, COUNT(*) AS afterSales_count FROM cmw_shop_history_order_afterSales WHERE shop_history_order_afterSales_status IN (0, 1);';
+
+        $db = DatabaseManager::getInstance();
+
+        $req = $db->prepare($sql);
+
+        if (!$req->execute()) {
+            return 0;
+        }
+
+        $res = $req->fetch();
+
+        return $res['afterSales_count'] ?? 0;
+    }
 }

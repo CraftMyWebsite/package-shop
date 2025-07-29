@@ -44,7 +44,7 @@ $description = '';
                     <?= LangManager::translate('shop.views.orders.manage.cancel.credit-text') ?>
                 </div>
                 <label for="name"><?= LangManager::translate('shop.views.orders.manage.cancel.name') ?><span style="color: red">*</span> :</label>
-                <input type="text" id="name" name="name" class="input" placeholder="Credit : Avoir">
+                <input type="text" id="name" name="name" class="input" value="Remboursement commande N°<?= $order->getOrderNumber() ?>" placeholder="Credit : Avoir">
                 <small><?= LangManager::translate('shop.views.orders.manage.cancel.name-info') ?></small>
             </div>
             <div class="modal-footer">

@@ -245,75 +245,24 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         $url = $item->getItemLink();
-
-        $varName = 'review_reminder';
-        $websiteName = Website::getWebsiteName();
-        $object = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? $websiteName . LangManager::translate('shop.views.elements.global.reviewReminder.object-default');
-        $titre = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.title-default');
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.message-default');
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.footer-1-default');
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.reviewReminder.footer-2-default');
+        $message = LangManager::translate('shop.views.elements.global.reviewReminder.message-default');
+        $footer1 = LangManager::translate('shop.views.elements.global.reviewReminder.footer-1-default');
+        $footer2 = LangManager::translate('shop.views.elements.global.reviewReminder.footer-2-default');
 
         $htmlTemplate = <<<HTML
-            <html>
-            <head>
-            <style>
-              .gift-card {
-                font-family: Arial, sans-serif;
-                max-width: 600px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: %CARDBG%;
-                border: 1px solid #ddd;
-                border-radius: 10px;
-                text-align: center;
-              }
-
-              .gift-card h1 {
-                color: %TITLECOLOR%;
-              }
-
-              .gift-card p {
-                color: %TEXTCOLOR%;
-              }
-
-              .code {
-                font-size: 18px;
-                color: %CODETEXT%;
-                margin: 20px 0;
-                padding: 10px;
-                background-color: %CODEBG%;
-                border-radius: 5px;
-                display: inline-block;
-              }
-            </style>
-            </head>
-            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem">
-
             <div class="gift-card">
-              <h1>%TITRE%</h1>
               <p>%MESSAGE%</p>
               <div class="code"><a href="%ITEM_URL%">%ITEM_NAME%</a></div><br>
               <p>%FOOTER_1%<br>
               <a href="%ITEM_URL%">%FOOTER_2%</a></p>
             </div>
-            </body>
-            </html>
             HTML;
 
-        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color', $varName) ?? '#f8f9fa';
-        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title', $varName) ?? '#2f2f2f';
-        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
-        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
-        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
-
-        $body = str_replace(['%TITRE%', '%MESSAGE%',  '%ITEM_URL%', '%ITEM_NAME%', '%FOOTER_1%', '%FOOTER_2%',
-            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
-            [$titre, $message, $url, $item->getName(), $footer1, $footer2, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
+        $body = str_replace(['%MESSAGE%',  '%ITEM_URL%', '%ITEM_NAME%', '%FOOTER_1%', '%FOOTER_2%',],
+            [$message, $url, $item->getName(), $footer1, $footer2], $htmlTemplate);
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
-            MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
             Flash::send(Alert::SUCCESS, 'Relance avis', $user->getPseudo() . ' à reçu une relance par mail !');
+            ShopNotifyController::getInstance()->notifyUser($user->getMail(), "Votre avis nous intéresse !", "Votre avis nous intéresse !", $body);
         } else {
             Flash::send(Alert::ERROR, 'Relance avis','Nous n\'avons pas réussi à envoyer le mail au client !');
         }
@@ -494,86 +443,36 @@ class ShopHistoryOrdersController extends AbstractController
 
         [$name] = Utils::filterInput('name');
 
-        $varName = 'credit_launcher';
-
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $orderPrice = $order->getOrderTotal();
         $user = $order->getUser();
-        $object = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_global', $varName) ?? Website::getWebsiteName().LangManager::translate('shop.views.elements.global.creditLauncher.object-default')) . ' ' . $order->getOrderNumber();
         $code = Utils::generateRandomNumber('6') . '_' . $order->getOrderNumber();
 
-        $titre = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_title_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.title-default')) . ' ' . $order->getOrderNumber();
-        $message = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-default');
-        $value = (ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_text_mail_value', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.message-value-default')) . ' ' . $order->getOrderTotalFormatted();
-        $footer1 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_1_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-1-default');
+        $message = LangManager::translate('shop.views.elements.global.creditLauncher.message-default');
+        $value = (LangManager::translate('shop.views.elements.global.creditLauncher.message-value-default')) . ' ' . $order->getOrderTotalFormatted();
+        $footer1 = LangManager::translate('shop.views.elements.global.creditLauncher.footer-1-default');
         $shopUrl = Website::getUrl() . EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop';
-        $footer2 = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_footer_2_mail', $varName) ?? LangManager::translate('shop.views.elements.global.creditLauncher.footer-2-default') . Website::getWebsiteName();
+        $footer2 = LangManager::translate('shop.views.elements.global.creditLauncher.footer-2-default') . Website::getWebsiteName();
 
         $htmlTemplate = <<<HTML
-            <html>
-            <head>
-            <style>
-              .gift-card {
-                font-family: Arial, sans-serif;
-                max-width: 600px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: %CARDBG%;
-                border: 1px solid #ddd;
-                border-radius: 10px;
-                text-align: center;
-              }
-
-              .gift-card h1 {
-                color: %TITLECOLOR%;
-              }
-
-              .gift-card p {
-                color: %TEXTCOLOR%;
-              }
-
-              .code {
-                font-size: 18px;
-                color: %CODETEXT%;
-                margin: 20px 0;
-                padding: 10px;
-                background-color: %CODEBG%;
-                border-radius: 5px;
-                display: inline-block;
-              }
-            </style>
-            </head>
-            <body style="background-color: %MAINBG%; padding-top: 3rem; padding-bottom: 3rem;">
-
-            <div class="gift-card">
-              <h1>%TITRE%</h1>
               <p>%MESSAGE%</p>
               <p><strong>%VALUE%</strong></p>
-              <div class="code">%CODE%</div><br>
+              <div style="text-align: center; font-family: monospace; font-size: 15px; background-color: #f4f4f4; color: #222; padding: 10px; border-radius: 5px; margin: 10px auto; max-width: 90%;">
+                  %CODE%
+              </div>
+              <br>
               <p>%FOOTER_1%<br>
               <a href="%SHOP_URL%">%FOOTER_2%</a></p>
-            </div>
-            </body>
-            </html>
             HTML;
 
-        $cardBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_card_color', $varName) ?? '#f8f9fa';
-        $titleColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_title', $varName) ?? '#2f2f2f';
-        $textColor = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_color_p', $varName) ?? '#656565';
-        $codeText = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_color', $varName) ?? '#007bff';
-        $codeBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_code_bg_color', $varName) ?? '#e9ecef';
-        $mainBG = ShopSettingsModel::getInstance()->getGlobalSetting($varName . '_body_color', $varName) ?? '#214e7e';
-
-        $body = str_replace(['%TITRE%', '%MESSAGE%', '%VALUE%', '%CODE%', '%FOOTER_1%', '%SHOP_URL%', '%FOOTER_2%',
-            '%MAINBG%', '%CODEBG%', '%CODETEXT%', '%TEXTCOLOR%', '%TITLECOLOR%', '%CARDBG%'],
-            [$titre, $message, $value, $code, $footer1, $shopUrl , $footer2, $mainBG, $codeBG, $codeText, $textColor, $titleColor, $cardBG], $htmlTemplate);
-
+        $body = str_replace(['%MESSAGE%', '%VALUE%', '%CODE%', '%FOOTER_1%', '%SHOP_URL%', '%FOOTER_2%'],
+            [$message, $value, $code, $footer1, $shopUrl , $footer2], $htmlTemplate);
 
         if (MailModel::getInstance()->getConfig() !== null && MailModel::getInstance()->getConfig()->isEnable()) {
             $discount = ShopDiscountModel::getInstance()->createDiscount($name,4,null,null,1,0,null,$orderPrice,0,1,0,$code,0,0,0);
             if ($discount) {
                 ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
-                MailManager::getInstance()->sendMail($user->getMail(), $object, $body);
+                ShopNotifyController::getInstance()->notifyUser($user->getMail(), "Votre avoir pour la commande N°" . $order->getOrderNumber(), "Avoir pour la commande N°" . $order->getOrderNumber(), $body);
                 Flash::send(Alert::SUCCESS, 'Avoir', $user->getPseudo() . ' à reçu son avoir par mail !');
             }
         } else {
@@ -743,21 +642,40 @@ class ShopHistoryOrdersController extends AbstractController
 
         $priceType = '';
         $itemsHtml = '';
+        $itemsHtml .= '<table cellpadding="6" cellspacing="0" width="100%">';
+        $itemsHtml .= '<thead>
+                            <tr>
+                                <th></th>
+                                <th>Article</th>
+                                <th>Quantité</th>
+                                <th>Prix</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
         foreach ($cartContent as $cartItem) {
             $priceType = $cartItem->getItem()->getPriceType();
             $itemName = $cartItem->getItem()->getName();
+            if ($cartItem->getFirstImageItemUrl() !== '/Public/Uploads/Shop/0') {
+                $itemImage = Website::getUrl() . $cartItem->getFirstImageItemUrl();
+            } else {
+                $itemImage = Website::getUrl() . ShopImagesModel::getInstance()->getDefaultImg();
+            }
             $itemQuantity = $cartItem->getQuantity();
             $itemPrice = $cartItem->getItemTotalPriceAfterDiscountFormatted();
+
             $itemsHtml .= <<<HTML
-                    <div class="summary-item">
-                        <span class="summary-title">Article :</span> $itemName
-                        <br>
-                        <span class="summary-title">Quantité :</span> $itemQuantity
-                        <br>
-                        <span class="summary-title">Prix :</span> $itemPrice
-                    </div>
-                HTML;
+            <tr>
+                <td><img src="$itemImage" width="40px"></td>
+                <td><b>$itemName</b></td>
+                <td>$itemQuantity</td>
+                <td>$itemPrice</td>
+            </tr>
+        HTML;
         }
+
+        $itemsHtml .= '</tbody></table>';
+
 
         if ($priceType == 'money') {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
@@ -772,18 +690,21 @@ class ShopHistoryOrdersController extends AbstractController
         }
 
         $htmlTemplate = <<<HTML
-                    <div class="summary-item-recap">
-                        <span class="summary-title-recap">Numéro de commande :</span> %ORDER%
+                    <div>
+                        <span>Numéro de commande :</span> <b>N°%ORDER%</b>
                     </div>
-                    <div class="summary-item-recap">
-                        <span class="summary-title-recap">Date de la commande :</span> %DATE%
+                    <div>
+                        <span>Date de la commande :</span> <b>%DATE%</b>
                     </div>
-                    $itemsHtml
-                    <div class="summary-item-recap">
-                        <span class="summary-title-recap">Total :</span> <b>%TOTAL%</b>
+                    <div style="margin-top: 4px; margin-bottom: 4px">
+                        $itemsHtml
+                    </div>
+                    <div>
+                        <span>Total :</span> <b>%TOTAL%</b>
                         <br>
-                        <span class="summary-title-recap">Méthode de paiement :</span> %PAYMENT_METHOD%
-                        <a href="%HISTORY_LINK%"><p>Consultez mes commandes</p></a>
+                        <span>Méthode de paiement :</span> %PAYMENT_METHOD%
+                        <br>
+                        <a href="%HISTORY_LINK%">Consultez mes commandes</a>
                         %INVOICE_SECTION%
                     </div>
             HTML;

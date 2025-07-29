@@ -72,6 +72,7 @@ Website::setDescription('Découvrez la boutique !');
                         foreach ($getImagesItem as $countImage) {
                             $v++;
                         } ?>
+                        <a style="all: inherit; cursor: pointer" href="<?= $item->getItemLink() ?>">
                         <?php if ($getImagesItem): ?>
                             <?php if ($v !== 1): ?>
                                 <div id="indicators-carousel-<?= $uniqueId ?>" class="shop-carousel-568945"
@@ -137,6 +138,7 @@ Website::setDescription('Découvrez la boutique !');
                         <?php else: ?>
                             <img alt="items image" class="shop-solo-img-5678451" src="<?= $defaultImage ?>">
                         <?php endif; ?>
+                        </a>
                         <a style="all: inherit; cursor: pointer" href="<?= $item->getItemLink() ?>">
                             <div class="shop-link-container-45754">
                                 <h4 style="text-align: center"><?= $item->getName() ?></h4>

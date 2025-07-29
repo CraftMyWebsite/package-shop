@@ -37,7 +37,7 @@ class ShopVirtualItemGiftCodeImplementations implements IVirtualItems
 
     public function execOnBuy(string $varName, ShopItemEntity $item, UserEntity $user): void
     {
-        ShopVirtualItemsGiftCodeController::getInstance()->sedMailWithGiftCode($varName, $item, $user);
+        ShopVirtualItemsGiftCodeController::getInstance()->sedMailWithGiftCode($item, $user);
     }
 
     public function execOnCancel(string $varName, ShopItemEntity $item, UserEntity $user): void

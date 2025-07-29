@@ -80,7 +80,7 @@ $description = '';
                                     <button type="button" data-modal-hide="modal-relance-<?= $orderItem->getItem()->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                                     <div class="modal-body">
-                                        <div class="alert-warning"><?= LangManager::translate('shop.views.orders.view.call-text') ?></div>
+                                        <div><?= LangManager::translate('shop.views.orders.view.call-text') ?></div>
                                     </div>
                                     <div class="modal-footer">
                                         <a href="../../../shop/settings" type="button" class="btn-warning"><?= LangManager::translate('shop.views.orders.view.no') ?></a>

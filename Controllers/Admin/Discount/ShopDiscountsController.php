@@ -415,9 +415,9 @@ class ShopDiscountsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.gift.add');
 
-        [$amount] = Utils::filterInput('amount');
+        [$amount, $receiver] = Utils::filterInput('amount', 'receiver');
 
-        ShopVirtualItemsGiftCodeController::getInstance()->adminGenerateCode($amount);
+        ShopVirtualItemsGiftCodeController::getInstance()->adminGenerateCode($amount, $receiver);
 
         Flash::send(Alert::SUCCESS, 'Boutique', 'Code généré !');
 

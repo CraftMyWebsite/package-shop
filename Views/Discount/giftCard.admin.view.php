@@ -37,6 +37,8 @@ $description = '';
         <div class="modal-body">
             <label for="amount"><?= LangManager::translate('shop.views.discount.giftCard.amount') ?></label>
             <input placeholder="18.99" type="text" name="amount" id="amount" class="input" required>
+            <label for="receiver">Envoyé à (mail)</label>
+            <input placeholder="your@mail.com" type="email" name="receiver" id="receiver" class="input" required>
         </div>
         <div class="modal-footer">
             <button type="submit" class="btn-primary">

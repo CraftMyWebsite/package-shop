@@ -628,7 +628,7 @@ VALUES ('currency', 'EUR'),
        ('stockAlert', '20'),
        ('maintenance', '0'),
        ('maintenanceMessage', 'La boutique est en cours de maintenance.'),
-       ('autoValidateVirtual', '0'),
+       ('autoValidateVirtual', '1'),
        ('topBestBuyer', '3'),
        ('showPublicStock', '1');
 

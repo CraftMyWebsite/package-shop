@@ -53,6 +53,6 @@ class ShopShippingWithdrawPointImplementations implements IShippingMethod
      */
     public function execAfterCommandValidatedByAdmin(string $varName, array $items, UserEntity $user, ShopHistoryOrdersEntity $order): void
     {
-        ShopShippingNotifyWithdrawController::getInstance()->sedMailWithInfo($varName, $items, $user, $order);
+        ShopShippingNotifyWithdrawController::getInstance()->sedMailWithInfo($user, $order);
     }
 }
