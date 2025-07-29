@@ -68,7 +68,7 @@ $description = '';
                                 <td><?= $shipping->getPriceFormatted() ?></td>
                                 <td><?= $shipping->getMinTotalCartPrice() ? $shipping->getMinTotalCartPrice() .  $symbol : '∞' ?></td>
                                 <td><?= $shipping->getMaxTotalCartPrice() ? $shipping->getMaxTotalCartPrice() . $symbol : '∞' ?></td>
-                                <td><?= $shipping->getMaxTotalWeight() ? $shipping->getMinTotalCartPrice() . 'g' : '∞' ?></td>
+                                <td><?= $shipping->getMaxTotalWeight() ? $shipping->getMaxTotalWeight() . 'g' : '∞' ?></td>
                                 <td class="text-center">
                                     <button data-modal-toggle="modal-edit-delivery-<?= $shipping->getId() ?>" class="text-info mr-2"
                                             type="button"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -205,7 +205,7 @@ $description = '';
                                 <td><?= $shipping->getPriceFormatted() ?></td>
                                 <td><?= $shipping->getMinTotalCartPrice() ? $shipping->getMinTotalCartPrice() . $symbol : '∞' ?></td>
                                 <td><?= $shipping->getMaxTotalCartPrice() ? $shipping->getMaxTotalCartPrice() . $symbol : '∞' ?></td>
-                                <td><?= $shipping->getMaxTotalWeight() ? $shipping->getMinTotalCartPrice() . 'g' : '∞' ?></td>
+                                <td><?= $shipping->getMaxTotalWeight() ? $shipping->getMaxTotalWeight() . 'g' : '∞' ?></td>
                                 <td class="text-center">
                                     <button data-modal-toggle="modal-edit-withdraw-<?= $shipping->getId() ?>" class="text-info mr-2"
                                             type="button"><i class="fa-solid fa-pen-to-square"></i></button>
