@@ -233,29 +233,33 @@ class ShopItemsModel extends AbstractModel
     public function getPublicShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
         $db = DatabaseManager::getInstance();
-        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+        $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+
+        $catIds = [$mainCatId];
+        $catIds = array_merge($catIds, $this->shopCategoriesModel->getAllChildrenCategoryIds($mainCatId));
+        $placeholders = implode(',', array_fill(0, count($catIds), '?'));
 
         $sortMap = [
             'pertinence' => 'shop_item_id DESC',
             'ascendingPrice' => 'shop_item_price ASC',
             'descendingPrice' => 'shop_item_price DESC',
         ];
-
         $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
 
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY $orderBy LIMIT :limit OFFSET :offset";
-
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY $orderBy LIMIT ? OFFSET ?";
         $res = $db->prepare($sql);
-        $res->bindValue(':shop_category_id', $catId, \PDO::PARAM_INT);
-        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        foreach ($catIds as $i => $id) {
+            $res->bindValue($i + 1, $id, \PDO::PARAM_INT);
+        }
+        $res->bindValue(count($catIds) + 1, $limit, \PDO::PARAM_INT);
+        $res->bindValue(count($catIds) + 2, $offset, \PDO::PARAM_INT);
 
         if (!$res->execute()) {
             return [];
         }
 
         $toReturn = [];
-
         while ($items = $res->fetch()) {
             $toReturn[] = $this->getShopItemsById($items['shop_item_id']);
         }
@@ -269,29 +273,33 @@ class ShopItemsModel extends AbstractModel
     public function getAdminShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
         $db = DatabaseManager::getInstance();
-        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+        $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+
+        $catIds = [$mainCatId];
+        $catIds = array_merge($catIds, $this->shopCategoriesModel->getAllChildrenCategoryIds($mainCatId));
+        $placeholders = implode(',', array_fill(0, count($catIds), '?'));
 
         $sortMap = [
             'pertinence' => 'shop_item_id DESC',
             'ascendingPrice' => 'shop_item_price ASC',
             'descendingPrice' => 'shop_item_price DESC',
         ];
-
         $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
 
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 ORDER BY $orderBy LIMIT :limit OFFSET :offset";
-
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 ORDER BY $orderBy LIMIT ? OFFSET ?";
         $res = $db->prepare($sql);
-        $res->bindValue(':shop_category_id', $catId, \PDO::PARAM_INT);
-        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        foreach ($catIds as $i => $id) {
+            $res->bindValue($i + 1, $id, \PDO::PARAM_INT);
+        }
+        $res->bindValue(count($catIds) + 1, $limit, \PDO::PARAM_INT);
+        $res->bindValue(count($catIds) + 2, $offset, \PDO::PARAM_INT);
 
         if (!$res->execute()) {
             return [];
         }
 
         $toReturn = [];
-
         while ($items = $res->fetch()) {
             $toReturn[] = $this->getShopItemsById($items['shop_item_id']);
         }
@@ -760,17 +768,25 @@ ORDER BY csi.shop_item_price ASC;';
     {
         $db = DatabaseManager::getInstance();
 
-        $sql = 'SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_category_id = :catId';
+        $catIds = [$categoryId];
+        $catIds = array_merge($catIds, $this->shopCategoriesModel->getAllChildrenCategoryIds($categoryId));
+        $placeholders = implode(',', array_fill(0, count($catIds), '?'));
+
+        $sql = "SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_category_id IN ($placeholders)";
         if (!$isAdmin) {
             $sql .= ' AND shop_item_draft = 0';
         }
 
         $res = $db->prepare($sql);
-        $res->bindValue(':catId', $categoryId, \PDO::PARAM_INT);
+        foreach ($catIds as $i => $id) {
+            $res->bindValue($i + 1, $id, \PDO::PARAM_INT);
+        }
+
         $res->execute();
 
         $row = $res->fetch();
         return (int)($row['total'] ?? 0);
     }
+
 
 }

@@ -86,6 +86,32 @@ class ShopCategoriesModel extends AbstractModel
         return $res['shop_category_id'] ?? 0;
     }
 
+    public function getAllChildrenCategoryIds(int $parentId): array
+    {
+        $db = DatabaseManager::getInstance();
+
+        $sql = 'SELECT shop_category_id, shop_sub_category_id FROM cmw_shops_categories';
+        $res = $db->query($sql);
+        $allCategories = $res->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $this->recursiveChildSearch($allCategories, $parentId);
+    }
+
+    private function recursiveChildSearch(array $all, int $parentId): array
+    {
+        $children = [];
+
+        foreach ($all as $cat) {
+            if ((int)($cat['shop_sub_category_id'] ?? 0) === $parentId) {
+                $children[] = (int)$cat['shop_category_id'];
+                $children = array_merge($children, $this->recursiveChildSearch($all, (int)$cat['shop_category_id']));
+            }
+        }
+
+        return $children;
+    }
+
+
     public function createShopCategory(string $name, string $description, string $icon): ?ShopCategoryEntity
     {
         $data = array(
