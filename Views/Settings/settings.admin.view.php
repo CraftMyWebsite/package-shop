@@ -18,6 +18,7 @@ $description = '';
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $autoValidateVirtual */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $showPublicStock */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
+/* @var \CMW\Model\Shop\Setting\ShopSettingsModel $perPage */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 
 ?>
@@ -95,6 +96,8 @@ $description = '';
                 <div class="toggle-slider"></div>
                 <p class="toggle-label"><?= LangManager::translate('shop.views.settings.settings.show_stock') ?></p>
             </label>
+            <label for="perPage"><?= LangManager::translate('shop.views.settings.settings.per_page_item') ?></label>
+            <input type="number" name="perPage" id="perPage" class="input" value="<?= $perPage ?>">
             <label for="stockAlert"><?= LangManager::translate('shop.views.settings.settings.stock_alert') ?></label>
             <div class="input-group">
                 <i class="fa-solid fa-percent"></i>

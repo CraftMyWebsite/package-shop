@@ -13,7 +13,6 @@ use CMW\Utils\Website;
 /* @var \CMW\Entity\Shop\Items\ShopItemPhysicalRequirementEntity $physicalInfo */
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
-/* @var CMW\Entity\Shop\Items\ShopItemEntity [] $otherItemsInThisCat */
 /* @var bool $showPublicStock */
 
 Website::setTitle('Boutique - Article');

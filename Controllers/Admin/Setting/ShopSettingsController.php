@@ -65,6 +65,7 @@ class ShopSettingsController extends AbstractController
         $currentAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         $currentReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         $stockAlert = ShopSettingsModel::getInstance()->getSettingValue('stockAlert');
+        $perPage = ShopSettingsModel::getInstance()->getSettingValue('perPage');
         $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
         $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
         $autoValidateVirtual = ShopSettingsModel::getInstance()->getSettingValue('autoValidateVirtual');
@@ -73,7 +74,7 @@ class ShopSettingsController extends AbstractController
         $globalConfigMethod = ShopItemsController::getInstance()->getGlobalConfigMethods();
 
         View::createAdminView('Shop', 'Settings/settings')
-            ->addVariableList(['showPublicStock' => $showPublicStock, 'currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
+            ->addVariableList(['showPublicStock' => $showPublicStock, 'currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'perPage' => $perPage, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
             ->view();
     }
 
@@ -89,13 +90,14 @@ class ShopSettingsController extends AbstractController
             }
         }
 
-        [$currency, $showAfter, $allowReviews, $stockAlert, $maintenance, $maintenanceMessage, $autoValidateVirtual, $showPublicStock] = Utils::filterInput('currency', 'showAfter', 'allowReviews', 'stockAlert', 'maintenance', 'maintenanceMessage', 'autoValidateVirtual', 'showPublicStock');
-        $symbol = ShopSettingsController::$availableCurrencies[$currency]['symbol'] ?? '€';
+        [$currency, $showAfter, $allowReviews, $stockAlert, $perPage, $maintenance, $maintenanceMessage, $autoValidateVirtual, $showPublicStock] = Utils::filterInput('currency', 'showAfter', 'allowReviews', 'stockAlert', 'perPage' ,'maintenance', 'maintenanceMessage', 'autoValidateVirtual', 'showPublicStock');
+        $symbol = self::$availableCurrencies[$currency]['symbol'] ?? '€';
         ShopSettingsModel::getInstance()->updateSetting('currency', $currency);
         ShopSettingsModel::getInstance()->updateSetting('symbol', $symbol);
         ShopSettingsModel::getInstance()->updateSetting('after', $showAfter);
         ShopSettingsModel::getInstance()->updateSetting('reviews', $allowReviews ?? 0);
         ShopSettingsModel::getInstance()->updateSetting('stockAlert', $stockAlert);
+        ShopSettingsModel::getInstance()->updateSetting('perPage', $perPage);
         ShopSettingsModel::getInstance()->updateSetting('maintenance', $maintenance ?? 0);
         ShopSettingsModel::getInstance()->updateSetting('maintenanceMessage', $maintenanceMessage);
         ShopSettingsModel::getInstance()->updateSetting('autoValidateVirtual', $autoValidateVirtual ?? 0);

@@ -763,6 +763,7 @@ return [
                 'auto_virtual' => 'Validation automatique des articles virtuel',
                 'show_stock' => 'Afficher les stocks publiquement',
                 'stock_alert' => 'Alerte stock :',
+                'per_page_item' => 'Nombre d\'articles par page :',
                 'stock_alert_explain' => 'Recevez une alerte quand les stocks tombent en dessous de XX pourcents',
             ],
         ],

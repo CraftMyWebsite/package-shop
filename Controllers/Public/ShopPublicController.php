@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
@@ -47,22 +48,48 @@ class ShopPublicController extends AbstractController
             }
         }
 
-        $categoryModel = ShopCategoriesModel::getInstance();
-        if (UsersController::isAdminLogged()) {
-            $items = ShopItemsModel::getInstance()->getAdminShopItems();
-        } else {
-            $items = ShopItemsModel::getInstance()->getPublicShopItems();
+        // --- Paramètres ---
+        $limit = ShopSettingsModel::getInstance()->getSettingValue('perPage');
+        $page = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+        $offset = ($page - 1) * $limit;
+
+        $sort = $_GET['sort'] ?? 'pertinence';
+        $allowedSorts = ['pertinence', 'ascendingPrice', 'descendingPrice'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'pertinence';
         }
-        $imagesItem = ShopImagesModel::getInstance();
-        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
-        $review = ShopReviewsModel::getInstance();
-        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+
+        $totalItems = ShopItemsModel::getInstance()->countVisibleShopItems(UsersController::isAdminLogged());
+        $maxPages = (int)ceil($totalItems / $limit);
+
+        // --- Items ---
+        $items = UsersController::isAdminLogged()
+            ? ShopItemsModel::getInstance()->getAdminShopItemsInPublicView($sort, $limit, $offset)
+            : ShopItemsModel::getInstance()->getPublicShopItemsInPublicView($sort, $limit, $offset);
+
+        // --- Données annexes ---
+        $categoryModel = ShopCategoriesModel::getInstance();
+        $imagesItem    = ShopImagesModel::getInstance();
+        $defaultImage  = $imagesItem->getDefaultImg();
+        $review        = ShopReviewsModel::getInstance();
+        $allowReviews  = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
+        // --- Vue ---
         View::createPublicView('Shop', 'Main/main')
-            ->addVariableList(['categoryModel' => $categoryModel, 'items' => $items, 'imagesItem' =>
-                $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addVariableList([
+                'categoryModel' => $categoryModel,
+                'items'         => $items,
+                'imagesItem'    => $imagesItem,
+                'defaultImage'  => $defaultImage,
+                'review'        => $review,
+                'allowReviews'  => $allowReviews,
+                'currentSort'   => $sort,
+                'currentPage'   => $page,
+                'itemsPerPage'  => $limit,
+                'maxPages'      => $maxPages,
+                'baseShopUrl' => EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop',
+            ])
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->view();
     }
@@ -80,22 +107,64 @@ class ShopPublicController extends AbstractController
                 Redirect::redirectToHome();
             }
         }
+
+        // --- Catégorie ---
         $categoryModel = ShopCategoriesModel::getInstance();
-        $thisCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
-        if (UsersController::isAdminLogged()) {
-            $items = ShopItemsModel::getInstance()->getAdminShopItemByCatSlug($catSlug);
-        } else {
-            $items = ShopItemsModel::getInstance()->getPublicShopItemByCatSlug($catSlug);
+        $catId = $categoryModel->getShopCategoryIdBySlug($catSlug);
+        $thisCat = $categoryModel->getShopCategoryById($catId);
+
+        // --- Paramètres ---
+        $limit = ShopSettingsModel::getInstance()->getSettingValue('perPage');
+        $page = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+        $offset = ($page - 1) * $limit;
+
+        $sort = $_GET['sort'] ?? 'pertinence';
+        $allowedSorts = ['pertinence', 'ascendingPrice', 'descendingPrice'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'pertinence';
         }
-        $imagesItem = ShopImagesModel::getInstance();
-        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $itemInCart = ShopCartItemModel::getInstance()->countItemsByUserId(UsersSessionsController::getInstance()->getCurrentUser()?->getId(), session_id());
-        $review = ShopReviewsModel::getInstance();
-        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+
+        $isAdmin = UsersController::isAdminLogged();
+
+        // --- Items filtrés ---
+        $items = $isAdmin
+            ? ShopItemsModel::getInstance()->getAdminShopItemByCatSlugInPublicView($catSlug, $sort, $limit, $offset)
+            : ShopItemsModel::getInstance()->getPublicShopItemByCatSlugInPublicView($catSlug, $sort, $limit, $offset);
+
+        // --- Total pour pagination ---
+        $totalItems = ShopItemsModel::getInstance()->countVisibleShopItemsByCategory($catId, $isAdmin);
+        $maxPages = (int)ceil($totalItems / $limit);
+
+        // --- Données annexes ---
+        $imagesItem   = ShopImagesModel::getInstance();
+        $defaultImage = $imagesItem->getDefaultImg();
+        $itemInCart   = ShopCartItemModel::getInstance()->countItemsByUserId(
+            UsersSessionsController::getInstance()->getCurrentUser()?->getId(),
+            session_id()
+        );
+        $review        = ShopReviewsModel::getInstance();
+        $allowReviews  = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
+        // --- Vue ---
         View::createPublicView('Shop', 'Main/main')
-            ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'itemInCart' => $itemInCart, 'thisCat' => $thisCat, 'categoryModel' => $categoryModel, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addVariableList([
+                'items'         => $items,
+                'imagesItem'    => $imagesItem,
+                'defaultImage'  => $defaultImage,
+                'itemInCart'    => $itemInCart,
+                'thisCat'       => $thisCat,
+                'categoryModel' => $categoryModel,
+                'review'        => $review,
+                'allowReviews'  => $allowReviews,
+                'currentPage'   => $page,
+                'itemsPerPage'  => $limit,
+                'maxPages'      => $maxPages,
+                'currentSort'   => $sort,
+                'isCatView'     => true,
+                'catSlug'       => $catSlug,
+                'baseShopUrl' => EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop/cat/'.$catSlug,
+            ])
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->view();
     }
@@ -112,11 +181,6 @@ class ShopPublicController extends AbstractController
                 Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
                 Redirect::redirectToHome();
             }
-        }
-        if (UsersController::isAdminLogged()) {
-            $otherItemsInThisCat = ShopItemsModel::getInstance()->getAdminShopItemByCatSlug($catSlug);
-        } else {
-            $otherItemsInThisCat = ShopItemsModel::getInstance()->getPublicShopItemByCatSlug($catSlug);
         }
         $parentCat = ShopCategoriesModel::getInstance()->getShopCategoryById(ShopCategoriesModel::getInstance()->getShopCategoryIdBySlug($catSlug));
         if (UsersController::isAdminLogged()) {
@@ -136,7 +200,7 @@ class ShopPublicController extends AbstractController
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
         View::createPublicView('Shop', 'Main/item')
-            ->addVariableList(['showPublicStock' => $showPublicStock, 'otherItemsInThisCat' => $otherItemsInThisCat, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews])
+            ->addVariableList(['showPublicStock' => $showPublicStock, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage, 'parentCat' => $parentCat, 'item' => $item, 'itemVariants' => $itemVariants, 'variantValuesModel' => $variantValuesModel, 'physicalInfo' => $physicalInfo ?? null, 'review' => $review, 'allowReviews' => $allowReviews])
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->view();
     }

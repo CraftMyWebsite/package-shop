@@ -760,6 +760,7 @@ return [
                 'auto_virtual' => 'Automatic validation of virtual items',
                 'show_stock' => 'Display stock publicly',
                 'stock_alert' => 'Stock alert:',
+                'per_page_item' => 'Number of articles per page:',
                 'stock_alert_explain' => 'Receive an alert when stock falls below XX percent',
             ],
         ],

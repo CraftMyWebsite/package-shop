@@ -68,20 +68,42 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * @return \CMW\Entity\Shop\Items\ShopItemEntity []
+     * Récupère les items de la boutique admin avec tri et pagination.
+     *
+     * @param string $sort Tri à appliquer : 'pertinence', 'ascendingPrice', 'descendingPrice'
+     * @param int $limit Nombre d'éléments à retourner
+     * @param int $offset Début de la pagination
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity[]
      */
-    public function getPublicShopItems(): array
+    public function getPublicShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
-        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC';
         $db = DatabaseManager::getInstance();
 
+        // Mapping du tri
+        $sortMap = [
+            'pertinence' => 'shop_item_id DESC',
+            'ascendingPrice' => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        $sql = "SELECT shop_item_id 
+            FROM cmw_shops_items 
+            WHERE shop_item_archived = 0 
+            AND shop_item_draft = 0
+            ORDER BY $orderBy 
+            LIMIT :limit OFFSET :offset";
+
         $res = $db->prepare($sql);
+        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
 
         if (!$res->execute()) {
-            return array();
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($item = $res->fetch()) {
             $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
@@ -91,6 +113,7 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
+     * Récupère les items de la boutique côté admin sans pagination !!
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
     public function getAdminShopItems(): array
@@ -112,6 +135,51 @@ class ShopItemsModel extends AbstractModel
 
         return $toReturn;
     }
+
+    /**
+     * Récupère les items de la boutique admin avec tri et pagination.
+     *
+     * @param string $sort Tri à appliquer : 'pertinence', 'ascendingPrice', 'descendingPrice'
+     * @param int $limit Nombre d'éléments à retourner
+     * @param int $offset Début de la pagination
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity[]
+     */
+    public function getAdminShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
+    {
+        $db = DatabaseManager::getInstance();
+
+        // Mapping du tri
+        $sortMap = [
+            'pertinence' => 'shop_item_id DESC',
+            'ascendingPrice' => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        $sql = "SELECT shop_item_id 
+            FROM cmw_shops_items 
+            WHERE shop_item_archived = 0 
+            ORDER BY $orderBy 
+            LIMIT :limit OFFSET :offset";
+
+        $res = $db->prepare($sql);
+        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
+        }
+
+        return $toReturn;
+    }
+
 
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
@@ -162,19 +230,31 @@ class ShopItemsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
-    public function getPublicShopItemByCatSlug(string $catSlug): array
+    public function getPublicShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
-        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
-        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC';
         $db = DatabaseManager::getInstance();
+        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+
+        $sortMap = [
+            'pertinence' => 'shop_item_id DESC',
+            'ascendingPrice' => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY $orderBy LIMIT :limit OFFSET :offset";
 
         $res = $db->prepare($sql);
+        $res->bindValue(':shop_category_id', $catId, \PDO::PARAM_INT);
+        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
 
-        if (!$res->execute(array('shop_category_id' => $catId))) {
-            return array();
+        if (!$res->execute()) {
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($items = $res->fetch()) {
             $toReturn[] = $this->getShopItemsById($items['shop_item_id']);
@@ -186,19 +266,31 @@ class ShopItemsModel extends AbstractModel
     /**
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
-    public function getAdminShopItemByCatSlug(string $catSlug): array
+    public function getAdminShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
-        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
-        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 ORDER BY shop_item_id DESC';
         $db = DatabaseManager::getInstance();
+        $catId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
+
+        $sortMap = [
+            'pertinence' => 'shop_item_id DESC',
+            'ascendingPrice' => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id = :shop_category_id  AND shop_item_archived = 0 ORDER BY $orderBy LIMIT :limit OFFSET :offset";
 
         $res = $db->prepare($sql);
+        $res->bindValue(':shop_category_id', $catId, \PDO::PARAM_INT);
+        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
 
-        if (!$res->execute(array('shop_category_id' => $catId))) {
-            return array();
+        if (!$res->execute()) {
+            return [];
         }
 
-        $toReturn = array();
+        $toReturn = [];
 
         while ($items = $res->fetch()) {
             $toReturn[] = $this->getShopItemsById($items['shop_item_id']);
@@ -638,4 +730,47 @@ ORDER BY csi.shop_item_price ASC;';
 
         return $toReturn;
     }
+
+    /**
+     * Retourne le nombre total d'items visibles selon le contexte (admin ou public).
+     *
+     * @param bool $isAdmin Si vrai, ne filtre que les archivés. Sinon filtre aussi les brouillons.
+     * @return int
+     */
+    public function countVisibleShopItems(bool $isAdmin): int
+    {
+        $db = DatabaseManager::getInstance();
+
+        $sql = 'SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0';
+
+        if (!$isAdmin) {
+            $sql .= ' AND shop_item_draft = 0';
+        }
+
+        $res = $db->query($sql);
+        if (!$res) {
+            return 0;
+        }
+
+        $row = $res->fetch();
+        return (int)($row['total'] ?? 0);
+    }
+
+    public function countVisibleShopItemsByCategory(int $categoryId, bool $isAdmin): int
+    {
+        $db = DatabaseManager::getInstance();
+
+        $sql = 'SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0 AND shop_category_id = :catId';
+        if (!$isAdmin) {
+            $sql .= ' AND shop_item_draft = 0';
+        }
+
+        $res = $db->prepare($sql);
+        $res->bindValue(':catId', $categoryId, \PDO::PARAM_INT);
+        $res->execute();
+
+        $row = $res->fetch();
+        return (int)($row['total'] ?? 0);
+    }
+
 }

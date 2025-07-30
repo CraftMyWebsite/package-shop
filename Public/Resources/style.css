@@ -437,3 +437,34 @@
         width: 30%;
     }
 }
+
+.pagination-5897542315 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 30px 0;
+    font-size: 1em;
+}
+
+.pagination-btn-97515 {
+    color: #435ed2;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: opacity 0.2s;
+}
+
+.pagination-btn-97515:hover {
+    opacity: 0.7;
+}
+
+.pagination-btn-97515.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+    cursor: default;
+}
+
+.pagination-info-97548745 {
+    font-weight: bold;
+}
+

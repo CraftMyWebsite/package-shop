@@ -11,6 +11,10 @@ use CMW\Utils\Website;
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $allowReviews */
 /* @var CMW\Entity\Shop\Categories\ShopCategoryEntity|null $thisCat */
+/* @var int $maxPages */
+/* @var int $currentPage */
+/* @var string $currentSort */
+/* @var string $baseShopUrl */
 
 Website::setTitle('Boutique');
 Website::setDescription('Découvrez la boutique !');
@@ -53,6 +57,15 @@ Website::setDescription('Découvrez la boutique !');
                 </div>
             </form>
         </div>
+        <form method="get" action="<?= $baseShopUrl ?>" id="sortForm" style="display:flex;">
+            <input type="hidden" name="p" value="<?= $currentPage ?>">
+            <label for="sort">Trier par :</label>
+            <select class="shop-select-5872154" name="sort" id="sort" onchange="document.getElementById('sortForm').submit()">
+                <option value="pertinence" <?= $currentSort === 'pertinence' ? 'selected' : '' ?>>Pertinence</option>
+                <option value="ascendingPrice" <?= $currentSort === 'ascendingPrice' ? 'selected' : '' ?>>Prix croissant</option>
+                <option value="descendingPrice" <?= $currentSort === 'descendingPrice' ? 'selected' : '' ?>>Prix décroissant</option>
+            </select>
+        </form>
     </div>
 
     <div class="shop-grid-main-5548754">
@@ -175,6 +188,22 @@ Website::setDescription('Découvrez la boutique !');
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <div class="pagination-5897542315">
+        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=1&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>" title="Première page">
+            <i class="fa-solid fa-angles-left"></i>
+        </a>
+        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=' . ($currentPage - 1) . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <span class="pagination-info-97548745"><?= $currentPage ?> / <?= $maxPages ?></span>
+        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . ($currentPage + 1) . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>">
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . $maxPages . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>" title="Dernière page">
+            <i class="fa-solid fa-angles-right"></i>
+        </a>
+    </div>
+
 </section>
 
 <script
