@@ -127,7 +127,13 @@ Website::setDescription("Méthode de paiement");
                 <?php endif; ?>
                 <div style="margin-top: 1.6rem; text-align: center">
                     <p style="font-weight: bolder; font-size: 1.3rem">Total</p>
-                    <p style="font-weight: bolder; font-size: 1.8rem" id="total"><?= $cart->getTotalPriceCompleteFormatted() ?></p>
+                    <p id="total" style="font-weight: bolder; font-size: 1.8rem" data-total="<?= $cart->getTotalPriceComplete() ?>">
+                        <?php
+                        $price = number_format($cart->getTotalPriceComplete(), 2, '.', '');
+                        $formatted = $cart->getTotalPriceCompleteFormatted();
+                        echo str_replace($price, '<span id="price-value">' . $price . '</span>', $formatted);
+                        ?>
+                    </p>
                 </div>
             </div>
         </div>
@@ -138,44 +144,36 @@ Website::setDescription("Méthode de paiement");
     document.getElementById("payment").addEventListener("submit", function(event) {
         const button = document.getElementById("payment-button");
         button.disabled = true;
-        button.innerHTML = `
-        <i style="margin-right: 10px" class="fa-solid fa-sack-dollar fa-bounce"></i> Paiement en cours...
-    `;
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-spinner fa-spin";
+        icon.style.marginRight = "10px";
+        button.textContent = "Paiement en cours...";
+        button.prepend(icon);
+
     });
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', () => {
         const paymentMethods = document.querySelectorAll('input[name="paymentName"]');
         const totalElement = document.getElementById('total');
-        const originalTotal = parseFloat("<?= str_replace(',', '.', $cart->getTotalPriceCompleteFormatted()) ?>");
-
-        const currencySymbol = "<?= ShopSettingsModel::getInstance()->getSettingValue('symbol') ?>";
-        const symbolIsAfter = <?= ShopSettingsModel::getInstance()->getSettingValue('after') ? 'true' : 'false' ?>;
-
-        function formatPrice(price) {
-            if (symbolIsAfter) {
-                return price.toFixed(2) + currencySymbol;
-            } else {
-                return currencySymbol  + price.toFixed(2);
-            }
-        }
+        const priceSpan = document.getElementById('price-value');
+        const originalTotal = parseFloat(totalElement.dataset.total);
 
         function updateTotal() {
-            let selectedPaymentMethod = document.querySelector('input[name="paymentName"]:checked');
-            if (selectedPaymentMethod) {
-                const methodId = selectedPaymentMethod.value;
-                const feeElement = document.getElementById(`fee_${methodId}`);
-                if (feeElement) {
-                    const fee = parseFloat(feeElement.textContent.replace(/[^\d.]/g, ''));
-                    const newTotal = originalTotal + (fee || 0);
-                    totalElement.textContent = formatPrice(newTotal);
-                }
-            }
+            const selected = document.querySelector('input[name="paymentName"]:checked');
+            if (!selected) return;
+
+            const feeElement = document.getElementById(`fee_${selected.value}`);
+            if (!feeElement) return;
+
+            const fee = parseFloat(feeElement.textContent.replace(/[^\d.]/g, '')) || 0;
+            const newTotal = originalTotal + fee;
+
+            priceSpan.textContent = newTotal.toFixed(2);
         }
 
-        paymentMethods.forEach(method => {
-            method.addEventListener('change', updateTotal);
-        });
+        paymentMethods.forEach(method => method.addEventListener('change', updateTotal));
     });
+
 </script>
