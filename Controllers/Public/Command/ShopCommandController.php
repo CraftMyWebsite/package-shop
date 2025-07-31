@@ -139,7 +139,12 @@ class ShopCommandController extends AbstractController
                 } else {
                     $commandTunnelAddressId = $commandTunnelModel->getShopDeliveryUserAddress()->getId();
                     $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnelAddressId);
-                    $shippings = ShopShippingModel::getInstance()->getAvailableShipping($selectedAddress, $cartContent);
+                    try {
+                        $shippings = ShopShippingModel::getInstance()->getAvailableShipping($selectedAddress, $cartContent);
+                    } catch (\Exception $e) {
+                        Flash::send(Alert::ERROR, 'Boutique', 'Certains articles de votre panier n’ont pas de poids défini.');
+                        Redirect::redirect('shop/cart');
+                    }
                     $withdrawPoints = ShopShippingModel::getInstance()->getAvailableWithdrawPoint($selectedAddress, $cartContent);
                     usort($withdrawPoints, function($a, $b) use ($selectedAddress) {
                         $distanceA = $a->getDistance($selectedAddress->getLatitude(), $selectedAddress->getLongitude());

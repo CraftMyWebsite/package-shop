@@ -7,6 +7,8 @@ use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Manager\Database\DatabaseManager;
+use CMW\Manager\Flash\Alert;
+use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Shop\Item\ShopItemsPhysicalRequirementModel;
 
@@ -105,6 +107,7 @@ class ShopShippingModel extends AbstractModel
      * @param ShopDeliveryUserAddressEntity $selectedAddress
      * @param ShopCartItemEntity[] $cartContent
      * @return \CMW\Entity\Shop\Shippings\ShopShippingEntity[]
+     * @throws \Exception
      */
     public function getAvailableShipping(ShopDeliveryUserAddressEntity $selectedAddress, array $cartContent): array
     {
@@ -114,7 +117,12 @@ class ShopShippingModel extends AbstractModel
         $totalCartPrice = 0;
         foreach ($cartContent as $item) {
             if ($item->getItem()->getType() == 0) {
-                $itemWeight = ShopItemsPhysicalRequirementModel::getInstance()->getShopItemPhysicalRequirementByItemId($item->getItem()->getId())->getWeight();
+                $requirement = ShopItemsPhysicalRequirementModel::getInstance()
+                    ->getShopItemPhysicalRequirementByItemId($item->getItem()?->getId());
+                if (!$requirement) {
+                    throw new \RuntimeException("Article sans poids détecté.");
+                }
+                $itemWeight = $requirement->getWeight();
                 $totalCartWeight += $itemWeight * $item->getQuantity();
                 $totalCartPrice += $item->getItemTotalPrice();
             }
