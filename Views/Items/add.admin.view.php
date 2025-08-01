@@ -159,13 +159,31 @@ $description = '';
                             </span>
                         </div>
                     </div>
-                    <div>
-                        <label><?= LangManager::translate('shop.views.items.add.type') ?><span style="color: red">*</span> :</label>
-                        <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                            <option selected value="1"><?= LangManager::translate('shop.views.items.add.virtual') ?></option>
-                            <option value="0"><?= LangManager::translate('shop.views.items.add.physical') ?></option>
-                        </select>
-                    </div>
+            <div>
+                <label>
+                    <?= LangManager::translate('shop.views.items.add.type') ?><span style="color: red">*</span> :
+                </label>
+                <select id="type"
+                        class="form-select super-choice"
+                        name="shop_item_type"
+                        onchange="afficherChamps()"
+                    <?= $isLocked ? 'disabled' : '' ?>
+                        required>
+                    <option value="1" <?= (!$isLocked || $lockedType === '1') ? 'selected' : '' ?>>
+                        <?= LangManager::translate('shop.views.items.add.virtual') ?>
+                    </option>
+                    <option value="0" <?= $lockedType === '0' ? 'selected' : '' ?>>
+                        <?= LangManager::translate('shop.views.items.add.physical') ?>
+                    </option>
+                </select>
+
+                <?php if ($isLocked): ?>
+                    <input type="hidden" name="shop_item_type" value="<?= $lockedType ?>">
+                    <small style="display:block; color: gray; margin-top: 0.25rem;">
+                        <?= htmlspecialchars($reason) ?>
+                    </small>
+                <?php endif; ?>
+            </div>
         </div>
         <div class="card mt-6">
             <div class="card-body">
@@ -583,5 +601,21 @@ $description = '';
 
         typeSelect.addEventListener("change", updatePaymentOptions);
         updatePaymentOptions(); // Appeler la fonction au chargement de la page
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectType = document.getElementById("type");
+        const reason = selectType.dataset.disabledReason;
+
+        if (selectType.disabled && reason) {
+            const label = selectType.previousElementSibling;
+            const info = document.createElement("small");
+            info.style.color = "gray";
+            info.style.display = "block";
+            info.textContent = reason;
+            label.appendChild(info);
+        }
     });
 </script>

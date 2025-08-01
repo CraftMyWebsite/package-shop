@@ -503,8 +503,26 @@ class ShopHistoryOrdersController extends AbstractController
             $shippingHistory = ShopHistoryOrdersShippingModel::getInstance()->addHistoryShippingOrder($order->getId(), $commandTunnel->getShipping()->getId(), $commandTunnel->getShipping()->getName(), $commandTunnel->getShipping()->getPrice());
         }
 
-        $userAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($commandTunnel->getShopDeliveryUserAddress()->getId());
-        $userAddressHistory = ShopHistoryOrdersUserAddressModel::getInstance()->addHistoryUserAddressOrder($order->getId(), $userAddress->getLabel(), $user->getMail(), $userAddress->getLastName(), $userAddress->getFirstName(), $userAddress->getLine1(), $userAddress->getLine2(), $userAddress->getCity(), $userAddress->getPostalCode(), $userAddress->getCountry(), $userAddress->getPhone());
+        $userAddress = null;
+        if (!is_null($commandTunnel->getShopDeliveryUserAddress())) {
+            $userAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById(
+                $commandTunnel->getShopDeliveryUserAddress()->getId()
+            );
+
+            ShopHistoryOrdersUserAddressModel::getInstance()->addHistoryUserAddressOrder(
+                $order->getId(),
+                $userAddress->getLabel(),
+                $user->getMail(),
+                $userAddress->getLastName(),
+                $userAddress->getFirstName(),
+                $userAddress->getLine1(),
+                $userAddress->getLine2(),
+                $userAddress->getCity(),
+                $userAddress->getPostalCode(),
+                $userAddress->getCountry(),
+                $userAddress->getPhone()
+            );
+        }
 
         $this->handleCartDiscount($user, $sessionId, $order, $discountModel);
 

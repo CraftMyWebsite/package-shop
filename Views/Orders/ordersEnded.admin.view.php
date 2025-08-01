@@ -42,7 +42,13 @@ $description = '';
             <tbody>
             <?php foreach ($finishedOrders as $finishedOrder): ?>
                 <tr>
-                    <td><?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $finishedOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td>
+                        <?php if ($finishedOrder->getUserAddressMethod()): ?>
+                            <?= $finishedOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $finishedOrder->getUserAddressMethod()->getUserLastName() ?>
+                        <?php else: ?>
+                            <?= $finishedOrder->getUser()->getPseudo() ?>
+                        <?php endif; ?>
+                    </td>
                     <td>#<?= $finishedOrder->getOrderNumber() ?></td>
                     <td>
                         <?= "<b style='color: #73ad6f'> +" . $finishedOrder->getOrderTotalFormatted() . '</b>' ?><br>

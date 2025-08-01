@@ -3,13 +3,12 @@
 namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
-use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Interface\Shop\IPaymentMethodV2;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
+class ShopPaymentMethodeFreeImplementations implements IPaymentMethodV2
 {
     public function name(): string
     {
@@ -77,7 +76,7 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethod
         return;
     }
 
-    public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
+    public function doPayment(array $cartItems, UserEntity $user): void
     {
         ShopPaymentMethodFreeController::getInstance()->sendFreePayment();
     }

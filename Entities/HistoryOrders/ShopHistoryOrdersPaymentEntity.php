@@ -68,11 +68,18 @@ class ShopHistoryOrdersPaymentEntity extends AbstractEntity
             break;
         }
 
-        if ($priceType == 'money') {
+        if ($priceType === 'money') {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
-            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($priceType)->faIcon() . ' ';
+            // Récupération sécurisée de l'implémentation
+            $method = ShopPaymentsController::getInstance()->getPaymentByVarName($priceType);
+            if ($method) {
+                $symbol = ' ' . $method->faIcon() . ' ';
+            } else {
+                $symbol = ''; // fallback safe
+            }
         }
+
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;

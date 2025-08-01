@@ -42,7 +42,13 @@ $description = '';
             <tbody>
             <?php foreach ($errorOrders as $errorOrder): ?>
                 <tr>
-                    <td><?= $errorOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $errorOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td>
+                        <?php if ($errorOrder->getUserAddressMethod()): ?>
+                            <?= $errorOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $errorOrder->getUserAddressMethod()->getUserLastName() ?>
+                        <?php else: ?>
+                            <?= $errorOrder->getUser()->getPseudo() ?>
+                        <?php endif; ?>
+                    </td>
                     <td>#<?= $errorOrder->getOrderNumber() ?></td>
                     <td>
                         <?= "<b style='color: #ad6f78'> -" . $errorOrder->getOrderTotalFormatted() . '</b>' ?><br>

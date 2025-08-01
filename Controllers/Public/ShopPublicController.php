@@ -188,8 +188,22 @@ class ShopPublicController extends AbstractController
         } else {
             $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
         }
-        $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
+
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $itemType = $item?->getType(); // 0 = physique, 1 = virtuel
+
+        $isInvalid =
+            ($shopType === 'virtual' && $itemType === 0) ||
+            ($shopType === 'physical' && $itemType === 1);
+
+        if ($isInvalid) {
+            Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
+        $showPublicStock = ShopSettingsModel::getInstance()->getSettingValue('showPublicStock');
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($itemId);

@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Cart;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Event\Users\LoginEvent;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Events\Listener;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -18,6 +19,7 @@ use CMW\Model\Shop\Command\ShopCommandTunnelModel;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -37,6 +39,25 @@ class ShopActionsCartController extends AbstractController
         $userId = UsersSessionsController::getInstance()->getCurrentUser()?->getId();
         $sessionId = session_id();
         $quantity = 1;
+
+        $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+
+        if (!$item) {
+            Flash::send(Alert::ERROR, 'Boutique', "Article introuvable.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+
+        $isInvalid =
+            ($shopType === 'virtual' && $itemType === 0) ||
+            ($shopType === 'physical' && $itemType === 1);
+
+        if ($isInvalid) {
+            Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
 
         if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
             Flash::send(Alert::INFO, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");
@@ -74,6 +95,25 @@ class ShopActionsCartController extends AbstractController
         } else {
             $itemId = ShopItemsModel::getInstance()->getPublicShopItemIdBySlug($itemSlug);
         }
+
+        $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+        if (!$item) {
+            Flash::send(Alert::ERROR, 'Boutique', "Article introuvable.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+
+        $isInvalid =
+            ($shopType === 'virtual' && $itemType === 0) ||
+            ($shopType === 'physical' && $itemType === 1);
+
+        if ($isInvalid) {
+            Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
         [$quantity] = Utils::filterInput('quantity');
 
         $this->handlePriceType($userId, $sessionId, $itemId);
@@ -251,6 +291,27 @@ class ShopActionsCartController extends AbstractController
         $thisCart = ShopCartItemModel::getInstance()->getShopCartsItemsById($cartItemId);
 
         $this->handleSessionHealth($sessionId);
+
+        $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
+        if (!$item) {
+            ShopCartItemModel::getInstance()->removeItemByCartItemId($cartItemId);
+            Flash::send(Alert::ERROR, 'Boutique', "L'article n'existe plus.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
+        // 🔒 Vérification compatibilité type boutique
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+
+        $isInvalid =
+            ($shopType === 'virtual' && $itemType === 0) ||
+            ($shopType === 'physical' && $itemType === 1);
+
+        if ($isInvalid) {
+            ShopCartItemModel::getInstance()->removeItemByCartItemId($cartItemId);
+            Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop/cart');
+        }
 
         if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId) && empty(ShopCartVariantesModel::getInstance()->getShopItemVariantValueByCartId($thisCart->getId()))) {
             Flash::send(Alert::INFO, 'Boutique', "Vous devez sélectionner une variante avant de pouvoir ajouter l'article à votre panier");

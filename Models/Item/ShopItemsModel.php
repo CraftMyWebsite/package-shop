@@ -6,6 +6,7 @@ use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 use CMW\Model\Shop\Category\ShopCategoriesModel;
+use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Utils\Utils;
 
 /**
@@ -68,51 +69,6 @@ class ShopItemsModel extends AbstractModel
     }
 
     /**
-     * Récupère les items de la boutique admin avec tri et pagination.
-     *
-     * @param string $sort Tri à appliquer : 'pertinence', 'ascendingPrice', 'descendingPrice'
-     * @param int $limit Nombre d'éléments à retourner
-     * @param int $offset Début de la pagination
-     * @return \CMW\Entity\Shop\Items\ShopItemEntity[]
-     */
-    public function getPublicShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
-    {
-        $db = DatabaseManager::getInstance();
-
-        // Mapping du tri
-        $sortMap = [
-            'pertinence' => 'shop_item_id DESC',
-            'ascendingPrice' => 'shop_item_price ASC',
-            'descendingPrice' => 'shop_item_price DESC',
-        ];
-
-        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
-
-        $sql = "SELECT shop_item_id 
-            FROM cmw_shops_items 
-            WHERE shop_item_archived = 0 
-            AND shop_item_draft = 0
-            ORDER BY $orderBy 
-            LIMIT :limit OFFSET :offset";
-
-        $res = $db->prepare($sql);
-        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
-
-        if (!$res->execute()) {
-            return [];
-        }
-
-        $toReturn = [];
-
-        while ($item = $res->fetch()) {
-            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
-        }
-
-        return $toReturn;
-    }
-
-    /**
      * Récupère les items de la boutique côté admin sans pagination !!
      * @return \CMW\Entity\Shop\Items\ShopItemEntity []
      */
@@ -144,9 +100,11 @@ class ShopItemsModel extends AbstractModel
      * @param int $offset Début de la pagination
      * @return \CMW\Entity\Shop\Items\ShopItemEntity[]
      */
-    public function getAdminShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
+    public function getPublicShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
         $db = DatabaseManager::getInstance();
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
 
         // Mapping du tri
         $sortMap = [
@@ -157,9 +115,72 @@ class ShopItemsModel extends AbstractModel
 
         $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
 
+        // Filtre sur le type d'article
+        $typeCondition = match ($shopType) {
+            'virtual' => 'AND shop_item_type = 1',
+            'physical' => 'AND shop_item_type = 0',
+            default => '' // both
+        };
+
         $sql = "SELECT shop_item_id 
             FROM cmw_shops_items 
             WHERE shop_item_archived = 0 
+            AND shop_item_draft = 0
+            $typeCondition
+            ORDER BY $orderBy 
+            LIMIT :limit OFFSET :offset";
+
+        $res = $db->prepare($sql);
+        $res->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $res->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        if (!$res->execute()) {
+            return [];
+        }
+
+        $toReturn = [];
+
+        while ($item = $res->fetch()) {
+            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
+        }
+
+        return $toReturn;
+    }
+
+    /**
+     * Récupère les items de la boutique admin avec tri et pagination.
+     *
+     * @param string $sort Tri à appliquer : 'pertinence', 'ascendingPrice', 'descendingPrice'
+     * @param int $limit Nombre d'éléments à retourner
+     * @param int $offset Début de la pagination
+     * @return \CMW\Entity\Shop\Items\ShopItemEntity[]
+     */
+    public function getAdminShopItemsInPublicView(string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
+    {
+        $db = DatabaseManager::getInstance();
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+
+        // Mapping du tri
+        $sortMap = [
+            'pertinence' => 'shop_item_id DESC',
+            'ascendingPrice' => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        // Filtre sur le type d'article
+        $typeCondition = match ($shopType) {
+            'virtual' => 'AND shop_item_type = 1',
+            'physical' => 'AND shop_item_type = 0',
+            default => '' // both
+        };
+
+        $sql = "SELECT shop_item_id 
+            FROM cmw_shops_items 
+            WHERE shop_item_archived = 0 
+            $typeCondition
             ORDER BY $orderBy 
             LIMIT :limit OFFSET :offset";
 
@@ -233,6 +254,9 @@ class ShopItemsModel extends AbstractModel
     public function getPublicShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
         $db = DatabaseManager::getInstance();
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+
         $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
 
         $catIds = [$mainCatId];
@@ -246,7 +270,14 @@ class ShopItemsModel extends AbstractModel
         ];
         $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
 
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY $orderBy LIMIT ? OFFSET ?";
+        // Filtre sur le type d'article
+        $typeCondition = match ($shopType) {
+            'virtual' => 'AND shop_item_type = 1',
+            'physical' => 'AND shop_item_type = 0',
+            default => '' // both
+        };
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 AND shop_item_draft = 0 $typeCondition ORDER BY $orderBy LIMIT ? OFFSET ?";
         $res = $db->prepare($sql);
 
         foreach ($catIds as $i => $id) {
@@ -273,6 +304,9 @@ class ShopItemsModel extends AbstractModel
     public function getAdminShopItemByCatSlugInPublicView(string $catSlug, string $sort = 'pertinence', int $limit = 4, int $offset = 0): array
     {
         $db = DatabaseManager::getInstance();
+
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+
         $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
 
         $catIds = [$mainCatId];
@@ -286,7 +320,14 @@ class ShopItemsModel extends AbstractModel
         ];
         $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
 
-        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 ORDER BY $orderBy LIMIT ? OFFSET ?";
+        // Filtre sur le type d'article
+        $typeCondition = match ($shopType) {
+            'virtual' => 'AND shop_item_type = 1',
+            'physical' => 'AND shop_item_type = 0',
+            default => '' // both
+        };
+
+        $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 $typeCondition ORDER BY $orderBy LIMIT ? OFFSET ?";
         $res = $db->prepare($sql);
 
         foreach ($catIds as $i => $id) {
@@ -748,12 +789,19 @@ ORDER BY csi.shop_item_price ASC;';
     public function countVisibleShopItems(bool $isAdmin): int
     {
         $db = DatabaseManager::getInstance();
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
 
         $sql = 'SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0';
 
         if (!$isAdmin) {
             $sql .= ' AND shop_item_draft = 0';
         }
+
+        $sql .= match ($shopType) {
+            'virtual' => ' AND shop_item_type = 1',
+            'physical' => ' AND shop_item_type = 0',
+            default => ''
+        };
 
         $res = $db->query($sql);
         if (!$res) {
@@ -768,6 +816,8 @@ ORDER BY csi.shop_item_price ASC;';
     {
         $db = DatabaseManager::getInstance();
 
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+
         $catIds = [$categoryId];
         $catIds = array_merge($catIds, $this->shopCategoriesModel->getAllChildrenCategoryIds($categoryId));
         $placeholders = implode(',', array_fill(0, count($catIds), '?'));
@@ -776,6 +826,12 @@ ORDER BY csi.shop_item_price ASC;';
         if (!$isAdmin) {
             $sql .= ' AND shop_item_draft = 0';
         }
+
+        $sql .= match ($shopType) {
+            'virtual' => ' AND shop_item_type = 1',
+            'physical' => ' AND shop_item_type = 0',
+            default => ''
+        };
 
         $res = $db->prepare($sql);
         foreach ($catIds as $i => $id) {

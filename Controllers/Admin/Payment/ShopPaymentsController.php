@@ -7,7 +7,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
-use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Interface\Shop\IPaymentMethodV2;
 use CMW\Manager\Events\Listener;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
@@ -29,30 +29,30 @@ use JetBrains\PhpStorm\NoReturn;
 class ShopPaymentsController extends AbstractController
 {
     /**
-     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     * @return \CMW\Interface\Shop\IPaymentMethodV2[]
      */
     public function getPaymentsMethods(): array
     {
-        return Loader::loadImplementations(IPaymentMethod::class);
+        return Loader::loadImplementations(IPaymentMethodV2::class);
     }
 
     /**
-     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     * @return \CMW\Interface\Shop\IPaymentMethodV2[]
      */
     public function getRealActivePaymentsMethods(): array
     {
-        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethodV2::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) {
             return $paymentMethod->isVirtualCurrency() === false && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
         });
     }
 
     /**
-     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     * @return \CMW\Interface\Shop\IPaymentMethodV2[]
      */
     public function getFreePayment(): array
     {
-        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethodV2::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) {
             return $paymentMethod->varName() === 'free';
         });
@@ -60,9 +60,9 @@ class ShopPaymentsController extends AbstractController
 
     /**
      * @param string $varName
-     * @return \CMW\Interface\Shop\IPaymentMethod|null
+     * @return \CMW\Interface\Shop\IPaymentMethodV2|null
      */
-    public function getPaymentByVarName(string $varName): ?IPaymentMethod
+    public function getPaymentByVarName(string $varName): ?IPaymentMethodV2
     {
         foreach ($this->getPaymentsMethods() as $paymentsMethod) {
             if ($paymentsMethod->varName() === $varName) {
@@ -74,11 +74,11 @@ class ShopPaymentsController extends AbstractController
 
     /**
      * @param string $varName
-     * @return \CMW\Interface\Shop\IPaymentMethod[]
+     * @return \CMW\Interface\Shop\IPaymentMethodV2[]
      */
     public function getVirtualPaymentByVarNameAsArray(string $varName): array
     {
-        $allPaymentMethods = Loader::loadImplementations(IPaymentMethod::class);
+        $allPaymentMethods = Loader::loadImplementations(IPaymentMethodV2::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) use ($varName) {
             return $paymentMethod->isVirtualCurrency() && $paymentMethod->isActive() && $paymentMethod->varName() === $varName;
         });

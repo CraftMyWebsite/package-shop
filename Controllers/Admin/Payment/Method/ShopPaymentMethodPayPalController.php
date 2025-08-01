@@ -35,7 +35,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendPayPalPayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
+    public function sendPayPalPayment(array $cartItems): void
     {
         if (!$this->isPayPalConfigComplete()) {
             throw new ShopPaymentException(message: 'PayPal config is not complete');

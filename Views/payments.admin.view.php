@@ -6,7 +6,7 @@ use CMW\Model\Core\MailModel;
 $title = LangManager::translate('shop.views.payments.title');
 $description = '';
 
-/* @var $methods \CMW\Interface\Shop\IPaymentMethod[] */
+/* @var $methods \CMW\Interface\Shop\IPaymentMethodV2[] */
 
 ?>
 

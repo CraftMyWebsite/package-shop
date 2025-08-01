@@ -44,7 +44,13 @@ $description = '';
             <tbody>
             <?php foreach ($inProgressOrders as $inProgressOrder): ?>
                 <tr>
-                    <td><?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?></td>
+                    <td>
+                        <?php if ($inProgressOrder->getUserAddressMethod()): ?>
+                            <?= $inProgressOrder->getUserAddressMethod()->getUserFirstName() . ' ' . $inProgressOrder->getUserAddressMethod()->getUserLastName() ?>
+                        <?php else: ?>
+                            <?= $inProgressOrder->getUser()->getPseudo() ?>
+                        <?php endif; ?>
+                    </td>
                     <td>#<?= $inProgressOrder->getOrderNumber() ?></td>
                     <td>
                         <?= "<b style='color: #6f6fad'>" . $inProgressOrder->getOrderTotalFormatted() . '</b>' ?><br>

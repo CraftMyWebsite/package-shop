@@ -34,7 +34,7 @@ class ShopPaymentMethodCoinbaseController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendCoinbasePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
+    public function sendCoinbasePayment(array $cartItems): void
     {
         if (!$this->isCryptoConfigComplete()) {
             throw new ShopPaymentException(message: 'Stripe config is not complete');

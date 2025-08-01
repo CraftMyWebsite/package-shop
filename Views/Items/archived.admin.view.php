@@ -50,14 +50,21 @@ $description = '';
         </tr>
         </thead>
         <tbody>
+        <?php
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        ?>
+
         <?php foreach ($items->getShopArchivedItems() as $item): ?>
-            <tr>
+            <?php
+            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+            $isInvalid =
+                ($shopType === 'virtual' && $itemType === 0) ||
+                ($shopType === 'physical' && $itemType === 1);
+            ?>
+            <tr style="<?= $isInvalid ? 'opacity: 0.6;' : '' ?>">
                 <td class="text-center" style="width: 6rem; height: 6rem;">
-                    <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
-                    $v = 0;
-                    foreach ($getImagesItem as $countImage) {
-                        $v++;
-                    } ?>
+                    <?php $getImagesItem = $imagesItem->getShopImagesByItem($item->getId()); ?>
+                    <?php $v = count($getImagesItem); ?>
                     <?php if ($getImagesItem): ?>
                         <?php if ($v !== 1): ?>
                             <div class="slider-container relative w-full max-w-2xl mx-auto" data-height="80px">
@@ -66,7 +73,7 @@ $description = '';
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
+                            <?php foreach ($getImagesItem as $imageUrl): ?>
                                 <img style="width: 6rem; max-height: 6rem; object-fit: contain"
                                      src="<?= $imageUrl->getImageUrl() ?>" class="p-2 d-block"
                                      alt="..."/>
@@ -79,7 +86,10 @@ $description = '';
                     <?php endif; ?>
                 </td>
                 <td style="width: fit-content;">
-                    <h6><?= mb_strimwidth($item->getName(), 0, 30, '...') ?></h6>
+                    <h6>
+                        <?= mb_strimwidth($item->getName(), 0, 30, '...') ?>
+                    </h6>
+                    <span class="badge-info"><?= $item->getType() ? 'Virtuel' : 'Physique' ?></span>
                 </td>
                 <?php if ($allowReviews): ?>
                     <td class="text-center">
@@ -99,14 +109,14 @@ $description = '';
                     <?= $item->getAdminFormattedStock() ?>
                 </td>
                 <td class="text-center space-x-2">
-                    <button data-modal-toggle="modal-push-<?= $item->getId() ?>" type="button">
-                        <i data-bs-toggle="tooltip" title="Activer" class="text-success fas fa-rocket"></i>
+                    <button data-modal-toggle="modal-push-<?= $item->getId() ?>" type="button"
+                        <?= $isInvalid ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '' ?>>
+                        <i data-bs-toggle="tooltip" title="<?= $isInvalid ? 'Incompatible avec le mode de boutique actuel' : 'Activer' ?>"
+                           class="text-success fas fa-rocket"></i>
                     </button>
                 </td>
             </tr>
-            <!--
-             --MODAL PUSH ARTICLE--
-             -->
+
             <div id="modal-push-<?= $item->getId() ?>" class="modal-container">
                 <div class="modal">
                     <div class="modal-header">
@@ -114,13 +124,21 @@ $description = '';
                         <button type="button" data-modal-hide="modal-push-<?= $item->getId() ?>"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="modal-body">
-                        <p><?= LangManager::translate('shop.views.items.archived.unarchive-warn') ?></p>
+                        <?php if ($isInvalid): ?>
+                            <p class="text-danger">Cet article ne peut pas être réactivé avec le type de boutique actuel.</p>
+                        <?php else: ?>
+                            <p><?= LangManager::translate('shop.views.items.archived.unarchive-warn') ?></p>
+                        <?php endif; ?>
                     </div>
                     <div class="modal-footer">
-                        <a href="activate/<?= $item->getId() ?>"
-                           class="btn-primary">
-                            <?= LangManager::translate('shop.views.items.archived.confirm') ?>
-                        </a>
+                        <?php if (!$isInvalid): ?>
+                            <a href="activate/<?= $item->getId() ?>"
+                               class="btn-primary">
+                                <?= LangManager::translate('shop.views.items.archived.confirm') ?>
+                            </a>
+                        <?php else: ?>
+                            <button class="btn-secondary" disabled>Action impossible</button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

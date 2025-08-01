@@ -585,6 +585,20 @@ class ShopCartItemModel extends AbstractModel
         return $db->prepare($sql)->execute($data);
     }
 
+    public function removeItemFromCart(?int $userId, string $sessionId, int $itemId): void
+    {
+        $cart = ShopCartModel::getInstance()->getShopCartsByUserOrSessionId($userId, $sessionId);
+        if (!$cart) return;
+
+        $sql = 'DELETE FROM cmw_shops_cart_items WHERE shop_cart_id = :cart_id AND shop_item_id = :item_id';
+        $db = DatabaseManager::getInstance();
+        $db->prepare($sql)->execute([
+            'cart_id' => $cart->getId(),
+            'item_id' => $itemId
+        ]);
+    }
+
+
     public function itemIsInCart(?int $itemId, ?int $userId, string $sessionId): bool
     {
         if ($itemId === null) {

@@ -54,7 +54,7 @@ class ShopCommandController extends AbstractController
         $appliedCartDiscounts = ShopDiscountService::getInstance()->getAppliedCartDiscounts($userId, $sessionId);
 
         // Récupère les adresses
-        $userAddresses = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
+        $userAddresses = ShopCommandService::getInstance()->isShopVirtualOnly() ? [] : ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressByUserId($userId);
 
         // Initialise le tunnel si besoin
         if (!ShopCommandTunnelModel::getInstance()->tunnelExist($userId)) {
@@ -63,6 +63,7 @@ class ShopCommandController extends AbstractController
 
         // Vérifie la santé des items
         ShopCartController::getInstance()->handleItemHealth($userId, $sessionId);
+        ShopCartController::getInstance()->handleIncompatibleCartItems($userId, $sessionId);
 
         // Vérifications pré-commande
         ShopCartValidationService::getInstance()->validateBeforeCommand($userId,$sessionId,$cartContent);
@@ -82,12 +83,18 @@ class ShopCommandController extends AbstractController
     #[NoReturn] #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
     private function publicCreateAddressPost(): void
     {
+        if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            Redirect::redirectPreviousRoute();
+        }
         ShopCommandStepService::getInstance()->createAddress();
     }
 
     #[NoReturn] #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
     private function publicAddAddressPost(): void
     {
+        if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            Redirect::redirectPreviousRoute();
+        }
         ShopCommandStepService::getInstance()->addAddress();
     }
 
@@ -95,6 +102,9 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toDelivery', Link::POST, ['.*?'], '/shop')]
     private function publicToDeliveryPost(): void
     {
+        if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            Redirect::redirectPreviousRoute();
+        }
         ShopCommandStepService::getInstance()->toDelivery();
     }
 
@@ -102,6 +112,9 @@ class ShopCommandController extends AbstractController
     #[Link('/command/toAddress', Link::POST, ['.*?'], '/shop')]
     private function publicToAddressPost(): void
     {
+        if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            Redirect::redirectPreviousRoute();
+        }
         ShopCommandStepService::getInstance()->toAddress();
     }
 

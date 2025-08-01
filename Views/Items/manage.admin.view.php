@@ -17,6 +17,7 @@ Website::setDescription("");
 /* @var CMW\Model\Shop\Review\ShopReviewsModel $review */
 /* @var ShopSettingsModel $allowReviews */
 /* @var ?MailConfigEntity $mailConfig */
+/* @var string $shopType */
 
 ?>
 <div class="page-title">
@@ -55,15 +56,18 @@ Website::setDescription("");
         </thead>
         <tbody>
         <?php foreach ($items as $item): ?>
-            <tr>
-                <td class="text-center" style="width: 6rem; height: 6rem;">
+            <?php
+            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+            $invalidType = (
+                ($shopType === 'virtual' && $itemType === 0) ||
+                ($shopType === 'physical' && $itemType === 1)
+            );
+            ?>
+            <tr style="<?= $invalidType ? 'opacity: 0.6;' : '' ?>">
+            <td class="text-center" style="width: 6rem; height: 6rem;">
                     <?php
                     $getImagesItem = $imagesItem->getShopImagesByItem($item->getId());
-                    //TODO Improve that.
-                    $v = 0;
-                    foreach ($getImagesItem as $countImage) {
-                        $v++;
-                    }
+                    $v = count($getImagesItem);
                     ?>
                     <?php if ($getImagesItem): ?>
                         <?php if ($v !== 1): ?>
@@ -73,7 +77,7 @@ Website::setDescription("");
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
+                            <?php foreach ($getImagesItem as $imageUrl): ?>
                                 <img style="width: 6rem; max-height: 6rem; object-fit: contain"
                                      src="<?= $imageUrl->getImageUrl() ?>" class="p-2 d-block"
                                      alt="..."/>
@@ -86,11 +90,15 @@ Website::setDescription("");
                     <?php endif; ?>
                 </td>
                 <td style="width: fit-content;">
-                    <h6><?= mb_strimwidth($item->getName(), 0, 30, '...') ?></h6>
+                    <h6 >
+                        <?= mb_strimwidth($item->getName(), 0, 30, '...') ?>
+                    </h6>
+                    <span class="badge-info"><?= $item->getType() ? 'Virtuel' : 'Physique' ?></span>
+                    <br>
                     <?php if ($item->isDraft()): ?>
-                        <small class="cursor-pointer" data-tooltip-target="tooltip-top" data-tooltip-placement="top"><i
+                        <small class="cursor-pointer" data-tooltip-target="tooltip-draft-<?= $item->getId() ?>" data-tooltip-placement="top"><i
                                 class="fa-solid fa-circle-info"></i> <?= LangManager::translate('shop.views.items.manage.draft') ?></small>
-                        <div id="tooltip-top" role="tooltip" class="tooltip-content">
+                        <div id="tooltip-draft-<?= $item->getId() ?>" role="tooltip" class="tooltip-content">
                             <?= LangManager::translate('shop.views.items.manage.draft-tooltip') ?>
                         </div>
                     <?php endif; ?>
@@ -120,39 +128,61 @@ Website::setDescription("");
                     <?= $item->getQuantityInCart() ?>
                 </td>
                 <td class="text-center space-x-2">
+                    <?php if (!$invalidType): ?>
                     <a href="<?= $item->getItemLink() ?>" target="_blank">
                         <i data-bs-toggle="tooltip" title="Voir le rendue"
-                           class="text-success me-3 fa-solid fa-up-right-from-square"></i>
+                           class="text-success fa-solid fa-up-right-from-square"></i>
                     </a>
-                    <a href="items/edit/<?= $item->getId() ?>">
-                        <i data-bs-toggle="tooltip" title="Éditer" class="text-info me-3 fa-solid fa-edit"></i>
-                    </a>
+                    <?php else: ?>
+                        <i class="text-secondary fa-solid fa-up-right-from-square" data-tooltip-target="tooltip-noView-<?= $item->getId() ?>" data-tooltip-placement="top"></i>
+                        <div id="tooltip-noView-<?= $item->getId() ?>" role="tooltip" class="tooltip-content">
+                            Visualisation désactivée dans ce mode de boutique
+                        </div>
+                    <?php endif; ?>
+                    <?php if (!$invalidType): ?>
+                        <a href="items/edit/<?= $item->getId() ?>">
+                            <i data-bs-toggle="tooltip" title="Éditer" class="text-info fa-solid fa-edit"></i>
+                        </a>
+                    <?php else: ?>
+                        <i class="text-secondary fa-solid fa-edit" data-tooltip-target="tooltip-noEdit-<?= $item->getId() ?>" data-tooltip-placement="top"></i>
+                        <div id="tooltip-noEdit-<?= $item->getId() ?>" role="tooltip" class="tooltip-content">
+                            Édition désactivée dans ce mode de boutique
+                        </div>
+                    <?php endif; ?>
+                    <?php if (!$invalidType): ?>
                     <button data-modal-toggle="modal-delete-<?= $item->getId() ?>" type="button">
                         <i data-bs-toggle="tooltip" title="Supprimé" class="text-danger fas fa-trash-alt"></i>
                     </button>
+                    <?php else: ?>
+                        <i class="text-secondary fas fa-trash-alt" data-tooltip-target="tooltip-noDelete-<?= $item->getId() ?>" data-tooltip-placement="top"></i>
+                        <div id="tooltip-noDelete-<?= $item->getId() ?>" role="tooltip" class="tooltip-content">
+                            Suppression désactivée dans ce mode de boutique
+                        </div>
+                    <?php endif; ?>
                 </td>
             </tr>
-            <!--
-             --MODAL SUPPRESSION ARTICLE--
-             -->
-            <div id="modal-delete-<?= $item->getId() ?>" class="modal-container">
-                <div class="modal">
-                    <div class="modal-header-danger">
-                        <h6><?= LangManager::translate('shop.views.items.manage.remove', ['name' => $item->getName()]) ?></h6>
-                        <button type="button" data-modal-hide="modal-delete-<?= $item->getId() ?>"><i
-                                class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="modal-body">
-                        <p><?= LangManager::translate('shop.views.items.manage.remove-warn') ?></p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="items/delete/<?= $item->getId() ?>"
-                           class="btn-danger"><?= LangManager::translate('core.btn.delete') ?>
-                        </a>
+
+            <?php if (!$invalidType): ?>
+                <div id="modal-delete-<?= $item->getId() ?>" class="modal-container">
+                    <div class="modal">
+                        <div class="modal-header-danger">
+                            <h6><?= LangManager::translate('shop.views.items.manage.remove', ['name' => $item->getName()]) ?></h6>
+                            <button type="button" data-modal-hide="modal-delete-<?= $item->getId() ?>"><i
+                                    class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><?= LangManager::translate('shop.views.items.manage.remove-warn') ?></p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="items/delete/<?= $item->getId() ?>"
+                               class="btn-danger"><?= LangManager::translate('core.btn.delete') ?>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php endif; ?>
         <?php endforeach; ?>
+
         </tbody>
     </table>
 </div>

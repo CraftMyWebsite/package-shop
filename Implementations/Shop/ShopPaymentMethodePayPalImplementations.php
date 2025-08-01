@@ -3,14 +3,13 @@
 namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodPayPalController;
-use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Interface\Shop\IPaymentMethodV2;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
+class ShopPaymentMethodePayPalImplementations implements IPaymentMethodV2
 {
     public function name(): string
     {
@@ -79,8 +78,8 @@ class ShopPaymentMethodePayPalImplementations implements IPaymentMethod
         require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Payments/paypal.config.inc.view.php';
     }
 
-    public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
+    public function doPayment(array $cartItems, UserEntity $user): void
     {
-        ShopPaymentMethodPayPalController::getInstance()->sendPayPalPayment($cartItems, $address);
+        ShopPaymentMethodPayPalController::getInstance()->sendPayPalPayment($cartItems);
     }
 }

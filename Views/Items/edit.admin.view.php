@@ -216,11 +216,29 @@ foreach ($itemVariants as $itemVariant) {
                     </div>
                 </div>
                 <div>
-                    <label><?= LangManager::translate('shop.views.items.add.type') ?><span style="color: red">*</span> :</label>
-                    <select id="type" class="form-select super-choice" name="shop_item_type" onchange="afficherChamps()" required>
-                        <option value="1" <?= $item->getType() === 1 ? 'selected' : '' ?>><?= LangManager::translate('shop.views.items.add.virtual') ?></option>
-                        <option value="0" <?= $item->getType() === 0 ? 'selected' : '' ?>><?= LangManager::translate('shop.views.items.add.physical') ?></option>
+                    <label>
+                        <?= LangManager::translate('shop.views.items.add.type') ?><span style="color: red">*</span> :
+                    </label>
+                    <select id="type"
+                            class="form-select super-choice"
+                            name="shop_item_type"
+                            onchange="afficherChamps()"
+                        <?= $isLocked ? 'disabled' : '' ?>
+                            required>
+                        <option value="1" <?= $itemType === 1 ? 'selected' : '' ?>>
+                            <?= LangManager::translate('shop.views.items.add.virtual') ?>
+                        </option>
+                        <option value="0" <?= $itemType === 0 ? 'selected' : '' ?>>
+                            <?= LangManager::translate('shop.views.items.add.physical') ?>
+                        </option>
                     </select>
+
+                    <?php if ($isLocked): ?>
+                        <input type="hidden" name="shop_item_type" value="<?= $itemType ?>">
+                        <small style="display:block; color: gray; margin-top: 0.25rem;">
+                            <?= htmlspecialchars($reason) ?>
+                        </small>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="card mt-6">

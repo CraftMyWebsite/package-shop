@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Cart;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Lang\LangManager;
@@ -55,6 +56,7 @@ class ShopCartController extends AbstractController
         $this->handleSessionHealth($sessionId);
 
         $this->handleItemHealth($userId, $sessionId);
+        $this->handleIncompatibleCartItems($userId, $sessionId);
 
         ShopDiscountModel::getInstance()->autoStatusChecker();
 
@@ -115,6 +117,38 @@ class ShopCartController extends AbstractController
             Flash::send(Alert::INFO, 'Boutique', "Certain article du panier n'existe plus. et nous ne somme malheureusement pas en mesure de le récupérer.");
         }
     }
+
+    public function handleIncompatibleCartItems(?int $userId, string $sessionId): void
+    {
+        $cartItems = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
+        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+
+        $removed = false;
+
+        foreach ($cartItems as $itemCart) {
+            $item = $itemCart->getItem();
+            if (!$item) {
+                continue;
+            }
+
+            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+
+            $isInvalid =
+                ($shopType === 'virtual' && $itemType === 0) ||
+                ($shopType === 'physical' && $itemType === 1);
+
+            if ($isInvalid) {
+                ShopCartItemModel::getInstance()->removeItemFromCart($userId, $sessionId, $item->getId());
+                $removed = true;
+            }
+        }
+
+        if ($removed) {
+            Flash::send(Alert::INFO, 'Boutique', "Certains articles ont été retirés du panier car ils ne sont plus compatibles avec la configuration actuelle de la boutique.");
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop/cart');
+        }
+    }
+
 
     public function handleStock(ShopCartItemEntity $itemCart, int $itemId, int $quantity, ?int $userId, string $sessionId): void
     {

@@ -56,4 +56,13 @@ class ShopCommandService extends AbstractController
     {
         return ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
     }
+
+    /**
+     * @return bool
+     */
+    public function isShopVirtualOnly(): bool
+    {
+        return ShopSettingsModel::getInstance()->getSettingValue('shopType') === 'virtual';
+    }
+
 }

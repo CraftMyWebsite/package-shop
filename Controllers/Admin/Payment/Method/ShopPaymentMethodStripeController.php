@@ -37,7 +37,7 @@ class ShopPaymentMethodStripeController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendStripePayment(array $cartItems, ShopDeliveryUserAddressEntity $address): void
+    public function sendStripePayment(array $cartItems): void
     {
         if (!$this->isStripeConfigComplete()) {
             throw new ShopPaymentException(message: 'Stripe config is not complete');

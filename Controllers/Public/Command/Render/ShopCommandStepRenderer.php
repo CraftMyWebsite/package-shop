@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Public\Command\Renderer;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Controller\Shop\Public\Command\Service\ShopCommandService;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Notification\NotificationManager;
@@ -37,6 +38,11 @@ class ShopCommandStepRenderer extends AbstractController
         $imagesItem = ShopImagesModel::getInstance();
         $defaultImage = $imagesItem->getDefaultImg();
 
+        if ($cartOnlyVirtual && ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            $this->renderPaymentChoice($cartContent, $imagesItem, $defaultImage, $appliedCartDiscounts, true, $cartIsFree, $priceType, $tunnel);
+            return;
+        }
+
         if (empty($userAddresses)) {
             $this->renderNewAddressForm($cartContent, $imagesItem, $defaultImage, $appliedCartDiscounts);
             return;
@@ -45,7 +51,7 @@ class ShopCommandStepRenderer extends AbstractController
         if ($step === 0) {
             $this->renderAddressChoice($cartContent, $imagesItem, $defaultImage, $appliedCartDiscounts, $userAddresses);
         } elseif ($step === 1) {
-            if ($cartOnlyVirtual) {
+            if ($cartOnlyVirtual && ShopCommandService::getInstance()->isShopVirtualOnly()) {
                 ShopCommandTunnelModel::getInstance()->skipShippingNext($userId);
                 Redirect::redirectPreviousRoute();
             } else {
@@ -167,11 +173,13 @@ class ShopCommandStepRenderer extends AbstractController
      */
     private function renderPaymentChoice(array $cartContent, $imagesItem, $defaultImage, array $appliedCartDiscounts, bool $cartOnlyVirtual, bool $cartIsFree, string $priceType, $tunnel): void
     {
-        $addressId = $tunnel->getShopDeliveryUserAddress()->getId();
-        $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
-
+        $selectedAddress = null;
         $shippingMethod = null;
-        if (!$cartOnlyVirtual) {
+        $isVirtualOnly = ShopCommandService::getInstance()->isShopVirtualOnly();
+
+        if (!$cartOnlyVirtual || !$isVirtualOnly) {
+            $addressId = $tunnel->getShopDeliveryUserAddress()->getId();
+            $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
             $shippingId = $tunnel->getShipping()?->getId();
             if (is_null($shippingId)) {
                 Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoi n\'existe plus !');
@@ -195,7 +203,7 @@ class ShopCommandStepRenderer extends AbstractController
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->addVariableList(compact(
                 'cartContent', 'imagesItem', 'defaultImage', 'selectedAddress',
-                'shippingMethod', 'paymentMethods', 'appliedCartDiscounts'
+                'shippingMethod', 'paymentMethods', 'appliedCartDiscounts', 'isVirtualOnly'
             ))
             ->view();
     }

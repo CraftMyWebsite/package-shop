@@ -3,14 +3,13 @@
 namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodStripeController;
-use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
 use CMW\Entity\Users\UserEntity;
-use CMW\Interface\Shop\IPaymentMethod;
+use CMW\Interface\Shop\IPaymentMethodV2;
 use CMW\Manager\Env\EnvManager;
 use CMW\Model\Shop\Payment\ShopPaymentMethodSettingsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 
-class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
+class ShopPaymentMethodeStripeImplementations implements IPaymentMethodV2
 {
     public function name(): string
     {
@@ -79,8 +78,8 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethod
         require_once EnvManager::getInstance()->getValue('DIR') . 'App/Package/Shop/Views/Elements/Payments/stripe.config.inc.view.php';
     }
 
-    public function doPayment(array $cartItems, UserEntity $user, ShopDeliveryUserAddressEntity $address): void
+    public function doPayment(array $cartItems, UserEntity $user): void
     {
-        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems, $address);
+        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems);
     }
 }
