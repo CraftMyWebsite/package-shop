@@ -104,12 +104,22 @@ switch ($attributs) {
                 iconSize: [30, 30],
                 popupAnchor: [0, -8]
             })
-        }).addTo(map).bindPopup(`
-<b><i class="fa-solid fa-circle-check fa-beat-fade fa-lg" style="color: #46db0f;"></i> ${point.name}</b>
-<div style="margin-top: 5px">${point.address}<br>
-${point.postalCode} ${point.city}<br>
-${point.country}</div>
-`);
+        }).addTo(map);
+
+        const popupContent = document.createElement('div');
+        const title = document.createElement('b');
+        const icon = document.createElement('i');
+        icon.className = "fa-solid fa-circle-check fa-beat-fade fa-lg";
+        icon.style.color = "#46db0f";
+        title.appendChild(icon);
+        title.appendChild(document.createTextNode(" " + point.name));
+        const address = document.createElement('div');
+        address.style.marginTop = "5px";
+        address.innerHTML = `${point.address}<br>${point.postalCode} ${point.city}<br>${point.country}`;
+        popupContent.appendChild(title);
+        popupContent.appendChild(address);
+
+        marker.bindPopup(popupContent);
 
         markers[point.id] = marker;
 
