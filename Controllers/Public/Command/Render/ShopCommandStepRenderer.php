@@ -51,7 +51,7 @@ class ShopCommandStepRenderer extends AbstractController
         if ($step === 0) {
             $this->renderAddressChoice($cartContent, $imagesItem, $defaultImage, $appliedCartDiscounts, $userAddresses);
         } elseif ($step === 1) {
-            if ($cartOnlyVirtual && ShopCommandService::getInstance()->isShopVirtualOnly()) {
+            if ($cartOnlyVirtual) {
                 ShopCommandTunnelModel::getInstance()->skipShippingNext($userId);
                 Redirect::redirectPreviousRoute();
             } else {
@@ -177,9 +177,10 @@ class ShopCommandStepRenderer extends AbstractController
         $shippingMethod = null;
         $isVirtualOnly = ShopCommandService::getInstance()->isShopVirtualOnly();
 
-        if (!$cartOnlyVirtual || !$isVirtualOnly) {
-            $addressId = $tunnel->getShopDeliveryUserAddress()->getId();
-            $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId);
+        if (!$cartOnlyVirtual && !$isVirtualOnly) {
+            $addressId = $tunnel->getShopDeliveryUserAddress()?->getId();
+            $selectedAddress = $addressId ? ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($addressId) : null;
+
             $shippingId = $tunnel->getShipping()?->getId();
             if (is_null($shippingId)) {
                 Flash::send(Alert::ERROR, 'Boutique', 'Cette méthode d\'envoi n\'existe plus !');
