@@ -118,11 +118,13 @@ class ShopActionsCartController extends AbstractController
 
         $this->handlePriceType($userId, $sessionId, $itemId);
 
-        $selectedVariants = $_POST['selected_variantes'];
+        if (ShopItemVariantModel::getInstance()->itemHasVariant($itemId)) {
+            $selectedVariants = $_POST['selected_variantes'];
 
-        if (!is_array($selectedVariants) || in_array('', $selectedVariants, true)) {
-            Flash::send(Alert::INFO, 'Boutique', 'Veuillez choisir une variante.');
-            Redirect::redirectPreviousRoute();
+            if (!is_array($selectedVariants) || in_array('', $selectedVariants, true)) {
+                Flash::send(Alert::INFO, 'Boutique', 'Veuillez choisir une variante.');
+                Redirect::redirectPreviousRoute();
+            }
         }
 
         $this->handleSessionHealth($sessionId);
