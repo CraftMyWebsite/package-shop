@@ -94,19 +94,28 @@ class ShopSettingsController extends AbstractController
             }
         }
 
-        [$currency, $showAfter, $allowReviews, $stockAlert, $perPage, $shopType, $maintenance, $maintenanceMessage, $autoValidateVirtual, $showPublicStock] = Utils::filterInput('currency', 'showAfter', 'allowReviews', 'stockAlert', 'perPage', 'shopType' ,'maintenance', 'maintenanceMessage', 'autoValidateVirtual', 'showPublicStock');
-        $symbol = self::$availableCurrencies[$currency]['symbol'] ?? '€';
-        ShopSettingsModel::getInstance()->updateSetting('currency', $currency);
-        ShopSettingsModel::getInstance()->updateSetting('symbol', $symbol);
-        ShopSettingsModel::getInstance()->updateSetting('after', $showAfter);
-        ShopSettingsModel::getInstance()->updateSetting('reviews', $allowReviews ?? 0);
-        ShopSettingsModel::getInstance()->updateSetting('stockAlert', $stockAlert);
-        ShopSettingsModel::getInstance()->updateSetting('perPage', $perPage);
-        ShopSettingsModel::getInstance()->updateSetting('shopType', $shopType);
-        ShopSettingsModel::getInstance()->updateSetting('maintenance', $maintenance ?? 0);
-        ShopSettingsModel::getInstance()->updateSetting('maintenanceMessage', $maintenanceMessage);
-        ShopSettingsModel::getInstance()->updateSetting('autoValidateVirtual', $autoValidateVirtual ?? 0);
-        ShopSettingsModel::getInstance()->updateSetting('showPublicStock', $showPublicStock ?? 0);
+        $inputKeys = ['currency', 'showAfter', 'allowReviews', 'stockAlert', 'perPage', 'shopType', 'maintenance', 'maintenanceMessage', 'autoValidateVirtual', 'showPublicStock'];
+
+        [$currency, $showAfter, $allowReviews, $stockAlert, $perPage, $shopType, $maintenance, $maintenanceMessage, $autoValidateVirtual, $showPublicStock] = Utils::filterInput(...$inputKeys);
+
+        $settings = [
+            'currency' => $currency,
+            'symbol' => self::$availableCurrencies[$currency]['symbol'] ?? '€',
+            'after' => $showAfter,
+            'reviews' => $allowReviews ?? 0,
+            'stockAlert' => $stockAlert,
+            'perPage' => $perPage,
+            'shopType' => $shopType,
+            'maintenance' => $maintenance ?? 0,
+            'maintenanceMessage' => $maintenanceMessage,
+            'autoValidateVirtual' => $autoValidateVirtual ?? 0,
+            'showPublicStock' => $showPublicStock ?? 0
+        ];
+
+        $model = ShopSettingsModel::getInstance();
+        foreach ($settings as $key => $value) {
+            $model->updateSetting($key, $value);
+        }
 
         Flash::send(Alert::SUCCESS, 'Boutique', 'Configuration appliqué !');
         Redirect::redirectPreviousRoute();
