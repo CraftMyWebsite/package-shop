@@ -120,6 +120,11 @@ class ShopActionsCartController extends AbstractController
 
         $selectedVariants = $_POST['selected_variantes'];
 
+        if (!is_array($selectedVariants) || in_array('', $selectedVariants, true)) {
+            Flash::send(Alert::INFO, 'Boutique', 'Veuillez choisir une variante.');
+            Redirect::redirectPreviousRoute();
+        }
+
         $this->handleSessionHealth($sessionId);
 
         $this->handleAddToCartVerification($itemId, $userId, $sessionId, $quantity);

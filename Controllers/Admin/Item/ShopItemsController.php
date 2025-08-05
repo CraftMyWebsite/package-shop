@@ -13,9 +13,12 @@ use CMW\Manager\Events\Emitter;
 use CMW\Manager\Filter\FilterManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
+use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Loader\Loader;
 use CMW\Manager\Package\AbstractController;
 use CMW\Manager\Router\Link;
+use CMW\Manager\Uploads\ImagesException;
+use CMW\Manager\Uploads\ImagesManager;
 use CMW\Manager\Views\View;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Cart\ShopCartItemModel;
@@ -182,11 +185,34 @@ class ShopItemsController extends AbstractController
             foreach ($variantNames as $parentIndex => $variantName) {
                 $variantId = ShopItemVariantModel::getInstance()->createVariant($variantName, $itemId);
 
-                foreach ($variantValues[$parentIndex] as $variantValue) {
+                foreach ($variantValues[$parentIndex] as $index => $variantValue) {
                     if (empty($variantValue)) {
                         continue;
                     }
-                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId?->getId());
+
+                    $imageName = null;
+
+                    if (isset($_FILES['shop_item_variant_value_image']['name'][$parentIndex][$index]) &&
+                        $_FILES['shop_item_variant_value_image']['error'][$parentIndex][$index] === UPLOAD_ERR_OK) {
+
+                        $image = [
+                            'name' => $_FILES['shop_item_variant_value_image']['name'][$parentIndex][$index],
+                            'type' => $_FILES['shop_item_variant_value_image']['type'][$parentIndex][$index],
+                            'tmp_name' => $_FILES['shop_item_variant_value_image']['tmp_name'][$parentIndex][$index],
+                            'error' => $_FILES['shop_item_variant_value_image']['error'][$parentIndex][$index],
+                            'size' => $_FILES['shop_item_variant_value_image']['size'][$parentIndex][$index],
+                        ];
+
+                        try {
+                            $imageName = ImagesManager::convertAndUpload($image, 'Shop/Variants');
+                        } catch (ImagesException $e) {
+                            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                                LangManager::translate('core.errors.upload.image'));
+                            Redirect::redirectPreviousRoute();
+                        }
+                    }
+
+                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId?->getId(), $imageName);
                 }
             }
         }
@@ -339,15 +365,44 @@ class ShopItemsController extends AbstractController
             ShopItemVariantModel::getInstance()->clearVariants($id);
             ShopCartItemModel::getInstance()->removeItemForAllCart($id);
             // todo notify user item has been removed bcs variantes changed
+
+            $variantImages = $_POST['shop_item_variant_value_image'] ?? [];
+
             foreach ($variantNames as $parentIndex => $variantName) {
                 $variantId = ShopItemVariantModel::getInstance()->createVariant($variantName, $id);
-                foreach ($variantValues[$parentIndex] as $variantValue) {
 
+                foreach ($variantValues[$parentIndex] as $index => $variantValue) {
                     if (empty($variantValue)) {
                         continue;
                     }
 
-                    ShopItemVariantValueModel::getInstance()->addVariantValue($variantValue, $variantId?->getId());
+                    $imageName = $variantImages[$parentIndex][$index] ?? null;
+
+                    if (isset($_FILES['shop_item_variant_value_image']['name'][$parentIndex][$index]) &&
+                        $_FILES['shop_item_variant_value_image']['error'][$parentIndex][$index] === UPLOAD_ERR_OK) {
+
+                        $image = [
+                            'name' => $_FILES['shop_item_variant_value_image']['name'][$parentIndex][$index],
+                            'type' => $_FILES['shop_item_variant_value_image']['type'][$parentIndex][$index],
+                            'tmp_name' => $_FILES['shop_item_variant_value_image']['tmp_name'][$parentIndex][$index],
+                            'error' => $_FILES['shop_item_variant_value_image']['error'][$parentIndex][$index],
+                            'size' => $_FILES['shop_item_variant_value_image']['size'][$parentIndex][$index],
+                        ];
+
+                        try {
+                            $imageName = ImagesManager::convertAndUpload($image, 'Shop/Variants');
+                        } catch (ImagesException $e) {
+                            Flash::send(Alert::ERROR, LangManager::translate('core.toaster.error'),
+                                LangManager::translate('core.errors.upload.image'));
+                            Redirect::redirectPreviousRoute();
+                        }
+                    }
+
+                    ShopItemVariantValueModel::getInstance()->addVariantValue(
+                        $variantValue,
+                        $variantId?->getId(),
+                        $imageName
+                    );
                 }
             }
         } elseif (ShopItemVariantModel::getInstance()->itemHasVariant($id)) {

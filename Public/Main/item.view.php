@@ -96,11 +96,11 @@ Website::setDescription("Venez découvrir l'article !");
                     <?php else: ?>
                         <?php foreach ($imagesItem->getShopImagesByItem($item->getId()) as $imageUrl): ?>
                             <img alt="shop product" class="shop-solo-img-5678451"
-                                 src="<?= $imageUrl->getImageUrl() ?>">
+                                 src="<?= $imageUrl->getImageUrl() ?>" data-default-image="<?= $imageUrl->getImageUrl() ?>">
                         <?php endforeach; ?>
                     <?php endif; ?>
                 <?php else: ?>
-                    <img alt="shop product" class="shop-solo-img-5678451"
+                    <img alt="shop product" class="shop-solo-img-5678451" data-default-image="<?= $defaultImage ?>"
                          src="<?= $defaultImage ?>">
                 <?php endif; ?>
             </div>
@@ -132,8 +132,9 @@ Website::setDescription("Venez découvrir l'article !");
                                     <?= $itemVariant->getName() ?> :
                                 </div>
                                 <select name="selected_variantes[]" class="shop-select-5872154">
+                                    <option value="" selected>Veuillez choisir...</option>
                                     <?php foreach ($variantValuesModel->getShopItemVariantValueByVariantId($itemVariant->getId()) as $variantValue): ?>
-                                        <option value="<?= $variantValue->getId() ?>"><?= $variantValue->getValue() ?></option>
+                                        <option data-image="<?= $variantValue->getImageLink()?>" value="<?= $variantValue->getId() ?>"><?= $variantValue->getValue() ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -256,4 +257,46 @@ Website::setDescription("Venez découvrir l'article !");
             document.getElementById(this.dataset.tab).classList.add('active');
         });
     });
+</script>
+
+<script>
+    document.querySelectorAll('select[name="selected_variantes[]"]').forEach(select => {
+        select.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const image = selectedOption.dataset.image;
+
+            if (selectedOption.value === "") {
+                restoreDefaultImage();
+                return;
+            }
+
+            if (!image) {
+                return;
+            }
+
+            const soloImg = document.querySelector('.shop-solo-img-5678451');
+            const carouselWrapper = document.querySelector('.shop-carousel-wrapper-48721565');
+            const carouselIndicators = document.querySelector('.shop-carousel-indicators-6478454');
+
+            if (soloImg) {
+                soloImg.src = image;
+            } else if (carouselWrapper && carouselIndicators) {
+                carouselWrapper.innerHTML = `
+                <div class="shop-carousel-item-698757845 active" data-carousel-item>
+                    <img style="all: inherit" src="${image}" class="shop-carousel-img-548754" alt="Variante">
+                </div>
+            `;
+                carouselIndicators.innerHTML = '';
+            }
+        });
+    });
+
+    function restoreDefaultImage() {
+        const soloImg = document.querySelector('.shop-solo-img-5678451');
+        if (soloImg) {
+            soloImg.src = soloImg.dataset.defaultImage; // doit être ajouté dans le HTML
+            return;
+        }
+        location.reload(); // fallback pour les carousels
+    }
 </script>

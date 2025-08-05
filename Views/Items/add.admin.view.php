@@ -117,7 +117,7 @@ $description = '';
                         <button class="btn btn-primary" type="button" onclick="ajouterVariante()"><?= LangManager::translate('core.btn.add') ?></button>
                     </div>
                 </div>
-                <p><?= LangManager::translate('shop.views.items.add.variants-tooltip') ?></p>
+                <p class="alert-info"><?= LangManager::translate('shop.views.items.add.variants-tooltip') ?></p>
                 <div id="variantsContainer"></div>
         </div>
     </div>
@@ -256,12 +256,6 @@ $description = '';
             document.getElementById("variantsContainer").removeChild(varianteContainer);
         };
 
-        let inputValeur = document.createElement("input");
-        inputValeur.className = "input";
-        inputValeur.name = "shop_item_variant_value[" + index + "][]";
-        inputValeur.placeholder = "<?= LangManager::translate('shop.views.items.add.red') ?>";
-        inputValeur.required = true;
-
         let labelValeurDiv = document.createElement("div")
         labelValeurDiv.className = "flex justify-between";
 
@@ -271,8 +265,9 @@ $description = '';
         // Ajouter un bouton "Ajouter une valeur"
         let boutonAjouterValeur = document.createElement("a");
         boutonAjouterValeur.textContent = "+ <?= LangManager::translate('shop.views.items.add.add-value') ?>";
-        boutonAjouterValeur.className = "text-success font-bold";
+        boutonAjouterValeur.className = "btn-success-sm font-bold";
         boutonAjouterValeur.type = "button";
+        boutonAjouterValeur.style.cursor = "pointer";
         boutonAjouterValeur.onclick = function() {
             ajouterValeur(valueContainer, index);
         };
@@ -297,7 +292,6 @@ $description = '';
         nameContainer.appendChild(boutonSupprimer);
         row.appendChild(valueContainer);
         valueContainer.appendChild(labelValeurDiv);
-        valueContainer.appendChild(inputValeur);
 
         // Ajouter le conteneur au conteneur principal
         document.getElementById("variantsContainer").appendChild(varianteContainer);
@@ -307,29 +301,60 @@ $description = '';
 
 
         function ajouterValeur(container, parentIndex) {
-            let inputDiv = document.createElement("div");
-            inputDiv.className = "flex gap-2 item-center mt-2";
+            const wrapper = document.createElement("div");
+            wrapper.className = "grid-3 card border dark:border-gray-600 rounded-lg relative mt-2";
 
-            let inputValeur = document.createElement("input");
+            // Champ image
+            const imageWrapper = document.createElement("div");
+
+            const labelImage = document.createElement("label");
+            labelImage.setAttribute("for", `file_input_${parentIndex}`);
+            labelImage.innerHTML = `Image de valeur <small>(optionnel)</small> :`;
+
+            const imageInput = document.createElement("input");
+            imageInput.type = "file";
+            imageInput.accept = "image/*";
+            imageInput.name = `shop_item_variant_value_image[${parentIndex}][]`;
+            imageInput.id = `file_input_${parentIndex}`;
+            imageInput.className = "mt-1";
+
+            imageWrapper.appendChild(labelImage);
+            imageWrapper.appendChild(imageInput);
+
+            // Champ valeur texte
+            const valueWrapper = document.createElement("div");
+            valueWrapper.className = "col-span-2";
+
+            const labelValue = document.createElement("label");
+            labelValue.innerHTML = `Valeur<span style="color: red">*</span> :`;
+
+            const inputValeur = document.createElement("input");
+            inputValeur.type = "text";
             inputValeur.className = "input";
-            inputValeur.name = "shop_item_variant_value[" + parentIndex + "][]";
             inputValeur.placeholder = "<?= LangManager::translate('shop.views.items.add.green') ?>";
+            inputValeur.name = `shop_item_variant_value[${parentIndex}][]`;
             inputValeur.required = true;
 
-            let boutonSupprimerValeur = document.createElement("button");
-            boutonSupprimerValeur.textContent = "x";
-            boutonSupprimerValeur.className = "btn-danger-sm h-fit";
-            boutonSupprimerValeur.type = "button";
-            boutonSupprimerValeur.onclick = function() {
-                // Supprimer le champ de valeur lors du clic sur le bouton
-                container.removeChild(inputDiv);
-                inputDiv.removeChild(inputValeur);
-                inputDiv.removeChild(boutonSupprimerValeur);
+            valueWrapper.appendChild(labelValue);
+            valueWrapper.appendChild(inputValeur);
+
+            // Bouton suppression
+            const boutonSupprimer = document.createElement("div");
+            boutonSupprimer.className = "absolute btn-danger-sm";
+            boutonSupprimer.style.top = "-4px";
+            boutonSupprimer.style.right = "-2px";
+            boutonSupprimer.textContent = "x";
+            boutonSupprimer.style.cursor = "pointer";
+
+            boutonSupprimer.onclick = function () {
+                container.removeChild(wrapper);
             };
 
-            container.appendChild(inputDiv);
-            inputDiv.appendChild(inputValeur);
-            inputDiv.appendChild(boutonSupprimerValeur);
+            wrapper.appendChild(imageWrapper);
+            wrapper.appendChild(valueWrapper);
+            wrapper.appendChild(boutonSupprimer);
+
+            container.appendChild(wrapper);
         }
     }
 </script>

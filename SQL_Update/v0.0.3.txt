@@ -1,3 +1,4 @@
 ALTER TABLE `cmw_shops_shipping` ADD `shops_shipping_always_displayed` INT NULL DEFAULT NULL AFTER `shops_shipping_type`;
 INSERT INTO `cmw_shops_settings` (`shop_settings_key`, `shop_settings_value`) VALUES ('perPage', '16');
 INSERT INTO `cmw_shops_settings` (`shop_settings_key`, `shop_settings_value`) VALUES ('shopType', 'both');
+ALTER TABLE cmw_shops_items_variants_values ADD shop_variants_value_image VARCHAR(255) DEFAULT NULL;

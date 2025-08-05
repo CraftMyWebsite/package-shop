@@ -48,6 +48,7 @@ class ShopItemVariantValueModel extends AbstractModel
             $res['shop_variants_values_id'],
             $variant,
             $res['shop_variants_value'],
+            $res['shop_variants_value_image'] ?? null,
             $res['shop_variants_values_created_at'],
             $res['shop_variants_values_updated_at']
         );
@@ -78,15 +79,16 @@ class ShopItemVariantValueModel extends AbstractModel
         return $toReturn;
     }
 
-    public function addVariantValue(string $value, ?int $variantId): ?ShopItemVariantValueEntity
+    public function addVariantValue(string $value, ?int $variantId, ?string $image = null): ?ShopItemVariantValueEntity
     {
         $data = array(
             'shop_variants_value' => $value,
             'shop_variants_id' => $variantId,
+            'shop_variants_value_image' => $image,
         );
 
-        $sql = 'INSERT INTO cmw_shops_items_variants_values (shop_variants_id, shop_variants_value)
-                VALUES (:shop_variants_id, :shop_variants_value)';
+        $sql = 'INSERT INTO cmw_shops_items_variants_values (shop_variants_id, shop_variants_value, shop_variants_value_image)
+                VALUES (:shop_variants_id, :shop_variants_value, :shop_variants_value_image)';
 
         if (is_null($variantId)) {
             return null;

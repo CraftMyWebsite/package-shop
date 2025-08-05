@@ -173,6 +173,7 @@ CREATE TABLE IF NOT EXISTS cmw_shops_items_variants_values
     shop_variants_values_id         INT AUTO_INCREMENT PRIMARY KEY,
     shop_variants_id                INT         NOT NULL,
     shop_variants_value             VARCHAR(50) NOT NULL,
+    shop_variants_value_image       VARCHAR(255) DEFAULT NULL,
     shop_variants_values_created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     shop_variants_values_updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_item_id_variants_values FOREIGN KEY (shop_variants_id)
