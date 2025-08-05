@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Public\Command\Analyzer;
 
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Package\AbstractController;
 
 /**
@@ -19,7 +20,7 @@ class ShopCartAnalyzer extends AbstractController
     public static function isOnlyVirtual(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
-            if ($item->getItem()->getType() != 1) {
+            if ($item->getItem()->getType() !== ShopItemType::VIRTUAL) {
                 return false;
             }
         }

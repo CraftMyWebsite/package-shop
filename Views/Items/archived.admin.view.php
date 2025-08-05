@@ -1,5 +1,6 @@
 <?php
 
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -56,10 +57,10 @@ $description = '';
 
         <?php foreach ($items->getShopArchivedItems() as $item): ?>
             <?php
-            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+            $itemType = $item->getType();
             $isInvalid =
-                ($shopType === 'virtual' && $itemType === 0) ||
-                ($shopType === 'physical' && $itemType === 1);
+                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
             ?>
             <tr style="<?= $isInvalid ? 'opacity: 0.6;' : '' ?>">
                 <td class="text-center" style="width: 6rem; height: 6rem;">
@@ -89,7 +90,7 @@ $description = '';
                     <h6>
                         <?= mb_strimwidth($item->getName(), 0, 30, '...') ?>
                     </h6>
-                    <span class="badge-info"><?= $item->getType() ? 'Virtuel' : 'Physique' ?></span>
+                    <span class="badge-info"><?= $item->getType()->label() ?></span>
                 </td>
                 <?php if ($allowReviews): ?>
                     <td class="text-center">

@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -197,11 +198,11 @@ class ShopPublicController extends AbstractController
         }
 
         $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
-        $itemType = $item?->getType(); // 0 = physique, 1 = virtuel
+        $itemType = $item?->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === 0) ||
-            ($shopType === 'physical' && $itemType === 1);
+            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");

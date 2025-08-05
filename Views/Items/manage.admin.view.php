@@ -1,6 +1,7 @@
 <?php
 
 use CMW\Entity\Core\MailConfigEntity;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
@@ -57,10 +58,10 @@ Website::setDescription("");
         <tbody>
         <?php foreach ($items as $item): ?>
             <?php
-            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+            $itemType = $item->getType();
             $invalidType = (
-                ($shopType === 'virtual' && $itemType === 0) ||
-                ($shopType === 'physical' && $itemType === 1)
+                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL)
             );
             ?>
             <tr style="<?= $invalidType ? 'opacity: 0.6;' : '' ?>">
@@ -93,7 +94,7 @@ Website::setDescription("");
                     <h6 >
                         <?= mb_strimwidth($item->getName(), 0, 30, '...') ?>
                     </h6>
-                    <span class="badge-info"><?= $item->getType() ? 'Virtuel' : 'Physique' ?></span>
+                    <span class="badge-info"><?= $item->getType()->label() ?></span>
                     <br>
                     <?php if ($item->isDraft()): ?>
                         <small class="cursor-pointer" data-tooltip-target="tooltip-draft-<?= $item->getId() ?>" data-tooltip-placement="top"><i

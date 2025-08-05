@@ -4,6 +4,7 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
@@ -103,11 +104,11 @@ $description = '';
                     <?= ShopReviewsModel::getInstance()->getStars($orderItem->getItem()->getId()) ?>
                 </div>
             <?php endif; ?>
-            <?php if ($orderItem->getItem()->getType() == 1):
+            <?php if ($orderItem->getItem()->getType() === ShopItemType::VIRTUAL):
                 $virtualMethod = ShopItemsVirtualMethodModel::getInstance()?->getVirtualItemMethodByItemId($orderItem->getItem()->getId())->getVirtualMethod()->name(); ?>
                 <p><?= LangManager::translate('shop.views.orders.manage.new.virtual-method', ['method' => $virtualMethod]) ?></p>
             <?php endif; ?>
-            <?php if ($orderItem->getItem()->getType() == 0): ?>
+            <?php if ($orderItem->getItem()->getType() === ShopItemType::PHYSICAL): ?>
                 <p><?= LangManager::translate('shop.views.orders.manage.new.physical') ?></p>
             <?php endif; ?>
             <p style="font-size: 1.2rem">

@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Utils\Date;
@@ -121,11 +122,11 @@ class ShopItemEntity extends AbstractEntity
     }
 
     /**
-     * @return int
+     * @return ShopItemType
      */
-    public function getType(): int
+    public function getType(): ShopItemType
     {
-        return $this->itemType;
+        return ShopItemType::fromDb($this->itemType);
     }
 
     /**

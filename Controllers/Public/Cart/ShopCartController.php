@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Cart;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -131,11 +132,11 @@ class ShopCartController extends AbstractController
                 continue;
             }
 
-            $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+            $itemType = $item->getType();
 
             $isInvalid =
-                ($shopType === 'virtual' && $itemType === 0) ||
-                ($shopType === 'physical' && $itemType === 1);
+                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
 
             if ($isInvalid) {
                 ShopCartItemModel::getInstance()->removeItemFromCart($userId, $sessionId, $item->getId());

@@ -10,6 +10,7 @@ use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
@@ -147,7 +148,7 @@ class ShopHistoryOrdersController extends AbstractController
                 // ExecVirtualNeeds :
                 $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
                 foreach ($items as $item) {
-                    if ($item->getItem()->getType() === 1) {
+                    if ($item->getItem()->getType() === ShopItemType::VIRTUAL) {
                         $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($item->getItem()->getId())->getVirtualMethod()->varName();
                         $quantity = $item->getQuantity();
                         for ($i = 0; $i < $quantity; $i++) {
@@ -356,7 +357,7 @@ class ShopHistoryOrdersController extends AbstractController
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $items = ShopHistoryOrdersItemsModel::getInstance()->getHistoryOrdersItemsByHistoryOrderId($orderId);
         foreach ($items as $item) {
-            if ($item->getItem()->getType() == 1) {
+            if ($item->getItem()->getType() === ShopItemType::VIRTUAL) {
                 $virtualItemVarName = ShopItemsVirtualMethodModel::getInstance()->getVirtualItemMethodByItemId($item->getItem()->getId())->getVirtualMethod()->varName();
                 $quantity = $item->getQuantity();
                 for ($i = 0; $i < $quantity; $i++) {
@@ -628,7 +629,7 @@ class ShopHistoryOrdersController extends AbstractController
     private function handleCartTypeContent(array $cartContent): bool
     {
         foreach ($cartContent as $item) {
-            if ($item->getItem()->getType() === 0) {
+            if ($item->getItem()->getType() === ShopItemType::PHYSICAL) {
                 return false;
             }
         }
@@ -641,7 +642,7 @@ class ShopHistoryOrdersController extends AbstractController
     private function handleOrderTypeContent(array $orderContent): bool
     {
         foreach ($orderContent as $item) {
-            if ( $item->getItem()->getType() === 0) {
+            if ( $item->getItem()->getType() === ShopItemType::PHYSICAL) {
                 return false;
             }
         }

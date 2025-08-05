@@ -3,6 +3,7 @@
 namespace CMW\Controller\Shop\Admin\Item;
 
 use CMW\Controller\Users\UsersController;
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
 use CMW\Event\Shop\ShopEditItemEvent;
@@ -294,11 +295,11 @@ class ShopItemsController extends AbstractController
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
 
         $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
-        $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+        $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === 0) ||
-            ($shopType === 'physical' && $itemType === 1);
+            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::ERROR, 'Erreur','Cet article ne peut pas être édité dans le mode de boutique actuel.');
@@ -440,7 +441,7 @@ class ShopItemsController extends AbstractController
             $length = is_null($length) ? 0 : (float)$length;
             $width = is_null($width) ? 0 : (float)$width;
             $height = is_null($height) ? 0 : (float)$height;
-            if ($backupItemInfo?->getType() === 0) {
+            if ($backupItemInfo?->getType() === ShopItemType::PHYSICAL) {
                 ShopItemsPhysicalRequirementModel::getInstance()->updatePhysicalRequirement($id, $weight, $length, $width, $height);
             } else {
                 ShopItemsVirtualMethodModel::getInstance()->clearMethod($id);  // This model also clear setting automatically
@@ -454,7 +455,7 @@ class ShopItemsController extends AbstractController
             [$varName] = Utils::filterInput('shop_item_virtual_method_var_name');
             if (!empty($varName)) {
                 $validPrefixes = Utils::filterInput('shop_item_virtual_prefix');
-                if ($backupItemInfo?->getType() === 1) {
+                if ($backupItemInfo?->getType() === ShopItemType::VIRTUAL) {
                     $updatedVirtualMethod = ShopItemsVirtualMethodModel::getInstance()->updateMethod($varName, $id);
                     $updatedVirtualMethodId = $updatedVirtualMethod->getId();
                     ShopItemsVirtualRequirementModel::getInstance()->clearSetting($updatedVirtualMethodId);
@@ -547,11 +548,11 @@ class ShopItemsController extends AbstractController
 
         // Vérification de compatibilité avec le type de boutique
         $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
-        $itemType = $item->getType(); // 0 = physique, 1 = virtuel
+        $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === 0) ||
-            ($shopType === 'physical' && $itemType === 1);
+            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::ERROR, 'Erreur', "Cet article ne peut pas être activé dans le mode de boutique actuel.");
