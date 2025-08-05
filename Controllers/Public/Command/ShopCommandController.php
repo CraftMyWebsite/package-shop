@@ -80,7 +80,7 @@ class ShopCommandController extends AbstractController
         ShopCommandStepRenderer::getInstance()->render($userId, $sessionId, $cartContent, $cartOnlyVirtual, $cartIsFree, $priceType, $appliedCartDiscounts, $userAddresses);
     }
 
-    #[NoReturn] #[Link('/command/createAddress', Link::POST, ['.*?'], '/shop')]
+    #[NoReturn] #[Link('/command/createAddress', Link::POST, [], '/shop')]
     private function publicCreateAddressPost(): void
     {
         if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
@@ -89,7 +89,7 @@ class ShopCommandController extends AbstractController
         ShopCommandStepService::getInstance()->createAddress();
     }
 
-    #[NoReturn] #[Link('/command/addAddress', Link::POST, ['.*?'], '/shop')]
+    #[NoReturn] #[Link('/command/addAddress', Link::POST, [], '/shop')]
     private function publicAddAddressPost(): void
     {
         if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
@@ -99,7 +99,7 @@ class ShopCommandController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/command/toDelivery', Link::POST, ['.*?'], '/shop')]
+    #[Link('/command/toDelivery', Link::POST, [], '/shop')]
     private function publicToDeliveryPost(): void
     {
         if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
@@ -109,7 +109,7 @@ class ShopCommandController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/command/toAddress', Link::POST, ['.*?'], '/shop')]
+    #[Link('/command/toAddress', Link::POST, [], '/shop')]
     private function publicToAddressPost(): void
     {
         if (ShopCommandService::getInstance()->isShopVirtualOnly()) {
@@ -119,14 +119,14 @@ class ShopCommandController extends AbstractController
     }
 
     #[NoReturn]
-    #[Link('/command/toShipping', Link::POST, ['.*?'], '/shop')]
+    #[Link('/command/toShipping', Link::POST, [], '/shop')]
     private function publicToShippingPost(): void
     {
         ShopCommandStepService::getInstance()->toShipping();
     }
 
     #[NoReturn]
-    #[Link('/command/toPayment', Link::POST, ['.*?'], '/shop')]
+    #[Link('/command/toPayment', Link::POST, [], '/shop')]
     private function publicToPaymentPost(): void
     {
         ShopCommandStepService::getInstance()->toPayment();
