@@ -3,9 +3,10 @@
 namespace CMW\Entity\Shop\Items;
 
 use CMW\Controller\Users\UsersSessionsController;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Categories\ShopCategoryEntity;
@@ -216,7 +217,7 @@ class ShopItemEntity extends AbstractEntity
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->itemPrice, 2, '.', '');
-        if ($this->getPriceType() == 'money') {
+        if ($this->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPriceType())->faIcon() . ' ';
@@ -241,7 +242,7 @@ class ShopItemEntity extends AbstractEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->getCategory()->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        if ($this->getPriceType() == 'money') {
+        if ($this->getPriceType() === PaymentPriceTypeConst::MONEY) {
             // all
             if (!empty($allDiscounts)) {
                 foreach ($allDiscounts as $allDiscount) {
@@ -400,7 +401,7 @@ class ShopItemEntity extends AbstractEntity
         $discountCategories = ShopDiscountCategoriesModel::getInstance()->getShopDiscountCategoriesDefaultAppliedByCategoryId($this->category->getId());
         $discountItems = ShopDiscountItemsModel::getInstance()->getShopDiscountItemsDefaultAppliedByItemId($this->getId());
 
-        if ($this->getPriceType() == 'money') {
+        if ($this->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
 
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');

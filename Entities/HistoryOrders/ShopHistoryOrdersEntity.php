@@ -5,6 +5,7 @@ namespace CMW\Entity\Shop\HistoryOrders;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersInvoiceModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Users\UserEntity;
@@ -179,7 +180,7 @@ class ShopHistoryOrdersEntity extends AbstractEntity
             break;
         }
 
-        if ($priceType == 'money') {
+        if ($priceType === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getPaymentMethod()->getVarName())->faIcon() . ' ';

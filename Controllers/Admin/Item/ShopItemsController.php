@@ -3,8 +3,8 @@
 namespace CMW\Controller\Shop\Admin\Item;
 
 use CMW\Controller\Users\UsersController;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
 use CMW\Event\Shop\ShopEditItemEvent;

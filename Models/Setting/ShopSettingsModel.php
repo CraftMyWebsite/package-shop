@@ -2,7 +2,7 @@
 
 namespace CMW\Model\Shop\Setting;
 
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 

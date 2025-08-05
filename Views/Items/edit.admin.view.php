@@ -1,11 +1,12 @@
 <?php
 
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Website;
 
 $title = LangManager::translate('shop.views.items.edit.title', ['name' => $item->getName()]);
@@ -211,7 +212,7 @@ foreach ($itemVariants as $itemVariant) {
                                 <select id="payment" class="form-select" name="shop_item_price_type" required>
                                     <?php foreach ($priceTypeMethods as $priceTypeMethod): ?>
                                         <option value="<?= $priceTypeMethod->varName() ?>"
-                                            <?= $priceTypeMethod->varName() === 'money' ? 'data-is-money="true"' : '' ?>
+                                            <?= $priceTypeMethod->varName() === PaymentPriceTypeConst::MONEY ? 'data-is-money="true"' : '' ?>
                                             <?= $priceTypeMethod->varName() === $item->getPriceType() ? 'selected' : '' ?>
                                         ><?= $priceTypeMethod->name() ?></option>
                                     <?php endforeach; ?>

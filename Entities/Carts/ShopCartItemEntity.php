@@ -5,6 +5,7 @@ namespace CMW\Entity\Shop\Carts;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Package\AbstractEntity;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Date;
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Entity\Shop\Discounts\ShopDiscountEntity;
@@ -180,7 +181,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getItemTotalPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPrice(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
@@ -239,7 +240,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getItemTotalPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getItemTotalPriceAfterDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
@@ -274,7 +275,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getTotalCartPriceBeforeDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceBeforeDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
@@ -322,7 +323,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getTotalCartPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalCartPriceAfterDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';
@@ -360,7 +361,7 @@ class ShopCartItemEntity extends AbstractEntity
     public function getTotalPriceCompleteFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceComplete(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getItem()->getPriceType())->faIcon() . ' ';

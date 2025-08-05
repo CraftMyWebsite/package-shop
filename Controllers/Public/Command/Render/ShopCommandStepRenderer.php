@@ -14,6 +14,7 @@ use CMW\Model\Shop\Delivery\ShopDeliveryUserAddressModel;
 use CMW\Model\Shop\Image\ShopImagesModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Shop\Shipping\ShopShippingModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Redirect;
 use CMW\Manager\Views\View;
 
@@ -194,7 +195,7 @@ class ShopCommandStepRenderer extends AbstractController
             $paymentMethods = is_null($shippingMethod) || $shippingMethod->getPrice() == 0
                 ? ShopPaymentsController::getInstance()->getFreePayment()
                 : ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
-        } elseif ($priceType === 'money') {
+        } elseif ($priceType === PaymentPriceTypeConst::MONEY) {
             $paymentMethods = ShopPaymentsController::getInstance()->getRealActivePaymentsMethods();
         } else {
             $paymentMethods = ShopPaymentsController::getInstance()->getVirtualPaymentByVarNameAsArray($priceType);

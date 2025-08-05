@@ -1,8 +1,8 @@
 <?php
 
 use CMW\Entity\Core\MailConfigEntity;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;

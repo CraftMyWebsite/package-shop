@@ -5,7 +5,7 @@ namespace CMW\Model\Shop\Shipping;
 use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Entity\Shop\Shippings\ShopShippingEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Flash\Alert;

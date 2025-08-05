@@ -1,7 +1,7 @@
 <?php
 
 use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -20,7 +20,7 @@ $description = '';
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $showPublicStock */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $perPage */
-/* @var \CMW\Entity\Shop\Enum\Shop\ShopType $selectedShopType */
+/* @var \CMW\Type\Shop\Enum\Shop\ShopType $selectedShopType */
 /* @var string $shopType */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 

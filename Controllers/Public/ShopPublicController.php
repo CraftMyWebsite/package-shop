@@ -4,8 +4,8 @@ namespace CMW\Controller\Shop\Public;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;

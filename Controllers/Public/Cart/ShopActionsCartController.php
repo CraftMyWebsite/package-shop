@@ -3,8 +3,8 @@ namespace CMW\Controller\Shop\Public\Cart;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Event\Users\LoginEvent;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Events\Listener;
@@ -22,6 +22,7 @@ use CMW\Model\Shop\HistoryOrder\ShopHistoryOrdersModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemVariantModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use JetBrains\PhpStorm\NoReturn;
@@ -152,7 +153,7 @@ class ShopActionsCartController extends AbstractController
 
         $itemsInCart = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
         foreach ($itemsInCart as $itemInCart) {
-            if ($itemInCart->getItem()->getPriceType() !== 'money') {
+            if ($itemInCart->getItem()->getPriceType() !== PaymentPriceTypeConst::MONEY) {
                 Flash::send(Alert::WARNING, 'Boutique', 'Vous ne pouvez pas appliqué de réduction sur ce type de monnaie');
                 Redirect::redirectPreviousRoute();
             }

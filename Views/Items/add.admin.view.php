@@ -5,6 +5,7 @@ use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Website;
 
 $title = LangManager::translate('shop.views.items.add.title');
@@ -153,7 +154,7 @@ $description = '';
                                     <!--TODO : Uniquement les articles virtuel pour le moment-->
                                 <select id="payment" class="form-select" name="shop_item_price_type" required>
                                     <?php foreach ($priceTypeMethods as $priceTypeMethod): ?>
-                                        <option value="<?= $priceTypeMethod->varName() ?>" <?= $priceTypeMethod->varName() === 'money' ? 'data-is-money="true"' : '' ?>><?= $priceTypeMethod->name() ?></option>
+                                        <option value="<?= $priceTypeMethod->varName() ?>" <?= $priceTypeMethod->varName() === PaymentPriceTypeConst::MONEY ? 'data-is-money="true"' : '' ?>><?= $priceTypeMethod->name() ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </span>

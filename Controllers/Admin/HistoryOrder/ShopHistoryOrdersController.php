@@ -10,7 +10,7 @@ use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Shop\Admin\Shipping\ShopShippingController;
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersItemsEntity;
 use CMW\Entity\Shop\HistoryOrders\ShopHistoryOrdersPaymentEntity;
@@ -54,6 +54,7 @@ use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Item\ShopItemsVirtualMethodModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
 use CMW\Model\Users\UsersModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 use CMW\Utils\Redirect;
 use CMW\Utils\Utils;
 use CMW\Utils\Website;
@@ -696,7 +697,7 @@ class ShopHistoryOrdersController extends AbstractController
         $itemsHtml .= '</tbody></table>';
 
 
-        if ($priceType == 'money') {
+        if ($priceType === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name() . ' ';
@@ -745,7 +746,7 @@ class ShopHistoryOrdersController extends AbstractController
             $priceType = $cartItem->getItem()->getPriceType();
         }
 
-        if ($priceType == 'money') {
+        if ($priceType === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopItemsController::getInstance()->getPriceTypeMethodsByVarName($priceType)->name() . ' ';

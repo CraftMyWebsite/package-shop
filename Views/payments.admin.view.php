@@ -1,6 +1,6 @@
 <?php
 
-use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
+use CMW\Type\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\MailModel;
 

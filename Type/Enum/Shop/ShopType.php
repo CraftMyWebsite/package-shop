@@ -1,5 +1,5 @@
 <?php
-namespace CMW\Entity\Shop\Enum\Shop;
+namespace CMW\Type\Shop\Enum\Shop;
 
 enum ShopType: string
 {

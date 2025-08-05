@@ -4,7 +4,7 @@
 /* @var CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 /* @var bool $reviewEnabled */
 
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;

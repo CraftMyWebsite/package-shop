@@ -5,7 +5,7 @@ namespace CMW\Controller\Shop\Admin\Payment;
 use CMW\Controller\Shop\Admin\HistoryOrder\ShopHistoryOrdersController;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
-use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
+use CMW\Type\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Interface\Shop\IPaymentMethodV2;

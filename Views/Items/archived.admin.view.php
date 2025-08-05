@@ -1,7 +1,7 @@
 <?php
 
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;

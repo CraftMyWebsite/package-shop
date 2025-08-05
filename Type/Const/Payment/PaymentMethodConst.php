@@ -1,5 +1,5 @@
 <?php
-namespace CMW\Entity\Shop\Const\Payment;
+namespace CMW\Type\Shop\Const\Payment;
 
 final class PaymentMethodConst
 {

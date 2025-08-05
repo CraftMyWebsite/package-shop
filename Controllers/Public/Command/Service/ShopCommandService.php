@@ -4,7 +4,7 @@ namespace CMW\Controller\Shop\Public\Command\Service;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
-use CMW\Entity\Shop\Enum\Shop\ShopType;
+use CMW\Type\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;

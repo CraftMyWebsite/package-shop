@@ -3,10 +3,11 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
-use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
+use CMW\Type\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 
 class ShopHistoryOrdersItemsEntity extends AbstractEntity
 {
@@ -89,7 +90,7 @@ class ShopHistoryOrdersItemsEntity extends AbstractEntity
     public function getPriceFormatted(): string
     {
         $formattedPrice = number_format($this->getPrice(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() == 'money') {
+        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
@@ -140,7 +141,7 @@ class ShopHistoryOrdersItemsEntity extends AbstractEntity
     public function getTotalPriceBeforeDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceBeforeDiscount(), 2, '.', '');
-        if ($this->getItem()->getPriceType() == 'money') {
+        if ($this->getItem()->getPriceType() === PaymentPriceTypeConst::MONEY) {
             $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
         } else {
             $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';

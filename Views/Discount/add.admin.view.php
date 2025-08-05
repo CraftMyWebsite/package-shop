@@ -6,6 +6,7 @@ use CMW\Manager\Security\SecurityManager;
 use CMW\Model\Core\MailModel;
 use CMW\Model\Shop\Item\ShopItemsModel;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 
 /* @var \CMW\Entity\Shop\Categories\ShopCategoryEntity [] $categories */
 /* @var \CMW\Entity\Shop\Items\ShopItemEntity [] $items */
@@ -212,7 +213,7 @@ $description = '';
                     <label for="linkedItems"><?= LangManager::translate('shop.views.discount.add.itemsLinked') ?><span class="text-danger">*</span> :</label>
                     <select id="linkedItems" name="linkedItems[]" class="choices" multiple>
                         <?php foreach ($items as $item): ?>
-                        <?php if ($item->getPriceType() == 'money' && $item->getPrice() > 0): ?>
+                        <?php if ($item->getPriceType() === PaymentPriceTypeConst::MONEY && $item->getPrice() > 0): ?>
                             <option value="<?= $item->getId() ?>"><?= $item->getName() ?> (<?= $item->getPrice() ?><?= $symbol ?>)</option>
                         <?php endif; ?>
                         <?php endforeach; ?>
@@ -225,7 +226,7 @@ $description = '';
                             <?php
                             $catHaveItemCompatible = false;
                             foreach (ShopItemsModel::getInstance()->getAdminShopItemByCat($category->getId()) as $item):
-                                if ($item->getPriceType() == 'money' && $item->getPrice() > 0) {
+                                if ($item->getPriceType() === PaymentPriceTypeConst::MONEY && $item->getPrice() > 0) {
                                     $catHaveItemCompatible = true;
                                     break;
                                 }

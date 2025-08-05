@@ -3,8 +3,9 @@
 namespace CMW\Controller\Shop\Public\Command\Analyzer;
 
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
-use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Type\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Package\AbstractController;
+use CMW\Type\Shop\Const\Payment\PaymentPriceTypeConst;
 
 /**
  * Analyseur du contenu du panier.
@@ -52,8 +53,8 @@ class ShopCartAnalyzer extends AbstractController
     public static function getPriceType(array $cartContent): string
     {
         foreach ($cartContent as $item) {
-            return $item->getItem()->getPriceType() ?? 'money';
+            return $item->getItem()->getPriceType() ?? PaymentPriceTypeConst::MONEY;
         }
-        return 'money';
+        return PaymentPriceTypeConst::MONEY;
     }
 }
