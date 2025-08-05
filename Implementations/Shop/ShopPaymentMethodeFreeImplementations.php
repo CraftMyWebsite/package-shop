@@ -3,6 +3,7 @@
 namespace CMW\Implementation\Shop\Shop;
 
 use CMW\Controller\Shop\Admin\Payment\Method\ShopPaymentMethodFreeController;
+use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Entity\Users\UserEntity;
 use CMW\Interface\Shop\IPaymentMethodV2;
 use CMW\Manager\Lang\LangManager;
@@ -17,7 +18,7 @@ class ShopPaymentMethodeFreeImplementations implements IPaymentMethodV2
 
     public function varName(): string
     {
-        return 'free';
+        return PaymentMethodConst::FREE;
     }
 
     public function faIcon(?string $customClass = null): ?string

@@ -5,6 +5,7 @@ namespace CMW\Controller\Shop\Admin\Payment;
 use CMW\Controller\Shop\Admin\HistoryOrder\ShopHistoryOrdersController;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
+use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Interface\Shop\IPaymentMethodV2;
@@ -43,7 +44,7 @@ class ShopPaymentsController extends AbstractController
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethodV2::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) {
-            return $paymentMethod->isVirtualCurrency() === false && $paymentMethod->isActive() && $paymentMethod->varName() !== 'free';
+            return $paymentMethod->isVirtualCurrency() === false && $paymentMethod->isActive() && $paymentMethod->varName() !== PaymentMethodConst::FREE;
         });
     }
 
@@ -54,7 +55,7 @@ class ShopPaymentsController extends AbstractController
     {
         $allPaymentMethods = Loader::loadImplementations(IPaymentMethodV2::class);
         return array_filter($allPaymentMethods, static function ($paymentMethod) {
-            return $paymentMethod->varName() === 'free';
+            return $paymentMethod->varName() === PaymentMethodConst::FREE;
         });
     }
 

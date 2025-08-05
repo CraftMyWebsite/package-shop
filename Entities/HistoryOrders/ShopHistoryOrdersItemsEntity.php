@@ -3,6 +3,7 @@
 namespace CMW\Entity\Shop\HistoryOrders;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
+use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Package\AbstractEntity;
 use CMW\Model\Shop\Setting\ShopSettingsModel;
@@ -118,11 +119,7 @@ class ShopHistoryOrdersItemsEntity extends AbstractEntity
     public function getPriceDiscountImpactFormatted(): string
     {
         $formattedPrice = number_format($this->getPriceDiscountImpact(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== 'free') {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
-        } else {
-            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
-        }
+        $symbol = $this->getPaymentSymbol();
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
@@ -168,11 +165,7 @@ class ShopHistoryOrdersItemsEntity extends AbstractEntity
     public function getTotalPriceAfterDiscountFormatted(): string
     {
         $formattedPrice = number_format($this->getTotalPriceAfterDiscount(), 2, '.', '');
-        if ($this->getHistoryOrder()->getPaymentMethod()->getVarName() !== 'free') {
-            $symbol = ShopSettingsModel::getInstance()->getSettingValue('symbol');
-        } else {
-            $symbol = ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($this->getHistoryOrder()->getPaymentMethod()->getVarName())->faIcon() . ' ';
-        }
+        $symbol = $this->getPaymentSymbol();
         $symbolIsAfter = ShopSettingsModel::getInstance()->getSettingValue('after');
         if ($symbolIsAfter) {
             return $formattedPrice . $symbol;
@@ -180,4 +173,16 @@ class ShopHistoryOrdersItemsEntity extends AbstractEntity
             return $symbol . $formattedPrice;
         }
     }
+
+    private function getPaymentSymbol(): string
+    {
+        $paymentMethod = $this->getHistoryOrder()->getPaymentMethod()->getVarName();
+
+        if ($paymentMethod !== PaymentMethodConst::FREE) {
+            return ShopSettingsModel::getInstance()->getSettingValue('symbol');
+        }
+
+        return ' ' . ShopPaymentsController::getInstance()->getPaymentByVarName($paymentMethod)->faIcon() . ' ';
+    }
+
 }

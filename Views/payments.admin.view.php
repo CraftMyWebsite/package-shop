@@ -1,5 +1,6 @@
 <?php
 
+use CMW\Entity\Shop\Const\Payment\PaymentMethodConst;
 use CMW\Manager\Lang\LangManager;
 use CMW\Model\Core\MailModel;
 
@@ -40,7 +41,7 @@ $description = '';
         <?php foreach ($methods as $method): ?>
         <div class="tab-content" id="tab-<?= $method->varName() ?>">
             <div class="card">
-                <?php if ($method->varName() == 'free'): ?>
+                <?php if ($method->varName() === PaymentMethodConst::FREE): ?>
                     <div class="card-body">
                         <p><?= LangManager::translate('shop.views.payments.warn') ?></p>
                     </div>
