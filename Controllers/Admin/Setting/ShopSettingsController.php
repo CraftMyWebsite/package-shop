@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Admin\Setting;
 
 use CMW\Controller\Shop\Admin\Item\ShopItemsController;
 use CMW\Controller\Users\UsersController;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
@@ -74,8 +75,10 @@ class ShopSettingsController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $globalConfigMethod = ShopItemsController::getInstance()->getGlobalConfigMethods();
 
+        $selectedShopType = ShopType::fromString($shopType);
+
         View::createAdminView('Shop', 'Settings/settings')
-            ->addVariableList(['showPublicStock' => $showPublicStock, 'currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'perPage' => $perPage, 'shopType' => $shopType, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
+            ->addVariableList(['selectedShopType' => $selectedShopType, 'showPublicStock' => $showPublicStock, 'currentCurrency' => $currentCurrency, 'currentAfter' => $currentAfter, 'currentSymbol' => $currentSymbol, 'defaultImage' => $defaultImage, 'globalConfigMethod' => $globalConfigMethod, 'currentReviews' => $currentReviews, 'stockAlert' => $stockAlert, 'perPage' => $perPage, 'shopType' => $shopType, 'maintenance' => $maintenance, 'maintenanceMessage' => $maintenanceMessage, 'autoValidateVirtual' => $autoValidateVirtual])
             ->view();
     }
 

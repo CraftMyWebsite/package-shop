@@ -2,6 +2,7 @@
 
 use CMW\Entity\Core\MailConfigEntity;
 use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
@@ -60,8 +61,8 @@ Website::setDescription("");
             <?php
             $itemType = $item->getType();
             $invalidType = (
-                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL)
+                ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL)
             );
             ?>
             <tr style="<?= $invalidType ? 'opacity: 0.6;' : '' ?>">

@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Admin\Item;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Event\Shop\ShopAddItemEvent;
 use CMW\Event\Shop\ShopDeleteItemEvent;
 use CMW\Event\Shop\ShopEditItemEvent;
@@ -59,7 +60,7 @@ class ShopItemsController extends AbstractController
         $review = ShopReviewsModel::getInstance();
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         $mailConfig = MailModel::getInstance()->getConfig();
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         View::createAdminView('Shop', 'Items/manage')
             ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
@@ -80,7 +81,7 @@ class ShopItemsController extends AbstractController
         $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
         $review = ShopReviewsModel::getInstance();
         $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         View::createAdminView('Shop', 'Items/archived')
             ->addVariableList(['items' => $items, 'imagesItem' => $imagesItem, 'defaultImage' => $defaultImage,
@@ -123,14 +124,18 @@ class ShopItemsController extends AbstractController
     {
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.items.add');
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
-        $lockedType = $shopType === 'virtual' ? '1' : ($shopType === 'physical' ? '0' : null);
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
+        $lockedType = match ($shopType) {
+            ShopType::VIRTUAL_ONLY => '1',
+            ShopType::PHYSICAL_ONLY => '0',
+            default => null,
+        };
         $isLocked = $lockedType !== null;
 
         $reason = match ($shopType) {
-            'virtual' => "Le type de boutique est défini sur 'Virtuel uniquement'.",
-            'physical' => "Le type de boutique est défini sur 'Physique uniquement'.",
-            default => ''
+            ShopType::VIRTUAL_ONLY => "Le type de boutique est défini sur 'Virtuel uniquement'.",
+            ShopType::PHYSICAL_ONLY => "Le type de boutique est défini sur 'Physique uniquement'.",
+            default => '',
         };
 
         if (ShopCategoriesModel::getInstance()->getShopCategories()) {
@@ -294,25 +299,29 @@ class ShopItemsController extends AbstractController
         $itemVariants = ShopItemVariantModel::getInstance()->getShopItemVariantByItemId($id);
         $variantValuesModel = ShopItemVariantValueModel::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
         $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+            ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::ERROR, 'Erreur','Cet article ne peut pas être édité dans le mode de boutique actuel.');
             Redirect::redirect('cmw-admin/shop/items');
         }
 
-        $lockedType = $shopType === 'virtual' ? '1' : ($shopType === 'physical' ? '0' : null);
+        $lockedType = match ($shopType) {
+            ShopType::VIRTUAL_ONLY => '1',
+            ShopType::PHYSICAL_ONLY => '0',
+            default => null,
+        };
         $isLocked = $lockedType !== null;
 
         $reason = match ($shopType) {
-            'virtual' => "Le type de boutique est défini sur 'Virtuel uniquement'.",
-            'physical' => "Le type de boutique est défini sur 'Physique uniquement'.",
-            default => ''
+            ShopType::VIRTUAL_ONLY => "Le type de boutique est défini sur 'Virtuel uniquement'.",
+            ShopType::PHYSICAL_ONLY => "Le type de boutique est défini sur 'Physique uniquement'.",
+            default => '',
         };
 
         View::createAdminView('Shop', 'Items/edit')
@@ -547,12 +556,12 @@ class ShopItemsController extends AbstractController
         $item = ShopItemsModel::getInstance()->getShopItemsById($id);
 
         // Vérification de compatibilité avec le type de boutique
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
         $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+            ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::ERROR, 'Erreur', "Cet article ne peut pas être activé dans le mode de boutique actuel.");

@@ -1,6 +1,7 @@
 <?php
 
 use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -51,16 +52,13 @@ $description = '';
         </tr>
         </thead>
         <tbody>
-        <?php
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
-        ?>
 
         <?php foreach ($items->getShopArchivedItems() as $item): ?>
             <?php
             $itemType = $item->getType();
             $isInvalid =
-                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+                ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
             ?>
             <tr style="<?= $isInvalid ? 'opacity: 0.6;' : '' ?>">
                 <td class="text-center" style="width: 6rem; height: 6rem;">

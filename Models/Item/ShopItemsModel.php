@@ -2,6 +2,7 @@
 
 namespace CMW\Model\Shop\Item;
 
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Entity\Shop\Items\ShopItemEntity;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
@@ -108,7 +109,7 @@ class ShopItemsModel extends AbstractModel
     {
         $db = DatabaseManager::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         // Mapping du tri
         $sortMap = [
@@ -121,9 +122,9 @@ class ShopItemsModel extends AbstractModel
 
         // Filtre sur le type d'article
         $typeCondition = match ($shopType) {
-            'virtual' => 'AND shop_item_type = 1',
-            'physical' => 'AND shop_item_type = 0',
-            default => '' // both
+            ShopType::VIRTUAL_ONLY => 'AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => 'AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $sql = "SELECT shop_item_id 
@@ -163,7 +164,7 @@ class ShopItemsModel extends AbstractModel
     {
         $db = DatabaseManager::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         // Mapping du tri
         $sortMap = [
@@ -176,9 +177,9 @@ class ShopItemsModel extends AbstractModel
 
         // Filtre sur le type d'article
         $typeCondition = match ($shopType) {
-            'virtual' => 'AND shop_item_type = 1',
-            'physical' => 'AND shop_item_type = 0',
-            default => '' // both
+            ShopType::VIRTUAL_ONLY => 'AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => 'AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $sql = "SELECT shop_item_id 
@@ -259,7 +260,7 @@ class ShopItemsModel extends AbstractModel
     {
         $db = DatabaseManager::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
 
@@ -276,9 +277,9 @@ class ShopItemsModel extends AbstractModel
 
         // Filtre sur le type d'article
         $typeCondition = match ($shopType) {
-            'virtual' => 'AND shop_item_type = 1',
-            'physical' => 'AND shop_item_type = 0',
-            default => '' // both
+            ShopType::VIRTUAL_ONLY => 'AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => 'AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 AND shop_item_draft = 0 $typeCondition ORDER BY $orderBy LIMIT ? OFFSET ?";
@@ -309,7 +310,7 @@ class ShopItemsModel extends AbstractModel
     {
         $db = DatabaseManager::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         $mainCatId = $this->shopCategoriesModel->getShopCategoryIdBySlug($catSlug);
 
@@ -326,9 +327,9 @@ class ShopItemsModel extends AbstractModel
 
         // Filtre sur le type d'article
         $typeCondition = match ($shopType) {
-            'virtual' => 'AND shop_item_type = 1',
-            'physical' => 'AND shop_item_type = 0',
-            default => '' // both
+            ShopType::VIRTUAL_ONLY => 'AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => 'AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $sql = "SELECT shop_item_id FROM cmw_shops_items WHERE shop_category_id IN ($placeholders) AND shop_item_archived = 0 $typeCondition ORDER BY $orderBy LIMIT ? OFFSET ?";
@@ -793,7 +794,7 @@ ORDER BY csi.shop_item_price ASC;';
     public function countVisibleShopItems(bool $isAdmin): int
     {
         $db = DatabaseManager::getInstance();
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         $sql = 'SELECT COUNT(*) as total FROM cmw_shops_items WHERE shop_item_archived = 0';
 
@@ -802,9 +803,9 @@ ORDER BY csi.shop_item_price ASC;';
         }
 
         $sql .= match ($shopType) {
-            'virtual' => ' AND shop_item_type = 1',
-            'physical' => ' AND shop_item_type = 0',
-            default => ''
+            ShopType::VIRTUAL_ONLY => ' AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => ' AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $res = $db->query($sql);
@@ -820,7 +821,7 @@ ORDER BY csi.shop_item_price ASC;';
     {
         $db = DatabaseManager::getInstance();
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         $catIds = [$categoryId];
         $catIds = array_merge($catIds, $this->shopCategoriesModel->getAllChildrenCategoryIds($categoryId));
@@ -832,9 +833,9 @@ ORDER BY csi.shop_item_price ASC;';
         }
 
         $sql .= match ($shopType) {
-            'virtual' => ' AND shop_item_type = 1',
-            'physical' => ' AND shop_item_type = 0',
-            default => ''
+            ShopType::VIRTUAL_ONLY => ' AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => ' AND shop_item_type = 0',
+            ShopType::BOTH => ''
         };
 
         $res = $db->prepare($sql);

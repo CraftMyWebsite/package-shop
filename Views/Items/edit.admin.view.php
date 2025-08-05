@@ -1,5 +1,6 @@
 <?php
 
+use CMW\Entity\Shop\Enum\Item\ShopItemType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -12,6 +13,7 @@ $description = '';
 
 /* @var CMW\Model\Shop\Category\ShopCategoriesModel $categoryModel */
 /* @var CMW\Entity\Shop\Items\ShopItemEntity $item */
+/* @var ShopItemType $itemType */
 /* @var CMW\Entity\Shop\Images\ShopImageEntity[] $imagesItem */
 /* @var \CMW\Entity\Shop\Items\ShopItemPhysicalRequirementEntity $physicalInfo */
 /* @var CMW\Interface\Shop\IVirtualItems[] $virtualMethods */
@@ -227,16 +229,16 @@ foreach ($itemVariants as $itemVariant) {
                             onchange="afficherChamps()"
                         <?= $isLocked ? 'disabled' : '' ?>
                             required>
-                        <option value="1" <?= $itemType === 1 ? 'selected' : '' ?>>
+                        <option value="1" <?= $itemType === ShopItemType::VIRTUAL ? 'selected' : '' ?>>
                             <?= LangManager::translate('shop.views.items.add.virtual') ?>
                         </option>
-                        <option value="0" <?= $itemType === 0 ? 'selected' : '' ?>>
+                        <option value="0" <?= $itemType === ShopItemType::PHYSICAL ? 'selected' : '' ?>>
                             <?= LangManager::translate('shop.views.items.add.physical') ?>
                         </option>
                     </select>
 
                     <?php if ($isLocked): ?>
-                        <input type="hidden" name="shop_item_type" value="<?= $itemType ?>">
+                        <input type="hidden" name="shop_item_type" value="<?= $itemType->value ?>">
                         <small style="display:block; color: gray; margin-top: 0.25rem;">
                             <?= htmlspecialchars($reason) ?>
                         </small>

@@ -2,6 +2,7 @@
 
 namespace CMW\Model\Shop\Setting;
 
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Database\DatabaseManager;
 use CMW\Manager\Package\AbstractModel;
 
@@ -88,4 +89,10 @@ class ShopSettingsModel extends AbstractModel
         $db = DatabaseManager::getInstance();
         return $db->prepare($sql)->execute(['methodVarName' => $methodVarName]);
     }
+
+    public function getShopTypeEnum(): ShopType
+    {
+        return ShopType::fromString(self::getSettingValue('shopType'));
+    }
+
 }

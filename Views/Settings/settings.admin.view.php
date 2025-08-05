@@ -1,6 +1,7 @@
 <?php
 
 use CMW\Controller\Shop\Admin\Setting\ShopSettingsController;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Lang\LangManager;
 use CMW\Manager\Security\SecurityManager;
@@ -19,6 +20,7 @@ $description = '';
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $showPublicStock */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $stockAlert */
 /* @var \CMW\Model\Shop\Setting\ShopSettingsModel $perPage */
+/* @var \CMW\Entity\Shop\Enum\Shop\ShopType $selectedShopType */
 /* @var string $shopType */
 /* @var \CMW\Model\Shop\Image\ShopImagesModel $defaultImage */
 
@@ -116,9 +118,11 @@ $description = '';
             <div class="alert-info">Ce paramètre détermine les types d’articles que vous vendez dans votre boutique. Cela impacte notamment le tunnel de commande et la gestion des adresses client.</div>
             <label for="shopType">Type :</label>
             <select name="shopType" id="shopType">
-                <option <?= $shopType === 'virtual' ? 'selected' : '' ?> value="virtual">Virtuel</option>
-                <option <?= $shopType === 'both' ? 'selected' : '' ?> value="both">Virtuel et physique</option>
-                <option <?= $shopType === 'physical' ? 'selected' : '' ?> value="physical">Physique</option>
+                <?php foreach (ShopType::cases() as $type): ?>
+                    <option value="<?= $type->value ?>" <?= $selectedShopType === $type ? 'selected' : '' ?>>
+                        <?= $type->getLabel() ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
             <small id="shopTypeSelected"></small>
         </div>

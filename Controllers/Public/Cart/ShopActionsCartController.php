@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Cart;
 use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Event\Users\LoginEvent;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Events\Listener;
@@ -48,12 +49,12 @@ class ShopActionsCartController extends AbstractController
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
         }
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
         $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+            ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
@@ -103,12 +104,12 @@ class ShopActionsCartController extends AbstractController
             Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
         }
 
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
         $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+            ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             Flash::send(Alert::WARNING, 'Boutique', "Ce type d'article n'est plus pris en charge dans la boutique.");
@@ -308,12 +309,12 @@ class ShopActionsCartController extends AbstractController
         }
 
         // 🔒 Vérification compatibilité type boutique
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
         $itemType = $item->getType();
 
         $isInvalid =
-            ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-            ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+            ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+            ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
         if ($isInvalid) {
             ShopCartItemModel::getInstance()->removeItemByCartItemId($cartItemId);

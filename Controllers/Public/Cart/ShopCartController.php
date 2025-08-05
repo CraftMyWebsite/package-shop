@@ -5,6 +5,7 @@ use CMW\Controller\Users\UsersController;
 use CMW\Controller\Users\UsersSessionsController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
 use CMW\Entity\Shop\Enum\Item\ShopItemType;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Env\EnvManager;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
@@ -122,7 +123,7 @@ class ShopCartController extends AbstractController
     public function handleIncompatibleCartItems(?int $userId, string $sessionId): void
     {
         $cartItems = ShopCartItemModel::getInstance()->getShopCartsItemsByUserId($userId, $sessionId);
-        $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
 
         $removed = false;
 
@@ -135,8 +136,8 @@ class ShopCartController extends AbstractController
             $itemType = $item->getType();
 
             $isInvalid =
-                ($shopType === 'virtual' && $itemType === ShopItemType::PHYSICAL) ||
-                ($shopType === 'physical' && $itemType === ShopItemType::VIRTUAL);
+                ($shopType === ShopType::VIRTUAL_ONLY && $itemType === ShopItemType::PHYSICAL) ||
+                ($shopType === ShopType::PHYSICAL_ONLY && $itemType === ShopItemType::VIRTUAL);
 
             if ($isInvalid) {
                 ShopCartItemModel::getInstance()->removeItemFromCart($userId, $sessionId, $item->getId());

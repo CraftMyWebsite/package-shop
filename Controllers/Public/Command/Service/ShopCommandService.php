@@ -4,6 +4,7 @@ namespace CMW\Controller\Shop\Public\Command\Service;
 
 use CMW\Controller\Users\UsersController;
 use CMW\Entity\Shop\Carts\ShopCartItemEntity;
+use CMW\Entity\Shop\Enum\Shop\ShopType;
 use CMW\Manager\Flash\Alert;
 use CMW\Manager\Flash\Flash;
 use CMW\Manager\Package\AbstractController;
@@ -62,7 +63,8 @@ class ShopCommandService extends AbstractController
      */
     public function isShopVirtualOnly(): bool
     {
-        return ShopSettingsModel::getInstance()->getSettingValue('shopType') === 'virtual';
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
+        return $shopType === ShopType::VIRTUAL_ONLY;
     }
 
 }
