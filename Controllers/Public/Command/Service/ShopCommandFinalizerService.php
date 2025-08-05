@@ -50,11 +50,10 @@ class ShopCommandFinalizerService extends AbstractController
 
         // Vérifie l’adresse
         $address = $tunnel->getShopDeliveryUserAddress();
-        if (!ShopCartAnalyzer::isOnlyVirtual($cartContent) || !ShopCommandService::getInstance()->isShopVirtualOnly()) {
-            if (!$address || !$address->getId()) {
-                Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traiter la commande, adresse introuvable !');
-                Redirect::redirectToHome();
-            }
+        $requireAddress = !ShopCartAnalyzer::isOnlyVirtual($cartContent) || !ShopCommandService::getInstance()->isShopVirtualOnly();
+        if ($requireAddress && (!$address || !$address->getId())) {
+            Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traiter la commande, adresse introuvable !');
+            Redirect::redirectToHome();
         }
 
         // Vérifie l’envoi (si besoin)
@@ -80,15 +79,6 @@ class ShopCommandFinalizerService extends AbstractController
         if (!$paymentMethod) {
             Flash::send(Alert::ERROR, 'Erreur', 'Impossible de trouver ce mode de paiement !');
             Redirect::redirectPreviousRoute();
-        }
-
-        $selectedAddress = null;
-        if (!ShopCartAnalyzer::isOnlyVirtual($cartContent) || !ShopCommandService::getInstance()->isShopVirtualOnly()) {
-            if (!$address || !$address->getId()) {
-                Flash::send(Alert::ERROR, 'Boutique', 'Impossible de traiter la commande, adresse introuvable !');
-                Redirect::redirectToHome();
-            }
-            $selectedAddress = ShopDeliveryUserAddressModel::getInstance()->getShopDeliveryUserAddressById($address->getId());
         }
 
         try {
