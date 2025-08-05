@@ -191,6 +191,11 @@ class ShopPublicController extends AbstractController
 
         $item = ShopItemsModel::getInstance()->getShopItemsById($itemId);
 
+        if (!$item) {
+            Flash::send(Alert::ERROR, 'Boutique', 'Ce produit n\'existe pas ou n\'existe plus');
+            Redirect::redirect(EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop');
+        }
+
         $shopType = ShopSettingsModel::getInstance()->getSettingValue('shopType');
         $itemType = $item?->getType(); // 0 = physique, 1 = virtuel
 

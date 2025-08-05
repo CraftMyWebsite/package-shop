@@ -42,6 +42,10 @@ class ShopItemsModel extends AbstractModel
 
         $res = $res->fetch();
 
+        if (!$res) {
+            return null;
+        }
+
         $category = is_null($res['shop_category_id']) ? null : $this->shopCategoriesModel->getShopCategoryById($res['shop_category_id']);
 
         return new ShopItemEntity(
