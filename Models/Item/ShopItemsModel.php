@@ -762,30 +762,6 @@ ORDER BY csi.shop_item_price ASC;';
     }
 
     /**
-     * @param string $search
-     * @return \CMW\Entity\Shop\Items\ShopItemEntity|null
-     */
-    public function getItemByResearch(string $search): ?array
-    {
-        $sql = 'SELECT shop_item_id FROM cmw_shops_items WHERE ( shop_item_name LIKE :search  OR shop_item_description LIKE :search1 OR shop_item_short_description LIKE :search2 ) AND shop_item_archived = 0 AND shop_item_draft = 0 ORDER BY shop_item_id DESC;';
-        $db = DatabaseManager::getInstance();
-
-        $res = $db->prepare($sql);
-
-        if (!$res->execute(array('search' => '%'.$search.'%', 'search1' => '%'.$search.'%', 'search2' => '%'.$search.'%'))) {
-            return [];
-        }
-
-        $toReturn = array();
-
-        while ($item = $res->fetch()) {
-            $toReturn[] = $this->getShopItemsById($item['shop_item_id']);
-        }
-
-        return $toReturn;
-    }
-
-    /**
      * Retourne le nombre total d'items visibles selon le contexte (admin ou public).
      *
      * @param bool $isAdmin Si vrai, ne filtre que les archivés. Sinon filtre aussi les brouillons.
@@ -849,5 +825,111 @@ ORDER BY csi.shop_item_price ASC;';
         return (int)($row['total'] ?? 0);
     }
 
+    // --- Utils interne ---
+    /** Échappe % et _ pour un LIKE sûr */
+    private function escapeForLike(string $q): string
+    {
+        // échappe % et _
+        return str_replace(['%', '_'], ['\%', '\_'], $q);
+    }
+
+    public function countSearchVisibleShopItems(string $query, bool $isAdmin): int
+    {
+        $db = DatabaseManager::getInstance();
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
+
+        $typeCondition = match ($shopType) {
+            ShopType::VIRTUAL_ONLY  => ' AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => ' AND shop_item_type = 0',
+            ShopType::BOTH          => ''
+        };
+
+        $like = '%' . $this->escapeForLike($query) . '%';
+
+        $sql = 'SELECT COUNT(*) AS total
+            FROM cmw_shops_items
+            WHERE shop_item_archived = 0' .
+            ($isAdmin ? '' : ' AND shop_item_draft = 0') .
+            $typeCondition .
+            ' AND (
+                shop_item_name LIKE :q1 OR
+                shop_item_description LIKE :q2 OR
+                shop_item_short_description LIKE :q3
+            )';
+
+        $st = $db->prepare($sql);
+        $st->bindValue(':q1', $like, \PDO::PARAM_STR);
+        $st->bindValue(':q2', $like, \PDO::PARAM_STR);
+        $st->bindValue(':q3', $like, \PDO::PARAM_STR);
+
+        if (!$st->execute()) {
+            return 0;
+        }
+        $row = $st->fetch();
+        return (int)($row['total'] ?? 0);
+    }
+
+
+    private function searchShopItems(string $query, string $sort, int $limit, int $offset, bool $isAdmin): array
+    {
+        $db = DatabaseManager::getInstance();
+        $shopType = ShopSettingsModel::getInstance()->getShopTypeEnum();
+
+        $sortMap = [
+            'pertinence'      => 'shop_item_id DESC',
+            'ascendingPrice'  => 'shop_item_price ASC',
+            'descendingPrice' => 'shop_item_price DESC',
+        ];
+        $orderBy = $sortMap[$sort] ?? $sortMap['pertinence'];
+
+        $typeCondition = match ($shopType) {
+            ShopType::VIRTUAL_ONLY  => ' AND shop_item_type = 1',
+            ShopType::PHYSICAL_ONLY => ' AND shop_item_type = 0',
+            ShopType::BOTH          => ''
+        };
+
+        $like = '%' . $this->escapeForLike($query) . '%';
+
+        $sql = 'SELECT shop_item_id
+            FROM cmw_shops_items
+            WHERE shop_item_archived = 0' .
+            ($isAdmin ? '' : ' AND shop_item_draft = 0') .
+            $typeCondition .
+            ' AND (
+                shop_item_name LIKE :q1 OR
+                shop_item_description LIKE :q2 OR
+                shop_item_short_description LIKE :q3
+            )
+            ORDER BY ' . $orderBy . '
+            LIMIT :limit OFFSET :offset';
+
+        $st = $db->prepare($sql);
+        $st->bindValue(':q1', $like, \PDO::PARAM_STR);
+        $st->bindValue(':q2', $like, \PDO::PARAM_STR);
+        $st->bindValue(':q3', $like, \PDO::PARAM_STR);
+        $st->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
+        $st->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+
+        if (!$st->execute()) {
+            return [];
+        }
+
+        $out = [];
+        while ($row = $st->fetch()) {
+            $out[] = $this->getShopItemsById($row['shop_item_id']);
+        }
+        return $out;
+    }
+
+
+    public function searchAdminShopItems(string $query, string $sort, int $limit, int $offset): array
+    {
+        return $this->searchShopItems($query, $sort, $limit, $offset, true);
+    }
+
+    public function searchPublicShopItems(string $query, string $sort, int $limit, int $offset): array
+    {
+        return $this->searchShopItems($query, $sort, $limit, $offset, false);
+    }
 
 }

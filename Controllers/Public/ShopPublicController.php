@@ -76,6 +76,10 @@ class ShopPublicController extends AbstractController
         $review        = ShopReviewsModel::getInstance();
         $allowReviews  = ShopSettingsModel::getInstance()->getSettingValue('reviews');
         ShopDiscountModel::getInstance()->autoStatusChecker();
+        $isSearchView = false;
+        $searchFor = '';
+        $isSearch = !empty($isSearchView) && isset($searchFor) && $searchFor !== '';
+        $extraQuery = $isSearch ? '&for=' . rawurlencode($searchFor) : '';
 
         // --- Vue ---
         View::createPublicView('Shop', 'Main/main')
@@ -91,6 +95,9 @@ class ShopPublicController extends AbstractController
                 'itemsPerPage'  => $limit,
                 'maxPages'      => $maxPages,
                 'baseShopUrl' => EnvManager::getInstance()->getValue('PATH_SUBFOLDER').'shop',
+                'isSearchView' => false,
+                'searchFor'    => $searchFor,
+                'extraQuery'   => $extraQuery
             ])
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->view();
@@ -301,27 +308,74 @@ class ShopPublicController extends AbstractController
         }
     }
 
-    #[Link('/search', Link::POST, ['.*?'], '/shop')]
-    private function publicShopResearch(): void
+    #[Link('/search', Link::GET, ['.*?'], '/shop')]
+    private function publicShopSearchView(): void
     {
-        [$for] = Utils::filterInput('for');
+        $maintenance = ShopSettingsModel::getInstance()->getSettingValue('maintenance');
+        if ($maintenance) {
+            if (UsersController::isAdminLogged()) {
+                Flash::send(Alert::INFO, 'Boutique', 'Shop est en maintenance, mais vous y avez accès car vous êtes administrateur');
+            } else {
+                $maintenanceMessage = ShopSettingsModel::getInstance()->getSettingValue('maintenanceMessage');
+                Flash::send(Alert::WARNING, 'Boutique', $maintenanceMessage);
+                Redirect::redirectToHome();
+            }
+        }
 
-        $items = ShopItemsModel::getInstance()->getItemByResearch($for);
+        $for = isset($_GET['for']) ? trim((string)$_GET['for']) : '';
+        if ($for === '') {
+            Redirect::redirect('/shop');
+        }
 
-        $imagesItem = ShopImagesModel::getInstance();
-        $defaultImage = ShopImagesModel::getInstance()->getDefaultImg();
-        $allowReviews = ShopSettingsModel::getInstance()->getSettingValue('reviews');
-        $review = ShopReviewsModel::getInstance();
+        $limit  = ShopSettingsModel::getInstance()->getSettingValue('perPage');
+        $page   = isset($_GET['p']) ? max(1, (int)$_GET['p']) : 1;
+        $offset = ($page - 1) * $limit;
+
+        $sort = $_GET['sort'] ?? 'pertinence';
+        $allowedSorts = ['pertinence', 'ascendingPrice', 'descendingPrice'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'pertinence';
+        }
+
+        $isAdmin = UsersController::isAdminLogged();
+
+        $totalItems = ShopItemsModel::getInstance()->countSearchVisibleShopItems($for, $isAdmin);
+        $maxPages   = (int)ceil($totalItems / $limit);
+
+        $items = $isAdmin
+            ? ShopItemsModel::getInstance()->searchAdminShopItems($for, $sort, $limit, $offset)
+            : ShopItemsModel::getInstance()->searchPublicShopItems($for, $sort, $limit, $offset);
+
         $categoryModel = ShopCategoriesModel::getInstance();
+        $imagesItem    = ShopImagesModel::getInstance();
+        $defaultImage  = $imagesItem->getDefaultImg();
+        $review        = ShopReviewsModel::getInstance();
+        $allowReviews  = ShopSettingsModel::getInstance()->getSettingValue('reviews');
+        ShopDiscountModel::getInstance()->autoStatusChecker();
+        $isSearchView = true;
+        $searchFor = $for;
+        $isSearch = !empty($isSearchView) && isset($searchFor) && $searchFor !== '';
+        $extraQuery = $isSearch ? '&for=' . rawurlencode($searchFor) : '';
 
         View::createPublicView('Shop', 'Main/main')
-            ->addVariableList(['items' => $items
-                , 'imagesItem' => $imagesItem
-                , 'defaultImage' => $defaultImage
-                , 'allowReviews' => $allowReviews
-                , 'review' => $review
-                , 'categoryModel' => $categoryModel])
+            ->addVariableList([
+                'categoryModel' => $categoryModel,
+                'items'         => $items,
+                'imagesItem'    => $imagesItem,
+                'defaultImage'  => $defaultImage,
+                'review'        => $review,
+                'allowReviews'  => $allowReviews,
+                'currentSort'   => $sort,
+                'currentPage'   => $page,
+                'itemsPerPage'  => $limit,
+                'maxPages'      => $maxPages,
+                'baseShopUrl'   => EnvManager::getInstance()->getValue('PATH_SUBFOLDER') . 'shop/search',
+                'isSearchView'  => true,
+                'searchFor'     => $for,
+                'extraQuery'   => $extraQuery
+            ])
             ->addStyle('Admin/Resources/Vendors/Fontawesome-free/Css/fa-all.min.css')
             ->view();
     }
+
 }

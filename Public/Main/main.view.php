@@ -42,27 +42,28 @@ Website::setDescription('Découvrez la boutique !');
             </select>
         </div>
         <div style="display:flex;">
-            <form action="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>shop/search" method="post">
-                <?php SecurityManager::getInstance()->insertHiddenToken() ?>
+            <form action="<?= EnvManager::getInstance()->getValue('PATH_SUBFOLDER') ?>shop/search" method="get">
                 <div style="position: relative; width: 20rem">
                     <input name="for" type="search" id="search-dropdown" class="shop-input-search-587254"
-                           placeholder="Rechercher" required>
-                    <button type="submit" class="shop-button-search-565787">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
+                           placeholder="Rechercher" required
+                           value="<?= isset($_GET['for']) ? htmlspecialchars($_GET['for']) : '' ?>">
+                    <!-- Forcer la page 1 à chaque nouvelle recherche -->
+                    <input type="hidden" name="p" value="1">
+                    <input type="hidden" name="sort" value="<?= $currentSort ?? 'pertinence' ?>">
+
+                    <button type="submit" class="shop-button-search-565787"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </form>
         </div>
         <form method="get" action="<?= $baseShopUrl ?>" id="sortForm" style="display:flex;">
-            <input type="hidden" name="p" value="<?= $currentPage ?>">
+            <input type="hidden" name="p" value="<?= (int)$currentPage ?>">
+            <?php if ($isSearch): ?>
+                <input type="hidden" name="for" value="<?= htmlspecialchars($searchFor) ?>">
+            <?php endif; ?>
             <label for="sort">Trier par :</label>
             <select class="shop-select-5872154" name="sort" id="sort" onchange="document.getElementById('sortForm').submit()">
-                <option value="pertinence" <?= $currentSort === 'pertinence' ? 'selected' : '' ?>>Pertinence</option>
-                <option value="ascendingPrice" <?= $currentSort === 'ascendingPrice' ? 'selected' : '' ?>>Prix croissant</option>
+                <option value="pertinence"      <?= $currentSort === 'pertinence' ? 'selected' : '' ?>>Pertinence</option>
+                <option value="ascendingPrice"  <?= $currentSort === 'ascendingPrice' ? 'selected' : '' ?>>Prix croissant</option>
                 <option value="descendingPrice" <?= $currentSort === 'descendingPrice' ? 'selected' : '' ?>>Prix décroissant</option>
             </select>
         </form>
@@ -189,21 +190,24 @@ Website::setDescription('Découvrez la boutique !');
         <?php endif; ?>
     </div>
     <div class="pagination-5897542315">
-        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=1&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>" title="Première page">
+        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=1&sort=' . $currentSort . $extraQuery : '#' ?>"
+           class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>" title="Première page">
             <i class="fa-solid fa-angles-left"></i>
         </a>
-        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=' . ($currentPage - 1) . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+        <a href="<?= $currentPage > 1 ? $baseShopUrl . '?p=' . ($currentPage - 1) . '&sort=' . $currentSort . $extraQuery : '#' ?>"
+           class="pagination-btn-97515 <?= $currentPage <= 1 ? 'disabled' : '' ?>">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
-        <span class="pagination-info-97548745"><?= $currentPage ?> / <?= $maxPages ?></span>
-        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . ($currentPage + 1) . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>">
+        <span class="pagination-info-97548745"><?= (int)$currentPage ?> / <?= (int)$maxPages ?></span>
+        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . ($currentPage + 1) . '&sort=' . $currentSort . $extraQuery : '#' ?>"
+           class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>">
             <i class="fa-solid fa-arrow-right"></i>
         </a>
-        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . $maxPages . '&sort=' . $currentSort : '#' ?>" class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>" title="Dernière page">
+        <a href="<?= $currentPage < $maxPages ? $baseShopUrl . '?p=' . $maxPages . '&sort=' . $currentSort . $extraQuery : '#' ?>"
+           class="pagination-btn-97515 <?= $currentPage >= $maxPages ? 'disabled' : '' ?>" title="Dernière page">
             <i class="fa-solid fa-angles-right"></i>
         </a>
     </div>
-
 </section>
 
 <script
