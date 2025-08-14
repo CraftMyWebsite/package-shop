@@ -14,7 +14,7 @@ Website::setDescription('Consultation de vos achats');
 <link rel="stylesheet"
       href="<?= EnvManager::getInstance()->getValue("PATH_SUBFOLDER") ?>App/Package/Shop/Public/Resources/style.css">
 
-<section class="shop-section-45875487">
+<section class="shop-history-45875487">
     <h3 style="text-align: center; margin-bottom: 1rem">Historique d'achat</h3>
         <?php foreach ($historyOrders as $order): ?>
         <div class="shop-cart-card-45854" style="margin-bottom: 1.6rem">
@@ -25,9 +25,9 @@ Website::setDescription('Consultation de vos achats');
                         </div>
                         <div><span class="shop-hide-mobile">Commandé le : </span><span style="color: #5a8cde"><?= $order->getCreated() ?></span></div>
                     </div>
+                    <?= $order->getBeautifulStatus(); ?>
                     <div class="shop-flex-45127" style="justify-content: space-between; align-items: center;">
                         <div>
-                            <p><span class="shop-hide-mobile">Statut :</span> <b><?= $order->getPublicStatus() ?></b></p>
                             <?php if ($order->getShippingMethod()): ?>
                                 <p><span class="shop-hide-mobile">Éxpédition : </span><?= $order->getShippingMethod()->getName() ?> (<?= $order->getShippingMethod()->getPriceFormatted() ?>)</p>
                             <?php endif; ?>

@@ -12,6 +12,26 @@
     }
 }
 
+.shop-history-45875487 {
+    width: 50%;
+    padding-bottom: 6rem;
+    margin: 1rem auto auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .shop-history-45875487 {
+        width: 95%;
+        padding-bottom: 6rem;
+        margin: 1rem auto auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
 .shop-header-4578544 {
     display: flex;
     justify-content: space-between

@@ -42,7 +42,13 @@ class ShopHistoryOrdersModel extends AbstractModel
             $res['shop_history_order_shipping_link'] ?? null,
             $res['shop_history_order_number'] ?? null,
             $res['shop_history_order_created_at'] ?? null,
-            $res['shop_history_order_updated_at'] ?? null
+            $res['shop_history_order_updated_at'] ?? null,
+            $res['shop_history_order_date_validated'] ?? null,
+            $res['shop_history_order_date_shipping'] ?? null,
+            $res['shop_history_order_date_ready_withdraw'] ?? null,
+            $res['shop_history_order_date_finished'] ?? null,
+            $res['shop_history_order_date_canceled'] ?? null,
+            $res['shop_history_order_date_refunded'] ?? null
         );
     }
 
@@ -283,4 +289,33 @@ class ShopHistoryOrdersModel extends AbstractModel
 
         $req->execute($var);
     }
+
+    private function touchDate(int $orderId, string $column): void
+    {
+        $allowed = [
+            'shop_history_order_date_validated',
+            'shop_history_order_date_shipping',
+            'shop_history_order_date_ready_withdraw',
+            'shop_history_order_date_finished',
+            'shop_history_order_date_canceled',
+            'shop_history_order_date_refunded',
+        ];
+        if (!in_array($column, $allowed, true)) return;
+
+        $sql = "UPDATE cmw_shop_history_order
+                SET {$column} = IF({$column} IS NULL, NOW(), {$column})
+                WHERE shop_history_order_id = :id";
+        $db = DatabaseManager::getInstance();
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['id' => $orderId]);
+    }
+
+    // --- wrappers explicites ---
+    public function markValidated(int $orderId): void            { $this->touchDate($orderId, 'shop_history_order_date_validated'); }
+    public function markShipping(int $orderId): void             { $this->touchDate($orderId, 'shop_history_order_date_shipping'); }
+    public function markReadyWithdraw(int $orderId): void        { $this->touchDate($orderId, 'shop_history_order_date_ready_withdraw'); }
+    public function markFinished(int $orderId): void             { $this->touchDate($orderId, 'shop_history_order_date_finished'); }
+    public function markCanceled(int $orderId): void             { $this->touchDate($orderId, 'shop_history_order_date_canceled'); }
+    public function markRefunded(int $orderId): void             { $this->touchDate($orderId, 'shop_history_order_date_refunded'); }
+
 }

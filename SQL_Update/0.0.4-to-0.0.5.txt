@@ -1,0 +1,7 @@
+ALTER TABLE cmw_shop_history_order
+ADD COLUMN shop_history_order_date_validated TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN shop_history_order_date_shipping TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN shop_history_order_date_ready_withdraw TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN shop_history_order_date_finished TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN shop_history_order_date_canceled TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN shop_history_order_date_refunded TIMESTAMP NULL DEFAULT NULL;

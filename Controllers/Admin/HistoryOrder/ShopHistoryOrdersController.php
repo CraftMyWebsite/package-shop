@@ -291,11 +291,16 @@ class ShopHistoryOrdersController extends AbstractController
         if (!$orderOnlyVirtual) {
             if ($thisOrder->getShippingMethod()?->getShipping()->getType() === 0) {
                 ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+                ShopHistoryOrdersModel::getInstance()->markValidated($orderId);
             } else {
                 ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, null);
+                ShopHistoryOrdersModel::getInstance()->markValidated($orderId);
+                ShopHistoryOrdersModel::getInstance()->markReadyWithdraw($orderId);
             }
         } else {
             ShopHistoryOrdersModel::getInstance()->toSendStep($orderId);
+            ShopHistoryOrdersModel::getInstance()->markValidated($orderId);
+            ShopHistoryOrdersModel::getInstance()->markFinished($orderId);
         }
 
         try {
@@ -317,6 +322,7 @@ class ShopHistoryOrdersController extends AbstractController
         ShopHistoryOrdersModel::getInstance()->toFinalStep($orderId, ($shippingLink === '' ? null : $shippingLink));
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
+        $type  = $order->getShippingMethod()?->getShipping()?->getType();
         $orderAddress = ShopHistoryOrdersUserAddressModel::getInstance()->getHistoryOrdersUserAddressByHistoryOrderId($orderId);
         $receiver = $orderAddress->getUserFirstName() . ' ' . $orderAddress->getUserLastName();
         $line = $orderAddress->getUserLine1();
@@ -324,6 +330,13 @@ class ShopHistoryOrdersController extends AbstractController
         $city = $orderAddress->getUserCity();
         $country = $orderAddress->getUserFormattedCountry();
         $shipping = $shippingLink !== '' ? '<h3><a href="' . $shippingLink . '">Suivre le colis</a></h3>' : '';
+
+        ShopHistoryOrdersModel::getInstance()->markValidated($orderId);
+        if ($type === 0) {
+            ShopHistoryOrdersModel::getInstance()->markShipping($orderId);
+        } elseif ($type === 1) {
+            ShopHistoryOrdersModel::getInstance()->markReadyWithdraw($orderId);
+        }
 
 
         $htmlMessage =<<<HTML
@@ -353,6 +366,7 @@ class ShopHistoryOrdersController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endSuccess');
 
         ShopHistoryOrdersModel::getInstance()->endOrder($orderId);
+        ShopHistoryOrdersModel::getInstance()->markFinished($orderId);
 
         // ExecVirtualNeeds :
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
@@ -391,6 +405,7 @@ class ShopHistoryOrdersController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.unrealizable');
 
         ShopHistoryOrdersModel::getInstance()->toCancelStep($orderId);
+        ShopHistoryOrdersModel::getInstance()->markCanceled($orderId);
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $htmlMessage =<<<HTML
@@ -417,6 +432,7 @@ class ShopHistoryOrdersController extends AbstractController
         UsersController::redirectIfNotHavePermissions('core.dashboard', 'shop.order.manage.endFailed');
 
         ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+        ShopHistoryOrdersModel::getInstance()->markRefunded($orderId);
 
         $order = ShopHistoryOrdersModel::getInstance()->getHistoryOrdersById($orderId);
         $htmlMessage =<<<HTML
@@ -474,6 +490,7 @@ class ShopHistoryOrdersController extends AbstractController
             $discount = ShopDiscountModel::getInstance()->createDiscount($name,4,null,null,1,0,null,$orderPrice,0,1,0,$code,0,0,0);
             if ($discount) {
                 ShopHistoryOrdersModel::getInstance()->refundStep($orderId);
+                ShopHistoryOrdersModel::getInstance()->markRefunded($orderId);
                 ShopNotifyController::getInstance()->notifyUser($user->getMail(), "Votre avoir pour la commande N°" . $order->getOrderNumber(), "Avoir pour la commande N°" . $order->getOrderNumber(), $body);
                 Flash::send(Alert::SUCCESS, 'Avoir', $user->getPseudo() . ' à reçu son avoir par mail !');
             }

@@ -377,13 +377,19 @@ CREATE TABLE IF NOT EXISTS cmw_shops_delivery_user_address
 
 CREATE TABLE IF NOT EXISTS cmw_shop_history_order
 (
-    shop_history_order_id            INT AUTO_INCREMENT PRIMARY KEY,
-    user_id                          INT          NULL,
-    shop_history_order_status        INT          NOT NULL DEFAULT 0,
-    shop_history_order_shipping_link VARCHAR(255) NULL,
-    shop_history_order_number        VARCHAR(50)  NULL,
-    shop_history_order_created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    shop_history_order_updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_history_order_id                   INT AUTO_INCREMENT PRIMARY KEY,
+    user_id                                 INT          NULL,
+    shop_history_order_status               INT          NOT NULL DEFAULT 0,
+    shop_history_order_shipping_link        VARCHAR(255) NULL,
+    shop_history_order_number               VARCHAR(50)  NULL,
+    shop_history_order_created_at           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_history_order_updated_at           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    shop_history_order_date_validated       TIMESTAMP    NULL DEFAULT NULL,
+    shop_history_order_date_shipping        TIMESTAMP    NULL DEFAULT NULL,
+    shop_history_order_date_ready_withdraw  TIMESTAMP    NULL DEFAULT NULL,
+    shop_history_order_date_finished        TIMESTAMP    NULL DEFAULT NULL,
+    shop_history_order_date_canceled        TIMESTAMP    NULL DEFAULT NULL,
+    shop_history_order_date_refunded        TIMESTAMP    NULL DEFAULT NULL,
     CONSTRAINT fk_user_id_shop_history_order FOREIGN KEY (user_id)
     REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE = InnoDB
