@@ -4,7 +4,7 @@ namespace CMW\Controller\Shop\Admin\Payment\Method;
 
 use CMW\Controller\Shop\Admin\Payment\ShopPaymentsController;
 use CMW\Controller\Users\UsersSessionsController;
-use CMW\Entity\Shop\Deliveries\ShopDeliveryUserAddressEntity;
+use CMW\Entity\Users\UserEntity;
 use CMW\Event\Shop\ShopPaymentCancelEvent;
 use CMW\Event\Shop\ShopPaymentCompleteEvent;
 use CMW\Exception\Shop\Payment\ShopPaymentException;
@@ -37,7 +37,7 @@ class ShopPaymentMethodStripeController extends AbstractController
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
      * @throws \CMW\Exception\Shop\Payment\ShopPaymentException
      */
-    public function sendStripePayment(array $cartItems): void
+    public function sendStripePayment(array $cartItems, UserEntity $user): void
     {
         if (!$this->isStripeConfigComplete()) {
             throw new ShopPaymentException(message: 'Stripe config is not complete');
@@ -144,6 +144,7 @@ class ShopPaymentMethodStripeController extends AbstractController
         $sessionData = [
             'payment_method_types' => [],  // if null is automatically handled by stripe and stripe payement account settings
             'line_items' => $Items,
+            'customer_email' => $user->getMail(),
             'mode' => 'payment',
             'success_url' => $completeUrl,
             'cancel_url' => $cancelUrl,

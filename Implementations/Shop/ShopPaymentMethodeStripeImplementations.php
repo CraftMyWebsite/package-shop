@@ -80,6 +80,6 @@ class ShopPaymentMethodeStripeImplementations implements IPaymentMethodV2
 
     public function doPayment(array $cartItems, UserEntity $user): void
     {
-        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems);
+        ShopPaymentMethodStripeController::getInstance()->sendStripePayment($cartItems, $user);
     }
 }
