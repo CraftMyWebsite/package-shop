@@ -28,8 +28,8 @@ use JsonException;
  */
 class ShopPaymentMethodPayPalController extends AbstractController
 {
-    private const string  PAYPAL_API_URL = 'https://api.paypal.com';
-    private const string  PAYPAL_SANDBOX_API_URL = 'https://api.sandbox.paypal.com';  // Only for dev.
+    private const string  PAYPAL_API_URL = 'https://api-m.paypal.com';
+    private const string  PAYPAL_SANDBOX_API_URL = 'https://api-m.sandbox.paypal.com';  // Only for dev.
 
     /**
      * @param \CMW\Entity\Shop\Carts\ShopCartItemEntity[] $cartItems
@@ -66,14 +66,7 @@ class ShopPaymentMethodPayPalController extends AbstractController
                     'amount' => [
                         'currency_code' => $currencyCode,
                         'value' => number_format($totalAmount, 2, '.', ''),
-                        'breakdown' => [
-                            'item_total' => [
-                                'currency_code' => $currencyCode,
-                                'value' => number_format(0.0, 2, '.', ''),
-                            ],
-                        ],
                     ],
-                    'items' => [],
                 ],
             ],
             'application_context' => [
