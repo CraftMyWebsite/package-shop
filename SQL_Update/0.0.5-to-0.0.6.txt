@@ -1,0 +1,42 @@
+
+CREATE TABLE IF NOT EXISTS cmw_shops_recurring_payment_method_settings
+(
+    shop_recurring_payment_method_settings_id         INT AUTO_INCREMENT PRIMARY KEY,
+    shop_recurring_payment_method_settings_key        VARCHAR(50)  NOT NULL UNIQUE KEY,
+    shop_recurring_payment_method_settings_value      VARCHAR(500) NOT NULL,
+    shop_recurring_payment_method_settings_created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_recurring_payment_method_settings_updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
+ALTER TABLE cmw_shops_items
+  ADD shop_item_is_recurring TINYINT NOT NULL DEFAULT 0 AFTER shop_item_type;
+
+CREATE TABLE IF NOT EXISTS cmw_shops_items_recurring
+(
+    shop_item_recurring_id          INT AUTO_INCREMENT PRIMARY KEY,
+    shop_item_id                    INT NOT NULL UNIQUE,
+    shop_item_recurring_interval    ENUM('week','month','year') NOT NULL,
+    shop_item_recurring_interval_count INT NOT NULL DEFAULT 1,
+    shop_item_trial_enabled         TINYINT NOT NULL DEFAULT 0,
+    shop_item_trial_duration_value  INT NULL,
+    shop_item_trial_duration_unit   ENUM('hour','day','week') NULL,
+    shop_item_trial_non_renewing    TINYINT NOT NULL DEFAULT 0,
+    shop_item_recurring_created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    shop_item_recurring_updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_item_recurring FOREIGN KEY (shop_item_id)
+        REFERENCES cmw_shops_items (shop_item_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE cmw_shops_command_tunnel
+  ADD shop_recurring_item_id INT NULL AFTER shop_payment_method_name,
+  ADD shop_recurring_variant_ids LONGTEXT NULL AFTER shop_recurring_item_id,
+  ADD shop_recurring_started_at TIMESTAMP NULL DEFAULT NULL AFTER shop_recurring_variant_ids,
+  ADD INDEX idx_recurring_item (shop_recurring_item_id),
+  ADD CONSTRAINT fk_recurring_item
+    FOREIGN KEY (shop_recurring_item_id) REFERENCES cmw_shops_items(shop_item_id)
+    ON UPDATE CASCADE ON DELETE SET NULL;
