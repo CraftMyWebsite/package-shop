@@ -58,7 +58,7 @@ $description = '';
                     <td><?= $inProgressOrder->getAdminStatus() ?></td>
                     <?php $payment = ShopPaymentsController::getInstance()->getPaymentByVarName($inProgressOrder->getPaymentMethod()->getVarName()) ?>
                     <td>
-                        <?php if ($payment->dashboardURL()): ?>
+                        <?php if ($payment): ?>
                             <a target="_blank" class="link"
                                href="<?= $payment->dashboardURL() ?>"><?= $inProgressOrder->getPaymentMethod()->getName() ?></a>
                         <?php else: ?>
