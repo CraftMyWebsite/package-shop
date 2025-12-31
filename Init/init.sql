@@ -618,6 +618,24 @@ CREATE TABLE IF NOT EXISTS cmw_shops_reviews
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `cmw_shop_payment_order`
+(
+    `order_id`              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `user_id`               INT NOT NULL,
+    `amount_cents`          INT NOT NULL,
+    `currency`              VARCHAR(10) NOT NULL,
+    `status`                ENUM('PENDING','PAID','CANCELLED') NOT NULL DEFAULT 'PENDING',
+    `nonce`                 VARCHAR(255) NOT NULL UNIQUE,
+    `session_id`            VARCHAR(255) DEFAULT NULL UNIQUE,
+    `payment_intent`        VARCHAR(255)    DEFAULT NULL,
+    `order_created`         TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `paid_at`               DATETIME        DEFAULT NULL,
+    `updated_at`            TIMESTAMP       NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cmw_market_order_users FOREIGN KEY (user_id) REFERENCES cmw_users (user_id) ON UPDATE CASCADE ON DELETE CASCADE
+    ) ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
 ALTER TABLE `cmw_shops_items`
     ADD
         CONSTRAINT fk_shop_image_id_items FOREIGN KEY (shop_image_id)
